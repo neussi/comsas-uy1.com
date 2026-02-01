@@ -1,0 +1,160 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Gestion des Parrains{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'admin_sponsorship_home' %}"
+                        class="text-decoration-none text-muted">Parrainage</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Parrains</li>
+            </ol>
+        </nav>
+        <h2 class="mt-2">
+            <i class="fas fa-chalkboard-teacher me-2 text-primary"></i>
+            Liste des Parrains
+        </h2>
+    </div>
+    <a href="{% url 'register_mentor' %}" target="_blank" class="btn btn-primary shadow-sm">
+        <i class="fas fa-plus me-1"></i>
+        Nouveau Parrain (Public)
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="table-card mb-4">
+    <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0 text-muted"><i class="fas fa-filter me-2"></i>Filtres</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="specialty" class="form-label small text-uppercase fw-bold text-muted">Spécialité</label>
+                <select class="form-select" id="specialty" name="specialty" onchange="this.form.submit()">
+                    <option value="">Toutes les spécialités</option>
+                    {% for value, label in specialties %}
+                    <option value="{{ value }}" {% if current_specialty == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-8 text-end">
+                <a href="{% url 'admin_sponsorship_mentors' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-undo me-1"></i> Réinitialiser
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Mentors List -->
+<div class="table-card">
+    <div class="card-header">
+        <h5 class="mb-0">Parrains inscrits ({{ mentors_page.paginator.count }})</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Nom & Prénom</th>
+                        <th>Coordonnées</th>
+                        <th>Profil</th>
+                        <th>Spécialité</th>
+                        <th class="text-center">Filleuls</th>
+                        <th>Capacité</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mentor in mentors_page.object_list %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold">{{ mentor.first_name }} {{ mentor.last_name }}</div>
+                            <span class="badge bg-light text-muted border mt-1">{{ mentor.session.name }}</span>
+                        </td>
+                        <td>
+                            <div class="small"><i class="fas fa-envelope me-2 text-muted" style="width: 16px;"></i>{{
+                                mentor.email }}</div>
+                            <div class="small mt-1"><i class="fas fa-phone me-2 text-muted" style="width: 16px;"></i>{{
+                                mentor.phone }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ mentor.get_level_display }}</span>
+                            {% if mentor.job_title %}
+                            <div class="small text-muted mt-1 text-truncate" style="max-width: 150px;"
+                                title="{{ mentor.job_title }}">{{ mentor.job_title }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span
+                                class="badge bg-purple bg-opacity-10 text-purple border border-purple border-opacity-25 rounded-pill px-3"
+                                style="color: purple;">
+                                {{ mentor.get_specialty_display }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-primary rounded-pill">
+                                {{ mentor.mentee_set.count }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="text-muted">{{ mentor.max_mentees }} max</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="opacity-25 mb-3">
+                                <i class="fas fa-chalkboard-teacher fa-3x"></i>
+                            </div>
+                            <p class="text-muted">Aucun parrain trouvé.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if mentors_page.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if mentors_page.has_previous %}
+        <li class="page-item">
+            <a class="page-link"
+                href="?page={{ mentors_page.previous_page_number }}{% if current_specialty %}&specialty={{ current_specialty }}{% endif %}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in mentors_page.paginator.page_range %}
+        {% if mentors_page.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > mentors_page.number|add:'-3' and num < mentors_page.number|add:'3' %} <li class="page-item">
+            <a class="page-link"
+                href="?page={{ num }}{% if current_specialty %}&specialty={{ current_specialty }}{% endif %}">
+                {{ num }}
+            </a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if mentors_page.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ mentors_page.next_page_number }}{% if current_specialty %}&specialty={{ current_specialty }}{% endif %}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

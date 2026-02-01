@@ -1,0 +1,228 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Paramètres du Site{% endblock %}
+{% block page_icon %}cogs{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.media }}
+
+    <!-- Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h4 class="fw-bold mb-0 text-dark">Configuration Générale</h4>
+            <p class="text-muted small mb-0">Personnalisez l'apparence et les informations du site</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'home' %}" target="_blank" class="btn btn-outline-info me-2 shadow-sm">
+                <i class="fas fa-external-link-alt me-2"></i>Voir le site
+            </a>
+            <button type="submit" class="btn btn-primary shadow-sm hover-lift">
+                <i class="fas fa-save me-2"></i>Enregistrer
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Config -->
+    <div class="row g-4">
+        <!-- Informations générales -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-info-circle me-2 text-primary"></i>Identité du
+                        Site</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label for="{{ form.site_name.id_for_label }}"
+                            class="form-label fw-bold small text-uppercase text-muted">Nom du Projet /
+                            Association</label>
+                        {{ form.site_name }}
+                        {% if form.site_name.errors %}
+                        <div class="text-danger small mt-1">{{ form.site_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="{{ form.slogan_fr.id_for_label }}"
+                                class="form-label fw-bold small text-uppercase text-muted">Slogan (FR)</label>
+                            {{ form.slogan_fr }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.slogan_en.id_for_label }}"
+                                class="form-label fw-bold small text-uppercase text-muted">Slogan (EN)</label>
+                            {{ form.slogan_en }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.description_fr.id_for_label }}"
+                            class="form-label fw-bold small text-uppercase text-muted">Description (FR)</label>
+                        {{ form.description_fr }}
+                        <div class="form-text small">Courte description pour le pied de page et le SEO.</div>
+                    </div>
+
+                    <div class="mb-0">
+                        <label for="{{ form.description_en.id_for_label }}"
+                            class="form-label fw-bold small text-uppercase text-muted">Description (EN)</label>
+                        {{ form.description_en }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-user-tie me-2 text-info"></i>Mot du Président
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="{{ form.president_message_fr.id_for_label }}"
+                                class="form-label fw-bold small text-uppercase text-muted">Message (FR)</label>
+                            {{ form.president_message_fr }}
+                        </div>
+                        <div class="col-md-12">
+                            <label for="{{ form.president_message_en.id_for_label }}"
+                                class="form-label fw-bold small text-uppercase text-muted">Message (EN)</label>
+                            {{ form.president_message_en }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-share-alt me-2 text-success"></i>Réseaux Sociaux
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.facebook_url.id_for_label }}" class="form-label fw-bold small"><i
+                                    class="fab fa-facebook text-primary me-1"></i> Facebook</label>
+                            {{ form.facebook_url }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.whatsapp_group_url.id_for_label }}" class="form-label fw-bold small"><i
+                                    class="fab fa-whatsapp text-success me-1"></i> WhatsApp</label>
+                            {{ form.whatsapp_group_url }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.linkedin_url.id_for_label }}" class="form-label fw-bold small"><i
+                                    class="fab fa-linkedin text-info me-1"></i> LinkedIn</label>
+                            {{ form.linkedin_url }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Config -->
+        <div class="col-lg-4">
+            <!-- Appearance -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-images me-2 text-warning"></i>Apparence</h5>
+                </div>
+                <div class="card-body text-center">
+                    <!-- Logo -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase text-muted d-block text-start">Logo du
+                            site</label>
+                        <div class="position-relative d-inline-block group cursor-pointer mb-2">
+                            {% if form.instance.logo %}
+                            <img src="{{ form.instance.logo.url }}" alt="Logo"
+                                class="img-fluid rounded shadow-sm border p-2 bg-white" style="max-height: 100px;">
+                            {% else %}
+                            <div class="bg-light rounded shadow-sm border p-4 text-muted">
+                                <i class="fas fa-image fa-2x"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {{ form.logo }}
+                    </div>
+
+                    <!-- Hero Image -->
+                    <div class="mb-0">
+                        <label class="form-label fw-bold small text-uppercase text-muted d-block text-start">Image
+                            d'accueil</label>
+                        <div class="position-relative d-inline-block group cursor-pointer w-100 mb-2">
+                            {% if form.instance.hero_image %}
+                            <img src="{{ form.instance.hero_image.url }}" alt="Hero"
+                                class="img-fluid rounded shadow-sm w-100 object-fit-cover" style="height: 150px;">
+                            {% else %}
+                            <div class="bg-light rounded shadow-sm border p-5 text-muted w-100 d-flex align-items-center justify-content-center"
+                                style="height: 150px;">
+                                <i class="fas fa-panorama fa-2x"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {{ form.hero_image }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview/Info -->
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-sync-alt me-2"></i>Note</h5>
+                    <p class="small opacity-75 mb-0">
+                        Les modifications apportées ici sont immédiatement répercutées sur l'ensemble du site public.
+                        Assurez-vous de vérifier le rendu après enregistrement.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Form Inputs Styling */
+    .form-control,
+    .form-select {
+        border-color: #e2e8f0;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+    }
+
+    /* File Input Styling */
+    input[type="file"] {
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+        background: #f1f5f9;
+        border: 0;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        color: #475569;
+        font-weight: 600;
+        margin-right: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    input[type="file"]::-webkit-file-upload-button:hover {
+        background: #e2e8f0;
+    }
+</style>
+{% endblock %}

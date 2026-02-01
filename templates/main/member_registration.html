@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Devenir Membre - Rejoindre le COM.S.AS{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="position-relative py-5 overflow-hidden">
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-white"></div>
+    <div class="position-absolute top-50 start-50 translate-middle"
+        style="width: 100%; height: 100%; max-width: 1200px; opacity: 0.05; background: radial-gradient(circle, var(--secondary-color) 0%, transparent 70%); pointer-events: none;">
+    </div>
+
+    <div class="container position-relative z-1 text-center mt-5">
+        <span
+            class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-2 mb-3 fw-medium animate-fade-in-up">
+            <i class="fas fa-user-plus me-2"></i>Adhésion
+        </span>
+        <h1 class="display-3 fw-bold mb-3 animate-fade-in-up text-dark" style="animation-delay: 0.1s;">
+            Rejoignez la <span class="text-primary typing-effect"
+                data-words='["Communauté", "Famille", "Révolution"]'></span>
+        </h1>
+        <p class="lead text-muted mx-auto animate-fade-in-up" style="max-width: 700px; animation-delay: 0.2s;">
+            Participez à nos projets, accédez à des formations exclusives et développez votre réseau professionnel.
+        </p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-lift transition-all">
+                    <div class="card-header bg-white border-bottom border-light p-4 text-center">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3"
+                            style="width: 60px; height: 60px;">
+                            <i class="fas fa-id-card fa-2x text-primary"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-1">Formulaire d'Inscription</h3>
+                        <p class="text-muted small mb-0">Remplissez les informations ci-dessous pour valider votre
+                            adhésion.</p>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            {% csrf_token %}
+
+                            <!-- Custom styling for crispy forms -->
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    {{ form.nom_prenom|as_crispy_field }}
+                                </div>
+                                <div class="col-12">
+                                    {{ form.matricule|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.email|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.telephone|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.date_naissance|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.lieu_naissance|as_crispy_field }}
+                                </div>
+                                <div class="col-12">
+                                    {{ form.photo|as_crispy_field }}
+                                </div>
+                                <div class="col-12">
+                                    {{ form.bio|as_crispy_field }}
+                                </div>
+                            </div>
+
+                            <div class="alert alert-light border border-light mt-4 d-flex align-items-start gap-3">
+                                <i class="fas fa-info-circle text-primary mt-1"></i>
+                                <small class="text-muted">Vos données personnelles sont traitées avec confidentialité et
+                                    utilisées uniquement dans le cadre des activités de l'association.</small>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">
+                                    <i class="fas fa-paper-plane me-2"></i>Soumettre ma demande
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer bg-light p-4 text-center border-top border-light">
+                        <small class="text-muted">Déjà membre ? <a href="#"
+                                class="fw-bold text-primary text-decoration-none">Connectez-vous</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+    }
+</style>
+{% endblock %}

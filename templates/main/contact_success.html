@@ -1,0 +1,901 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block title %}Message envoyé - COMS.A.S{% endblock %}
+
+{% block meta_description %}Votre message a été envoyé avec succès à l'Association des Anciens Élèves du Lycée Bilingue
+de l'Université de Yaoundé 1. Nous vous répondrons bientôt.{% endblock %}
+
+{% block og_title %}Message envoyé - COMS.A.S{% endblock %}
+{% block og_description %}Merci pour votre message. Notre équipe vous répondra dans les plus brefs délais.{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-success-hero {
+        background: var(--gradient-primary),
+        url('{% static "images/contact-bg.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        background-blend-mode: overlay;
+    }
+
+    .contact-success-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('{% static "images/contact-pattern.svg" %}') repeat;
+        opacity: 0.1;
+        z-index: 1;
+    }
+
+    .success-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .success-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        animation: messagePulse 2s ease-in-out infinite;
+        backdrop-filter: blur(15px);
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .success-icon i {
+        font-size: 3rem;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .success-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .success-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+        font-weight: 300;
+        line-height: 1.6;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .response-info-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 5rem 0;
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border-left: 5px solid var(--primary-color);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--gradient-primary);
+    }
+
+    .info-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .info-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 20px rgba(44, 85, 48, 0.3);
+    }
+
+    .response-timeline {
+        background: var(--primary-color);
+        color: white;
+        padding: 5rem 0;
+        position: relative;
+    }
+
+    .timeline-container {
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .timeline-line {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--secondary-color);
+        transform: translateX(-50%);
+        border-radius: 2px;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .timeline-item:nth-child(odd) {
+        flex-direction: row;
+    }
+
+    .timeline-item:nth-child(even) {
+        flex-direction: row-reverse;
+    }
+
+    .timeline-content {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+        width: 45%;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .timeline-content:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(1.02);
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 20px;
+        background: var(--secondary-color);
+        border-radius: 50%;
+        border: 4px solid white;
+        z-index: 2;
+        box-shadow: 0 0 0 4px var(--secondary-color);
+    }
+
+    .alternative-contact-section {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, #FFA500 100%);
+        padding: 4rem 0;
+        color: var(--dark-color);
+    }
+
+    .contact-option {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .contact-option:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .contact-option-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 10px 25px rgba(44, 85, 48, 0.3);
+    }
+
+    .floating-elements {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .floating-message {
+        position: absolute;
+        opacity: 0.1;
+        animation: floatMessage 8s ease-in-out infinite;
+        font-size: 2rem;
+        color: white;
+    }
+
+    .floating-message:nth-child(1) {
+        top: 15%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+
+    .floating-message:nth-child(2) {
+        top: 60%;
+        right: 15%;
+        animation-delay: 3s;
+    }
+
+    .floating-message:nth-child(3) {
+        bottom: 25%;
+        left: 20%;
+        animation-delay: 6s;
+    }
+
+    .stats-section {
+        background: white;
+        padding: 4rem 0;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: block;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+
+    @keyframes messagePulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(255, 255, 255, 0.4);
+        }
+
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 0 0 0 20px rgba(255, 255, 255, 0);
+        }
+    }
+
+    @keyframes floatMessage {
+
+        0%,
+        100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+
+        25% {
+            transform: translateY(-15px) rotate(5deg);
+        }
+
+        50% {
+            transform: translateY(-30px) rotate(0deg);
+        }
+
+        75% {
+            transform: translateY(-15px) rotate(-5deg);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .success-title {
+            font-size: 2.2rem;
+        }
+
+        .success-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .timeline-line {
+            left: 30px;
+        }
+
+        .timeline-item {
+            flex-direction: column !important;
+            align-items: flex-start;
+            padding-left: 60px;
+        }
+
+        .timeline-content {
+            width: 100%;
+        }
+
+        .timeline-marker {
+            left: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Success Hero Section -->
+<section class="contact-success-hero">
+    <div class="floating-elements">
+        <div class="floating-message">
+            <i class="fas fa-envelope"></i>
+        </div>
+        <div class="floating-message">
+            <i class="fas fa-paper-plane"></i>
+        </div>
+        <div class="floating-message">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 success-content" data-aos="fade-up">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+
+                <h1 class="success-title">
+                    Message envoyé !
+                </h1>
+
+                <p class="success-subtitle">
+                    Merci pour votre message. Nous l'avons bien reçu et notre équipe vous répondra dans les plus brefs
+                    délais. Votre communication est importante pour nous.
+                </p>
+
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{% url 'home' %}" class="btn btn-light btn-lg px-4">
+                        <i class="fas fa-home me-2"></i>
+                        Retour à l'accueil
+                    </a>
+                    <a href="{% url 'about' %}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-users me-2"></i>
+                        Découvrir l'association
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Response Information Section -->
+<section class="response-info-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5" data-aos="fade-up">
+                <h2 class="mb-4">
+                    <i class="fas fa-info-circle me-3"></i>
+                    Informations importantes
+                </h2>
+                <p class="lead text-muted">
+                    Voici ce qui va se passer maintenant
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope-open"></i>
+                    </div>
+                    <h4>Accusé de réception</h4>
+                    <p>Vous recevrez un email de confirmation automatique dans les prochaines minutes confirmant la
+                        réception de votre message.</p>
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>
+                        Immédiatement
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h4>Attribution à un responsable</h4>
+                    <p>Votre message sera dirigé vers le membre du bureau le plus approprié selon le sujet de votre
+                        demande.</p>
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>
+                        Dans les 2 heures
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-reply"></i>
+                    </div>
+                    <h4>Réponse personnalisée</h4>
+                    <p>Un membre de notre équipe vous contactera pour répondre à votre question ou demande de manière
+                        détaillée.</p>
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>
+                        Sous 24-48 heures
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Response Timeline Section -->
+<section class="response-timeline">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5" data-aos="fade-up">
+                <h2 class="text-white mb-4">
+                    <i class="fas fa-timeline me-3"></i>
+                    Processus de traitement
+                </h2>
+                <p class="lead text-white-50">
+                    Suivez le parcours de votre message
+                </p>
+            </div>
+        </div>
+
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+
+            <div class="timeline-item" data-aos="fade-right">
+                <div class="timeline-content">
+                    <h5>
+                        <i class="fas fa-inbox me-2"></i>
+                        Réception
+                    </h5>
+                    <p class="mb-2">Votre message arrive dans notre système de gestion</p>
+                    <small class="text-white-50">Fait ✓</small>
+                </div>
+                <div class="timeline-marker"></div>
+            </div>
+
+            <div class="timeline-item" data-aos="fade-left">
+                <div class="timeline-content">
+                    <h5>
+                        <i class="fas fa-filter me-2"></i>
+                        Tri et classification
+                    </h5>
+                    <p class="mb-2">Classification selon le type et l'urgence de la demande</p>
+                    <small class="text-white-50">En cours...</small>
+                </div>
+                <div class="timeline-marker"></div>
+            </div>
+
+            <div class="timeline-item" data-aos="fade-right">
+                <div class="timeline-content">
+                    <h5>
+                        <i class="fas fa-user-check me-2"></i>
+                        Attribution
+                    </h5>
+                    <p class="mb-2">Assignation au membre du bureau compétent</p>
+                    <small class="text-white-50">Dans 2h</small>
+                </div>
+                <div class="timeline-marker"></div>
+            </div>
+
+            <div class="timeline-item" data-aos="fade-left">
+                <div class="timeline-content">
+                    <h5>
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Réponse
+                    </h5>
+                    <p class="mb-2">Envoi de notre réponse personnalisée</p>
+                    <small class="text-white-50">Sous 24-48h</small>
+                </div>
+                <div class="timeline-marker"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5" data-aos="fade-up">
+                <h2 class="mb-4">
+                    <i class="fas fa-chart-line me-3"></i>
+                    Notre engagement qualité
+                </h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-item">
+                    <span class="stat-number counter" data-target="98">0</span>
+                    <div class="stat-label">% de satisfaction</div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-item">
+                    <span class="stat-number counter" data-target="24">0</span>
+                    <div class="stat-label">Heures max de réponse</div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-item">
+                    <span class="stat-number counter" data-target="500">0</span>
+                    <div class="stat-label">Messages traités/mois</div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-item">
+                    <span class="stat-number counter" data-target="15">0</span>
+                    <div class="stat-label">Membres du bureau</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Alternative Contact Section -->
+<section class="alternative-contact-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5" data-aos="fade-up">
+                <h2 class="mb-4">
+                    <i class="fas fa-headset me-3"></i>
+                    Besoin d'une réponse plus rapide ?
+                </h2>
+                <p class="lead">
+                    Utilisez ces moyens de contact directs pour une réponse immédiate
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="contact-option">
+                    <div class="contact-option-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h5>WhatsApp Direct</h5>
+                    <p>Contactez notre président pour une réponse rapide</p>
+                    <a href="{% url 'whatsapp_redirect' %}?type=president&message=Bonjour, j'ai envoyé un message via le site et j'ai besoin d'une réponse rapide"
+                        class="btn btn-success" target="_blank">
+                        <i class="fab fa-whatsapp me-2"></i>
+                        Écrire maintenant
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="contact-option">
+                    <div class="contact-option-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h5>Appel téléphonique</h5>
+                    <p>Parlez directement avec un membre du bureau</p>
+                    <a href="tel:+237673583241" class="btn btn-primary">
+                        <i class="fas fa-phone me-2"></i>
+                        +237 6 73 58 32 41
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="contact-option">
+                    <div class="contact-option-icon">
+                        <i class="fab fa-facebook"></i>
+                    </div>
+                    <h5>Réseaux sociaux</h5>
+                    <p>Suivez-nous et contactez-nous sur Facebook</p>
+                    <a href="#" class="btn btn-info" target="_blank">
+                        <i class="fab fa-facebook me-2"></i>
+                        Page Facebook
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <h2 class="mb-4">
+                    <i class="fas fa-heart me-3"></i>
+                    Merci pour votre confiance !
+                </h2>
+                <p class="lead mb-4">
+                    Votre message est important pour nous. En attendant notre réponse, découvrez nos activités et
+                    projets.
+                </p>
+
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{% url 'events' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calendar me-2"></i>
+                        Nos événements
+                    </a>
+                    <a href="{% url 'projects' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-project-diagram me-2"></i>
+                        Nos projets
+                    </a>
+                </div>
+
+                <div class="mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Pensez à vérifier votre boîte email (y compris les spams) pour notre réponse
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animation des compteurs
+    function animateCounters() {
+        const counters = document.querySelectorAll('.counter');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = +counter.getAttribute('data-target');
+                    const increment = target / 100;
+
+                    function updateCounter() {
+                        const current = +counter.innerText;
+                        if (current < target) {
+                            counter.innerText = Math.ceil(current + increment);
+                            setTimeout(updateCounter, 20);
+                        } else {
+                            counter.innerText = target;
+                        }
+                    }
+
+                    updateCounter();
+                    observer.unobserve(counter);
+                }
+            });
+        });
+
+        counters.forEach(counter => {
+            observer.observe(counter);
+        });
+    }
+
+    // Initialiser les animations
+    document.addEventListener('DOMContentLoaded', function () {
+        animateCounters();
+    });
+
+    // Animation de la timeline responsive
+    function updateTimelineForMobile() {
+        if (window.innerWidth <= 768) {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.2}s`;
+            });
+        }
+    }
+
+    window.addEventListener('resize', updateTimelineForMobile);
+    updateTimelineForMobile();
+
+    // Notification toast de rappel
+    setTimeout(() => {
+        if (window.bootstrap) {
+            const toastHTML = `
+                <div class="toast position-fixed top-0 end-0 m-3" role="alert" style="z-index: 1055;">
+                    <div class="toast-header">
+                        <i class="fas fa-bell text-info me-2"></i>
+                        <strong class="me-auto">Rappel</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        Notre équipe traite actuellement votre message. Vous recevrez une réponse sous 24-48h.
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', toastHTML);
+            const toast = new bootstrap.Toast(document.querySelector('.toast'));
+            toast.show();
+        }
+    }, 2000);
+
+    // Effet de particules pour célébrer l'envoi du message
+    function createMessageParticles() {
+        const colors = ['#0d6efd', '#6610f2', '#6f42c1'];
+        const icons = ['📧', '✉️', '📨', '💌'];
+
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+            particle.style.position = 'fixed';
+            particle.style.top = '50vh';
+            particle.style.left = '50vw';
+            particle.style.fontSize = Math.random() * 20 + 10 + 'px';
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '9999';
+            particle.style.userSelect = 'none';
+
+            const angle = (i / 15) * Math.PI * 2;
+            const velocity = Math.random() * 100 + 50;
+            const gravity = 0.5;
+            let velocityX = Math.cos(angle) * velocity;
+            let velocityY = Math.sin(angle) * velocity;
+
+            document.body.appendChild(particle);
+
+            let animationFrame;
+            function animate() {
+                const rect = particle.getBoundingClientRect();
+                velocityY += gravity;
+                particle.style.left = rect.left + velocityX + 'px';
+                particle.style.top = rect.top + velocityY + 'px';
+
+                if (rect.top > window.innerHeight) {
+                    particle.remove();
+                } else {
+                    animationFrame = requestAnimationFrame(animate);
+                }
+            }
+
+            setTimeout(() => {
+                animate();
+            }, i * 100);
+
+            setTimeout(() => {
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                }
+                if (particle.parentNode) {
+                    particle.remove();
+                }
+            }, 3000);
+        }
+    }
+
+    // Lancer l'animation de particules au chargement
+    window.addEventListener('load', () => {
+        setTimeout(createMessageParticles, 800);
+    });
+
+    // Smooth scroll pour les liens internes
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Effet de typing pour le titre principal
+    function typeWriter(element, text, speed = 50) {
+        let i = 0;
+        element.innerHTML = '';
+
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            }
+        }
+
+        type();
+    }
+
+    // Appliquer l'effet typing au titre si souhaité (optionnel)
+    // const titleElement = document.querySelector('.success-title');
+    // if (titleElement) {
+    //     const originalText = titleElement.textContent;
+    //     setTimeout(() => {
+    //         typeWriter(titleElement, originalText, 100);
+    //     }, 1000);
+    // }
+
+    // Gestion des erreurs de chargement d'images
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('error', function () {
+            this.style.display = 'none';
+        });
+    });
+
+    // Progress bar animation pour le processus de traitement
+    function animateProcessProgress() {
+        const progressSteps = document.querySelectorAll('.timeline-marker');
+        let currentStep = 0;
+
+        function highlightNextStep() {
+            if (currentStep < progressSteps.length) {
+                progressSteps[currentStep].style.background = '#128c7e';
+                progressSteps[currentStep].style.transform = 'translateX(-50%) scale(1.2)';
+                currentStep++;
+
+                if (currentStep < progressSteps.length) {
+                    setTimeout(highlightNextStep, 2000);
+                }
+            }
+        }
+
+        // Commencer l'animation après un délai
+        setTimeout(highlightNextStep, 2000);
+    }
+
+    // Démarrer l'animation du processus
+    const timelineSection = document.querySelector('.response-timeline');
+    if (timelineSection) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateProcessProgress();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        observer.observe(timelineSection);
+    }
+</script>
+{% endblock %}

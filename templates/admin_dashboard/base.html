@@ -1,0 +1,619 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Administration - COMS.A.S{% endblock %}</title>
+
+    <!-- Meta Tags -->
+    <meta name="description" content="Dashboard d'administration COMS.A.S">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <style>
+        :root {
+            /* Branding */
+            --primary-color: #E91E63;
+            --primary-dark: #C2185B;
+            --secondary-color: #FF9800;
+            --info-color: #03A9F4;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #ff3e1d;
+
+            /* Layout Dimensions */
+            --sidebar-width: 260px;
+            --header-height: 64px;
+            --footer-height: 60px;
+
+            /* Theme Colors */
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --text-primary: #384551;
+            --text-secondary: #8795a1;
+            --border-color: #e6e9ef;
+
+            /* Effects */
+            --shadow-sm: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
+            --shadow-md: 0 4px 15px rgba(67, 89, 113, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.25s ease-in-out;
+            --gradient-primary: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+            --gradient-sidebar: linear-gradient(180deg, #2b3543 0%, #1a222c 100%);
+        }
+
+        /* Base Typography */
+        body {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+            background-color: var(--bg-body);
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #2b3543;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        .fw-semibold {
+            font-weight: 600 !important;
+        }
+
+        .text-xsmall {
+            font-size: 0.75rem;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-card);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1040;
+            transition: var(--transition);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 1rem;
+        }
+
+        .brand-logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-menu {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .menu-header {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin: 1.5rem 0 0.5rem 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-header:first-child {
+            margin-top: 0;
+        }
+
+        .menu-item .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-item .menu-link:hover,
+        .menu-item .menu-link.active {
+            background-color: rgba(233, 30, 99, 0.08);
+            color: var(--primary-color);
+        }
+
+        .menu-item .menu-link i {
+            width: 1.5rem;
+            font-size: 1.1rem;
+            margin-right: 0.75rem;
+            text-align: center;
+        }
+
+        .menu-badge {
+            margin-left: auto;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* MAIN CONTENT WRAPPER */
+        .layout-page {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        /* NAVBAR / HEADER */
+        .navbar-admin {
+            height: var(--header-height);
+            background: rgba(255, 255, 255, 0.85);
+            /* Slightly transparent */
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-search {
+            position: relative;
+            width: 300px;
+        }
+
+        .navbar-search .form-control {
+            border-radius: 20px;
+            padding-left: 2.5rem;
+            background: var(--bg-body);
+            border: none;
+            font-size: 0.875rem;
+        }
+
+        .navbar-search .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--text-primary);
+            padding: 0 0.5rem;
+            position: relative;
+        }
+
+        .avatar img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        .avatar-initials {
+            width: 38px;
+            height: 38px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* CONTENT AREA */
+        .content-wrapper {
+            flex-grow: 1;
+            padding: 1.5rem;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* UTILS */
+        .card {
+            background-color: var(--bg-card);
+            background-clip: padding-box;
+            border: 0;
+            box-shadow: var(--shadow-sm);
+            border-radius: 12px;
+        }
+
+        .btn {
+            border-radius: 8px;
+            /* Slightly squarer than pill */
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(233, 30, 99, 0.4);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* MOBILE OVERLAY */
+        .layout-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1039;
+            display: none;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .layout-page {
+                margin-left: 0;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .layout-overlay.show {
+                display: block;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="layout-sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'admin_dashboard_home' %}" class="brand-logo text-decoration-none">
+                <i class="fas fa-graduation-cap"></i> COMS.A.S
+            </a>
+            <a href="javascript:void(0);" class="layout-menu-toggle d-lg-none ms-auto text-muted">
+                <i class="fas fa-times"></i>
+            </a>
+        </div>
+
+        <div class="sidebar-menu custom-scrollbar">
+            <!-- Dashboard -->
+            <div class="menu-item">
+                <a href="{% url 'admin_dashboard_home' %}"
+                    class="menu-link {% if request.resolver_match.url_name == 'admin_dashboard_home' %}active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <div>Tableau de bord</div>
+                </a>
+            </div>
+
+            <div class="menu-header">Gestion</div>
+            <div class="menu-item">
+                <a href="{% url 'admin_members_list' %}"
+                    class="menu-link {% if 'member' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-users"></i>
+                    <div>Membres</div>
+                    {% if pending_members_count > 0 %}
+                    <span class="menu-badge">{{ pending_members_count }}</span>
+                    {% endif %}
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_projects_list' %}"
+                    class="menu-link {% if 'project' in request.resolver_match.url_name and 'project' not in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-project-diagram"></i>
+                    <div>Projets</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_events_list' %}"
+                    class="menu-link {% if 'event' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div>Événements</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_news_list' %}" class="menu-link {% if 'news' in request.resolver_match.url_name %}active{% endif %}"></a>
+                    <i class="fas fa-newspaper"></i>
+                    <div>Actualités</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_gallery_list' %}" class="menu-link {% if 'gallery' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-images"></i>
+                    <div>Galerie</div>
+                </a>
+            </div>
+
+            <div class="menu-header">Parrainage & Concours</div>
+            <div class="menu-item">
+                <a href="{% url 'admin_sponsorship_home' %}" class="menu-link {% if 'sponsorship' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-handshake"></i>
+                    <div>Parrainage</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_contests_home' %}" class="menu-link {% if 'contest' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-trophy"></i>
+                    <div>Concours / Vote</div>
+                </a>
+            </div>
+
+            <div class="menu-header">Communication</div>
+            <div class="menu-item">
+                <a href="{% url 'admin_messages_list' %}"
+                    class="menu-link {% if 'message' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-envelope"></i>
+                    <div>Messages</div>
+                    {% if unread_messages_count > 0 %}
+                    <span class="menu-badge">{{ unread_messages_count }}</span>
+                    {% endif %}
+                </a>
+            </div>
+
+            <div class="menu-header">Système</div>
+            <div class="menu-item">
+                <a href="{% url 'admin_site_settings' %}"
+                    class="menu-link {% if 'settings' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-cog"></i>
+                    <div>Paramètres</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'home' %}" class="menu-link" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    <div>Voir le site</div>
+                </a>
+            </div>
+            <div class="menu-item mt-3">
+                <a href="{% url 'admin:logout' %}" class="menu-link text-danger"
+                    onclick="return confirm('Se déconnecter ?')">
+                    <i class="fas fa-power-off"></i>
+                    <div>Déconnexion</div>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay -->
+    <div class="layout-overlay" id="layout-overlay"></div>
+
+    <!-- Main Content -->
+    <div class="layout-page">
+        <!-- Navbar -->
+        <nav class="navbar-admin" id="layout-navbar">
+            <div class="layout-menu-toggle d-lg-none me-3">
+                <a href="javascript:void(0)" class="text-primary" id="toggle-sidebar-btn">
+                    <i class="fas fa-bars fa-lg"></i>
+                </a>
+            </div>
+
+            <!-- Page Title Mobile / Desktop -->
+            <h5 class="mb-0 fw-bold text-dark d-none d-md-block">
+                <i class="fas fa-{% block page_icon %}layer-group{% endblock %} me-2 text-primary"></i>
+                {% block page_title %}Dashboard{% endblock %}
+            </h5>
+
+            <div class="d-flex align-items-center gap-3">
+                <!-- Search -->
+                <div class="navbar-search d-none d-md-block">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="form-control border-0 shadow-none" placeholder="Rechercher..."
+                        id="globalSearch">
+                </div>
+
+                <!-- Notifications -->
+                <div class="dropdown">
+                    <a href="#" class="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fa-lg text-muted"></i>
+                        {% if unread_messages_count %}
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                        <li>
+                            <h6 class="dropdown-header">Notifications</h6>
+                        </li>
+                        <li><a class="dropdown-item small" href="{% url 'admin_messages_list' %}">Voir les messages</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- User Profile -->
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle hide-arrow"
+                        data-bs-toggle="dropdown">
+                        <div class="avatar">
+                            {% if user.member.photo %}
+                            <img src="{{ user.member.photo.url }}" alt="{{ user.username }}">
+                            {% else %}
+                            <div class="avatar-initials">
+                                {{ user.username|first|upper }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                        <li class="px-3 py-2 border-bottom">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar">
+                                        {% if user.member.photo %}
+                                        <img src="{{ user.member.photo.url }}" alt="{{ user.username }}">
+                                        {% else %}
+                                        <div class="avatar-initials">
+                                            {{ user.username|first|upper }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <span class="fw-semibold d-block">{{ user.username }}</span>
+                                    <small class="text-muted">Administrateur</small>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="dropdown-divider"></div>
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'admin_site_settings' %}"><i
+                                    class="fas fa-user-cog me-2"></i> Profil</a></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'admin:logout' %}"><i
+                                    class="fas fa-power-off me-2"></i> Déconnexion</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            {% if messages %}
+            <div class="container-fluid px-0 mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show border-0 shadow-sm" role="alert">
+                    <i class="fas fa-info-circle me-2"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block content %}
+            <!-- Default Content (Should be overridden by child templates) -->
+            {% endblock %}
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div>
+                © 2024 <strong>COMS.A.S</strong>. Tous droits réservés.
+            </div>
+            <div>
+                <a href="#" class="footer-link me-3">Aide</a>
+                <a href="#" class="footer-link">Support</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Sidebar Toggle for Mobile
+            const sidebar = document.getElementById('layout-sidebar');
+            const overlay = document.getElementById('layout-overlay');
+            const toggleBtn = document.getElementById('toggle-sidebar-btn');
+            const closeBtn = document.querySelector('.layout-menu-toggle');
+
+            function toggleMenu() {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+            }
+
+            if (toggleBtn) toggleBtn.addEventListener('click', toggleMenu);
+            if (closeBtn) closeBtn.addEventListener('click', toggleMenu);
+            if (overlay) overlay.addEventListener('click', toggleMenu);
+
+            // Global Search Filter (Simple implementation for sidebar)
+            $('#globalSearch').on('keyup', function () {
+                var value = $(this).val().toLowerCase();
+                $('.menu-item').filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

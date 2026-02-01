@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Galerie - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-white text-center">
+    <div class="container py-4">
+        <h1 class="display-3 fw-bold mb-4">Notre <span class="text-primary">Galerie</span></h1>
+        <p class="lead text-muted mb-5">Revivez en images les moments forts de notre association.</p>
+
+        <!-- Filter Buttons (Optional, Javascript needed for implementation or just links) -->
+        <div class="d-flex justify-content-center gap-3 mb-5">
+            <button class="btn btn-dark rounded-pill px-4 active">Tout</button>
+            <button class="btn btn-outline-primary rounded-pill px-4">Images</button>
+            <button class="btn btn-outline-primary rounded-pill px-4">Vidéos</button>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+
+        <!-- Images Section -->
+        {% if images %}
+        <div class="mb-5">
+            <h3 class="fw-bold mb-4 border-start border-5 border-primary ps-3">Images</h3>
+            <div class="row g-4 masonry-grid">
+                {% for item in images %}
+                <div class="col-md-4 mb-4 masonry-item">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden position-relative group-hover h-100">
+                        {% if item.image %}
+                        <a href="{{ item.image.url }}" data-lightbox="gallery" data-title="{{ item.description }}">
+                            <img src="{{ item.image.url }}" alt="{{ item.title }}"
+                                class="img-fluid w-100 transform-scale-11 transition-all"
+                                style="height: 300px; object-fit: cover;">
+                        </a>
+                        {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                            <i class="fas fa-image fa-3x text-muted opacity-25"></i>
+                        </div>
+                        {% endif %}
+                        <div
+                            class="card-body position-absolute bottom-0 start-0 w-100 bg-gradient-dark text-white p-3 translate-y-100 group-hover-translate-0 transition-all">
+                            <h6 class="fw-bold mb-1 text-white">{{ item.title }}</h6>
+                            <small class="opacity-75">{{ item.created_at|date:"d M Y" }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Videos Section -->
+        {% if videos %}
+        <div class="mb-5">
+            <h3 class="fw-bold mb-4 border-start border-5 border-danger ps-3">Vidéos</h3>
+            <div class="row g-4">
+                {% for item in videos %}
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                        <div class="ratio ratio-16x9 bg-dark">
+                            {% if item.video_url %}
+                            <iframe src="{{ item.video_url }}" allowfullscreen class="rounded-top-4"></iframe>
+                            {% elif item.video_file %}
+                            <video controls class="w-100 h-100 rounded-top-4">
+                                <source src="{{ item.video_file.url }}" type="video/mp4">
+                                Votre navigateur ne supporte pas la lecture de vidéos.
+                            </video>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="fw-bold">{{ item.title }}</h5>
+                            <p class="text-muted small mb-0">{{ item.description|truncatewords:20 }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if not images and not videos %}
+        <div class="text-center py-5">
+            <div class="bg-white p-5 rounded-4 shadow-sm">
+                <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">La galerie est vide pour le moment.</h5>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Lightbox CSS/JS dependencies should be in base.html or added here if needed -->
+{% endblock %}

@@ -1,0 +1,392 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Accueil - COM.S.AS{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="position-relative overflow-hidden bg-white" style="padding-top: 80px; padding-bottom: 60px;">
+    <!-- Tech Background Particles (Subtle) -->
+    <div id="particles-js" class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 0; opacity: 0.4;"></div>
+
+    <div class="container position-relative z-2">
+        <div class="row align-items-center flex-column-reverse flex-lg-row">
+            <!-- Text Content -->
+            <div class="col-lg-7 mt-5 mt-lg-0 text-center text-lg-start" data-aos="fade-right">
+                <div class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-light rounded-pill border">
+                    <span class="text-primary fw-bold small text-uppercase ls-1">Club Informatique UY1</span>
+                </div>
+                
+                <h1 class="display-3 fw-bolder mb-4 text-dark lh-sm">
+                    Rejoignez l'élite du <br>
+                    <span class="text-primary typing-effect" data-words='["Code.", "Design.", "Réseau.", "I.A.", "Numérique."]'></span>
+                    <span class="cursor">|</span>
+                </h1>
+                
+                <p class="lead text-muted mb-5 mx-auto mx-lg-0" style="max-width: 600px;">
+                    Le <strong>COM.S.AS</strong> forme, connecte et propulse les étudiants passionnés par la technologie. 
+                    Développez vos compétences, bâtissez votre réseau.
+                </p>
+                
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+                    <a href="{% url 'member_registration' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm hover-lift">
+                        Devenir Membre
+                    </a>
+                    <a href="{% url 'projects' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5 hover-lift">
+                        Nos Projets
+                    </a>
+                </div>
+
+                <!-- Stats (Clean Row) -->
+                <div class="row mt-5 pt-4 border-top g-4 justify-content-center justify-content-lg-start">
+                     <div class="col-auto text-center text-lg-start px-4 border-end">
+                        <span class="h2 d-block fw-bold text-dark counter" data-target="{{ total_members|default:'500' }}">0</span>
+                        <span class="small text-muted text-uppercase">Membres</span>
+                     </div>
+                     <div class="col-auto text-center text-lg-start px-4 border-end">
+                        <span class="h2 d-block fw-bold text-secondary counter" data-target="{{ completed_projects|default:'20' }}">0</span>
+                        <span class="small text-muted text-uppercase">Projets</span>
+                     </div>
+                     <div class="col-auto text-center text-lg-start px-4">
+                        <span class="h2 d-block fw-bold text-dark">10+</span>
+                        <span class="small text-muted text-uppercase">Années</span>
+                     </div>
+                </div>
+            </div>
+            
+            <!-- Hero Visual (Dynamic Tech) -->
+            <div class="col-lg-5 mb-4 mb-lg-0" data-aos="fade-left">
+                <div class="position-relative mx-auto" style="max-width: 450px;">
+                    <!-- Rotating Code Ring -->
+                    <div class="position-absolute top-50 start-50 translate-middle border border-dashed border-primary border-opacity-25 rounded-circle orbit-slow" style="width: 110%; padding-bottom: 110%; z-index: -1;"></div>
+                    
+                    <!-- Main Logo with Pulse -->
+                    <div class="text-center p-4 position-relative">
+                        <div class="position-absolute top-50 start-50 translate-middle bg-primary opacity-10 rounded-circle pulse-ring" style="width: 300px; height: 300px;"></div>
+                        <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS" class="img-fluid position-relative z-2 hover-scale" style="max-height: 320px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
+                    </div>
+
+                    <!-- Floating Tech Cards (Dynamic) -->
+                    <div class="d-none d-sm-block">
+                        <div class="position-absolute top-0 end-0 bg-white p-3 rounded-4 shadow-sm border animate-float">
+                            <i class="fab fa-python fa-2x text-primary"></i>
+                        </div>
+                        <div class="position-absolute bottom-0 start-0 bg-white p-3 rounded-4 shadow-sm border animate-float" style="animation-delay: 1s;">
+                            <i class="fas fa-terminal fa-2x text-secondary"></i>
+                        </div>
+                        <div class="position-absolute top-50 start-0 translate-middle-x bg-dark text-white p-3 rounded-4 shadow-sm border animate-float" style="animation-delay: 2s;">
+                            <span class="font-monospace fw-bold">&lt;/&gt;</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tech Stack Marquee (New Dynamic Section) -->
+<section class="py-4 bg-light border-top border-bottom overflow-hidden">
+    <div class="container-fluid">
+        <p class="text-center text-muted small text-uppercase fw-bold ls-1 mb-3">Nos Technologies Préférées</p>
+        <div class="marquee">
+            <div class="marquee-content gap-5 opacity-50 grayscale-hover">
+                <i class="fab fa-python fa-3x" title="Python"></i>
+                <i class="fab fa-js fa-3x" title="JavaScript"></i>
+                <i class="fab fa-react fa-3x" title="React"></i>
+                <i class="fab fa-docker fa-3x" title="Docker"></i>
+                <i class="fab fa-git-alt fa-3x" title="Git"></i>
+                <i class="fab fa-linux fa-3x" title="Linux"></i>
+                <i class="fab fa-aws fa-3x" title="AWS"></i>
+                <i class="fas fa-database fa-3x" title="SQL"></i>
+                <!-- Duplicate for seamless loop -->
+                <i class="fab fa-python fa-3x"></i>
+                <i class="fab fa-js fa-3x"></i>
+                <i class="fab fa-react fa-3x"></i>
+                <i class="fab fa-docker fa-3x"></i>
+                <i class="fab fa-git-alt fa-3x"></i>
+                <i class="fab fa-linux fa-3x"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nos Piliers (Activités) -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <h2 class="fw-bold mb-3">Ce que nous faisons</h2>
+                <p class="text-muted">Nos activités sont conçues pour booster votre carrière.</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Formation -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm bg-light hover-card-tech p-4 transition-all">
+                    <div class="mb-4">
+                        <div class="icon-box bg-white text-primary shadow-sm rounded-circle p-3 d-inline-block">
+                            <i class="fas fa-laptop-code fa-2x"></i>
+                        </div>
+                    </div>
+                    <h4 class="fw-bold mb-3">Formation & Ateliers</h4>
+                    <p class="text-muted mb-0">Des sessions pratiques sur le développement web, mobile, l'IA et la cybersécurité.</p>
+                </div>
+            </div>
+
+            <!-- Projets -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm bg-light hover-card-tech p-4 transition-all">
+                    <div class="mb-4">
+                        <div class="icon-box bg-white text-secondary shadow-sm rounded-circle p-3 d-inline-block">
+                            <i class="fas fa-project-diagram fa-2x"></i>
+                        </div>
+                    </div>
+                    <h4 class="fw-bold mb-3">Projets & Innovation</h4>
+                    <p class="text-muted mb-0">Travaillez sur des projets concrets. De l'idée au déploiement.</p>
+                </div>
+            </div>
+
+            <!-- Hackathons -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm bg-light hover-card-tech p-4 transition-all">
+                    <div class="mb-4">
+                        <div class="icon-box bg-white text-dark shadow-sm rounded-circle p-3 d-inline-block">
+                            <i class="fas fa-trophy fa-2x"></i>
+                        </div>
+                    </div>
+                    <h4 class="fw-bold mb-3">Hackathons</h4>
+                    <p class="text-muted mb-0">Des compétitions de code intenses pour tester vos limites et gagner des prix.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Terminal Section (Visuel Tech demandé) -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+             <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+                <span class="badge bg-dark text-white px-3 py-2 rounded-pill mb-3">
+                    <i class="fas fa-terminal me-2"></i>Dev Zone
+                </span>
+                <h2 class="fw-bold mb-4">Parlez-vous <span class="text-primary">Code</span> ?</h2>
+                <p class="lead text-muted mb-4">
+                    Au COM.S.AS, le code est notre langage universel. Que vous soyez débutant ou expert, il y a une place pour vous.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-white text-dark border p-2">#Python</span>
+                    <span class="badge bg-white text-dark border p-2">#Django</span>
+                    <span class="badge bg-white text-dark border p-2">#React</span>
+                    <span class="badge bg-white text-dark border p-2">#Flutter</span>
+                    <span class="badge bg-white text-dark border p-2">#DevOps</span>
+                </div>
+             </div>
+             <div class="col-lg-6" data-aos="fade-left">
+                 <!-- Fake Terminal Window -->
+                 <div class="card bg-dark text-white border-0 shadow-lg rounded-3" style="font-family: 'Courier New', monospace;">
+                     <div class="card-header bg-secondary bg-opacity-25 border-bottom border-secondary d-flex gap-2">
+                         <div class="rounded-circle bg-danger" style="width: 12px; height: 12px;"></div>
+                         <div class="rounded-circle bg-warning" style="width: 12px; height: 12px;"></div>
+                         <div class="rounded-circle bg-success" style="width: 12px; height: 12px;"></div>
+                     </div>
+                     <div class="card-body p-4">
+                         <p class="mb-1"><span class="text-success">user@comsas:~$</span> python3 join_club_maintenant.py</p>
+                         <p class="mb-1 text-muted">Loading dependencies...</p>
+                         <p class="mb-3 text-white">
+                             > Passion detected... <span class="text-success">OK</span><br>
+                             > Motivation... <span class="text-success">100%</span><br>
+                             > Skills... <span class="text-warning">Loading...</span>
+                         </p>
+                         <p class="mb-0 text-white typewriter">Bienvenue dans la communauté ! <span class="cursor">_</span></p>
+                     </div>
+                 </div>
+             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Events -->
+{% if featured_events %}
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h2 class="fw-bold mb-0">Prochains Événements</h2>
+            <a href="{% url 'events' %}" class="btn btn-outline-primary rounded-pill btn-sm">Voir tout</a>
+        </div>
+        
+        <div class="row g-4">
+            {% for event in featured_events %}
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+                    <div class="position-relative">
+                        {% if event.image %}
+                        <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title_fr }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center text-muted" style="height: 200px;">
+                            <i class="fas fa-calendar-alt fa-3x"></i>
+                        </div>
+                        {% endif %}
+                        <div class="position-absolute bottom-0 start-0 m-3 bg-white px-3 py-1 rounded shadow-sm">
+                            <small class="fw-bold text-dark">{{ event.date_event|date:"d M" }}</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-2">{{ event.title_fr }}</h5>
+                        <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1"></i> {{ event.location }}</p>
+                        <a href="{% url 'event_detail' event.pk %}" class="text-primary text-decoration-none fw-bold small">Détails <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Projects Highlight -->
+{% if featured_projects %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Nos Réalisations</h2>
+            <p class="text-muted">L'innovation par la pratique.</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            {% for project in featured_projects|slice:":3" %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                <div class="card border-0 shadow-sm h-100 p-3 rounded-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="rounded-circle bg-light p-2 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-laptop-code text-primary"></i>
+                        </div>
+                        {% if project.status == 'ongoing' %}
+                        <span class="badge bg-warning text-dark align-self-start rounded-pill">En cours</span>
+                        {% else %}
+                        <span class="badge bg-success align-self-start rounded-pill">Terminé</span>
+                        {% endif %}
+                    </div>
+                    <h5 class="fw-bold">{{ project.title_fr }}</h5>
+                    <p class="text-muted small line-clamp-3">{{ project.description_fr|striptags }}</p>
+                    <div class="mt-auto pt-3 border-top">
+                        <a href="{% url 'project_detail' project.pk %}" class="btn btn-outline-dark btn-sm rounded-pill w-100">Voir le projet</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA (Dark Footer Style) -->
+<section class="py-5 bg-dark text-white position-relative overflow-hidden">
+    <!-- Matrix Effect Background (Abstract css) -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent); background-size: 50px 50px;"></div>
+    
+    <div class="container text-center position-relative z-1">
+        <h2 class="fw-bold mb-3">Prêt à nous rejoindre ?</h2>
+        <p class="text-white-50 mb-4 mx-auto" style="max-width: 600px;">
+            L'adhésion est ouverte. Intégrez une communauté qui vous tire vers le haut.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'member_registration' %}" class="btn btn-primary rounded-pill px-4">Devenir Membre</a>
+            <a href="{% url 'contact' %}" class="btn btn-outline-light rounded-pill px-4">Nous contacter</a>
+        </div>
+    </div>
+</section>
+
+<!-- Styles & Scripts -->
+<style>
+    .ls-1 { letter-spacing: 1px; }
+    
+    /* Animations */
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    
+    .orbit-slow { animation: spin 20s linear infinite; }
+    @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+    
+    .pulse-ring { animation: pulse 3s infinite; }
+    @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; } }
+
+    /* Hover Effects */
+    .hover-lift:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+    .hover-scale:hover { transform: scale(1.05); transition: transform 0.3s ease; }
+    .hover-card-tech:hover { background: white !important; transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important; }
+    .transition-all { transition: all 0.3s ease; }
+
+    /* Typewriter Cursor */
+    .cursor { animation: blink 1s infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* Marquee */
+    .marquee { overflow: hidden; white-space: nowrap; position: relative; }
+    .marquee-content { display: inline-flex; animation: marquee 30s linear infinite; }
+    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    
+    .grayscale-hover { filter: grayscale(100%); transition: filter 0.3s; }
+    .grayscale-hover:hover { filter: grayscale(0%); }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Simple Typewriter Effect
+        const textElement = document.querySelector('.typing-effect');
+        if(textElement) {
+            const words = JSON.parse(textElement.getAttribute('data-words'));
+            let wordIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let currentText = '';
+            
+            function type() {
+                const currentWord = words[wordIndex];
+                if(isDeleting) {
+                    currentText = currentWord.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    currentText = currentWord.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+                
+                textElement.textContent = currentText;
+                
+                let typeSpeed = isDeleting ? 100 : 200;
+                
+                if(!isDeleting && charIndex === currentWord.length) {
+                    typeSpeed = 2000; // Pause at end
+                    isDeleting = true;
+                } else if(isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    wordIndex = (wordIndex + 1) % words.length;
+                    typeSpeed = 500;
+                }
+                
+                setTimeout(type, typeSpeed);
+            }
+            type();
+        }
+        
+        // Counters
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            const inc = target / 100;
+            const updateCount = () => {
+                const count = +counter.innerText;
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + inc);
+                    setTimeout(updateCount, 20);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            updateCount();
+        });
+    });
+</script>
+{% endblock %}

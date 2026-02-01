@@ -1,0 +1,147 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Supprimer l'événement{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'admin_events_list' %}">Événements</a>
+                </li>
+                <li class="breadcrumb-item active">Supprimer</li>
+            </ol>
+        </nav>
+        <h2>
+            <i class="fas fa-trash me-2 text-danger"></i>
+            Supprimer l'événement
+        </h2>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="table-card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmation de suppression
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-warning me-1"></i>
+                        Attention !
+                    </h6>
+                    Vous êtes sur le point de supprimer définitivement cet événement. Cette action est irréversible et supprimera également :
+                    <ul class="mt-2 mb-0">
+                        <li>Toutes les inscriptions à cet événement ({{ object.registered_count }} inscriptions)</li>
+                        <li>L'historique des confirmations</li>
+                        <li>Les données de l'événement</li>
+                    </ul>
+                </div>
+                
+                <!-- Aperçu de l'événement à supprimer -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        {% if object.image %}
+                            <img src="{{ object.image.url }}" alt="{{ object.title_fr }}" 
+                                 class="img-fluid rounded">
+                        {% else %}
+                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <i class="fas fa-calendar fa-3x text-white"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <h4>{{ object.title_fr }}</h4>
+                        <p class="text-muted">{{ object.title_en }}</p>
+                        
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p><strong>Date de l'événement :</strong> {{ object.date_event|date:"d/m/Y à H:i" }}</p>
+                                <p><strong>Lieu :</strong> {{ object.location }}</p>
+                                <p><strong>Date limite d'inscription :</strong> {{ object.registration_deadline|date:"d/m/Y H:i" }}</p>
+                                {% if object.max_participants %}
+                                    <p><strong>Places max :</strong> {{ object.max_participants }}</p>
+                                {% else %}
+                                    <p><strong>Places :</strong> Illimitées</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-6">
+                                <p><strong>Inscriptions :</strong> {{ object.registered_count }}</p>
+                                <p><strong>Statut :</strong> 
+                                    {% if object.is_active %}
+                                        <span class="badge bg-success">Actif</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactif</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Créé le :</strong> {{ object.created_at|date:"d/m/Y H:i" }}</p>
+                                {% if object.is_featured %}
+                                    <p><strong>En vedette :</strong> 
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-star me-1"></i>
+                                            Oui
+                                        </span>
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="description-preview mt-3">
+                            <h6>Description (extrait) :</h6>
+                            <div class="border rounded p-3 bg-light">
+                                {{ object.description_fr|striptags|truncatewords:30 }}
+                                {% if object.description_fr|wordcount > 30 %}
+                                    <span class="text-muted">...</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if object.registered_count > 0 %}
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-1"></i>
+                                <strong>{{ object.registered_count }} personnes sont inscrites</strong> à cet événement. 
+                                La suppression annulera automatiquement toutes les inscriptions.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'admin_events_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Annuler
+                        </a>
+                        <div>
+                            <a href="{% url 'admin_event_edit' object.pk %}" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-edit me-1"></i>
+                                Modifier à la place
+                            </a>
+                            {% if object.registered_count > 0 %}
+                                <a href="{% url 'admin_event_registrations' object.pk %}" class="btn btn-outline-info me-2">
+                                    <i class="fas fa-users me-1"></i>
+                                    Voir les inscriptions
+                                </a>
+                            {% endif %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>
+                                Oui, supprimer définitivement
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

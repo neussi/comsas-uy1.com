@@ -1,0 +1,233 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Gestion des Projets{% endblock %}
+{% block page_icon %}project-diagram{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h4 class="fw-bold mb-0 text-dark">Portefeuille Projets</h4>
+        <p class="text-muted small mb-0">Suivez l'avancement et le financement</p>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'admin_project_create' %}" class="btn btn-primary shadow-sm hover-lift">
+            <i class="fas fa-plus me-2"></i>Nouveau Projet
+        </a>
+    </div>
+</div>
+
+<!-- Filtres -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label for="status" class="form-label text-uppercase fw-bold text-muted x-small">Filtrer par
+                            statut</label>
+                        <select class="form-select bg-light border-0 cursor-pointer" id="status" name="status">
+                            <option value="">Tous les statuts</option>
+                            {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1 fw-bold">
+                            <i class="fas fa-filter me-2"></i>Appliquer
+                        </button>
+                        <a href="{% url 'admin_projects_list' %}" class="btn btn-light text-muted"
+                            title="Réinitialiser">
+                            <i class="fas fa-sync-alt"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des projets -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 py-4 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold text-dark">Liste des Projets <span
+                class="badge bg-light text-primary rounded-pill ms-2">{{ projects_page.paginator.count }}</span></h5>
+    </div>
+    <div class="card-body p-0">
+        {% if projects_page.object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-nowrap">
+                <thead class="bg-light text-uppercase text-muted small">
+                    <tr>
+                        <th class="ps-4 border-0">Projet</th>
+                        <th class="border-0">Statut</th>
+                        <th class="border-0">Budget & Financement</th>
+                        <th class="border-0">Progression</th>
+                        <th class="border-0">Calendrier</th>
+                        <th class="border-0 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects_page.object_list %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                {% if project.image %}
+                                <img src="{{ project.image.url }}" alt="{{ project.title}}"
+                                    class="rounded-3 shadow-sm me-3" width="60" height="60" style="object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light text-primary rounded-3 d-flex align-items-center justify-content-center me-3"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-folder-open fa-lg"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-1 text-dark fw-bold text-wrap" style="max-width: 250px;">{{
+                                        project.title_fr }}</h6>
+                                    {% if project.is_featured %}
+                                    <span class="badge bg-warning text-dark py-1 px-2" style="font-size: 0.65rem;"><i
+                                            class="fas fa-star me-1"></i>Mis en avant</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                        {% if project.status == 'planning' %}bg-info bg-opacity-10 text-info
+                                        {% elif project.status == 'ongoing' %}bg-primary bg-opacity-10 text-primary
+                                        {% elif project.status == 'completed' %}bg-success bg-opacity-10 text-success
+                                        {% elif project.status == 'suspended' %}bg-warning bg-opacity-10 text-warning
+                                        {% endif %} rounded-pill px-3 py-2">
+                                {{ project.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="text-muted">Collecté:</span>
+                                    <span class="fw-bold text-success">{{ project.budget_collected|floatformat:0 }}
+                                        FCFA</span>
+                                </div>
+                                <div class="progress" style="height: 6px; width: 140px;">
+                                    {% widthratio project.budget_collected project.budget_required 100 as text_percent
+                                    %}
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                        style="width: {{ text_percent }}%" aria-valuenow="{{ text_percent }}"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted mt-1">Objectif: {{ project.budget_required|floatformat:0 }}
+                                    FCFA</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="circular-progress position-relative me-2"
+                                    style="width: 40px; height: 40px;">
+                                    <svg viewBox="0 0 36 36" class="w-100 h-100">
+                                        <path class="text-light"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="#eee" stroke-width="4" />
+                                        <path class="text-primary"
+                                            stroke-dasharray="{{ project.progress_percentage }}, 100"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="var(--primary-color)" stroke-width="4" />
+                                    </svg>
+                                    <span class="position-absolute top-50 start-50 translate-middle small fw-bold"
+                                        style="font-size: 0.65rem;">{{ project.progress_percentage }}%</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column small">
+                                <span class="text-dark"><i class="fas fa-play text-success me-2"
+                                        style="width: 10px;"></i>{{ project.start_date|date:"d M Y" }}</span>
+                                <span class="text-muted mt-1"><i class="fas fa-flag-checkered text-danger me-2"
+                                        style="width: 10px;"></i>{{ project.end_date|date:"d M Y"|default:"-" }}</span>
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <a href="{% url 'admin_project_detail' project.pk %}"
+                                    class="btn btn-sm btn-light text-primary rounded-circle me-1" title="Voir">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'admin_project_edit' project.pk %}"
+                                    class="btn btn-sm btn-light text-info rounded-circle me-1" title="Modifier">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a href="{% url 'admin_project_delete' project.pk %}"
+                                    class="btn btn-sm btn-light text-danger rounded-circle" title="Supprimer"
+                                    onclick="return confirm('Supprimer ce projet ?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if projects_page.has_other_pages %}
+        <div class="card-footer bg-white border-0 py-4">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if projects_page.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-circle me-2"
+                            href="?page={{ projects_page.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}"
+                            style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in projects_page.paginator.page_range %}
+                    {% if projects_page.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link border-0 shadow-sm rounded-pill bg-primary px-3">{{ projects_page.number
+                            }}</span>
+                    </li>
+                    {% elif num > projects_page.number|add:'-3' and num < projects_page.number|add:'3' %} <li
+                        class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-circle mx-1"
+                            href="?page={{ num }}{% if current_status %}&status={{ current_status }}{% endif %}"
+                            style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                            {{ num }}
+                        </a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if projects_page.has_next %}
+                        <li class="page-item">
+                            <a class="page-link border-0 shadow-sm rounded-circle ms-2"
+                                href="?page={{ projects_page.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}"
+                                style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <div class="mb-3 opacity-25">
+                <i class="fas fa-folder-open fa-4x text-muted"></i>
+            </div>
+            <h5 class="text-muted fw-bold">Aucun projet trouvé</h5>
+            <p class="text-muted small">Commencez par créer votre premier projet.</p>
+            <a href="{% url 'admin_project_create' %}"
+                class="btn btn-outline-primary btn-sm mt-2 rounded-pill px-4">Créer un projet</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,274 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Gestion des Membres{% endblock %}
+{% block page_icon %}users{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h4 class="fw-bold mb-0 text-dark">Annuaire des Membres</h4>
+        <p class="text-muted small mb-0">Gérez les inscriptions, cotisations et statuts</p>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'admin_member_create' %}" class="btn btn-primary shadow-sm hover-lift">
+            <i class="fas fa-plus me-2"></i>Nouveau Membre
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Total</h6>
+                <h4 class="mb-0 fw-bold text-dark">{{ members_page.paginator.count }}</h4>
+            </div>
+            <div class="bg-light text-primary rounded-circle p-3">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Actifs</h6>
+                <h4 class="mb-0 fw-bold text-success">
+                    {% with active=0 %}
+                    {% for m in members_page.object_list %}
+                    {% if m.is_active %}{% endif %} <!-- Placeholder -->
+                    {% endfor %}
+                    -
+                    {% endwith %}
+                </h4>
+            </div>
+            <div class="bg-light text-success rounded-circle p-3">
+                <i class="fas fa-user-check"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">En Attente</h6>
+                <h4 class="mb-0 fw-bold text-warning">-</h4>
+            </div>
+            <div class="bg-light text-warning rounded-circle p-3">
+                <i class="fas fa-user-clock"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Nouveaux (7j)</h6>
+                <h4 class="mb-0 fw-bold text-info">-</h4>
+            </div>
+            <div class="bg-light text-info rounded-circle p-3">
+                <i class="fas fa-calendar-week"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtres -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label for="search"
+                            class="form-label text-uppercase fw-bold text-muted x-small">Rechercher</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i
+                                    class="fas fa-search text-muted"></i></span>
+                            <input type="text" class="form-control bg-light border-start-0 ps-0" id="search"
+                                name="search" value="{{ search_query }}" placeholder="Nom, email, matricule...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="type" class="form-label text-uppercase fw-bold text-muted x-small">Type de
+                            membre</label>
+                        <select class="form-select bg-light border-0 cursor-pointer" id="type" name="type">
+                            <option value="">Tous les types</option>
+                            {% for value, label in member_types %}
+                            <option value="{{ value }}" {% if current_type == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1 fw-bold">Filtrer</button>
+                        <a href="{% url 'admin_members_list' %}" class="btn btn-light text-muted" title="Réinitialiser">
+                            <i class="fas fa-sync-alt"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des membres -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 py-4 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold text-dark">Liste des Membres <span
+                class="badge bg-light text-primary rounded-pill ms-2">{{ members_page.paginator.count }}</span></h5>
+    </div>
+    <div class="card-body p-0">
+        {% if members_page.object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-nowrap">
+                <thead class="bg-light text-uppercase text-muted small">
+                    <tr>
+                        <th class="ps-4 border-0">Membre</th>
+                        <th class="border-0">Statut</th>
+                        <th class="border-0">Promotion/Niveau</th>
+                        <th class="border-0">Type</th>
+                        <th class="border-0">Inscription</th>
+                        <th class="border-0 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in members_page.object_list %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                {% if member.photo %}
+                                <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}"
+                                    class="rounded-circle border border-2 border-white shadow-sm me-3" width="48"
+                                    height="48" style="object-fit: cover;">
+                                {% else %}
+                                <div class="avatar-ph bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                    style="width: 48px; height: 48px; font-weight: bold;">
+                                    {{ member.nom_prenom|first|upper }}
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-0 text-dark fw-bold">{{ member.nom_prenom }}</h6>
+                                    <small class="text-muted d-block">{{ member.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if member.is_active %}
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Actif</span>
+                            {% else %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">En
+                                attente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-semibold text-dark">{{ member.niveau|default:"-" }}</span>
+                                <small class="text-muted">Promo {{ member.promotion }}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                        {% if member.member_type == 'founder' %}bg-purple bg-opacity-10 text-purple
+                                        {% elif member.member_type == 'bureau' %}bg-primary bg-opacity-10 text-primary
+                                        {% elif member.member_type == 'conseil' %}bg-info bg-opacity-10 text-info
+                                        {% else %}bg-secondary bg-opacity-10 text-secondary
+                                        {% endif %} rounded-pill px-3">
+                                {{ member.get_member_type_display }}
+                            </span>
+                        </td>
+                        <td class="text-muted small">{{ member.date_adhesion|date:"d M Y" }}</td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <a href="{% url 'admin_member_detail' member.pk %}"
+                                    class="btn btn-sm btn-light text-primary rounded-circle me-1" title="Voir">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'admin_member_edit' member.pk %}"
+                                    class="btn btn-sm btn-light text-info rounded-circle me-1" title="Modifier">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                {% if not member.is_active %}
+                                <a href="{% url 'admin_member_approve' member.pk %}"
+                                    class="btn btn-sm btn-light text-success rounded-circle me-1" title="Approuver"
+                                    onclick="return confirm('Approuver ce membre ?')">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                {% else %}
+                                <a href="{% url 'admin_member_delete' member.pk %}"
+                                    class="btn btn-sm btn-light text-danger rounded-circle" title="Supprimer"
+                                    onclick="return confirm('Supprimer ce membre ?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if members_page.has_other_pages %}
+        <div class="card-footer bg-white border-0 py-4">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if members_page.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-circle me-2"
+                            href="?page={{ members_page.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}"
+                            style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link border-0 shadow-sm rounded-pill bg-primary px-3">{{ members_page.number
+                            }}</span>
+                    </li>
+
+                    {% if members_page.has_next %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-circle ms-2"
+                            href="?page={{ members_page.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}"
+                            style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <div class="mb-3 opacity-25">
+                <i class="fas fa-users-slash fa-4x text-muted"></i>
+            </div>
+            <h5 class="text-muted fw-bold">Aucun membre trouvé</h5>
+            <p class="text-muted small">Essayez de modifier vos filtres.</p>
+            <a href="{% url 'admin_members_list' %}"
+                class="btn btn-outline-primary btn-sm mt-2 rounded-pill px-4">Réinitialiser</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        let searchTimeout;
+        $('#search').on('input', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function () {
+                $('form').submit();
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

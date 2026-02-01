@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nos Parrains - COMSAS{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-primary text-white py-5">
+    <div class="container text-center">
+        <h1 class="fw-bold mb-3">Nos Parrains</h1>
+        {% if session %}
+        <p class="lead mb-0">Découvrez les mentors de la session {{ session.name }}</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Mentors List Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <!-- Filter -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-6">
+                <form method="get" class="d-flex gap-2">
+                    <select class="form-select" name="specialty" onchange="this.form.submit()">
+                        <option value="">Toutes les spécialités</option>
+                        {% for value, label in specialties %}
+                        <option value="{{ value }}" {% if current_specialty==value %}selected{% endif %}>{{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        {% if mentors %}
+        <div class="row g-4">
+            {% for mentor in mentors %}
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm hover-shadow transition text-center">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 mx-auto mb-3 text-primary"
+                            style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">{{ mentor.first_name }} {{ mentor.last_name }}</h5>
+                        <p class="text-primary mb-2">{{ mentor.get_specialty_display }}</p>
+                        <p class="small text-muted mb-3">{{ mentor.job_title }}</p>
+                        <span class="badge bg-light text-dark border">{{ mentor.get_level_display }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <h3>Aucun parrain trouvé</h3>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

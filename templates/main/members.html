@@ -1,0 +1,1695 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}Nos Membres - COMS.A.S{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<!-- Hero Section -->
+<section class="py-5 bg-white position-relative overflow-hidden mb-5">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-decoration-none text-muted">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Nos Membres</li>
+                    </ol>
+                </nav>
+                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-users me-2"></i>Communauté
+                </div>
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    Notre Grande <span class="text-primary">Famille</span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Découvrez les visages qui composent notre communauté d'excellence, unis par les valeurs de notre
+                    établissement et la passion de l'informatique.
+                </p>
+
+                <div class="row g-4 mt-2">
+                    <div class="col-auto">
+                        <div class="d-flex align-items-center">
+                            <div class="h2 fw-bold text-dark mb-0 me-2 counter"
+                                data-target="{{ bureau_members.count|default:'8' }}">0</div>
+                            <span class="text-muted small lh-1">Membres<br>Bureau</span>
+                        </div>
+                    </div>
+                    <div class="col-auto border-start ps-4">
+                        <div class="d-flex align-items-center">
+                            <div class="h2 fw-bold text-dark mb-0 me-2 counter"
+                                data-target="{{ total_members|default:'150' }}">0</div>
+                            <span class="text-muted small lh-1">Membres<br>Actifs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="position-relative text-center mt-5 mt-lg-0">
+                    <div class="bg-warning bg-opacity-10 rounded-circle position-absolute top-50 start-50 translate-middle"
+                        style="width: 350px; height: 350px; z-index: -1;"></div>
+                    <div class="position-relative">
+                        <i class="fas fa-users fa-5x text-primary opacity-25 mb-4"></i>
+                        <div class="row g-3 justify-content-center">
+                            <div class="col-6">
+                                <div class="card border-0 shadow-sm p-3 mb-3 animate-float-slow">
+                                    <i class="fas fa-graduation-cap fa-2x text-warning mb-2"></i>
+                                    <h6 class="mb-0">Excellence</h6>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card border-0 shadow-sm p-3 mt-4 animate-float-reverse">
+                                    <i class="fas fa-handshake fa-2x text-success mb-2"></i>
+                                    <h6 class="mb-0">Entraide</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bureau Executive Section -->
+{% if bureau_members %}
+<section class="section-bureau">
+    <div class="container">
+        <div class="section-header text-center mb-5" data-aos="fade-up">
+            <span class="section-badge">
+                <i class="fas fa-crown me-2"></i>
+                Direction
+            </span>
+            <h2 class="section-title">
+                Bureau <span class="text-primary">Exécutif</span>
+            </h2>
+            <p class="section-subtitle">
+                L'équipe dirigeante qui guide notre association vers l'excellence
+            </p>
+        </div>
+
+        <div class="members-grid bureau-grid">
+            {% for member in bureau_members %}
+            <div class="member-card bureau-card" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0|mul:100 }}">
+                <div class="card-decoration bureau-decoration"></div>
+                <div class="member-avatar">
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}" class="avatar-image">
+                    <div class="avatar-status bureau-status">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    {% else %}
+                    <div class="avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="avatar-status bureau-status">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="member-info">
+                    <h5 class="member-name">{{ member.nom_prenom }}</h5>
+                    <div class="member-role bureau-role">
+                        {{ member.poste_bureau }}
+                    </div>
+                    <div class="member-details">
+                        <div class="detail-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Promotion {{ member.promotion }}</span>
+                        </div>
+                        {% if member.profession %}
+                        <div class="detail-item">
+                            <i class="fas fa-briefcase"></i>
+                            <span>{{ member.profession|truncatechars:30 }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if member.bio %}
+                    <button class="btn-member-action" data-bs-toggle="modal"
+                        data-bs-target="#memberModal{{ member.id }}">
+                        <span>En savoir plus</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Founders Section -->
+{% if founder_members %}
+<section class="section-founders">
+    <div class="container">
+        <div class="section-header text-center mb-5" data-aos="fade-up">
+            <span class="section-badge warning">
+                <i class="fas fa-star me-2"></i>
+                Pionniers
+            </span>
+            <h2 class="section-title">
+                Membres <span class="text-warning">Fondateurs</span>
+            </h2>
+            <p class="section-subtitle">
+                Les visionnaires qui ont créé notre belle communauté
+            </p>
+        </div>
+
+        <div class="founders-grid">
+            {% for member in founder_members %}
+            <div class="founder-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:100 }}">
+                <div class="founder-badge">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="founder-content">
+                    <div class="founder-avatar">
+                        {% if member.photo %}
+                        <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}" class="founder-image">
+                        {% else %}
+                        <div class="founder-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="founder-info">
+                        <h6 class="founder-name">{{ member.nom_prenom }}</h6>
+                        <div class="founder-details">
+                            <div class="founder-promotion">
+                                <i class="fas fa-graduation-cap"></i>
+                                Promotion {{ member.promotion }}
+                            </div>
+                            {% if member.profession %}
+                            <div class="founder-profession">{{ member.profession|truncatechars:35 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Influential Members Section -->
+{% if influential_members %}
+<section class="section-influential">
+    <div class="container">
+        <div class="section-header text-center mb-5" data-aos="fade-up">
+            <span class="section-badge bg-light text-dark border border-dark">
+                <i class="fas fa-medal me-2"></i>
+                Excellence
+            </span>
+            <h2 class="section-title">
+                Membres <span class="text-dark">d'Exception</span>
+            </h2>
+            <p class="section-subtitle">
+                Des parcours inspirants qui illustrent l'excellence de notre formation
+            </p>
+        </div>
+
+        <div class="influential-grid">
+            {% for member in influential_members %}
+            <div class="influential-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:100 }}">
+                <div class="influential-decoration"></div>
+                <div class="influential-content">
+                    <div class="influential-avatar">
+                        {% if member.photo %}
+                        <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}" class="influential-image">
+                        {% else %}
+                        <div class="influential-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="influential-info">
+                        <h5 class="influential-name">{{ member.nom_prenom }}</h5>
+                        <div class="influential-promotion">
+                            Promotion {{ member.promotion }}
+                        </div>
+                        {% if member.profession %}
+                        <div class="influential-profession">{{ member.profession }}</div>
+                        {% endif %}
+                        {% if member.bio %}
+                        <p class="influential-bio">{{ member.bio|striptags|truncatewords:20 }}</p>
+                        <button class="btn-influential-action" data-bs-toggle="modal"
+                            data-bs-target="#memberModal{{ member.id }}">
+                            <span>Lire le parcours</span>
+                            <i class="fas fa-book-open"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- General Members Section -->
+<section class="section-general-members">
+    <div class="container">
+        <div class="section-header text-center mb-5" data-aos="fade-up">
+            <span class="section-badge bg-light text-primary border border-primary">
+                <i class="fas fa-users me-2"></i>
+                Communauté
+            </span>
+            <h2 class="section-title">
+                Nos <span class="text-primary">Membres</span>
+            </h2>
+            <p class="section-subtitle">
+                Découvrez quelques-uns de nos membres actifs qui font la richesse de notre communauté
+            </p>
+        </div>
+
+        <div class="general-members-grid">
+            {% for member in general_members|slice:":10" %}
+            <div class="general-member-card" data-aos="flip-up" data-aos-delay="{{ forloop.counter0|mul:80 }}">
+                <div class="general-member-avatar">
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}" class="general-avatar-image">
+                    {% else %}
+                    <div class="general-avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="general-member-info">
+                    <h6 class="general-member-name">{{ member.nom_prenom }}</h6>
+                    <div class="general-member-promotion">
+                        Promotion {{ member.promotion }}
+                    </div>
+                    {% if member.profession %}
+                    <div class="general-member-profession">{{ member.profession|truncatechars:25 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if general_members.count > 10 %}
+        <div class="text-center mt-5" data-aos="fade-up">
+            <p class="text-muted mb-3">
+                Et {{ general_members.count|add:"-10" }} autres membres actifs...
+            </p>
+            <a href="{% url 'member_registration' %}" class="btn-view-all">
+                <span>Rejoindre la Communauté</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="section-cta">
+    <div class="cta-decoration"></div>
+    <div class="container text-center">
+        <div class="cta-content" data-aos="zoom-in">
+            <div class="cta-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+
+            <h2 class="cta-title">
+                Rejoignez <span class="text-warning">Notre Famille</span>
+            </h2>
+
+            <p class="cta-subtitle">
+                Vous êtes étudiant en informatique à l'UY1 ? Rejoignez notre communauté et participez à notre
+                aventure commune
+            </p>
+
+            <div class="cta-benefits">
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h6>Réseau Professionnel</h6>
+                    <p>Élargissez vos opportunités</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h6>Entraide Mutuelle</h6>
+                    <p>Soutenez et soyez soutenu</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h6>Événements Exclusifs</h6>
+                    <p>Participez aux rencontres</p>
+                </div>
+            </div>
+
+            <div class="cta-actions">
+                <a href="{% url 'member_registration' %}" class="btn-cta primary">
+                    <span>Devenir Membre</span>
+                    <i class="fas fa-user-plus"></i>
+                </a>
+                <a href="{% url 'contact' %}" class="btn-cta secondary">
+                    <span>Nous Contacter</span>
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Member Modals -->
+{% for member in bureau_members %}
+{% if member.bio %}
+<div class="modal fade" id="memberModal{{ member.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-member-info">
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}" class="modal-avatar">
+                    {% endif %}
+                    <div>
+                        <h5 class="modal-title">{{ member.nom_prenom }}</h5>
+                        <span class="modal-role">{{ member.poste_bureau }}</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-details">
+                    <div class="detail-row">
+                        <div class="detail-col">
+                            <h6>Promotion</h6>
+                            <p>{{ member.promotion }}</p>
+                        </div>
+                        <div class="detail-col">
+                            <h6>Profession</h6>
+                            <p>{{ member.profession|default:"Non spécifiée" }}</p>
+                        </div>
+                    </div>
+                    <div class="bio-section">
+                        <h6>Biographie</h6>
+                        <div class="bio-content">{{ member.bio|safe }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+{% for member in influential_members %}
+{% if member.bio %}
+<div class="modal fade" id="memberModal{{ member.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-member-info">
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}" class="modal-avatar">
+                    {% endif %}
+                    <div>
+                        <h5 class="modal-title">{{ member.nom_prenom }}</h5>
+                        <span class="modal-role">Membre d'Exception</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-details">
+                    <div class="detail-row">
+                        <div class="detail-col">
+                            <h6>Promotion</h6>
+                            <p>{{ member.promotion }}</p>
+                        </div>
+                        <div class="detail-col">
+                            <h6>Profession</h6>
+                            <p>{{ member.profession|default:"Non spécifiée" }}</p>
+                        </div>
+                    </div>
+                    <div class="bio-section">
+                        <h6>Parcours</h6>
+                        <div class="bio-content">{{ member.bio|safe }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .members-hero {
+        min-height: 100vh;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="heroPattern" width="50" height="50" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="40" r="0.5" fill="rgba(255,255,255,0.03)"/></pattern></defs><rect width="100" height="100" fill="url(%23heroPattern)"/></svg>');
+        opacity: 0.6;
+    }
+
+    .hero-decoration {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.02) 50%, transparent 52%);
+        animation: shine 4s infinite;
+    }
+
+    @keyframes shine {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    .min-vh-70 {
+        min-height: 70vh;
+    }
+
+    .breadcrumb-custom {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 1rem;
+    }
+
+    .breadcrumb-custom li {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+
+    .breadcrumb-custom li:not(:last-child)::after {
+        content: '/';
+        margin-left: 1rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .breadcrumb-custom a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .breadcrumb-custom a:hover {
+        color: #FFD700;
+    }
+
+    .hero-badge .badge-hero {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 700;
+        color: white;
+        margin: 1.5rem 0;
+        line-height: 1.2;
+    }
+
+    .text-gradient {
+        background: var(--secondary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        min-width: 140px;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px) scale(1.05);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #FFD700;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .community-graphic {
+        position: relative;
+        width: 250px;
+        height: 250px;
+    }
+
+    .main-circle {
+        width: 150px;
+        height: 150px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #FFD700;
+        font-size: 3rem;
+        animation: pulse 3s infinite;
+    }
+
+    .orbit-elements {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        animation: rotate 20s linear infinite;
+    }
+
+    .orbit-item {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 215, 0, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        font-size: 1.2rem;
+        box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+    }
+
+    .item-1 {
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .item-2 {
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .item-3 {
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .item-4 {
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        50% {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+    }
+
+    /* Section Styles */
+    .section-bureau,
+    .section-general-members {
+        padding: 5rem 0;
+        background: #f8f9fa;
+    }
+
+    .section-founders,
+    .section-influential {
+        padding: 5rem 0;
+        background: white;
+    }
+
+    .section-cta {
+        padding: 5rem 0;
+        background: var(--gradient-primary);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-decoration {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="ctaPattern" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23ctaPattern)"/></svg>');
+        opacity: 0.4;
+    }
+
+    .section-header {
+        margin-bottom: 3rem;
+    }
+
+    .section-badge {
+        background: rgba(44, 85, 48, 0.1);
+        color: var(--primary-color);
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
+    .section-badge.warning {
+        background: rgba(255, 193, 7, 0.1);
+        color: #856404;
+    }
+
+    .section-badge.dark {
+        background: rgba(33, 37, 41, 0.1);
+        color: #212529;
+    }
+
+    .section-badge.success {
+        background: rgba(25, 135, 84, 0.1);
+        color: #0d5132;
+    }
+
+    .section-title {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* Bureau Members */
+    .members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .member-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .member-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-decoration {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .member-card:hover .card-decoration {
+        transform: scaleX(1);
+    }
+
+    .bureau-decoration {
+        background: var(--gradient-primary);
+    }
+
+    .member-avatar {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .avatar-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--primary-color);
+        transition: transform 0.3s ease;
+    }
+
+    .member-card:hover .avatar-image {
+        transform: scale(1.1);
+    }
+
+    .avatar-placeholder {
+        width: 120px;
+        height: 120px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        border: 4px solid var(--primary-color);
+    }
+
+    .avatar-status {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.9rem;
+        border: 3px solid white;
+    }
+
+    .bureau-status {
+        background: var(--primary-color);
+    }
+
+    .member-name {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 1.2rem;
+    }
+
+    .member-role {
+        background: var(--primary-color);
+        color: white;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
+    .member-details {
+        margin: 1rem 0;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .detail-item i {
+        color: var(--primary-color);
+        width: 16px;
+    }
+
+    .btn-member-action {
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-member-action:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Founders Section */
+    .founders-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .founder-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .founder-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    .founder-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        background: #FFD700;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    }
+
+    .founder-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .founder-avatar {
+        flex-shrink: 0;
+    }
+
+    .founder-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #FFD700;
+    }
+
+    .founder-placeholder {
+        width: 80px;
+        height: 80px;
+        background: var(--secondary-gradient);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        font-size: 1.8rem;
+    }
+
+    .founder-name {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .founder-promotion {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .founder-promotion i {
+        color: #FFD700;
+    }
+
+    .founder-profession {
+        color: #999;
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    /* Influential Members */
+    .influential-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+    }
+
+    .influential-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border-left: 4px solid transparent;
+    }
+
+    .influential-card:hover {
+        transform: translateY(-10px);
+        border-left-color: #333;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .influential-decoration {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 60px;
+        height: 60px;
+        background: rgba(33, 37, 41, 0.05);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: rgba(33, 37, 41, 0.1);
+    }
+
+    .influential-decoration::before {
+        content: '\f091';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+    }
+
+    .influential-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .influential-avatar {
+        flex-shrink: 0;
+    }
+
+    .influential-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .influential-placeholder {
+        width: 100px;
+        height: 100px;
+        background: var(--gradient-primary);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+    }
+
+    .influential-name {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 1.3rem;
+    }
+
+    .influential-promotion {
+        background: #333;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 0.75rem;
+    }
+
+    .influential-profession {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .influential-bio {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-influential-action {
+        background: transparent;
+        border: 2px solid #333;
+        color: #333;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-influential-action:hover {
+        background: #333;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* General Members */
+    .general-members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .general-member-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .general-member-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        border-color: var(--primary-color);
+    }
+
+    .general-member-avatar {
+        margin-bottom: 1rem;
+    }
+
+    .general-avatar-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary-color);
+    }
+
+    .general-avatar-placeholder {
+        width: 80px;
+        height: 80px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 auto;
+    }
+
+    .general-member-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .general-member-promotion {
+        color: var(--primary-color);
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .general-member-profession {
+        color: #666;
+        font-size: 0.8rem;
+        line-height: 1.3;
+    }
+
+    .btn-view-all {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(44, 85, 48, 0.2);
+    }
+
+    .btn-view-all:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(44, 85, 48, 0.3);
+        color: white;
+    }
+
+    /* CTA Section */
+    .cta-content {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    .cta-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        color: #FFD700;
+        font-size: 2rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .cta-title {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .cta-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 3rem;
+        line-height: 1.6;
+    }
+
+    .cta-benefits {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .benefit-item {
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .benefit-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .benefit-icon {
+        width: 60px;
+        height: 60px;
+        background: #FFD700;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: #333;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .benefit-item:hover .benefit-icon {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+    }
+
+    .benefit-item h6 {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .benefit-item p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .cta-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 15px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-cta.primary {
+        background: var(--secondary-gradient);
+        color: #333;
+    }
+
+    .btn-cta.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-cta.primary:hover {
+        color: #333;
+    }
+
+    .btn-cta.secondary:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 2rem;
+        border: none;
+    }
+
+    .modal-member-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .modal-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+    }
+
+    .modal-title {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .modal-role {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .detail-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .detail-col h6 {
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .detail-col p {
+        color: #333;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .bio-section h6 {
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .bio-content {
+        color: #555;
+        line-height: 1.7;
+        font-size: 1rem;
+    }
+
+    .bio-content p {
+        margin-bottom: 1rem;
+    }
+
+    /* Counter Animation */
+    .counter {
+        font-family: 'Playfair Display', serif;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .members-hero {
+            padding: 2rem 0;
+            min-height: 90vh;
+        }
+
+        .hero-stats {
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .stat-card {
+            min-width: 120px;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .section-bureau,
+        .section-founders,
+        .section-influential,
+        .section-general-members,
+        .section-cta {
+            padding: 3rem 0;
+        }
+
+        .members-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .founders-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .influential-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .general-members-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .cta-benefits {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .cta-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-cta {
+            width: 100%;
+            max-width: 280px;
+            justify-content: center;
+        }
+
+        .detail-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .influential-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-stats {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .community-graphic {
+            width: 200px;
+            height: 200px;
+        }
+
+        .main-circle {
+            width: 120px;
+            height: 120px;
+            font-size: 2.5rem;
+        }
+
+        .orbit-item {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .member-card,
+        .founder-card,
+        .influential-card {
+            padding: 1.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Counter Animation
+        function initCounters() {
+            const counters = document.querySelectorAll('.counter');
+
+            const animateCounter = (counter) => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 2000;
+                const increment = target / (duration / 16);
+                let current = 0;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    counter.textContent = Math.floor(current);
+
+                    if (current >= target) {
+                        counter.textContent = target;
+                        clearInterval(timer);
+                    }
+                }, 16);
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                        entry.target.classList.add('animated');
+                        animateCounter(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            counters.forEach(counter => observer.observe(counter));
+        }
+
+        // Enhanced Card Hover Effects
+        const cards = document.querySelectorAll('.member-card, .founder-card, .influential-card, .general-member-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-15px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Smooth Scroll for Navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Modal Enhancement
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('show.bs.modal', function () {
+                document.body.style.overflow = 'hidden';
+            });
+
+            modal.addEventListener('hide.bs.modal', function () {
+                document.body.style.overflow = 'auto';
+            });
+        });
+
+        // Parallax Effect for Hero
+        window.addEventListener('scroll', function () {
+            const scrolled = window.pageYOffset;
+            const heroOverlay = document.querySelector('.hero-overlay');
+
+            if (heroOverlay && window.innerWidth > 768) {
+                heroOverlay.style.transform = `translateY(${scrolled * 0.3}px)`;
+            }
+        });
+
+        // Intersection Observer for Scroll Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe cards for scroll animations
+        document.querySelectorAll('.member-card, .founder-card, .influential-card, .general-member-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            scrollObserver.observe(card);
+        });
+
+        // Initialize counters
+        initCounters();
+
+        // Loading Animation for Buttons
+        document.querySelectorAll('.btn-cta, .btn-member-action, .btn-influential-action').forEach(button => {
+            button.addEventListener('click', function (e) {
+                if (this.getAttribute('href') && this.getAttribute('href').startsWith('http')) {
+                    const originalContent = this.innerHTML;
+                    this.style.pointerEvents = 'none';
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Chargement...';
+
+                    setTimeout(() => {
+                        this.style.pointerEvents = 'auto';
+                        this.innerHTML = originalContent;
+                    }, 1500);
+                }
+            });
+        });
+
+        // Staggered Animation for Grid Items
+        const gridItems = document.querySelectorAll('.members-grid > *, .founders-grid > *, .influential-grid > *, .general-members-grid > *');
+        gridItems.forEach((item, index) => {
+            item.style.animationDelay = `${index * 0.1}s`;
+        });
+    });
+</script>
+{% endblock %}

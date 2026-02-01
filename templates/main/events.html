@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Événements - COMS.A.S{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 bg-white overflow-hidden">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-decoration-none text-muted">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Événements</li>
+                    </ol>
+                </nav>
+                <div class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-calendar-star me-2"></i>Rencontres & Célébrations
+                </div>
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    Nos <span class="text-primary">Événements</span>
+                </h1>
+                <p class="lead text-muted mb-5">
+                    Découvrez nos événements qui renforcent les liens entre anciens élèves, créent des opportunités de
+                    networking et célèbrent nos réussites communes.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#upcoming-events" class="btn btn-warning btn-lg rounded-pill px-4 text-dark fw-bold">
+                        <i class="fas fa-calendar-plus me-2"></i>À Venir
+                    </a>
+                    <a href="#past-events" class="btn btn-outline-primary btn-lg rounded-pill px-4">
+                        <i class="fas fa-history me-2"></i>Passés
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <!-- Simple Calendar Visual -->
+                <div class="card border-0 shadow-lg rounded-4 transform-rotate-3">
+                    <div class="card-header bg-primary text-white text-center py-3">
+                        <h4 class="mb-0 fw-bold">{{ "now"|date:"F Y" }}</h4>
+                    </div>
+                    <div class="card-body p-4 text-center">
+                        <div class="row g-2 mb-2 fw-bold text-muted">
+                            <div class="col">L</div>
+                            <div class="col">M</div>
+                            <div class="col">M</div>
+                            <div class="col">J</div>
+                            <div class="col">V</div>
+                            <div class="col">S</div>
+                            <div class="col">D</div>
+                        </div>
+                        <div class="row g-2 text-muted">
+                            <!-- Dummy Calendar Days -->
+                            <div class="col p-2">1</div>
+                            <div class="col p-2">2</div>
+                            <div class="col p-2">3</div>
+                            <div class="col p-2">4</div>
+                            <div class="col p-2">5</div>
+                            <div class="col p-2">6</div>
+                            <div class="col p-2">7</div>
+                            <div class="col p-2">8</div>
+                            <div class="col p-2">9</div>
+                            <div class="col p-2">10</div>
+                            <div class="col p-2">11</div>
+                            <div class="col p-2">12</div>
+                            <div class="col p-2">13</div>
+                            <div class="col p-2">14</div>
+                            <div class="col p-2">15</div>
+                            <div class="col p-2">16</div>
+                            <div class="col p-2">17</div>
+                            <div class="col p-2">18</div>
+                            <div class="col p-2 bg-warning rounded-circle text-dark fw-bold">19</div>
+                            <div class="col p-2">20</div>
+                            <div class="col p-2">21</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Events -->
+<section id="upcoming-events" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary px-3 py-2 rounded-pill mb-3">Prochainement</span>
+            <h2 class="fw-bold">Événements à Venir</h2>
+        </div>
+
+        {% if upcoming_events %}
+        <div class="row g-4">
+            {% for event in upcoming_events %}
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:100 }}">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                    <div class="position-relative">
+                        {% if event.image %}
+                        <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title_fr }}"
+                            style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                            style="height: 200px;">
+                            <i class="fas fa-calendar-alt fa-3x text-primary"></i>
+                        </div>
+                        {% endif %}
+                        <div
+                            class="position-absolute top-0 end-0 m-3 bg-white rounded-3 shadow-sm px-3 py-2 text-center">
+                            <span class="d-block fw-bold h5 mb-0 text-primary">{{ event.date_event|date:"d" }}</span>
+                            <span class="small text-muted text-uppercase">{{ event.date_event|date:"M" }}</span>
+                        </div>
+                        {% if event.is_registration_open %}
+                        <div
+                            class="position-absolute bottom-0 start-0 w-100 bg-secondary bg-opacity-75 text-white text-center py-1">
+                            <small class="fw-bold">Inscriptions Ouvertes</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-2 text-muted small">
+                            <i class="fas fa-clock me-1"></i> {{ event.date_event|date:"H:i" }} |
+                            <i class="fas fa-map-marker-alt me-1"></i> {{ event.location }}
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">{{ event.title_fr }}</h5>
+                        <p class="card-text text-muted mb-4 small">{{ event.description_fr|striptags|truncatewords:20 }}
+                        </p>
+                        <a href="{% url 'event_detail' event.pk %}" class="btn btn-outline-primary w-100 rounded-pill">
+                            Voir Détails
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="bg-white p-5 rounded-4 shadow-sm d-inline-block">
+                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Aucun événement à venir pour le moment.</h5>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Past Events -->
+{% if past_events %}
+<section id="past-events" class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-info text-dark px-3 py-2 rounded-pill mb-3">Historique</span>
+            <h2 class="fw-bold">Événements Réalisés</h2>
+        </div>
+        <div class="row g-4">
+            {% for event in past_events %}
+            <div class="col-md-6" data-aos="fade-up">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-md-4">
+                            {% if event.image %}
+                            <img src="{{ event.image.url }}" class="img-fluid h-100" alt="{{ event.title_fr }}"
+                                style="min-height: 150px; object-fit: cover;">
+                            {% else %}
+                            <div class="bg-light h-100 d-flex align-items-center justify-content-center"
+                                style="min-height: 150px;">
+                                <i class="fas fa-history text-muted fa-2x"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <small class="text-muted mb-1 d-block">{{ event.date_event|date:"d F Y" }}</small>
+                                <h5 class="card-title fw-bold">{{ event.title_fr }}</h5>
+                                <a href="{% url 'event_detail' event.pk %}"
+                                    class="text-decoration-none small text-primary fw-bold">
+                                    Voir les photos <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

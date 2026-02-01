@@ -1,0 +1,457 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}
+    {% if object %}Modifier l'élément{% else %}Nouvel élément{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'admin_gallery_list' %}">Galerie</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    {% if object %}Modifier{% else %}Nouveau{% endif %}
+                </li>
+            </ol>
+        </nav>
+        <h2>
+            <i class="fas fa-images me-2"></i>
+            {% if object %}Modifier l'élément{% else %}Nouvel élément{% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>
+                    Informations du média
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="galleryForm">
+                    {% csrf_token %}
+                    
+                    <!-- Type de média -->
+                    <div class="mb-3">
+                        <label for="{{ form.media_type.id_for_label }}" class="form-label">
+                            Type de média <span class="text-danger">*</span>
+                        </label>
+                        {{ form.media_type }}
+                        {% if form.media_type.errors %}
+                            <div class="text-danger small">{{ form.media_type.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Titres -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.title_fr.id_for_label }}" class="form-label">
+                                Titre (Français) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title_fr }}
+                            {% if form.title_fr.errors %}
+                                <div class="text-danger small">{{ form.title_fr.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.title_en.id_for_label }}" class="form-label">
+                                Titre (Anglais) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title_en }}
+                            {% if form.title_en.errors %}
+                                <div class="text-danger small">{{ form.title_en.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Descriptions -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.description_fr.id_for_label }}" class="form-label">
+                                Description (Français)
+                            </label>
+                            {{ form.description_fr }}
+                            {% if form.description_fr.errors %}
+                                <div class="text-danger small">{{ form.description_fr.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.description_en.id_for_label }}" class="form-label">
+                                Description (Anglais)
+                            </label>
+                            {{ form.description_en }}
+                            {% if form.description_en.errors %}
+                                <div class="text-danger small">{{ form.description_en.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Champs pour image -->
+                    <div id="imageFields" class="media-fields">
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">
+                                Image <span class="text-danger">*</span>
+                            </label>
+                            {{ form.image }}
+                            <div class="form-text">Formats acceptés : JPG, PNG, GIF. Taille max : 5MB</div>
+                            {% if form.image.errors %}
+                                <div class="text-danger small">{{ form.image.errors }}</div>
+                            {% endif %}
+                            {% if object and object.image %}
+                                <div class="mt-2">
+                                    <small class="text-muted">Image actuelle :</small><br>
+                                    <img src="{{ object.image.url }}" alt="{{ object.title_fr }}" 
+                                         class="img-thumbnail" style="max-width: 300px;">
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Champs pour vidéo -->
+                    <div id="videoFields" class="media-fields" style="display: none;">
+                        <div class="mb-3">
+                            <label for="{{ form.video_url.id_for_label }}" class="form-label">
+                                URL de la vidéo
+                            </label>
+                            {{ form.video_url }}
+                            <div class="form-text">URL YouTube, Vimeo ou autre plateforme</div>
+                            {% if form.video_url.errors %}
+                                <div class="text-danger small">{{ form.video_url.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.video_file.id_for_label }}" class="form-label">
+                                Ou fichier vidéo
+                            </label>
+                            {{ form.video_file }}
+                            <div class="form-text">Formats acceptés : MP4, AVI, MOV. Taille max : 50MB</div>
+                            {% if form.video_file.errors %}
+                                <div class="text-danger small">{{ form.video_file.errors }}</div>
+                            {% endif %}
+                            {% if object and object.video_file %}
+                                <div class="mt-2">
+                                    <small class="text-muted">Fichier vidéo actuel :</small><br>
+                                    <a href="{{ object.video_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-play me-1"></i>
+                                        Voir la vidéo
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Options -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_featured }}
+                            <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                                Élément en vedette
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Boutons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'admin_gallery_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            {% if object %}Modifier{% else %}Ajouter{% endif %} l'élément
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Aide -->
+        <div class="table-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Aide
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Types de médias :</h6>
+                <ul class="small">
+                    <li><strong>Image :</strong> Photos, illustrations, graphiques</li>
+                    <li><strong>Vidéo :</strong> Fichiers vidéo ou liens YouTube/Vimeo</li>
+                </ul>
+                
+                <h6 class="mt-3">Conseils pour les images :</h6>
+                <ul class="small">
+                    <li>Utilisez des images de haute qualité</li>
+                    <li>Formats recommandés : JPG, PNG</li>
+                    <li>Résolution minimale : 800x600 pixels</li>
+                    <li>Taille de fichier max : 5MB</li>
+                </ul>
+                
+                <h6 class="mt-3">Conseils pour les vidéos :</h6>
+                <ul class="small">
+                    <li>Privilégiez les liens YouTube/Vimeo</li>
+                    <li>Pour les fichiers : formats MP4 recommandé</li>
+                    <li>Durée recommandée : moins de 5 minutes</li>
+                    <li>Taille de fichier max : 50MB</li>
+                </ul>
+                
+                <div class="alert alert-info mt-3">
+                    <small>
+                        <i class="fas fa-lightbulb me-1"></i>
+                        <strong>Astuce :</strong> Les éléments en vedette apparaissent en premier sur le site.
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        {% if object %}
+            <!-- Aperçu de l'élément -->
+            <div class="table-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-eye me-2"></i>
+                        Aperçu
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if object.media_type == 'image' and object.image %}
+                        <img src="{{ object.image.url }}" alt="{{ object.title_fr }}" 
+                             class="img-fluid rounded mb-3" style="max-height: 200px;">
+                    {% elif object.media_type == 'video' %}
+                        {% if object.video_url %}
+                            <div class="mb-3">
+                                <i class="fas fa-external-link-alt me-1"></i>
+                                <a href="{{ object.video_url }}" target="_blank">Voir la vidéo</a>
+                            </div>
+                        {% endif %}
+                        {% if object.video_file %}
+                            <video controls class="w-100 rounded mb-3" style="max-height: 200px;">
+                                <source src="{{ object.video_file.url }}" type="video/mp4">
+                                Votre navigateur ne supporte pas la lecture vidéo.
+                            </video>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <h6>{{ object.title_fr }}</h6>
+                    {% if object.description_fr %}
+                        <p class="small text-muted">{{ object.description_fr }}</p>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge 
+                            {% if object.media_type == 'image' %}bg-success{% else %}bg-primary{% endif %}">
+                            {{ object.get_media_type_display }}
+                        </span>
+                        {% if object.is_featured %}
+                            <span class="badge bg-warning">En vedette</span>
+                        {% endif %}
+                    </div>
+                    
+                    <hr>
+                    
+                    <small class="text-muted">
+                        Ajouté le {{ object.created_at|date:"d/m/Y à H:i" }}
+                    </small>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Force les styles sur TOUS les inputs */
+input[type="text"], 
+input[type="email"], 
+input[type="url"], 
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+}
+
+input[type="text"]:focus, 
+input[type="email"]:focus, 
+input[type="url"]:focus, 
+input[type="password"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #4f46e5 !important;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
+    outline: none !important;
+    transform: translateY(-1px) !important;
+}
+
+/* File inputs spéciaux */
+input[type="file"] {
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    background: #f8fafc !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+}
+
+input[type="file"]:hover {
+    border-color: #4f46e5 !important;
+    background: rgba(79, 70, 229, 0.05) !important;
+}
+
+/* Checkboxes */
+input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 6px !important;
+    border: 2px solid #e2e8f0 !important;
+    transition: all 0.3s ease !important;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+}
+
+/* Labels */
+.form-label {
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+}
+
+/* Boutons */
+.btn {
+    border-radius: 10px !important;
+    padding: 10px 20px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+    color: white !important;
+}
+
+.btn-outline-secondary {
+    border: 2px solid #6b7280 !important;
+    color: #6b7280 !important;
+    background: transparent !important;
+}
+
+.btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Cards */
+.table-card {
+    border-radius: 12px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.card-body {
+    padding: 1.5rem !important;
+}
+
+/* Animations */
+.media-fields {
+    transition: all 0.3s ease !important;
+}
+
+/* Override Bootstrap defaults */
+.form-control {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+}
+
+.form-select {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+}
+
+/* Text areas */
+textarea.form-control {
+    min-height: 120px !important;
+    resize: vertical !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mediaTypeSelect = document.getElementById('{{ form.media_type.id_for_label }}');
+    const imageFields = document.getElementById('imageFields');
+    const videoFields = document.getElementById('videoFields');
+    
+    function toggleMediaFields() {
+        const selectedType = mediaTypeSelect.value;
+        
+        if (selectedType === 'image') {
+            imageFields.style.display = 'block';
+            videoFields.style.display = 'none';
+        } else if (selectedType === 'video') {
+            imageFields.style.display = 'none';
+            videoFields.style.display = 'block';
+        } else {
+            imageFields.style.display = 'block';
+            videoFields.style.display = 'none';
+        }
+    }
+    
+    toggleMediaFields();
+    mediaTypeSelect.addEventListener('change', toggleMediaFields);
+    
+    // Validation du formulaire
+    document.getElementById('galleryForm').addEventListener('submit', function(e) {
+        const mediaType = mediaTypeSelect.value;
+        const imageFile = document.getElementById('{{ form.image.id_for_label }}').files[0];
+        const videoUrl = document.getElementById('{{ form.video_url.id_for_label }}').value;
+        const videoFile = document.getElementById('{{ form.video_file.id_for_label }}').files[0];
+        
+        if (mediaType === 'image' && !imageFile {% if not object.image %}{% else %} && !{{ object.image|yesno:"true,false" }}{% endif %}) {
+            e.preventDefault();
+            alert('Veuillez sélectionner une image.');
+            return false;
+        }
+        
+        if (mediaType === 'video' && !videoUrl && !videoFile {% if not object.video_url and not object.video_file %}{% else %} && !{{ object.video_url|yesno:"true,false" }} && !{{ object.video_file|yesno:"true,false" }}{% endif %}) {
+            e.preventDefault();
+            alert('Veuillez fournir une URL de vidéo ou télécharger un fichier vidéo.');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

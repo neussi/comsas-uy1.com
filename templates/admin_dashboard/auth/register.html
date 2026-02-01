@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande d'accès Admin - COMS.A.S</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #E91E63;
+            --secondary-color: #FF9800;
+            --dark-color: #333;
+            --light-color: #f8f9fa;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fce4ec 0%, #fff3e0 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--dark-color);
+        }
+
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(233, 30, 99, 0.15);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .register-left {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #C2185B 100%);
+            color: white;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .register-right {
+            padding: 3rem;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control,
+        .form-select {
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            padding: 12px 15px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.1);
+        }
+
+        .btn-register {
+            background: linear-gradient(45deg, var(--primary-color) 0%, #C2185B 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.4);
+            background: linear-gradient(45deg, #C2185B 0%, var(--primary-color) 100%);
+        }
+
+        .requirements {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #FF9800;
+            padding: 1rem;
+            border-radius: 0 10px 10px 0;
+            text-align: left;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 0 1rem;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.5rem;
+            color: #666;
+        }
+
+        .step.active .step-number {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .register-left {
+                padding: 2rem;
+            }
+
+            .register-right {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="row g-0">
+                <!-- Left side - Information -->
+                <div class="col-lg-4 register-left">
+                    <div class="logo">
+                        <i class="fas fa-graduation-cap fa-2x"></i>
+                    </div>
+                    <h2 class="mb-3">COMS.A.S</h2>
+                    <h4 class="mb-4">Demande d'Accès Admin</h4>
+
+                    <div class="requirements">
+                        <h6 class="mb-3">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            Conditions d'accès
+                        </h6>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2">
+                                <i class="fas fa-check me-2"></i>
+                                Être membre actif de l'association
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check me-2"></i>
+                                Avoir un rôle de responsabilité
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check me-2"></i>
+                                Approbation du bureau
+                            </li>
+                            <li>
+                                <i class="fas fa-check me-2"></i>
+                                Formation à l'utilisation
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="small">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Votre demande sera examinée par le bureau de l'association.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right side - Registration form -->
+                <div class="col-lg-8 register-right">
+                    <!-- Step indicator -->
+                    <div class="step-indicator">
+                        <div class="step active">
+                            <div class="step-number">1</div>
+                            <span class="small">Informations</span>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <span class="small">Validation</span>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <span class="small">Approbation</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <h3 class="text-dark">Demande d'Accès Administrateur</h3>
+                        <p class="text-muted">Remplissez le formulaire pour demander un accès admin</p>
+                    </div>
+
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <form method="post" id="registerForm">
+                        {% csrf_token %}
+
+                        <!-- Personal Information -->
+                        <fieldset class="mb-4">
+                            <legend class="h6 text-primary mb-3">Informations personnelles</legend>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                        Prénom <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                    <div class="text-danger small">{{ form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                        Nom <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                    <div class="text-danger small">{{ form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                                        Email <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.email }}
+                                    <div class="form-text">Doit correspondre à votre email de membre</div>
+                                    {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label">
+                                        Nom d'utilisateur <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                    <div class="text-danger small">{{ form.username.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Security -->
+                        <fieldset class="mb-4">
+                            <legend class="h6 text-primary mb-3">Sécurité</legend>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.password1.id_for_label }}" class="form-label">
+                                        Mot de passe <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.password1 }}
+                                    <div class="form-text">Minimum 8 caractères</div>
+                                    {% if form.password1.errors %}
+                                    <div class="text-danger small">{{ form.password1.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.password2.id_for_label }}" class="form-label">
+                                        Confirmer le mot de passe <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}
+                                    <div class="text-danger small">{{ form.password2.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Role and Justification -->
+                        <fieldset class="mb-4">
+                            <legend class="h6 text-primary mb-3">Rôle et justification</legend>
+
+                            <div class="mb-3">
+                                <label for="requested_role" class="form-label">
+                                    Rôle demandé <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="requested_role" name="requested_role" required>
+                                    <option value="">Sélectionnez un rôle</option>
+                                    <option value="bureau">Membre du Bureau</option>
+                                    <option value="moderator">Modérateur</option>
+                                    <option value="editor">Éditeur de contenu</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="justification" class="form-label">
+                                    Justification de la demande <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" id="justification" name="justification" rows="4" required
+                                    placeholder="Expliquez pourquoi vous avez besoin d'un accès administrateur..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="current_position" class="form-label">
+                                    Poste actuel dans l'association
+                                </label>
+                                <input type="text" class="form-control" id="current_position" name="current_position"
+                                    placeholder="Ex: Secrétaire général, Trésorier...">
+                            </div>
+                        </fieldset>
+
+                        <!-- Terms and conditions -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    J'accepte les <a href="#" class="text-decoration-none">conditions d'utilisation</a>
+                                    et m'engage à respecter la charte d'usage de la plateforme administrative.
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'admin_login' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Retour à la connexion
+                            </a>
+                            <button type="submit" class="btn btn-register text-white">
+                                <i class="fas fa-paper-plane me-1"></i>
+                                Envoyer la demande
+                            </button>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Information :</strong> Votre demande sera examinée dans un délai de 48h.
+                            Vous recevrez une notification par email.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Password strength indicator
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            return strength;
+        }
+
+        // Form validation
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            const password1 = document.getElementById('{{ form.password1.id_for_label }}').value;
+            const password2 = document.getElementById('{{ form.password2.id_for_label }}').value;
+
+            if (password1 !== password2) {
+                e.preventDefault();
+                alert('Les mots de passe ne correspondent pas.');
+                return false;
+            }
+
+            if (checkPasswordStrength(password1) < 3) {
+                e.preventDefault();
+                alert('Le mot de passe doit contenir au moins 8 caractères avec des lettres et des chiffres.');
+                return false;
+            }
+        });
+
+        // Auto-hide alerts
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 8000);
+    </script>
+</body>
+
+</html>

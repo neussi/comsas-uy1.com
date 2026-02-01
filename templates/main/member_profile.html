@@ -1,0 +1,129 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Profil Membre - {{ member.nom_prenom }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 bg-white position-relative overflow-hidden">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-decoration-none text-muted">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'members' %}"
+                                class="text-decoration-none text-muted">Membres</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ member.nom_prenom }}</li>
+                    </ol>
+                </nav>
+
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                        <i class="fas fa-id-card me-2"></i>Membre Certifié
+                    </span>
+                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill border">
+                        Promo {{ member.promotion }}
+                    </span>
+                </div>
+
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    {{ member.nom_prenom }}
+                </h1>
+                <p class="lead text-muted mb-4 fs-4">
+                    {{ member.profession|default:"Étudiant en Informatique" }}
+                </p>
+
+                {% if member.linkedin_url or member.github_url %}
+                <div class="d-flex gap-3 mb-4">
+                    {% if member.linkedin_url %}
+                    <a href="{{ member.linkedin_url }}" target="_blank"
+                        class="btn btn-outline-primary btn-lg rounded-circle p-0 d-flex align-items-center justify-content-center"
+                        style="width: 50px; height: 50px;">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    {% endif %}
+                    {% if member.github_url %}
+                    <a href="{{ member.github_url }}" target="_blank"
+                        class="btn btn-outline-dark btn-lg rounded-circle p-0 d-flex align-items-center justify-content-center"
+                        style="width: 50px; height: 50px;">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="position-relative text-center">
+                    <div class="bg-warning bg-opacity-10 rounded-circle position-absolute top-50 start-50 translates-middle"
+                        style="width: 400px; height: 400px; z-index: -1;"></div>
+
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}"
+                        class="img-fluid rounded-4 shadow-lg border border-5 border-white"
+                        style="max-height: 450px; width: 100%; object-fit: cover; transform: rotate(-2deg);">
+                    {% else %}
+                    <div class="bg-white rounded-4 shadow-lg d-flex align-items-center justify-content-center border border-5 border-light"
+                        style="height: 450px; width: 100%; transform: rotate(-2deg);">
+                        <i class="fas fa-user-circle fa-8x text-secondary opacity-25"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Details Section -->
+<section class="py-5 bg-light border-top">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-body p-5">
+                        <h3 class="fw-bold mb-4">À propos</h3>
+                        <div class="text-muted lead fs-6">
+                            {% if member.bio %}
+                            {{ member.bio|safe }}
+                            {% else %}
+                            <p>Ce membre n'a pas encore ajouté de biographie.</p>
+                            {% endif %}
+                        </div>
+
+                        <hr class="my-5 opacity-10">
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center p-3 bg-light rounded-4">
+                                    <div class="bg-white p-3 rounded-circle shadow-sm me-3 text-primary">
+                                        <i class="fas fa-graduation-cap fa-lg"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-uppercase text-muted fw-bold"
+                                            style="font-size: 0.7rem;">Statut</small>
+                                        <h6 class="mb-0 fw-bold">{{ member.get_member_type_display }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center p-3 bg-light rounded-4">
+                                    <div class="bg-white p-3 rounded-circle shadow-sm me-3 text-success">
+                                        <i class="fas fa-calendar-check fa-lg"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-uppercase text-muted fw-bold"
+                                            style="font-size: 0.7rem;">Membre depuis</small>
+                                        <h6 class="mb-0 fw-bold">{{ member.date_adhesion|date:"F Y" }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

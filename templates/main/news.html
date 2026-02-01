@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Actualités - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-white position-relative">
+    <div class="container py-4 position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-muted text-decoration-none">Accueil</a></li>
+                        <li class="breadcrumb-item active text-primary">Actualités</li>
+                    </ol>
+                </nav>
+                <div class="badge bg-danger bg-opacity-10 text-danger mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-newspaper me-2"></i>Informations Officielles
+                </div>
+                <h1 class="display-3 fw-bold mb-4">Restez <span class="text-warning">Informés</span></h1>
+                <p class="lead text-muted mb-4">
+                    Suivez toute l'actualité de l'association : annonces, comptes-rendus, et opportunités pour les
+                    membres.
+                </p>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="p-4 bg-light rounded-4 border border-dashed border-2 text-center">
+                    <i class="fas fa-bullhorn fa-4x text-warning mb-3"></i>
+                    <h4 class="fw-bold">Abonnez-vous à la Newsletter</h4>
+                    <p class="text-muted mb-4 small">Recevez les dernières nouvelles directement dans votre boîte mail.
+                    </p>
+                    <form class="d-flex gap-2 justify-content-center">
+                        <input type="email" class="form-control rounded-pill" placeholder="Votre email..."
+                            style="max-width: 300px;">
+                        <button class="btn btn-dark rounded-pill px-4">S'abonner</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        {% if news_page %}
+        <div class="row g-4">
+            <!-- Featured / First Item -->
+            {% if news_page.number == 1 and news_page.object_list %}
+            <div class="col-12 mb-4" data-aos="fade-up">
+                {% with featured=news_page.object_list.0 %}
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="row g-0">
+                        <div class="col-lg-6 position-relative">
+                            {% if featured.image %}
+                            <img src="{{ featured.image.url }}" class="img-fluid h-100 object-fit-cover w-100"
+                                alt="{{ featured.title_fr }}" style="min-height: 400px;">
+                            {% else %}
+                            <div class="bg-primary h-100 d-flex align-items-center justify-content-center"
+                                style="min-height: 400px;">
+                                <i class="fas fa-newspaper fa-5x text-white-50"></i>
+                            </div>
+                            {% endif %}
+                            <div class="position-absolute top-0 start-0 m-4">
+                                <span class="badge bg-danger px-3 py-2 rounded-pill shadow-sm">À la Une</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 d-flex align-items-center bg-dark text-white">
+                            <div class="card-body p-5">
+                                <div class="mb-3 text-warning">
+                                    <i class="far fa-calendar me-2"></i>{{ featured.created_at|date:"d F Y" }}
+                                </div>
+                                <h2 class="card-title fw-bold display-6 mb-4">{{ featured.title_fr }}</h2>
+                                <p class="card-text opacity-75 mb-5 lead">{{
+                                    featured.content_fr|striptags|truncatewords:30 }}</p>
+                                <a href="{% url 'news_detail' featured.pk %}"
+                                    class="btn btn-warning rounded-pill px-5 btn-lg text-dark fw-bold">
+                                    Lire l'article complet
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+            {% endif %}
+
+            <!-- Other Items -->
+            {% for news in news_page.object_list %}
+            {% if news_page.number > 1 or not forloop.first %}
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                    {% if news.image %}
+                    <img src="{{ news.image.url }}" class="card-img-top" alt="{{ news.title_fr }}"
+                        style="height: 220px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                        <i class="fas fa-file-alt fa-3x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body p-4">
+                        <div class="mb-2 text-muted small">
+                            <span class="badge bg-light text-dark border me-2">{{ news.category|default:"Général"
+                                }}</span>
+                            <i class="far fa-clock me-1"></i>{{ news.created_at|date:"d M, Y" }}
+                        </div>
+                        <h5 class="card-title fw-bold mb-3 line-clamp-2">{{ news.title_fr }}</h5>
+                        <p class="card-text text-muted mb-4 small line-clamp-3">{{
+                            news.content_fr|striptags|truncatewords:20 }}</p>
+                        <a href="{% url 'news_detail' news.pk %}"
+                            class="text-primary text-decoration-none fw-bold stretched-link">
+                            Lire la suite <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if news_page.has_other_pages %}
+        <div class="d-flex justify-content-center mt-5">
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-lg">
+                    {% if news_page.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link rounded-pill me-2 border-0 shadow-sm"
+                            href="?page={{ news_page.previous_page_number }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link rounded-pill border-0 shadow-sm bg-primary border-primary">
+                            {{ news_page.number }} / {{ news_page.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if news_page.has_next %}
+                    <li class="page-item">
+                        <a class="page-link rounded-pill ms-2 border-0 shadow-sm"
+                            href="?page={{ news_page.next_page_number }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <div class="bg-white p-5 rounded-4 shadow-sm">
+                <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Aucune actualité disponible.</h5>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Détail du Concours : {{ contest.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'admin_contests_home' %}"
+                        class="text-decoration-none text-muted">Concours</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ contest.title }}</li>
+            </ol>
+        </nav>
+        <h2 class="mt-2">
+            <i class="fas fa-trophy me-2 text-warning"></i>
+            {{ contest.title }}
+        </h2>
+    </div>
+    <div class="btn-group shadow-sm">
+        <a href="{% url 'admin_contest_edit' contest.pk %}" class="btn btn-outline-primary bg-white">
+            <i class="fas fa-edit me-1"></i> Modifier
+        </a>
+        <a href="{% url 'admin_candidate_create' contest_pk=contest.pk %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Ajouter un Candidat
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Contest Info -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white border-0 py-4 px-4">
+                <h5 class="mb-0 fw-bold text-dark">Informations</h5>
+            </div>
+            <div class="card-body px-4 pb-4 pt-0">
+                {% if contest.image %}
+                <img src="{{ contest.image.url }}" class="img-fluid rounded-3 mb-4 w-100 shadow-sm"
+                    style="max-height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light rounded-3 mb-4 w-100 d-flex align-items-center justify-content-center text-muted"
+                    style="height: 150px;">
+                    <i class="fas fa-image fa-3x"></i>
+                </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="small text-muted text-uppercase fw-bold mb-1">Status</label>
+                    <div class="d-flex align-items-center">
+                        {% if contest.is_active %}
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 me-2">Actif</span>
+                        {% else %}
+                        <span
+                            class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 me-2">Inactif</span>
+                        {% endif %}
+
+                        {% if contest.allow_public_candidates %}
+                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3"
+                            title="Candidatures publiques autorisées">Public</span>
+                        {% else %}
+                        <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3"
+                            title="Candidatures restreintes">Privé</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted text-uppercase fw-bold mb-1">Dates</label>
+                    <div class="d-flex flex-column">
+                        <span class="text-dark fw-medium"><i class="fas fa-play-circle text-success me-2"
+                                style="width: 16px;"></i>{{ contest.start_date|date:"d M Y H:i" }}</span>
+                        <span class="text-dark fw-medium mt-1"><i class="fas fa-stop-circle text-danger me-2"
+                                style="width: 16px;"></i>{{ contest.end_date|date:"d M Y H:i" }}</span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <label class="small text-muted text-uppercase fw-bold mb-1">Description</label>
+                    <p class="text-muted small">{{ contest.description|linebreaksbr }}</p>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{% url 'admin_contest_delete' contest.pk %}"
+                        class="btn btn-outline-danger btn-sm w-100 rounded-pill"
+                        onclick="return confirm('Supprimer ce concours ?')">
+                        <i class="fas fa-trash me-1"></i> Supprimer le concours
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Candidates List -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark">Candidats & Résultats</h5>
+                <span class="badge bg-light text-dark rounded-pill border">{{ candidates.count }} participant(s)</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="bg-light text-uppercase text-muted small">
+                        <tr>
+                            <th class="ps-4 border-0">Candidat / Projet</th>
+                            <th class="border-0">Statut</th>
+                            <th class="border-0 text-center">Votes</th>
+                            <th class="border-0 text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidate in candidates %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    {% if candidate.image %}
+                                    <img src="{{ candidate.image.url }}" class="rounded-3 shadow-sm me-3" width="50"
+                                        height="50" style="object-fit: cover;">
+                                    {% else %}
+                                    <div class="rounded-3 me-3 bg-light text-primary d-flex align-items-center justify-content-center"
+                                        style="width: 50px; height: 50px;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-bold text-dark position-relative">
+                                            {{ candidate.name }}
+                                            {% if candidate.video_url %}
+                                            <a href="{{ candidate.video_url }}" target="_blank" class="text-danger ms-1"
+                                                title="Voir la vidéo">
+                                                <i class="fab fa-youtube"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                        <small class="text-muted d-block text-truncate" style="max-width: 250px;">{{
+                                            candidate.bio|striptags|truncatechars:50 }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if candidate.status == 'approved' %}
+                                <span
+                                    class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Approuvé</span>
+                                {% elif candidate.status == 'pending' %}
+                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">En
+                                    attente</span>
+                                {% else %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">Rejeté</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="fw-bold text-dark fs-5">{{ candidate.votes_count }}</span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group">
+                                    <a href="{% url 'admin_candidate_edit' candidate.pk %}"
+                                        class="btn btn-sm btn-light text-primary rounded-circle me-1" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'admin_candidate_delete' candidate.pk %}"
+                                        class="btn btn-sm btn-light text-danger rounded-circle" title="Supprimer"
+                                        onclick="return confirm('Supprimer ce candidat ?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <div class="opacity-25 mb-3">
+                                    <i class="fas fa-users-slash fa-3x"></i>
+                                </div>
+                                <h6 class="text-muted fw-bold">Aucun candidat pour le moment</h6>
+                                <p class="text-muted small">Commencez par ajouter des participants au concours.</p>
+                                <a href="{% url 'admin_candidate_create' contest_pk=contest.pk %}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill px-4">
+                                    <i class="fas fa-plus me-1"></i> Ajouter un candidat
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

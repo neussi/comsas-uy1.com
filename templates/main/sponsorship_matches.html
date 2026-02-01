@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Les Binômes de Parrainage - COMSAS{% endblock %}
+
+{% block content %}
+<!-- Hero Section (Matching About Page Style) -->
+<section class="py-5 bg-white position-relative overflow-hidden"
+    style="min-height: 40vh; display: flex; align-items: center;">
+    <div class="container position-relative z-1">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                <i class="fas fa-handshake me-2"></i>Programme de Mentorat
+            </div>
+            <h1 class="display-4 fw-bold mb-4 text-dark">
+                Les Binômes de la <span class="text-primary">Session {{ session.name }}</span>
+            </h1>
+            <p class="lead text-muted mx-auto" style="max-width: 700px;">
+                Découvrez les duos formés pour cette édition. L'excellence par le partage et l'entraide.
+            </p>
+        </div>
+    </div>
+
+    <!-- Decorative Background Elements -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 text-center d-flex align-items-center justify-content-center"
+        style="z-index: 0; pointer-events: none;">
+        <div class="bg-primary bg-opacity-10 rounded-circle position-absolute top-50 start-50 translate-middle"
+            style="width: 600px; height: 600px; opacity: 0.3; filter: blur(80px);"></div>
+    </div>
+</section>
+
+<!-- Matches List Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        {% if matches %}
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden" data-aos="fade-up">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-uppercase small fw-bold text-muted">
+                            <tr>
+                                <th scope="col" class="py-4 ps-5">Parrain (Mentor)</th>
+                                <th scope="col" class="py-4">Filleul (Mentee)</th>
+                                <th scope="col" class="py-4 text-center">Session</th>
+                                <th scope="col" class="py-4 text-end pe-5">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            {% for match in matches %}
+                            <tr class="transition-hover">
+                                <td class="ps-5 py-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 text-primary d-flex align-items-center justify-content-center shadow-sm"
+                                            style="width: 50px; height: 50px;">
+                                            <i class="fas fa-chalkboard-teacher"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1 fw-bold text-dark">{{ match.mentor.first_name }} {{
+                                                match.mentor.last_name }}</h6>
+                                            <div class="small">
+                                                <span class="badge bg-light text-dark border me-1">{{
+                                                    match.mentor.get_level_display }}</span>
+                                                <span class="text-muted">{{ match.mentor.get_specialty_display }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3 text-info d-flex align-items-center justify-content-center shadow-sm"
+                                            style="width: 50px; height: 50px;">
+                                            <i class="fas fa-user-graduate"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1 fw-bold text-dark">{{ match.mentee.first_name }} {{
+                                                match.mentee.last_name }}</h6>
+                                            <div class="small">
+                                                <span class="badge bg-light text-dark border me-1">{{
+                                                    match.mentee.get_level_display }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 text-center">
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                                        {{ match.session.name }}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-5 py-4">
+                                    <span class="text-muted small fw-medium">
+                                        <i class="far fa-calendar-alt me-1"></i> {{ match.created_at|date:"d M Y" }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="mb-4 text-muted opacity-25">
+                <i class="fas fa-users-slash fa-5x"></i>
+            </div>
+            <h3 class="fw-bold text-dark">Aucun binôme formé</h3>
+            <p class="text-muted">Les associations pour la session en cours n'ont pas encore été publiées.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

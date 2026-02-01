@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Nos Parrains - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <h1 class="display-4 fw-bold mb-4 text-center">Nos <span class="text-primary">Parrains</span></h1>
+
+        <div class="row g-4">
+            {% for mentor in mentors %}
+            <div class="col-md-4 col-lg-3">
+                <div class="card border-0 shadow-sm h-100 hover-lift text-center p-4 rounded-4">
+                    <div class="avatar bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                        style="width: 80px; height: 80px; font-size: 24px; font-weight: bold;">
+                        {{ mentor.first_name|first }}{{ mentor.last_name|first }}
+                    </div>
+                    <h5 class="fw-bold mb-1">{{ mentor.first_name }} {{ mentor.last_name }}</h5>
+                    <div class="badge bg-light text-dark mb-2">{{ mentor.get_level_display }}</div>
+                    <div class="text-primary small fw-bold mb-3">{{ mentor.get_specialty_display }}</div>
+                    <p class="text-muted small mb-0">{{ mentor.expertise_domains }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="text-muted">Aucun parrain inscrit pour le moment.</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

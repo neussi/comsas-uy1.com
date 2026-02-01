@@ -1,0 +1,504 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+{% if object %}Modifier le projet{% else %}Nouveau projet{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'admin_projects_list' %}">Projets</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    {% if object %}Modifier{% else %}Nouveau{% endif %}
+                </li>
+            </ol>
+        </nav>
+        <h2>
+            <i class="fas fa-project-diagram me-2"></i>
+            {% if object %}Modifier le projet{% else %}Nouveau projet{% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>
+                    Informations du projet
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.media }}
+
+                    <!-- Titres -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.title_fr.id_for_label }}" class="form-label">
+                                Titre (Français) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title_fr }}
+                            {% if form.title_fr.errors %}
+                            <div class="text-danger small">{{ form.title_fr.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.title_en.id_for_label }}" class="form-label">
+                                Titre (Anglais) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title_en }}
+                            {% if form.title_en.errors %}
+                            <div class="text-danger small">{{ form.title_en.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Description française -->
+                    <div class="mb-3">
+                        <label for="{{ form.description_fr.id_for_label }}" class="form-label">
+                            Description (Français) <span class="text-danger">*</span>
+                        </label>
+                        {{ form.description_fr }}
+                        {% if form.description_fr.errors %}
+                        <div class="text-danger small">{{ form.description_fr.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description anglaise -->
+                    <div class="mb-3">
+                        <label for="{{ form.description_en.id_for_label }}" class="form-label">
+                            Description (Anglais) <span class="text-danger">*</span>
+                        </label>
+                        {{ form.description_en }}
+                        {% if form.description_en.errors %}
+                        <div class="text-danger small">{{ form.description_en.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Image -->
+                    <div class="mb-3">
+                        <label for="{{ form.image.id_for_label }}" class="form-label">Image du projet</label>
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                        <div class="text-danger small">{{ form.image.errors }}</div>
+                        {% endif %}
+                        {% if object and object.image %}
+                        <div class="mt-2">
+                            <small class="text-muted">Image actuelle :</small><br>
+                            <img src="{{ object.image.url }}" alt="{{ object.title_fr }}" class="img-thumbnail"
+                                style="max-width: 200px;">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Statut et options -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">
+                                Statut <span class="text-danger">*</span>
+                            </label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                            <div class="text-danger small">{{ form.status.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4">
+                                {{ form.is_featured }}
+                                <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                                    Projet en vedette
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Budget -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.budget_required.id_for_label }}" class="form-label">
+                                Budget requis (FCFA) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.budget_required }}
+                            {% if form.budget_required.errors %}
+                            <div class="text-danger small">{{ form.budget_required.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.budget_collected.id_for_label }}" class="form-label">
+                                Budget collecté (FCFA)
+                            </label>
+                            {{ form.budget_collected }}
+                            {% if form.budget_collected.errors %}
+                            <div class="text-danger small">{{ form.budget_collected.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.start_date.id_for_label }}" class="form-label">
+                                Date de début <span class="text-danger">*</span>
+                            </label>
+                            {{ form.start_date }}
+                            {% if form.start_date.errors %}
+                            <div class="text-danger small">{{ form.start_date.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.end_date.id_for_label }}" class="form-label">
+                                Date de fin (optionnelle)
+                            </label>
+                            {{ form.end_date }}
+                            {% if form.end_date.errors %}
+                            <div class="text-danger small">{{ form.end_date.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Boutons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'admin_projects_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            {% if object %}Modifier{% else %}Créer{% endif %} le projet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Aide -->
+        <div class="table-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Aide
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Conseils pour créer un projet :</h6>
+                <ul class="small">
+                    <li>Utilisez un titre accrocheur et descriptif</li>
+                    <li>Rédigez une description détaillée du projet</li>
+                    <li>Ajoutez une image représentative</li>
+                    <li>Définissez un budget réaliste</li>
+                    <li>Planifiez les dates de début et de fin</li>
+                </ul>
+
+                <h6 class="mt-3">Statuts disponibles :</h6>
+                <ul class="small">
+                    <li><strong>En planification :</strong> Projet en phase de conception</li>
+                    <li><strong>En cours :</strong> Projet actif</li>
+                    <li><strong>Terminé :</strong> Projet achevé</li>
+                    <li><strong>Suspendu :</strong> Projet mis en pause</li>
+                </ul>
+            </div>
+        </div>
+
+        {% if object %}
+        <!-- Statistiques du projet -->
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Statistiques
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h3 class="text-primary">{{ object.progress_percentage|floatformat:1 }}%</h3>
+                    <p class="text-muted">Progression</p>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: {{ object.progress_percentage }}%"></div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Budget collecté :</span>
+                    <strong>{{ object.budget_collected|floatformat:0 }} FCFA</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Budget requis :</span>
+                    <strong>{{ object.budget_required|floatformat:0 }} FCFA</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Reste à collecter :</span>
+                    <strong class="text-warning">
+                        {{
+                        object.budget_required|add:object.budget_collected|add:"-"|add:object.budget_collected|floatformat:0
+                        }} FCFA
+                    </strong>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Force les styles sur TOUS les inputs */
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="time"],
+    select,
+    textarea {
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        transition: all 0.3s ease !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="url"]:focus,
+    input[type="password"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    input[type="datetime-local"]:focus,
+    input[type="time"]:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #4f46e5 !important;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
+        outline: none !important;
+        transform: translateY(-1px) !important;
+    }
+
+    /* File inputs */
+    input[type="file"] {
+        border: 2px dashed #cbd5e1 !important;
+        border-radius: 12px !important;
+        padding: 20px !important;
+        background: #f8fafc !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+    }
+
+    input[type="file"]:hover {
+        border-color: #4f46e5 !important;
+        background: rgba(79, 70, 229, 0.05) !important;
+    }
+
+    /* Checkboxes */
+    input[type="checkbox"] {
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 6px !important;
+        border: 2px solid #e2e8f0 !important;
+        transition: all 0.3s ease !important;
+    }
+
+    input[type="checkbox"]:checked {
+        background-color: #4f46e5 !important;
+        border-color: #4f46e5 !important;
+    }
+
+    /* Form checks */
+    .form-check {
+        padding: 12px !important;
+        background: #f8fafc !important;
+        border-radius: 10px !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .form-check:hover {
+        background: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+    }
+
+    .form-check-label {
+        font-weight: 500 !important;
+        color: #1e293b !important;
+        margin-left: 8px !important;
+    }
+
+    /* Labels */
+    .form-label {
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        margin-bottom: 8px !important;
+        display: block !important;
+    }
+
+    /* Boutons */
+    .btn {
+        border-radius: 10px !important;
+        padding: 10px 20px !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+        color: white !important;
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid #6b7280 !important;
+        color: #6b7280 !important;
+        background: transparent !important;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Cards */
+    .table-card {
+        border-radius: 12px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+
+    .card-body {
+        padding: 1.5rem !important;
+    }
+
+    /* Text areas */
+    textarea.form-control {
+        min-height: 120px !important;
+        resize: vertical !important;
+    }
+
+    /* Progress bar */
+    .progress {
+        border-radius: 10px !important;
+        height: 12px !important;
+        background: #f1f5f9 !important;
+    }
+
+    .progress-bar {
+        border-radius: 10px !important;
+        background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+        transition: width 0.6s ease !important;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+        border-radius: 10px !important;
+        padding: 10px 15px !important;
+    }
+
+    .breadcrumb-item a {
+        color: #4f46e5 !important;
+        text-decoration: none !important;
+    }
+
+    .breadcrumb-item a:hover {
+        color: #6366f1 !important;
+    }
+
+    /* Images */
+    .img-thumbnail {
+        border-radius: 10px !important;
+        border: 2px solid #e2e8f0 !important;
+        padding: 4px !important;
+    }
+
+    /* Headers avec icônes */
+    h2 i.fas {
+        color: #4f46e5;
+        margin-right: 0.5rem;
+    }
+
+    .card-header h5 i.fas {
+        color: #6b7280;
+        margin-right: 0.5rem;
+    }
+
+    /* Statistiques styling */
+    .text-primary {
+        color: #4f46e5 !important;
+    }
+
+    /* Form sections spacing */
+    .mb-3 {
+        margin-bottom: 1.5rem !important;
+    }
+
+    /* Budget inputs avec formatage */
+    input[type="number"] {
+        font-family: 'Courier New', monospace !important;
+        font-weight: 600 !important;
+        color: #059669 !important;
+    }
+
+    /* Date inputs styling */
+    input[type="date"] {
+        font-family: inherit !important;
+        color: #1e293b !important;
+    }
+
+    /* Select dropdown */
+    select.form-control,
+    select.form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 12px center !important;
+        background-size: 16px 12px !important;
+    }
+
+    /* Error messages */
+    .text-danger.small {
+        font-size: 0.875rem !important;
+        margin-top: 0.25rem !important;
+        padding: 0.5rem 0.75rem !important;
+        background: rgba(239, 68, 68, 0.1) !important;
+        border-radius: 6px !important;
+        border-left: 3px solid #ef4444 !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem !important;
+        }
+
+        .d-flex.justify-content-between {
+            flex-direction: column !important;
+            gap: 1rem !important;
+        }
+
+        .btn-outline-secondary {
+            margin-bottom: 0.5rem !important;
+        }
+    }
+</style>
+{% endblock %}

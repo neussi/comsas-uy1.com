@@ -1,0 +1,418 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block page_title %}Tableau de Bord{% endblock %}
+{% block page_icon %}tachometer-alt{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-card {
+        background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+        border: none;
+        border-radius: 16px;
+        color: white;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .welcome-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 12px;
+        transition: transform 0.2s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+
+    .table-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card welcome-card shadow-sm">
+            <div class="card-body p-4 p-lg-5 position-relative z-1">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h2 class="display-6 fw-bold mb-2">Bienvenue, {{ user.get_full_name|default:user.username }} !
+                        </h2>
+                        <p class="lead opacity-90 mb-4">Voici un aperçu de l'activité de votre association aujourd'hui.
+                        </p>
+                        <div class="d-flex gap-3">
+                            <a href="{% url 'admin_members_list' %}"
+                                class="btn btn-light text-primary px-4 py-2 border-0 fw-bold shadow-sm">
+                                <i class="fas fa-users me-2"></i>Membres
+                            </a>
+                            <a href="{% url 'admin_events_list' %}" class="btn btn-outline-light px-4 py-2 fw-bold">
+                                <i class="fas fa-calendar-plus me-2"></i>Événements
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 d-none d-lg-block text-end">
+                        <div class="opacity-25">
+                            <i class="fas fa-chart-line fa-8x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Stats Cards -->
+<div class="row g-4 mb-4">
+    <!-- Members -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <h6 class="text-uppercase text-muted fw-bold small ls-1">Membres</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ stats.total_members }}</h2>
+                    </div>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    {% if stats.pending_members > 0 %}
+                    <span class="badge bg-warning text-dark me-2">
+                        <i class="fas fa-clock me-1"></i> {{ stats.pending_members }}
+                    </span>
+                    <span class="text-muted small">En attente</span>
+                    {% else %}
+                    <span class="text-success small fw-bold">
+                        <i class="fas fa-check-circle me-1"></i> Tout est à jour
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <h6 class="text-uppercase text-muted fw-bold small ls-1">Projets Actifs</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ stats.ongoing_projects }}</h2>
+                    </div>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                </div>
+                <span class="text-muted small">Sur {{ stats.total_projects }} projets au total</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Events -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <h6 class="text-uppercase text-muted fw-bold small ls-1">Événements</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ stats.upcoming_events }}</h2>
+                    </div>
+                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+                <span class="text-muted small">À venir prochainement</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <h6 class="text-uppercase text-muted fw-bold small ls-1">Messages</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ stats.unread_messages }}</h2>
+                    </div>
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+                {% if stats.unread_messages > 0 %}
+                <a href="{% url 'admin_messages_list' %}?status=unread"
+                    class="text-warning small fw-bold text-decoration-none">
+                    Lire maintenant <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+                {% else %}
+                <span class="text-muted small">Boîte de réception vide</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Member Growth Chart -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark">Croissance des Membres</h5>
+                <span class="badge bg-light text-dark">12 derniers mois</span>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="memberGrowthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Funding Chart -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold text-dark">Financement Projets</h5>
+            </div>
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <div style="position: relative; height: 200px; width: 200px;">
+                    <canvas id="projectFundingChart"></canvas>
+                </div>
+                <div class="mt-4 text-center">
+                    <h5 class="fw-bold mb-0 text-success">{{ financial_collected_millions|floatformat:1 }}M FCFA</h5>
+                    <small class="text-muted">Collectés sur {{ financial_required_millions|floatformat:1 }}M
+                        requis</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity & Top Events -->
+<div class="row g-4">
+    <!-- Recent Messages -->
+    <div class="col-lg-6">
+        <div class="card table-card h-100">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark">Derniers Messages</h5>
+                <a href="{% url 'admin_messages_list' %}" class="btn btn-sm btn-link text-decoration-none">Tout voir</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="ps-4 border-0">Expéditeur</th>
+                                <th class="border-0">Sujet</th>
+                                <th class="text-end pe-4 border-0">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in recent_messages %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-2"
+                                            style="width: 32px; height: 32px; font-weight: bold;">
+                                            {{ message.nom_prenom|first|default:"U" }}
+                                        </div>
+                                        <span class="fw-medium text-dark">{{ message.nom_prenom|truncatechars:15
+                                            }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted text-truncate" style="max-width: 150px;">
+                                    {{ message.sujet }}
+                                </td>
+                                <td class="text-end pe-4 small text-muted">
+                                    {{ message.created_at|date:"d M" }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-muted">Aucun message récent.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Events -->
+    <div class="col-lg-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold text-dark">Top Événements</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="topEventsChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- 1. Member Growth Chart (Line) ---
+        const ctxGrowth = document.getElementById('memberGrowthChart').getContext('2d');
+        const gradientGrowth = ctxGrowth.createLinearGradient(0, 0, 0, 400);
+        gradientGrowth.addColorStop(0, 'rgba(233, 30, 99, 0.2)');
+        gradientGrowth.addColorStop(1, 'rgba(233, 30, 99, 0)');
+
+        new Chart(ctxGrowth, {
+            type: 'line',
+            data: {
+                labels: {{ growth_labels| safe }},
+        datasets: [{
+            label: 'Nouveaux Membres',
+            data: {{ growth_values| safe }},
+        borderColor: '#E91E63',
+        backgroundColor: gradientGrowth,
+        borderWidth: 3,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#E91E63',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        fill: true,
+        tension: 0.4
+                }]
+            },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#333',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                padding: 10,
+                cornerRadius: 8
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { borderDash: [5, 5], color: '#f0f0f0' },
+                ticks: { stepSize: 1 }
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+    }
+        });
+
+    // --- 2. Project Funding Chart (Doughnut) ---
+    const ctxFunding = document.getElementById('projectFundingChart').getContext('2d');
+    new Chart(ctxFunding, {
+        type: 'doughnut',
+        data: {
+            labels: ['Collecté', 'Restant'],
+            datasets: [{
+                data: [{{ financial_collected }}, {{ financial_required }} - {{ financial_collected }}],
+        backgroundColor: ['#4CAF50', '#eceff1'],
+        borderWidth: 0,
+        hoverOffset: 4
+                }]
+            },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '75%',
+        plugins: {
+            legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        let label = context.label || '';
+                        if (label) { label += ': '; }
+                        label += context.raw.toLocaleString() + ' FCFA';
+                        return label;
+                    }
+                }
+            }
+        }
+    }
+        });
+
+    // --- 3. Top Events Chart (Bar) ---
+    const ctxEvents = document.getElementById('topEventsChart').getContext('2d');
+    new Chart(ctxEvents, {
+        type: 'bar',
+        data: {
+            labels: {{ event_labels| safe }},
+        datasets: [{
+            label: 'Inscriptions',
+            data: {{ event_values| safe }},
+        backgroundColor: '#03A9F4',
+        borderRadius: 4,
+        barThickness: 20
+                }]
+            },
+        options: {
+        responsive: true,
+        indexAxis: 'y', // Horizontal bars
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                grid: { borderDash: [5, 5], color: '#f0f0f0' },
+                ticks: { stepSize: 1 }
+            },
+            y: {
+                grid: { display: false }
+            }
+        }
+    }
+        });
+    });
+</script>
+{% endblock %}

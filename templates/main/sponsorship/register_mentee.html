@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Inscription Filleul - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light position-relative">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-muted text-decoration-none">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'sponsorship_home' %}"
+                                class="text-muted text-decoration-none">Parrainage</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Inscription Filleul</li>
+                    </ol>
+                </nav>
+
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header bg-success text-white p-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-user-graduate fa-2x me-3"></i>
+                            <div>
+                                <h3 class="mb-0 text-white fw-bold">Trouver un Parrain</h3>
+                                <p class="mb-0 opacity-75">Bénéficiez de l'expérience de vos aînés</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-5 bg-white">
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-dark mb-3">Avantages</h5>
+                            <ul class="text-muted small">
+                                <li>Recevez des conseils pour vos études et votre carrière.</li>
+                                <li>Un parrain de votre spécialité souhaitée vous sera attribué.</li>
+                                <li>Élargissez votre réseau professionnel.</li>
+                            </ul>
+                        </div>
+
+                        {% crispy form %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

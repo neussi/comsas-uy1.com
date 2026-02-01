@@ -1,0 +1,30 @@
+{% extends 'emails/base_email.html' %}
+
+{% block content %}
+<div class="text-center">
+    <h1 style="color: #E91E63;">Demande Reçue ! 📋</h1>
+    <p class="lead" style="font-size: 18px; color: #555;">Nous avons bien reçu votre inscription.</p>
+</div>
+
+<p>Bonjour <strong>{{ member.nom_prenom }}</strong>,</p>
+
+<p>Nous vous confirmons la bonne réception de votre demande d'adhésion au <strong>COMS.A.S</strong>.</p>
+
+<p>Votre dossier est actuellement en cours d'examen par notre bureau exécutif. Vous recevrez une notification par email
+    dès que votre adhésion sera validée.</p>
+
+<div class="highlight">
+    <p style="margin: 0; font-weight: bold;">Récapitulatif de vos informations :</p>
+    <ul style="text-align: left; margin-top: 10px;">
+        <li><strong>Matricule :</strong> {{ member.matricule }}</li>
+        <li><strong>Niveau :</strong> {{ member.niveau }}</li>
+        <li><strong>Téléphone :</strong> {{ member.telephone }}</li>
+    </ul>
+</div>
+
+<p>En cas de questions, n'hésitez pas à nous contacter.</p>
+
+<p>Cordialement,<br>
+    <strong>Le Bureau Exécutif</strong>
+</p>
+{% endblock %}

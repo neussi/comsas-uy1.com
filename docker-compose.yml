@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+  web:
+    build: .
+    container_name: a2elbm2_web
+    restart: always
+    ports:
+      - "8336:8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    networks:
+      - a2elbm2_network
+
+volumes:
+  static_volume:
+  media_volume:
+
+networks:
+  a2elbm2_network:
+    driver: bridge

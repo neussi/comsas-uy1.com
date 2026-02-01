@@ -1,0 +1,516 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}
+    {% if object %}Modifier le membre{% else %}Nouveau membre{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'admin_members_list' %}">Membres</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    {% if object %}Modifier{% else %}Nouveau{% endif %}
+                </li>
+            </ol>
+        </nav>
+        <h2>
+            <i class="fas fa-user me-2"></i>
+            {% if object %}Modifier le membre{% else %}Nouveau membre{% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>
+                    Informations du membre
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Informations personnelles -->
+                    <fieldset class="mb-4">
+                        <legend class="h6 text-primary">Informations personnelles</legend>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.nom_prenom.id_for_label }}" class="form-label">
+                                    Nom et Prénom <span class="text-danger">*</span>
+                                </label>
+                                {{ form.nom_prenom }}
+                                {% if form.nom_prenom.errors %}
+                                    <div class="text-danger small">{{ form.nom_prenom.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                    Email <span class="text-danger">*</span>
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.date_naissance.id_for_label }}" class="form-label">
+                                    Date de naissance <span class="text-danger">*</span>
+                                </label>
+                                {{ form.date_naissance }}
+                                {% if form.date_naissance.errors %}
+                                    <div class="text-danger small">{{ form.date_naissance.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.lieu_naissance.id_for_label }}" class="form-label">
+                                    Lieu de naissance <span class="text-danger">*</span>
+                                </label>
+                                {{ form.lieu_naissance }}
+                                {% if form.lieu_naissance.errors %}
+                                    <div class="text-danger small">{{ form.lieu_naissance.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.promotion.id_for_label }}" class="form-label">
+                                    Promotion <span class="text-danger">*</span>
+                                </label>
+                                {{ form.promotion }}
+                                {% if form.promotion.errors %}
+                                    <div class="text-danger small">{{ form.promotion.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.telephone.id_for_label }}" class="form-label">
+                                    Téléphone <span class="text-danger">*</span>
+                                </label>
+                                {{ form.telephone }}
+                                {% if form.telephone.errors %}
+                                    <div class="text-danger small">{{ form.telephone.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.profession.id_for_label }}" class="form-label">
+                                Profession <span class="text-danger">*</span>
+                            </label>
+                            {{ form.profession }}
+                            {% if form.profession.errors %}
+                                <div class="text-danger small">{{ form.profession.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.adresse.id_for_label }}" class="form-label">
+                                Adresse <span class="text-danger">*</span>
+                            </label>
+                            {{ form.adresse }}
+                            {% if form.adresse.errors %}
+                                <div class="text-danger small">{{ form.adresse.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    
+                    <!-- Statut et rôle -->
+                    <fieldset class="mb-4">
+                        <legend class="h6 text-primary">Statut et rôle</legend>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.member_type.id_for_label }}" class="form-label">
+                                    Type de membre <span class="text-danger">*</span>
+                                </label>
+                                {{ form.member_type }}
+                                {% if form.member_type.errors %}
+                                    <div class="text-danger small">{{ form.member_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mt-4">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                        Membre actif
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.poste_bureau.id_for_label }}" class="form-label">
+                                Poste au bureau (optionnel)
+                            </label>
+                            {{ form.poste_bureau }}
+                            <div class="form-text">Uniquement pour les membres du bureau</div>
+                            {% if form.poste_bureau.errors %}
+                                <div class="text-danger small">{{ form.poste_bureau.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    
+                    <!-- Photo et biographie -->
+                    <fieldset class="mb-4">
+                        <legend class="h6 text-primary">Photo et biographie</legend>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.photo.id_for_label }}" class="form-label">Photo</label>
+                            {{ form.photo }}
+                            <div class="form-text">Formats acceptés : JPG, PNG. Taille max : 2MB</div>
+                            {% if form.photo.errors %}
+                                <div class="text-danger small">{{ form.photo.errors }}</div>
+                            {% endif %}
+                            {% if object and object.photo %}
+                                <div class="mt-2">
+                                    <small class="text-muted">Photo actuelle :</small><br>
+                                    <img src="{{ object.photo.url }}" alt="{{ object.nom_prenom }}" 
+                                         class="img-thumbnail" style="max-width: 200px;">
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.bio.id_for_label }}" class="form-label">Biographie</label>
+                            {{ form.bio }}
+                            <div class="form-text">Présentation du membre (optionnel)</div>
+                            {% if form.bio.errors %}
+                                <div class="text-danger small">{{ form.bio.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    
+                    <!-- Boutons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'admin_members_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            {% if object %}Modifier{% else %}Créer{% endif %} le membre
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Aide -->
+        <div class="table-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Aide
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Types de membres :</h6>
+                <ul class="small">
+                    <li><strong>Membre Fondateur :</strong> Membre historique de l'association</li>
+                    <li><strong>Membre du Bureau :</strong> Membre avec responsabilités administratives</li>
+                    <li><strong>Conseiller :</strong> Membre consultatif</li>
+                    <li><strong>Membre Simple :</strong> Membre ordinaire</li>
+                </ul>
+                
+                <h6 class="mt-3">Champs obligatoires :</h6>
+                <ul class="small">
+                    <li>Nom et prénom</li>
+                    <li>Email (unique)</li>
+                    <li>Date et lieu de naissance</li>
+                    <li>Promotion</li>
+                    <li>Téléphone</li>
+                    <li>Profession</li>
+                    <li>Adresse</li>
+                </ul>
+                
+                <div class="alert alert-info mt-3">
+                    <small>
+                        <i class="fas fa-lightbulb me-1"></i>
+                        <strong>Conseil :</strong> Vérifiez l'email car il servira pour la connexion du membre.
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        {% if object %}
+            <!-- Informations du membre -->
+            <div class="table-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info me-2"></i>
+                        Informations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Créé le :</span>
+                        <strong>{{ object.date_adhesion|date:"d/m/Y H:i" }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Statut :</span>
+                        {% if object.is_active %}
+                            <span class="badge bg-success">Actif</span>
+                        {% else %}
+                            <span class="badge bg-warning">Inactif</span>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Type :</span>
+                        <span class="badge 
+                            {% if object.member_type == 'founder' %}bg-success
+                            {% elif object.member_type == 'bureau' %}bg-primary
+                            {% elif object.member_type == 'conseil' %}bg-info
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ object.get_member_type_display }}
+                        </span>
+                    </div>
+                    {% if object.user %}
+                        <div class="d-flex justify-content-between">
+                            <span>Compte utilisateur :</span>
+                            <span class="badge bg-success">Créé</span>
+                        </div>
+                    {% else %}
+                        <div class="d-flex justify-content-between">
+                            <span>Compte utilisateur :</span>
+                            <span class="badge bg-secondary">Non créé</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Force les styles sur TOUS les inputs */
+input[type="text"], 
+input[type="email"], 
+input[type="url"], 
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+input[type="tel"],
+select,
+textarea {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+}
+
+input[type="text"]:focus, 
+input[type="email"]:focus, 
+input[type="url"]:focus, 
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="datetime-local"]:focus,
+input[type="time"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #4f46e5 !important;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
+    outline: none !important;
+    transform: translateY(-1px) !important;
+}
+
+/* File inputs spéciaux */
+input[type="file"] {
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    background: #f8fafc !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+}
+
+input[type="file"]:hover {
+    border-color: #4f46e5 !important;
+    background: rgba(79, 70, 229, 0.05) !important;
+}
+
+/* Checkboxes */
+input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 6px !important;
+    border: 2px solid #e2e8f0 !important;
+    transition: all 0.3s ease !important;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+}
+
+/* Labels */
+.form-label {
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+}
+
+/* Fieldsets modernes */
+fieldset {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    background: #f8fafc !important;
+    margin-bottom: 1.5rem !important;
+}
+
+fieldset:hover {
+    border-color: #cbd5e1 !important;
+    background: #f1f5f9 !important;
+}
+
+legend {
+    border: none !important;
+    margin-bottom: 1rem !important;
+    font-weight: 700 !important;
+    color: #4f46e5 !important;
+    font-size: 1.1rem !important;
+    background: #ffffff !important;
+    padding: 0 12px !important;
+    border-radius: 8px !important;
+    border: 2px solid #e2e8f0 !important;
+}
+
+/* Boutons */
+.btn {
+    border-radius: 10px !important;
+    padding: 10px 20px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+    color: white !important;
+}
+
+.btn-outline-secondary {
+    border: 2px solid #6b7280 !important;
+    color: #6b7280 !important;
+    background: transparent !important;
+}
+
+.btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Cards */
+.table-card {
+    border-radius: 12px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.card-body {
+    padding: 1.5rem !important;
+}
+
+/* Text areas */
+textarea.form-control {
+    min-height: 120px !important;
+    resize: vertical !important;
+}
+
+/* Badges */
+.badge {
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    font-weight: 500 !important;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+    border-radius: 10px !important;
+    padding: 10px 15px !important;
+}
+
+.breadcrumb-item a {
+    color: #4f46e5 !important;
+    text-decoration: none !important;
+}
+
+.breadcrumb-item a:hover {
+    color: #6366f1 !important;
+}
+
+/* Form text helper */
+.form-text {
+    font-size: 12px !important;
+    color: #6b7280 !important;
+    margin-top: 4px !important;
+}
+
+/* Images */
+.img-thumbnail {
+    border-radius: 10px !important;
+    border: 2px solid #e2e8f0 !important;
+    padding: 4px !important;
+}
+
+/* Alert */
+.alert-info {
+    background: linear-gradient(135deg, #e0f2fe, #b3e5fc) !important;
+    border: 1px solid #0ea5e9 !important;
+    border-radius: 10px !important;
+    color: #0c4a6e !important;
+}
+
+/* Form check labels */
+.form-check-label {
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    margin-left: 8px !important;
+}
+
+.form-check {
+    padding: 12px !important;
+    background: #f8fafc !important;
+    border-radius: 10px !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.form-check:hover {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+}
+</style>
+{% endblock %}

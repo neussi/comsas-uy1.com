@@ -1,0 +1,32 @@
+{% extends 'emails/base_email.html' %}
+
+{% block content %}
+<div class="text-center">
+    <h1 style="color: #E91E63;">Félicitations ! 🎉</h1>
+    <p class="lead" style="font-size: 18px; color: #555;">Bienvenue dans la famille COMS.A.S</p>
+</div>
+
+<p>Bonjour <strong>{{ member.nom_prenom }}</strong>,</p>
+
+<p>Nous avons le plaisir de vous informer que votre demande d'adhésion a été <strong>validée</strong> par notre
+    administration.</p>
+
+<p>En tant que membre actif, vous avez désormais accès à tous nos services et événements exclusifs.</p>
+
+<div class="text-center">
+    <a href="{{ profile_url }}" class="btn">Voir Mon Profil Public</a>
+</div>
+
+<div class="highlight">
+    <p style="margin: 0;"><strong>ℹ️ Note pour votre Carte de Membre :</strong></p>
+    <p style="margin-top: 5px; font-size: 14px;">Votre carte de membre physique est imprimée par l'administration pour
+        éviter les contrefaçons. Veuillez vous rapprocher du bureau pour la récupérer.</p>
+</div>
+
+<p>N'hésitez pas à partager votre profil sur les réseaux sociaux et à inviter vos camarades à rejoindre le mouvement !
+</p>
+
+<p>Cordialement,<br>
+    <strong>Le Bureau Exécutif</strong>
+</p>
+{% endblock %}

@@ -1,0 +1,1090 @@
+{% extends 'base.html' %}
+
+
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Faire un Don - COMS.A.S{% endblock %}
+
+{% block content %}
+<br><br><br>
+
+<!-- Hero Section -->
+<section class="hero-donation position-relative overflow-hidden">
+    <div class="hero-bg"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center min-vh-80">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="hero-content">
+                    <div class="hero-badge mb-3">
+                        <span class="badge-premium">
+                            <i class="fas fa-heart me-2"></i>
+                            Générosité
+                        </span>
+                    </div>
+                    <h1 class="hero-title">
+                        Transformez<br>
+                        <span class="text-gradient">l'Avenir</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Votre contribution façonne l'excellence éducative de demain
+                    </p>
+                    <a href="#donation-methods" class="btn-hero-cta">
+                        <span>Faire un Don</span>
+                        <i class="fas fa-arrow-down ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="goal-visual">
+                    <div class="goal-card-premium">
+                        <div class="goal-header">
+                            <h3>Objectif 2025</h3>
+                            <div class="goal-amount">100.000 <span>FCFA</span></div>
+                        </div>
+                        <div class="progress-premium">
+                            <div class="progress-track">
+                                <div class="progress-fill" data-progress="65"></div>
+                            </div>
+                            <div class="progress-labels">
+                                <span>0</span>
+                                <span>50.000</span>
+                                <span>10.000</span>
+                            </div>
+                        </div>
+                        <div class="goal-stats">
+                            <div class="stat">
+                                <div class="stat-value">45000FCFA</div>
+                                <div class="stat-label">Collectés</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">55000FCFA</div>
+                                <div class="stat-label">Restants</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Donation Methods -->
+<section id="donation-methods" class="section-donation-methods">
+    <div class="container">
+        <div class="section-header text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title">Méthodes de Don</h2>
+            <p class="section-subtitle">Choisissez la méthode qui vous convient</p>
+        </div>
+
+        <div class="donation-grid">
+            <!-- WhatsApp Method -->
+            <div class="donation-method whatsapp" data-aos="fade-up" data-aos-delay="100">
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h3 class="method-title">WhatsApp</h3>
+                    <p class="method-subtitle">Contact direct et rapide</p>
+                    <div class="method-contact">
+                        <div class="contact-name">Tajiotio Ramces</div>
+                        <div class="contact-role">Président</div>
+                    </div>
+                    <a href="https://wa.me/237673583241?text=Bonjour, je souhaite faire un don à COMS.A.S"
+                        class="method-button whatsapp-btn" target="_blank">
+                        <span>+237 6 73 58 32 41</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- MTN Method -->
+            <div class="donation-method mtn" data-aos="fade-up" data-aos-delay="200">
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="method-title">MTN Money</h3>
+                    <p class="method-subtitle">Transfert mobile sécurisé</p>
+                    <div class="method-contact">
+                        <div class="contact-name">Tagne Kevin</div>
+                        <div class="contact-role">Trésorier</div>
+                    </div>
+                    <div class="number-display">
+                        <span class="number">683 533 430</span>
+                        <button class="copy-btn" onclick="copyNumber('683533430', 'MTN')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="method-steps">
+                        <small>*126# → Transfert</small>
+                    </div>
+                    <a href="https://wa.me/237683533430?text=Don effectué via MTN Money" class="method-button mtn-btn"
+                        target="_blank">
+                        Confirmer le Don
+                    </a>
+                </div>
+            </div>
+
+            <!-- Orange Method -->
+            <div class="donation-method orange" data-aos="fade-up" data-aos-delay="300">
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="method-title">Orange Money</h3>
+                    <p class="method-subtitle">Solution mobile fiable</p>
+                    <div class="method-contact">
+                        <div class="contact-name">Tagne Kevin</div>
+                        <div class="contact-role">Trésorier</div>
+                    </div>
+                    <div class="number-display">
+                        <span class="number">698 810 079</span>
+                        <button class="copy-btn" onclick="copyNumber('698810079', 'Orange')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="method-steps">
+                        <small>#150# → Transfert</small>
+                    </div>
+                    <a href="https://wa.me/237698810079?text=Don effectué via Orange Money"
+                        class="method-button orange-btn" target="_blank">
+                        Confirmer le Don
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Amounts -->
+        <div class="quick-amounts" data-aos="fade-up" data-aos-delay="400">
+            <h4 class="amounts-title">Montants suggérés</h4>
+            <div class="amounts-grid">
+                <button class="amount-btn" data-amount="10000">
+                    <span class="amount">10K</span>
+                    <span class="currency">FCFA</span>
+                </button>
+                <button class="amount-btn" data-amount="25000">
+                    <span class="amount">25K</span>
+                    <span class="currency">FCFA</span>
+                </button>
+                <button class="amount-btn" data-amount="50000">
+                    <span class="amount">50K</span>
+                    <span class="currency">FCFA</span>
+                </button>
+                <button class="amount-btn custom" onclick="customAmount()">
+                    <span class="amount">Autre</span>
+                    <span class="currency">montant</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Impact Section -->
+<section class="section-impact">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="impact-content">
+                    <h2 class="impact-title">Impact de vos Dons</h2>
+                    <p class="impact-description">
+                        Chaque contribution transforme directement la vie de nos élèves et améliore leur environnement
+                        d'apprentissage.
+                    </p>
+                    <div class="impact-stats">
+                        <div class="impact-stat">
+                            <div class="stat-number" data-target="500">0</div>
+                            <div class="stat-text">Élèves Aidés</div>
+                        </div>
+                        <div class="impact-stat">
+                            <div class="stat-number" data-target="15">0</div>
+                            <div class="stat-text">Projets Financés</div>
+                        </div>
+                        <div class="impact-stat">
+                            <div class="stat-number" data-target="50">0</div>
+                            <div class="stat-text">Millions Collectés</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="quote-icon">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <p class="testimonial-text">
+                            "Grâce à votre soutien, j'ai pu poursuivre mes études et devenir ingénieur. Aujourd'hui, je
+                            contribue à mon tour pour aider d'autres élèves."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-info">
+                                <div class="author-name">Jean-Pierre K.</div>
+                                <div class="author-role">Ancien Bénéficiaire</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final CTA -->
+<section class="section-final-cta">
+    <div class="container text-center">
+        <div class="cta-content" data-aos="zoom-in">
+            <h2 class="cta-title">Rejoignez Notre Mission</h2>
+            <p class="cta-subtitle">Ensemble, construisons l'avenir de l'éducation</p>
+            <a href="#donation-methods" class="btn-final-cta">
+                <span>Faire un Don Maintenant</span>
+                <i class="fas fa-heart ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: var(--gradient-primary);
+        --secondary-gradient: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        --accent-gradient: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+        --whatsapp-color: #25D366;
+        --mtn-color: #FFCC00;
+        --orange-color: #FF6600;
+        --glass-effect: rgba(255, 255, 255, 0.1);
+        --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Hero Section */
+    .hero-donation {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        background: var(--primary-gradient);
+    }
+
+    .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .min-vh-80 {
+        min-height: 80vh;
+    }
+
+    .hero-badge .badge-premium {
+        background: var(--glass-effect);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 700;
+        color: white;
+        margin: 1.5rem 0;
+        line-height: 1.2;
+    }
+
+    .text-gradient {
+        background: var(--secondary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .btn-hero-cta {
+        background: white;
+        color: var(--primary-color);
+        padding: 15px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-premium);
+    }
+
+    .btn-hero-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+        color: var(--primary-color);
+    }
+
+    /* Goal Visual */
+    .goal-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .goal-card-premium {
+        background: var(--glass-effect);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 24px;
+        padding: 2rem;
+        color: white;
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .goal-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .goal-header h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .goal-amount {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #FFD700;
+    }
+
+    .goal-amount span {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .progress-premium {
+        margin: 2rem 0;
+    }
+
+    .progress-track {
+        height: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--secondary-gradient);
+        border-radius: 10px;
+        transition: width 2s ease;
+        position: relative;
+    }
+
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    .progress-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .goal-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .stat {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #FFD700;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 0.25rem;
+    }
+
+    /* Donation Methods Section */
+    .section-donation-methods {
+        padding: 5rem 0;
+        background: #f8f9fa;
+    }
+
+    .section-header .section-title {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .donation-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .donation-method {
+        position: relative;
+    }
+
+    .method-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-premium);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .method-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .whatsapp .method-card:hover {
+        border-color: var(--whatsapp-color);
+    }
+
+    .mtn .method-card:hover {
+        border-color: var(--mtn-color);
+    }
+
+    .orange .method-card:hover {
+        border-color: var(--orange-color);
+    }
+
+    .method-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 2rem;
+        color: white;
+    }
+
+    .whatsapp .method-icon {
+        background: var(--whatsapp-color);
+    }
+
+    .mtn .method-icon {
+        background: var(--mtn-color);
+        color: #333;
+    }
+
+    .orange .method-icon {
+        background: var(--orange-color);
+    }
+
+    .method-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .method-subtitle {
+        color: #666;
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .method-contact {
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .contact-role {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+    .number-display {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .number {
+        font-family: 'Courier New', monospace;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .copy-btn {
+        background: none;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+        background: #e9ecef;
+    }
+
+    .copy-btn.copied {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .method-steps {
+        color: #666;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .method-button {
+        background: var(--primary-color);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        margin-top: auto;
+    }
+
+    .whatsapp-btn {
+        background: var(--whatsapp-color);
+    }
+
+    .mtn-btn {
+        background: var(--mtn-color);
+        color: #333;
+    }
+
+    .orange-btn {
+        background: var(--orange-color);
+    }
+
+    .method-button:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .mtn-btn:hover {
+        color: #333;
+    }
+
+    /* Quick Amounts */
+    .quick-amounts {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .amounts-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 2rem;
+    }
+
+    .amounts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .amount-btn {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 16px;
+        padding: 1.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .amount-btn:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .amount-btn.custom {
+        border-color: #FFD700;
+    }
+
+    .amount-btn.custom:hover {
+        border-color: #FFD700;
+        background: #FFD700;
+        color: #333;
+    }
+
+    .amount {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .currency {
+        display: block;
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 0.25rem;
+    }
+
+    /* Impact Section */
+    .section-impact {
+        padding: 5rem 0;
+        background: white;
+    }
+
+    .impact-title {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .impact-description {
+        font-size: 1.1rem;
+        color: #666;
+        line-height: 1.7;
+        margin-bottom: 3rem;
+    }
+
+    .impact-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 2rem;
+    }
+
+    .impact-stat {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: block;
+    }
+
+    .stat-text {
+        color: #666;
+        font-weight: 500;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Testimonial */
+    .testimonial-card {
+        background: var(--primary-gradient);
+        border-radius: 20px;
+        padding: 2.5rem;
+        color: white;
+        position: relative;
+    }
+
+    .quote-icon {
+        font-size: 3rem;
+        color: rgba(255, 255, 255, 0.2);
+        margin-bottom: 1rem;
+    }
+
+    .testimonial-text {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        font-style: italic;
+    }
+
+    .author-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .author-role {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Final CTA */
+    .section-final-cta {
+        padding: 5rem 0;
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    .cta-title {
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .cta-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-final-cta {
+        background: var(--secondary-gradient);
+        color: #2C5530;
+        padding: 15px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-premium);
+    }
+
+    .btn-final-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+        color: #2C5530;
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+        .hero-donation {
+            padding: 2rem 0;
+            min-height: 90vh;
+        }
+
+        .goal-card-premium {
+            margin-top: 2rem;
+            padding: 1.5rem;
+        }
+
+        .donation-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .amounts-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .impact-stats {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .section-donation-methods,
+        .section-impact,
+        .section-final-cta {
+            padding: 3rem 0;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .method-card {
+            padding: 1.5rem;
+        }
+
+        .goal-card-premium {
+            padding: 1.25rem;
+        }
+
+        .goal-amount {
+            font-size: 2rem;
+        }
+
+        .amounts-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .testimonial-card {
+            padding: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Progress bar animation
+        const progressFill = document.querySelector('.progress-fill');
+        if (progressFill) {
+            const progress = progressFill.getAttribute('data-progress');
+            setTimeout(() => {
+                progressFill.style.width = progress + '%';
+            }, 500);
+        }
+
+        // Counter animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number[data-target]');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                        entry.target.classList.add('animated');
+                        animateCounter(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            counters.forEach(counter => observer.observe(counter));
+        }
+
+        function animateCounter(counter) {
+            const target = parseInt(counter.getAttribute('data-target'));
+            const duration = 2000;
+            const increment = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += increment;
+                counter.textContent = Math.floor(current);
+
+                if (current >= target) {
+                    counter.textContent = target;
+                    clearInterval(timer);
+                }
+            }, 16);
+        }
+
+        // Amount buttons functionality
+        const amountButtons = document.querySelectorAll('.amount-btn[data-amount]');
+        amountButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const amount = this.getAttribute('data-amount');
+                const formattedAmount = parseInt(amount).toLocaleString();
+                const message = `Bonjour, je souhaite faire un don de ${formattedAmount} FCFA à l'association COMS.A.S.`;
+                window.open(`https://wa.me/237673583241?text=${encodeURIComponent(message)}`, '_blank');
+            });
+        });
+
+        // Initialize animations
+        animateCounters();
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80; // Navbar height
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
+
+    // Copy number function
+    function copyNumber(number, type) {
+        navigator.clipboard.writeText(number).then(() => {
+            const button = event.target.closest('.copy-btn');
+            const originalContent = button.innerHTML;
+
+            button.classList.add('copied');
+            button.innerHTML = '<i class="fas fa-check"></i>';
+
+            // Show toast
+            showToast(`Numéro ${type} copié avec succès !`, 'success');
+
+            setTimeout(() => {
+                button.classList.remove('copied');
+                button.innerHTML = originalContent;
+            }, 2000);
+        }).catch(() => {
+            showToast('Erreur lors de la copie', 'error');
+        });
+    }
+
+    // Custom amount function
+    function customAmount() {
+        const amount = prompt('Entrez le montant de votre don (en FCFA) :');
+        if (amount && !isNaN(amount) && parseInt(amount) > 0) {
+            const formattedAmount = parseInt(amount).toLocaleString();
+            const message = `Bonjour, je souhaite faire un don de ${formattedAmount} FCFA à l'association COMS.A.S.`;
+            window.open(`https://wa.me/237673583241?text=${encodeURIComponent(message)}`, '_blank');
+        }
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification toast-${type}`;
+        toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        z-index: 9999;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        font-weight: 500;
+        max-width: 300px;
+    `;
+
+        const icon = type === 'success' ? 'fas fa-check-circle' :
+            type === 'error' ? 'fas fa-exclamation-circle' :
+                'fas fa-info-circle';
+
+        toast.innerHTML = `<i class="${icon} me-2"></i>${message}`;
+
+        document.body.appendChild(toast);
+
+        // Animate in
+        setTimeout(() => {
+            toast.style.transform = 'translateX(0)';
+        }, 100);
+
+        // Auto remove
+        setTimeout(() => {
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Enhanced hover effects
+    document.querySelectorAll('.method-card').forEach(card => {
+        card.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+
+        card.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+
+    // Parallax effect for hero background
+    window.addEventListener('scroll', function () {
+        const scrolled = window.pageYOffset;
+        const heroBackground = document.querySelector('.hero-bg');
+
+        if (heroBackground && window.innerWidth > 768) {
+            heroBackground.style.transform = `translateY(${scrolled * 0.3}px)`;
+        }
+    });
+
+    // Loading states for external links
+    document.querySelectorAll('a[target="_blank"]').forEach(link => {
+        link.addEventListener('click', function () {
+            const button = this;
+            const originalText = button.innerHTML;
+
+            if (button.classList.contains('method-button')) {
+                button.style.pointerEvents = 'none';
+                button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Redirection...';
+
+                setTimeout(() => {
+                    button.style.pointerEvents = 'auto';
+                    button.innerHTML = originalText;
+                }, 2000);
+            }
+        });
+    });
+
+    // Progressive enhancement for older browsers
+    if (!window.IntersectionObserver) {
+        // Fallback for counter animation
+        setTimeout(() => {
+            document.querySelectorAll('.stat-number[data-target]').forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                counter.textContent = target;
+            });
+        }, 1000);
+    }
+</script>
+{% endblock %}

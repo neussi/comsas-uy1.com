@@ -1,0 +1,138 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Gestion des Binômes{% endblock %}
+
+{% block content %}
+<!-- FIXED -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'admin_sponsorship_home' %}"
+                        class="text-decoration-none text-muted">Parrainage</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Binômes</li>
+            </ol>
+        </nav>
+        <h2 class="mt-2">
+            <i class="fas fa-link me-2 text-primary"></i>
+            Liste des Binômes
+        </h2>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'admin_sponsorship_export_csv' %}" class="btn btn-outline-success">
+            <i class="fas fa-file-csv me-1"></i>
+            CSV
+        </a>
+        <a href="{% url 'admin_sponsorship_export_excel' %}" class="btn btn-success">
+            <i class="fas fa-file-excel me-1"></i>
+            Excel
+        </a>
+    </div>
+</div>
+
+<!-- Matches List -->
+<div class="table-card">
+    <div class="card-header">
+        <h5 class="mb-0">Binômes formés ({{ matches_page.paginator.count }})</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Date de création</th>
+                        <th>Parrain</th>
+                        <th>Filleul</th>
+                        <th>Session</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in matches_page.object_list %}
+                    <tr>
+                        <td class="ps-4">{{ match.created_at|date:"d/m/Y" }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2 text-primary d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">{{ match.mentor.first_name }} {{ match.mentor.last_name
+                                        }}</strong>
+                                    <small class="text-muted">{{ match.mentor.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info bg-opacity-10 rounded-circle p-2 me-2 text-info d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">{{ match.mentee.first_name }} {{ match.mentee.last_name
+                                        }}</strong>
+                                    <small class="text-muted">{{ match.mentee.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">{{ match.session.name }}</span></td>
+                        <td>
+                            {% if match.is_active %}
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Actif</span>
+                            {% else %}
+                            <span
+                                class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3">Inactif</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="opacity-25 mb-3">
+                                <i class="fas fa-unlink fa-3x"></i>
+                            </div>
+                            <p class="text-muted">Aucun binôme formé pour le moment.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if matches_page.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if matches_page.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ matches_page.previous_page_number }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in matches_page.paginator.page_range %}
+        {% if matches_page.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > matches_page.number|add:'-3' and num < matches_page.number|add:'3' %} <li class="page-item">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if matches_page.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ matches_page.next_page_number }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

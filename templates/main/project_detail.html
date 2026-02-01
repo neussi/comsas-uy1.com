@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}{{ project.title_fr }} - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-white position-relative overflow-hidden">
+    <!-- Background Decor -->
+    <div class="position-absolute top-0 start-0 w-100 h-100">
+        <div class="position-absolute top-0 end-0 bg-primary bg-opacity-10 rounded-circle translate-middle-y"
+            style="width: 300px; height: 300px; opacity: 0.5;"></div>
+        <div class="position-absolute bottom-0 start-0 bg-secondary bg-opacity-10 rounded-circle translate-middle-x"
+            style="width: 200px; height: 200px; opacity: 0.5;"></div>
+    </div>
+
+    <div class="container py-4 position-relative z-1">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                        class="text-muted text-decoration-none">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects' %}"
+                        class="text-muted text-decoration-none">Projets</a></li>
+                <li class="breadcrumb-item active text-dark" aria-current="page">{{ project.title_fr|truncatechars:20 }}
+                </li>
+            </ol>
+        </nav>
+
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <div class="mb-4">
+                    {% if project.status == 'ongoing' %}
+                    <span
+                        class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill mb-3">En
+                        Cours</span>
+                    {% elif project.status == 'planning' %}
+                    <span
+                        class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill mb-3">En
+                        Planification</span>
+                    {% else %}
+                    <span
+                        class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill mb-3">Terminé</span>
+                    {% endif %}
+
+                    <h1 class="display-4 fw-bold mb-4 text-dark">{{ project.title_fr }}</h1>
+                </div>
+
+                {% if project.image %}
+                <div class="mb-5 rounded-4 overflow-hidden shadow-lg position-relative">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-10"></div>
+                    <img src="{{ project.image.url }}" alt="{{ project.title_fr }}" class="img-fluid w-100">
+                </div>
+                {% endif %}
+
+                <div class="content-rich fs-5 text-muted mb-5 lh-lg">
+                    {{ project.description_fr|safe }}
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4 position-sticky" style="top: 100px;">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3">
+                            <i class="fas fa-info-circle fa-lg"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0">Détails Projet</h4>
+                    </div>
+
+                    <div class="mb-4 pt-3 border-top">
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="fas fa-coins text-warning me-2"></i>
+                            <small class="text-muted fw-bold">Budget</small>
+                        </div>
+                        <span class="fs-5 fw-medium">{{ project.budget_required|default:"Non spécifié" }} FCFA</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="fas fa-user-tie text-primary me-2"></i>
+                            <small class="text-muted fw-bold">Responsable</small>
+                        </div>
+                        <span class="fw-medium">{{ project.manager|default:"Bureau Exécutif" }}</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="fas fa-calendar-alt text-success me-2"></i>
+                            <small class="text-muted fw-bold">Période</small>
+                        </div>
+                        <span class="fw-medium">
+                            {{ project.start_date|date:"d M Y" }} -
+                            {% if project.end_date %}
+                            {{ project.end_date|date:"d M Y" }}
+                            {% else %}
+                            <span class="text-primary">En cours</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <a href="{% url 'donations' %}" class="btn btn-primary w-100 rounded-pill btn-lg mb-3 fw-bold">
+                        <i class="fas fa-hand-holding-heart me-2"></i>Soutenir ce projet
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

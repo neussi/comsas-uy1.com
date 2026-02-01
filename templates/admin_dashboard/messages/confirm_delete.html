@@ -1,0 +1,125 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Supprimer le message{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'admin_messages_list' %}">Messages</a>
+                </li>
+                <li class="breadcrumb-item active">Supprimer</li>
+            </ol>
+        </nav>
+        <h2>
+            <i class="fas fa-trash me-2 text-danger"></i>
+            Supprimer le message
+        </h2>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="table-card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmation de suppression
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-warning me-1"></i>
+                        Attention !
+                    </h6>
+                    Vous êtes sur le point de supprimer définitivement ce message. Cette action est irréversible.
+                </div>
+                
+                <!-- Aperçu du message à supprimer -->
+                <div class="row mb-4">
+                    <div class="col-md-3 text-center">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                        <h6>{{ message.nom_prenom }}</h6>
+                        
+                        <div class="mt-2">
+                            {% if message.is_read %}
+                                <span class="badge bg-success">Lu</span>
+                            {% else %}
+                                <span class="badge bg-warning">Non lu</span>
+                            {% endif %}
+                            
+                            {% if message.is_replied %}
+                                <br><span class="badge bg-info mt-1">Répondu</span>
+                            {% else %}
+                                <br><span class="badge bg-secondary mt-1">Non répondu</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h4>{{ message.sujet }}</h4>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <p><strong>Expéditeur :</strong> {{ message.nom_prenom }}</p>
+                                <p><strong>Email :</strong> {{ message.email }}</p>
+                                {% if message.telephone %}
+                                    <p><strong>Téléphone :</strong> {{ message.telephone }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-6">
+                                <p><strong>Date de réception :</strong> {{ message.created_at|date:"d/m/Y à H:i" }}</p>
+                                <p><strong>Statut de lecture :</strong> 
+                                    {% if message.is_read %}Lu{% else %}Non lu{% endif %}
+                                </p>
+                                <p><strong>Statut de réponse :</strong> 
+                                    {% if message.is_replied %}Répondu{% else %}Non répondu{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="message-content">
+                            <h6>Message :</h6>
+                            <div class="border rounded p-3 bg-light">
+                                {{ message.message|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'admin_messages_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Annuler
+                        </a>
+                        <div>
+                            <a href="{% url 'admin_message_detail' message.pk %}" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-eye me-1"></i>
+                                Voir le message
+                            </a>
+                            <a href="mailto:{{ message.email }}?subject=Re: {{ message.sujet }}" class="btn btn-outline-success me-2">
+                                <i class="fas fa-reply me-1"></i>
+                                Répondre par email
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>
+                                Oui, supprimer définitivement
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

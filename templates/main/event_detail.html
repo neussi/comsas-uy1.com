@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ event.title_fr }} - COMS.A.S{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<!-- Hero Section -->
+<section class="py-5 bg-white position-relative overflow-hidden">
+    <div class="container position-relative z-1 py-4">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                        class="text-muted text-decoration-none">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'events' %}"
+                        class="text-muted text-decoration-none">Événements</a></li>
+                <li class="breadcrumb-item active text-dark" aria-current="page">{{ event.title_fr|truncatechars:30 }}
+                </li>
+            </ol>
+        </nav>
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="mb-3">
+                    {% if event.date_event > now %}
+                    <span
+                        class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill">
+                        <i class="fas fa-calendar-plus me-1"></i> À Venir
+                    </span>
+                    {% else %}
+                    <span
+                        class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-3 py-2 rounded-pill">
+                        <i class="fas fa-check me-1"></i> Passé
+                    </span>
+                    {% endif %}
+                </div>
+                <h1 class="display-4 fw-bold mb-4 text-dark">{{ event.title_fr }}</h1>
+                <p class="lead text-muted">{{ event.description_fr|striptags|truncatewords:25 }}</p>
+                <div class="mt-4 d-flex flex-wrap gap-4 align-items-center text-muted">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle bg-primary bg-opacity-10 text-primary me-2 p-2 rounded-circle">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <span>{{ event.date_event|date:"d F Y" }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle bg-primary bg-opacity-10 text-primary me-2 p-2 rounded-circle">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <span>{{ event.date_event|time:"H:i" }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle bg-primary bg-opacity-10 text-primary me-2 p-2 rounded-circle">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <span>{{ event.location }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center ps-lg-5">
+                {% if event.image %}
+                <img src="{{ event.image.url }}" alt="{{ event.title_fr }}"
+                    class="img-fluid rounded-4 shadow-lg rotate-hover" style="max-height: 350px;">
+                {% else %}
+                <div class="bg-light rounded-4 d-flex align-items-center justify-content-center shadow-sm p-5"
+                    style="height: 300px;">
+                    <i class="fas fa-calendar-alt fa-5x text-primary opacity-25"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Content Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
+                    <h3 class="fw-bold mb-4 text-primary">À propos de cet événement</h3>
+                    <div class="event-description">
+                        {{ event.description_fr|safe }}
+                    </div>
+                </div>
+
+                <!-- Registration Form -->
+                {% if can_register %}
+                <div id="registration-form"
+                    class="card border-0 shadow-sm rounded-4 p-4 bg-white border-top border-5 border-warning">
+                    <h3 class="fw-bold mb-4">Inscription</h3>
+                    <p class="text-muted mb-4">Remplissez le formulaire ci-dessous pour participer.</p>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 mt-3 fw-bold">Confirmer
+                            l'inscription</button>
+                    </form>
+                </div>
+                {% elif event.date_event > now %}
+                <div class="alert alert-info rounded-4 shadow-sm border-0">
+                    <i class="fas fa-info-circle me-2"></i> Les inscriptions pour cet événement ne sont plus ouvertes.
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Info Card -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Détails Pratiques</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3 d-flex align-items-center">
+                            <div class="bg-light rounded-circle p-2 me-3 text-primary"><i class="fas fa-calendar"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Date</small>
+                                <strong>{{ event.date_event|date:"l d F Y" }}</strong>
+                            </div>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center">
+                            <div class="bg-light rounded-circle p-2 me-3 text-primary"><i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Heure</small>
+                                <strong>{{ event.date_event|time:"H:i" }}</strong>
+                            </div>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center">
+                            <div class="bg-light rounded-circle p-2 me-3 text-primary"><i
+                                    class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <small class="text-muted d-block">Lieu</small>
+                                <strong>{{ event.location }}</strong>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <div class="bg-light rounded-circle p-2 me-3 text-warning"><i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Participants</small>
+                                <strong>{{ event.registered_count|default:"0" }} inscrits</strong>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Share -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white">
+                    <h6 class="fw-bold mb-3">Partager cet événement</h6>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-circle"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-sm btn-outline-info rounded-circle"><i
+                                class="fab fa-twitter"></i></a>
+                        <a href="#" class="btn btn-sm btn-outline-success rounded-circle"><i
+                                class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Gestion des Filleuls{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'admin_sponsorship_home' %}"
+                        class="text-decoration-none text-muted">Parrainage</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Filleuls</li>
+            </ol>
+        </nav>
+        <h2 class="mt-2">
+            <i class="fas fa-user-graduate me-2 text-primary"></i>
+            Liste des Filleuls
+        </h2>
+    </div>
+    <a href="{% url 'register_mentee' %}" target="_blank" class="btn btn-primary shadow-sm">
+        <i class="fas fa-plus me-1"></i>
+        Nouveau Filleul (Public)
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="table-card mb-4">
+    <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0 text-muted"><i class="fas fa-filter me-2"></i>Filtres</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="specialty" class="form-label small text-uppercase fw-bold text-muted">Spécialité
+                    visée</label>
+                <select class="form-select" id="specialty" name="specialty" onchange="this.form.submit()">
+                    <option value="">Toutes les spécialités</option>
+                    {% for value, label in specialties %}
+                    <option value="{{ value }}" {% if current_specialty == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="unmatched" name="unmatched" value="true" {% if
+                        unmatched_only %}checked{% endif %} onchange="this.form.submit()">
+                    <label class="form-check-label" for="unmatched">
+                        Afficher uniquement sans parrain
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'admin_sponsorship_mentees' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-undo me-1"></i> Réinitialiser
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Mentees List -->
+<div class="table-card">
+    <div class="card-header">
+        <h5 class="mb-0">Filleuls inscrits ({{ mentees_page.paginator.count }})</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Nom & Prénom</th>
+                        <th>Coordonnées</th>
+                        <th>Niveau</th>
+                        <th>Spécialité Visée</th>
+                        <th>Parrain</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mentee in mentees_page.object_list %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold">{{ mentee.first_name }} {{ mentee.last_name }}</div>
+                            <span class="badge bg-light text-muted border mt-1">{{ mentee.session.name }}</span>
+                        </td>
+                        <td>
+                            <div class="small"><i class="fas fa-envelope me-2 text-muted" style="width: 16px;"></i>{{
+                                mentee.email }}</div>
+                            <div class="small mt-1"><i class="fas fa-phone me-2 text-muted" style="width: 16px;"></i>{{
+                                mentee.phone }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ mentee.get_level_display }}</span>
+                        </td>
+                        <td>
+                            <span
+                                class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">
+                                {{ mentee.get_desired_specialty_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if mentee.mentor %}
+                            <div class="d-flex align-items-center text-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <span class="fw-medium">{{ mentee.mentor.first_name }} {{ mentee.mentor.last_name
+                                    }}</span>
+                            </div>
+                            {% else %}
+                            <span
+                                class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3">
+                                <i class="fas fa-clock me-1"></i> En attente
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="opacity-25 mb-3">
+                                <i class="fas fa-user-slash fa-3x"></i>
+                            </div>
+                            <p class="text-muted">Aucun filleul trouvé.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if mentees_page.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if mentees_page.has_previous %}
+        <li class="page-item">
+            <a class="page-link"
+                href="?page={{ mentees_page.previous_page_number }}{% if current_specialty %}&specialty={{ current_specialty }}{% endif %}{% if unmatched_only %}&unmatched=true{% endif %}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in mentees_page.paginator.page_range %}
+        {% if mentees_page.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > mentees_page.number|add:'-3' and num < mentees_page.number|add:'3' %} <li class="page-item">
+            <a class="page-link"
+                href="?page={{ num }}{% if current_specialty %}&specialty={{ current_specialty }}{% endif %}{% if unmatched_only %}&unmatched=true{% endif %}">
+                {{ num }}
+            </a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if mentees_page.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ mentees_page.next_page_number }}{% if current_specialty %}&specialty={{ current_specialty }}{% endif %}{% if unmatched_only %}&unmatched=true{% endif %}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

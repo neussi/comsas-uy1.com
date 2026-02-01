@@ -1,0 +1,450 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}
+{% if object %}Modifier l'événement{% else %}Nouvel événement{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'admin_events_list' %}">Événements</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    {% if object %}Modifier{% else %}Nouveau{% endif %}
+                </li>
+            </ol>
+        </nav>
+        <h2>
+            <i class="fas fa-calendar me-2"></i>
+            {% if object %}Modifier l'événement{% else %}Nouvel événement{% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>
+                    Informations de l'événement
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.media }}
+
+                    <!-- Titres -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.title_fr.id_for_label }}" class="form-label">
+                                Titre (Français) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title_fr }}
+                            {% if form.title_fr.errors %}
+                            <div class="text-danger small">{{ form.title_fr.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.title_en.id_for_label }}" class="form-label">
+                                Titre (Anglais) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title_en }}
+                            {% if form.title_en.errors %}
+                            <div class="text-danger small">{{ form.title_en.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Description française -->
+                    <div class="mb-3">
+                        <label for="{{ form.description_fr.id_for_label }}" class="form-label">
+                            Description (Français) <span class="text-danger">*</span>
+                        </label>
+                        {{ form.description_fr }}
+                        {% if form.description_fr.errors %}
+                        <div class="text-danger small">{{ form.description_fr.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description anglaise -->
+                    <div class="mb-3">
+                        <label for="{{ form.description_en.id_for_label }}" class="form-label">
+                            Description (Anglais) <span class="text-danger">*</span>
+                        </label>
+                        {{ form.description_en }}
+                        {% if form.description_en.errors %}
+                        <div class="text-danger small">{{ form.description_en.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Image -->
+                    <div class="mb-3">
+                        <label for="{{ form.image.id_for_label }}" class="form-label">Image de l'événement</label>
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                        <div class="text-danger small">{{ form.image.errors }}</div>
+                        {% endif %}
+                        {% if object and object.image %}
+                        <div class="mt-2">
+                            <small class="text-muted">Image actuelle :</small><br>
+                            <img src="{{ object.image.url }}" alt="{{ object.title_fr }}" class="img-thumbnail"
+                                style="max-width: 200px;">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Date et lieu -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.date_event.id_for_label }}" class="form-label">
+                                Date et heure de l'événement <span class="text-danger">*</span>
+                            </label>
+                            {{ form.date_event }}
+                            {% if form.date_event.errors %}
+                            <div class="text-danger small">{{ form.date_event.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.location.id_for_label }}" class="form-label">
+                                Lieu <span class="text-danger">*</span>
+                            </label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                            <div class="text-danger small">{{ form.location.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Participants et inscription -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.max_participants.id_for_label }}" class="form-label">
+                                Nombre maximum de participants
+                            </label>
+                            {{ form.max_participants }}
+                            <small class="form-text text-muted">Laissez vide pour un nombre illimité</small>
+                            {% if form.max_participants.errors %}
+                            <div class="text-danger small">{{ form.max_participants.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.registration_deadline.id_for_label }}" class="form-label">
+                                Date limite d'inscription <span class="text-danger">*</span>
+                            </label>
+                            {{ form.registration_deadline }}
+                            {% if form.registration_deadline.errors %}
+                            <div class="text-danger small">{{ form.registration_deadline.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ form.is_featured }}
+                                <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                                    Événement en vedette
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Événement actif
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Boutons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'admin_events_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            {% if object %}Modifier{% else %}Créer{% endif %} l'événement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Aide -->
+        <div class="table-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Aide
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Conseils pour créer un événement :</h6>
+                <ul class="small">
+                    <li>Choisissez un titre attractif et descriptif</li>
+                    <li>Précisez le lieu exact de l'événement</li>
+                    <li>Définissez une date limite d'inscription</li>
+                    <li>Limitez le nombre de participants si nécessaire</li>
+                    <li>Ajoutez une image représentative</li>
+                </ul>
+
+                <h6 class="mt-3">Options disponibles :</h6>
+                <ul class="small">
+                    <li><strong>En vedette :</strong> L'événement apparaîtra en première position</li>
+                    <li><strong>Actif :</strong> Les inscriptions sont ouvertes</li>
+                    <li><strong>Participants illimités :</strong> Laissez le champ vide</li>
+                </ul>
+            </div>
+        </div>
+
+        {% if object %}
+        <!-- Statistiques de l'événement -->
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Statistiques
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h3 class="text-primary">{{ object.registered_count }}</h3>
+                    <p class="text-muted">Inscriptions confirmées</p>
+                    {% if object.max_participants %}
+                    <div class="progress">
+                        {% widthratio object.registered_count object.max_participants 100 as percentage %}
+                        <div class="progress-bar 
+                                    {% if percentage >= 90 %}bg-danger
+                                    {% elif percentage >= 75 %}bg-warning
+                                    {% else %}bg-success
+                                    {% endif %}" style="width: {{ percentage }}%">
+                            {{ percentage }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ object.registered_count }} / {{ object.max_participants }}
+                        places</small>
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Date événement :</span>
+                    <strong>{{ object.date_event|date:"d/m/Y H:i" }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Limite inscription :</span>
+                    <strong>{{ object.registration_deadline|date:"d/m/Y H:i" }}</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Statut :</span>
+                    {% if object.is_registration_open %}
+                    <span class="badge bg-success">Ouvert</span>
+                    {% else %}
+                    <span class="badge bg-danger">Fermé</span>
+                    {% endif %}
+                </div>
+
+                {% if object.registered_count > 0 %}
+                <hr>
+                <a href="{% url 'admin_event_registrations' object.pk %}" class="btn btn-outline-info w-100">
+                    <i class="fas fa-users me-1"></i>
+                    Voir les inscriptions
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Force les styles sur TOUS les inputs */
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="time"],
+    select,
+    textarea {
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        transition: all 0.3s ease !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="url"]:focus,
+    input[type="password"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    input[type="datetime-local"]:focus,
+    input[type="time"]:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #4f46e5 !important;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
+        outline: none !important;
+        transform: translateY(-1px) !important;
+    }
+
+    /* File inputs spéciaux */
+    input[type="file"] {
+        border: 2px dashed #cbd5e1 !important;
+        border-radius: 12px !important;
+        padding: 20px !important;
+        background: #f8fafc !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+    }
+
+    input[type="file"]:hover {
+        border-color: #4f46e5 !important;
+        background: rgba(79, 70, 229, 0.05) !important;
+    }
+
+    /* Checkboxes */
+    input[type="checkbox"] {
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 6px !important;
+        border: 2px solid #e2e8f0 !important;
+        transition: all 0.3s ease !important;
+    }
+
+    input[type="checkbox"]:checked {
+        background-color: #4f46e5 !important;
+        border-color: #4f46e5 !important;
+    }
+
+    /* Labels */
+    .form-label {
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        margin-bottom: 8px !important;
+        display: block !important;
+    }
+
+    /* Boutons */
+    .btn {
+        border-radius: 10px !important;
+        padding: 10px 20px !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+        border: none !important;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+        color: white !important;
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid #6b7280 !important;
+        color: #6b7280 !important;
+        background: transparent !important;
+    }
+
+    .btn-outline-info {
+        border: 2px solid #0ea5e9 !important;
+        color: #0ea5e9 !important;
+        background: transparent !important;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Cards */
+    .table-card {
+        border-radius: 12px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+
+    .card-body {
+        padding: 1.5rem !important;
+    }
+
+    /* Text areas */
+    textarea.form-control {
+        min-height: 120px !important;
+        resize: vertical !important;
+    }
+
+    /* Progress bar */
+    .progress {
+        border-radius: 10px !important;
+        height: 10px !important;
+    }
+
+    .progress-bar {
+        border-radius: 10px !important;
+    }
+
+    /* Badges */
+    .badge {
+        border-radius: 8px !important;
+        padding: 6px 12px !important;
+        font-weight: 500 !important;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+        border-radius: 10px !important;
+        padding: 10px 15px !important;
+    }
+
+    .breadcrumb-item a {
+        color: #4f46e5 !important;
+        text-decoration: none !important;
+    }
+
+    .breadcrumb-item a:hover {
+        color: #6366f1 !important;
+    }
+
+    /* Form text helper */
+    .form-text {
+        font-size: 12px !important;
+        color: #6b7280 !important;
+        margin-top: 4px !important;
+    }
+
+    /* Images */
+    .img-thumbnail {
+        border-radius: 10px !important;
+        border: 2px solid #e2e8f0 !important;
+        padding: 4px !important;
+    }
+</style>
+{% endblock %}

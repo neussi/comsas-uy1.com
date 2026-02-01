@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Nos Projets - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-white text-center">
+    <div class="container py-4">
+        <h1 class="display-3 fw-bold mb-4">Nos <span class="text-primary">Projets</span></h1>
+        <p class="lead text-muted mb-5 text-center mx-auto" style="max-width: 800px;">
+            Découvrez comment nous transformons nos engagements en actions concrètes pour le Computer Science
+            Association
+            et ses élèves.
+        </p>
+
+        <ul class="nav nav-pills justify-content-center mb-5" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill px-4" id="pills-ongoing-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-ongoing" type="button" role="tab" aria-controls="pills-ongoing"
+                    aria-selected="true">En Cours</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill px-4" id="pills-planning-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-planning" type="button" role="tab" aria-controls="pills-planning"
+                    aria-selected="false">En Planification</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill px-4" id="pills-completed-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-completed" type="button" role="tab" aria-controls="pills-completed"
+                    aria-selected="false">Terminés</button>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="tab-content" id="pills-tabContent">
+
+            <!-- Ongoing Projects -->
+            <div class="tab-pane fade show active" id="pills-ongoing" role="tabpanel"
+                aria-labelledby="pills-ongoing-tab" tabindex="0">
+                {% if ongoing_projects %}
+                <div class="row g-4">
+                    {% for project in ongoing_projects %}
+                    <div class="col-md-6 mb-4" data-aos="fade-up">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                            {% if project.image %}
+                            <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title_fr }}"
+                                style="height: 250px; object-fit: cover;">
+                            {% else %}
+                            <div class="bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                                style="height: 250px;">
+                                <i class="fas fa-hammer fa-3x text-primary"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body p-4">
+                                <div class="badge bg-primary mb-3">En Cours</div>
+                                <h4 class="fw-bold mb-3">{{ project.title_fr }}</h4>
+                                <p class="text-muted">{{ project.description_fr|striptags|truncatewords:25 }}</p>
+                                <a href="{% url 'project_detail' project.pk %}"
+                                    class="btn btn-outline-primary rounded-pill mt-3">Voir les détails</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted lead">Aucun projet en cours pour le moment.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Planning Projects -->
+            <div class="tab-pane fade" id="pills-planning" role="tabpanel" aria-labelledby="pills-planning-tab"
+                tabindex="0">
+                {% if planning_projects %}
+                <div class="row g-4">
+                    {% for project in planning_projects %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                            {% if project.image %}
+                            <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title_fr }}"
+                                style="height: 250px; object-fit: cover;">
+                            {% else %}
+                            <div class="bg-warning bg-opacity-10 d-flex align-items-center justify-content-center"
+                                style="height: 250px;">
+                                <i class="fas fa-clipboard-list fa-3x text-warning"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body p-4">
+                                <div class="badge bg-warning text-dark mb-3">En Planification</div>
+                                <h4 class="fw-bold mb-3">{{ project.title_fr }}</h4>
+                                <p class="text-muted">{{ project.description_fr|striptags|truncatewords:25 }}</p>
+                                <a href="{% url 'project_detail' project.pk %}"
+                                    class="btn btn-outline-warning text-dark rounded-pill mt-3">En savoir plus</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted lead">Aucun projet en planification.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Completed Projects -->
+            <div class="tab-pane fade" id="pills-completed" role="tabpanel" aria-labelledby="pills-completed-tab"
+                tabindex="0">
+                {% if completed_projects %}
+                <div class="row g-4">
+                    {% for project in completed_projects %}
+                    <div class="col-md-6 mb-4">
+                        <div
+                            class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden opacity-75 grayscale-hover-0 transition-all">
+                            {% if project.image %}
+                            <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title_fr }}"
+                                style="height: 250px; object-fit: cover;">
+                            {% else %}
+                            <div class="bg-success bg-opacity-10 d-flex align-items-center justify-content-center"
+                                style="height: 250px;">
+                                <i class="fas fa-check-circle fa-3x text-success"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body p-4">
+                                <div class="badge bg-success mb-3">Terminé</div>
+                                <h4 class="fw-bold mb-3">{{ project.title_fr }}</h4>
+                                <p class="text-muted">{{ project.description_fr|striptags|truncatewords:25 }}</p>
+                                <a href="{% url 'project_detail' project.pk %}"
+                                    class="btn btn-outline-success rounded-pill mt-3">Résultats</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted lead">Aucun projet terminé affiché.</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Contact - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="position-relative bg-white text-center py-5">
+    <div class="container py-5">
+        <h1 class="display-3 fw-bold mb-3 text-dark">Contactez-<span class="text-primary">Nous</span></h1>
+        <p class="lead text-muted mx-auto" style="max-width: 600px;">
+            Une question sur nos activités ou une proposition de partenariat ?
+            N'hésitez pas à nous écrire.
+        </p>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Info Cards -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center mb-4">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-map-marker-alt fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold">Adresse</h5>
+                    <p class="text-muted">Département d'Informatique<br>Faculté des Sciences, UY1<br>Yaoundé, Cameroun
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center mb-4">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-phone fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold">Téléphone</h5>
+                    <p class="text-muted">+237 650 97 05 26<br><span class="small">(Disponible sur WhatsApp)</span></p>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center mb-4">
+                    <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-envelope fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold">Email</h5>
+                    <p class="text-muted">contact@comsas-uy1.com<br>bureau@comsas-uy1.com</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5 mt-4">
+            <!-- Map -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100" style="min-height: 400px;">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15923.18128695576!2d11.5020759!3d3.866667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x108bcf7a3a9a1d37%3A0x6b8f3b8f3b8f3b8!2sUniversity%20of%20Yaounde%20I!5e0!3m2!1sen!2scm!4v1620000000000!5m2!1sen!2scm"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-lg rounded-4 p-5 bg-white">
+                    <h3 class="fw-bold mb-4">Envoyez un message</h3>
+                    <form method="post" action="{% url 'contact' %}">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary rounded-pill btn-lg fw-bold shadow-sm">
+                                Envoyer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Parrainage - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-white position-relative overflow-hidden">
+    <!-- Background Decor -->
+    <div class="position-absolute top-0 start-0 w-100 h-100">
+        <div class="position-absolute top-0 end-0 bg-primary bg-opacity-10 rounded-circle translate-middle-y"
+            style="width: 400px; height: 400px; opacity: 0.5;"></div>
+        <div class="position-absolute bottom-0 start-0 bg-secondary bg-opacity-10 rounded-circle translate-middle-x"
+            style="width: 300px; height: 300px; opacity: 0.5;"></div>
+    </div>
+
+    <div class="container position-relative z-1">
+        <div class="row align-items-center mb-5">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-handshake me-2"></i>Programme de Mentorat
+                </div>
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    Grandir Ensemble via le <span class="text-primary">Parrainage</span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Le programme de parrainage connecte les étudiants seniors (L3, Master, Doctorat) avec les nouveaux
+                    arrivants pour guider leurs premiers pas dans le monde universitaire et professionnel.
+                </p>
+                {% if active_session %}
+                <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="h3 mb-0 me-3 text-success"><i class="fas fa-check-circle"></i></div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Session Active : {{ active_session.name }}</h5>
+                            <p class="mb-0 small text-muted">Inscriptions ouvertes du {{
+                                active_session.start_date|date:"d M Y" }} au {{ active_session.end_date|date:"d M Y" }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex gap-3 flex-column flex-sm-row">
+                    <a href="{% url 'register_mentee' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
+                        <i class="fas fa-user-graduate me-2"></i>Je cherche un Parrain
+                    </a>
+                    <a href="{% url 'register_mentor' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Je veux être Parrain
+                    </a>
+                </div>
+                <div class="mt-3 text-center text-lg-start">
+                    <a href="{% url 'list_matches' %}" class="btn btn-link text-decoration-none fw-bold">
+                        <i class="fas fa-list-ul me-2"></i>Voir la liste des binômes
+                    </a>
+                </div>
+                {% else %}
+                <div class="alert alert-warning border-0 shadow-sm rounded-4">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Aucune session de parrainage n'est active pour le
+                    moment.
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="position-relative">
+                    <div class="bg-gradient-primary rounded-circle position-absolute top-50 start-50 translate-middle opacity-10"
+                        style="width: 500px; height: 500px;"></div>
+                    <img src="{% static 'images/mentorship.svg' %}" alt="Mentorship"
+                        class="img-fluid position-relative z-1"
+                        onerror="this.src='https://placehold.co/600x400/png?text=Mentorship';">
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-5 opacity-10">
+
+        <!-- Values Section -->
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-light h-100 hover-lift transition-all">
+                    <div class="icon-circle bg-white text-primary shadow-sm mb-4 mx-auto"
+                        style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                        <i class="fas fa-compass fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Orientation</h4>
+                    <p class="text-muted">Des conseils avisés pour choisir ses unités d'enseignement et définir son
+                        projet professionnel.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-light h-100 hover-lift transition-all">
+                    <div class="icon-circle bg-white text-secondary shadow-sm mb-4 mx-auto"
+                        style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                        <i class="fas fa-book-reader fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Soutien Académique</h4>
+                    <p class="text-muted">Une aide méthodologique et technique pour réussir ses examens et projets.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-light h-100 hover-lift transition-all">
+                    <div class="icon-circle bg-white text-success shadow-sm mb-4 mx-auto"
+                        style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                        <i class="fas fa-network-wired fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Réseautage</h4>
+                    <p class="text-muted">Intégration dans la famille COMS.A.S et connexion avec les anciens.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

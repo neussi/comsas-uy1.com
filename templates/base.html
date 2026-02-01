@@ -1,0 +1,518 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}COM.S.AS - Club Informatique | UY1{% endblock %}</title>
+
+    <!-- Meta Tags -->
+    <meta name="description"
+        content="{% block meta_description %}COM.S.AS (Computer Sciences Association) - Le Club Informatique de l'Université de Yaoundé 1. Excellence, Innovation, Professionalisme.{% endblock %}">
+    <meta name="keywords"
+        content="COMSAS, COM.S.AS, Club Informatique, Université de Yaoundé 1, Informatique, Cameroun, Association Étudiante">
+    <meta name="author" content="COM.S.AS">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{% block og_title %}COM.S.AS{% endblock %}">
+    <meta property="og:description"
+        content="{% block og_description %}Computer Sciences Association - Université de Yaoundé 1{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/comsas.png' %}{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- AOS Animation Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+    <!-- GLightbox -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    {% block extra_css %}{% endblock %}
+
+    <!-- Custom CSS Styles -->
+    <style>
+        :root {
+            /* Theme: LIGHT (White Background) */
+
+            /* Branding Colors */
+            --primary-color: #E91E63;
+            /* Pink */
+            --secondary-color: #FF9800;
+            /* Orange */
+            --accent-color: #F50057;
+            /* Deep Pink Accent */
+
+            /* Backgrounds */
+            --bg-body: #ffffff;
+            --bg-light: #f8f9fa;
+            --bg-dark: #212529;
+            /* Keep for dark sections mostly footer */
+
+            /* Text Colors */
+            --text-main: #1a1a1a;
+            --text-muted: #6c757d;
+            --text-light: #ffffff;
+
+            /* Bootstrap Overrides */
+            --bs-primary: #E91E63;
+            --bs-secondary: #FF9800;
+            --bs-body-bg: #ffffff;
+            --bs-body-color: #1a1a1a;
+
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+            --gradient-secondary: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            --gradient-hero: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+            /* Clean UI */
+            --border-radius: 10px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Playfair Display', serif;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        /* Navbar Light */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            color: var(--primary-color) !important;
+            font-weight: 700;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--text-main) !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: var(--primary-color) !important;
+        }
+
+        /* Cards Light */
+        .card {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-sm);
+            border-radius: var(--border-radius);
+            color: var(--text-main);
+        }
+
+        .card-body {
+            color: var(--text-main);
+        }
+
+        .bg-light {
+            background-color: var(--bg-light) !important;
+            color: var(--text-main) !important;
+        }
+
+        /* Global Overrides to ensure Light Theme */
+        .bg-dark {
+            background-color: #111 !important;
+            color: white !important;
+        }
+
+        .text-white {
+            color: white !important;
+        }
+
+        .text-light {
+            color: #f8f9fa !important;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Footer stays dark for contrast, but clean */
+        .footer {
+            background: #111;
+            color: #ccc;
+            margin-top: 5rem;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer h5 {
+            color: white;
+        }
+
+        .footer a {
+            color: #aaa;
+        }
+
+        .footer a:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .text-secondary {
+            color: var(--secondary-color) !important;
+        }
+
+        /* WhatsApp */
+        .whatsapp-float:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Navbar Light Theme Overrides */
+        .navbar-light .navbar-nav .nav-link {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .navbar-light .navbar-nav .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm" id="mainNavbar">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                {% if site_settings.logo %}
+                <img src="{{ site_settings.logo.url }}" alt="COM.S.AS Logo" height="40" class="me-2">
+                {% else %}
+                <!-- Fallback logo if none set -->
+                <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS" height="40" class="me-2"
+                    onerror="this.style.display='none'">
+                {% endif %}
+                <span>COM.S.AS</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                            href="{% url 'home' %}">
+                            Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'mandate' %}active{% endif %}"
+                            href="{% url 'mandate' %}">
+                            Plan d'Action
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}"
+                            href="{% url 'about' %}">
+                            À propos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'members' %}active{% endif %}"
+                            href="{% url 'members' %}">
+                            Bureau
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'sponsorship' in request.resolver_match.url_name %}active{% endif %}"
+                            href="{% url 'sponsorship_home' %}">
+                            Parrainage
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'project' in request.resolver_match.url_name %}active{% endif %}"
+                            href="{% url 'projects' %}">
+                            Projets
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'event' in request.resolver_match.url_name %}active{% endif %}"
+                            href="{% url 'events' %}">
+                            Activités
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'news' %}active{% endif %}"
+                            href="{% url 'news' %}">
+                            Actualités
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'contest' in request.resolver_match.url_name %}active{% endif %}"
+                            href="{% url 'contest_list' %}">
+                            Concours
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}"
+                            href="{% url 'gallery' %}">
+                            Galerie
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"
+                            href="{% url 'contact' %}">
+                            Contact
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <!-- Language Selector -->
+
+
+                    <!-- CTA Buttons -->
+                    <a href="{% url 'member_registration' %}" class="btn btn-primary btn-sm rounded-pill">
+                        Rejoindre
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer Clean Design -->
+    <footer class="footer bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <h5 class="fw-bold text-white mb-4">COM.S.AS</h5>
+                    <p class="text-white-50">
+                        Association des étudiants en informatique de l'Université de Yaoundé 1.
+                        Promouvoir l'excellence et l'innovation numérique.
+                    </p>
+                    <div class="d-flex gap-3 mt-4">
+                        {% if site_settings.facebook_url %}
+                        <a href="{{ site_settings.facebook_url|default:'#' }}" class="text-white-50 hover-text-white"><i
+                                class="fab fa-facebook-f fa-lg"></i></a>
+                        {% endif %}
+                        <a href="{{ site_settings.twitter_url|default:'#' }}" class="text-white-50 hover-text-white"><i
+                                class="fab fa-twitter fa-lg"></i></a>
+                        <a href="{{ site_settings.linkedin_url|default:'#' }}" class="text-white-50 hover-text-white"><i
+                                class="fab fa-linkedin-in fa-lg"></i></a>
+                        <a href="{{ site_settings.github_url|default:'#' }}" class="text-white-50 hover-text-white"><i
+                                class="fab fa-github fa-lg"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                    <h6 class="text-uppercase fw-bold mb-4 text-white">Liens Rapides</h6>
+                    <ul class="list-unstyled mb-0 d-grid gap-2">
+                        <li><a href="{% url 'home' %}"
+                                class="text-white-50 text-decoration-none hover-text-primary">Accueil</a></li>
+                        <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none hover-text-primary">À
+                                propos</a></li>
+                        <li><a href="{% url 'projects' %}"
+                                class="text-white-50 text-decoration-none hover-text-primary">Projets</a></li>
+                        <li><a href="{% url 'events' %}"
+                                class="text-white-50 text-decoration-none hover-text-primary">Événements</a></li>
+                        <li><a href="{% url 'contact' %}"
+                                class="text-white-50 text-decoration-none hover-text-primary">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                    <h6 class="text-uppercase fw-bold mb-4 text-white">Ressources</h6>
+                    <ul class="list-unstyled mb-0 d-grid gap-2">
+                        <li><a href="{% url 'member_registration' %}"
+                                class="text-white-50 text-decoration-none hover-text-primary">Devenir Membre</a></li>
+                        <li><a href="{% url 'donations' %}"
+                                class="text-white-50 text-decoration-none hover-text-primary">Faire un Don</a></li>
+                        <li><a href="{% url 'gallery' %}"
+                                class="text-white-50 text-decoration-none hover-text-primary">Galerie</a></li>
+                        <li><a href="{% url 'news' %}"
+                                class="text-white-50 text-decoration-none hover-text-primary">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-uppercase fw-bold mb-4 text-white">Contact</h6>
+                    <ul class="list-unstyled mb-0 d-grid gap-3">
+                        <li class="d-flex text-white-50">
+                            <i class="fas fa-map-marker-alt mt-1 me-3 text-primary"></i>
+                            <span>Dépt. Informatique, FS, UY1<br>Yaoundé, Cameroun</span>
+                        </li>
+                        <li class="d-flex text-white-50">
+                            <i class="fas fa-envelope mt-1 me-3 text-primary"></i>
+                            <a href="mailto:contact@comsas-uy1.com"
+                                class="text-white-50 text-decoration-none">contact@comsas-uy1.com</a>
+                        </li>
+                        <li class="d-flex text-white-50">
+                            <i class="fas fa-phone mt-1 me-3 text-primary"></i>
+                            <a href="tel:+237650970526" class="text-white-50 text-decoration-none">+237 650 97 05 26</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="my-5 border-secondary opacity-25">
+
+            <div class="row align-items-center justify-content-between">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="small text-white-50 mb-0">&copy; {% now "Y" %} COM.S.AS - Tous droits réservés.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="small text-white-50 mb-0">Développé par la <span class="text-white fw-bold">Team Tech
+                            COM.S.AS</span></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/237650970526" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+        {% for message in messages %}
+        <div class="toast show bg-dark text-white border-0 shadow-lg" role="alert" data-bs-autohide="true"
+            data-bs-delay="5000">
+            <div class="toast-header bg-dark text-white border-bottom border-secondary">
+                <i
+                    class="fas fa-{% if message.tags == 'success' %}check-circle text-success{% elif message.tags == 'error' %}times-circle text-danger{% elif message.tags == 'warning' %}exclamation-triangle text-warning{% else %}info-circle text-info{% endif %} me-2"></i>
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Scripts -->
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- AOS Animation -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <!-- GLightbox -->
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            mirror: false
+        });
+
+        // Initialize GLightbox
+        const lightbox = GLightbox({
+            touchNavigation: true,
+            loop: true,
+            autoplayVideos: true,
+            skin: 'clean'
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('mainNavbar');
+            if (window.scrollY > 20) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Auto-hide alerts
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                if (alert.classList.contains('alert-dismissible')) {
+                    alert.style.transition = 'opacity 0.5s';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }
+            });
+        }, 5000);
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

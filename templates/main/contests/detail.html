@@ -1,0 +1,446 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ contest.title }} - Votes COMSAS{% endblock %}
+
+{% block content %}
+<!-- Hero Section (About Style) -->
+<section class="py-5 bg-white position-relative overflow-hidden"
+    style="min-height: 40vh; display: flex; align-items: center;">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-decoration-none text-muted">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contest_list' %}"
+                                class="text-decoration-none text-muted">Concours</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ contest.title }}</li>
+                    </ol>
+                </nav>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    {% if contest.is_open %}
+                    <div class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                        <i class="fas fa-check-circle me-2"></i>Votes Ouverts
+                    </div>
+                    {% else %}
+                    <div class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">
+                        <i class="fas fa-lock me-2"></i>Votes Clos
+                    </div>
+                    {% endif %}
+                    <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                        <i class="fas fa-users me-2"></i>{{ total_votes }} Votes
+                    </div>
+                </div>
+
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    {{ contest.title }}
+                </h1>
+                <p class="lead text-muted mb-4">
+                    {{ contest.description }}
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#candidates" class="btn btn-primary btn-lg rounded-pill px-4">
+                        Voir les Candidats <i class="fas fa-arrow-down ms-2"></i>
+                    </a>
+                    <a href="#results" class="btn btn-outline-dark btn-lg rounded-pill px-4">
+                        Résultats <i class="fas fa-chart-pie ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="position-relative text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle position-absolute top-50 start-50 translates-middle"
+                        style="width: 350px; height: 350px; z-index: -1;"></div>
+                    {% if contest.image %}
+                    <img src="{{ contest.image.url }}" alt="{{ contest.title }}" class="img-fluid rounded-4 shadow-lg"
+                        style="max-height: 350px; width: 100%; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-light rounded-4 shadow-lg d-flex align-items-center justify-content-center"
+                        style="height: 350px; width: 100%;">
+                        <i class="fas fa-trophy fa-5x text-secondary opacity-25"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Results Dashboard Section -->
+<section id="results" class="py-5 bg-light border-top border-bottom">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-5 mb-4 mb-lg-0" data-aos="fade-right">
+                <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-chart-bar me-2"></i>Statistiques
+                </span>
+                <h2 class="fw-bold mb-4">Répartition des Votes</h2>
+                <!-- Leaderboard List -->
+                <div class="list-group shadow-sm border-0 rounded-4 overflow-hidden">
+                    {% for candidate in candidates %}
+                    <div class="list-group-item border-0 p-3 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold fs-5 me-3 text-secondary">#{{ forloop.counter }}</span>
+                            <div>
+                                <h6 class="mb-0 fw-bold">{{ candidate.name }}</h6>
+                                <small class="text-muted">{{ candidate.votes_count }} votes</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 40%;">
+                            <div class="progress flex-grow-1 me-3" style="height: 6px;">
+                                <div class="progress-bar bg-primary" role="progressbar"
+                                    style="width: {{ candidate.percentage }}%"></div>
+                            </div>
+                            <span class="fw-bold small">{{ candidate.percentage }}%</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-lg-7 text-center" data-aos="fade-left">
+                <div class="card border-0 shadow-lg rounded-4 p-4 bg-white align-items-center justify-content-center">
+                    <div style="max-height: 400px; max-width: 400px; width: 100%;">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Candidates Grid -->
+<section id="candidates" class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="badge bg-warning bg-opacity-10 text-warning text-dark mb-3 px-3 py-2 rounded-pill">
+                <i class="fas fa-users me-2"></i>Candidats
+            </span>
+            <h2 class="fw-bold">Découvrez les Participants</h2>
+        </div>
+
+        {% if has_voted %}
+        <div class="alert alert-success border-0 shadow-sm mb-5 text-center rounded-4 py-4" role="alert">
+            <div class="d-inline-flex bg-success bg-opacity-10 text-success rounded-circle p-3 mb-3">
+                <i class="fas fa-check-circle fa-2x"></i>
+            </div>
+            <h4 class="alert-heading fw-bold">Merci d'avoir voté !</h4>
+            <p class="mb-0 text-muted">Votre voix compte. Suivez les résultats en temps réel ci-dessus.</p>
+        </div>
+        {% endif %}
+
+        <div class="row g-4 justify-content-center">
+            {% for candidate in candidates %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="card border-0 shadow-lg h-100 overflow-hidden rounded-4 transform-hover pointer-cursor"
+                    onclick="showCandidateDetails({
+                        id: {{ candidate.id }},
+                        name: '{{ candidate.name|escapejs }}',
+                        description: '{{ candidate.description|escapejs }}',
+                        votes_count: {{ candidate.votes_count }},
+                        image_url: '{% if candidate.image %}{{ candidate.image.url }}{% endif %}',
+                        video_url: '{% if candidate.video_url %}{{ candidate.video_url }}{% endif %}',
+                        is_votable: {% if contest.is_open and not has_voted %}true{% else %}false{% endif %}
+                     })">
+                    <div class="position-relative">
+                        {% if candidate.image %}
+                        <img src="{{ candidate.image.url }}" class="card-img-top object-fit-cover"
+                            alt="{{ candidate.name }}" style="height: 280px;">
+                        {% else %}
+                        <div class="bg-secondary bg-opacity-10 card-img-top d-flex align-items-center justify-content-center text-primary"
+                            style="height: 280px;">
+                            <i class="fas fa-user fa-5x opacity-50"></i>
+                        </div>
+                        {% endif %}
+                        <div class="position-absolute bottom-0 end-0 m-3">
+                            <span class="badge bg-white text-dark shadow-sm px-3 py-2 rounded-pill">
+                                <i class="fas fa-vote-yea text-primary me-1"></i> {{ candidate.votes_count }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 text-center">
+                        <h3 class="h4 fw-bold mb-2 text-dark">{{ candidate.name }}</h3>
+                        <p class="text-muted small mb-4">
+                            {{ candidate.description|truncatewords:15 }}
+                        </p>
+
+                        <div onclick="event.stopPropagation()">
+                            {% if contest.is_open and not has_voted %}
+                            <button onclick="openVoteModal({{ candidate.id }}, '{{ contest.slug }}')"
+                                class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm transition-all"
+                                id="btn-{{ candidate.id }}">
+                                <i class="fas fa-heart me-1"></i> Je vote
+                            </button>
+                            {% elif has_voted %}
+                            <button class="btn btn-success w-100 rounded-pill fw-bold py-2 opacity-75" disabled>
+                                <i class="fas fa-check me-1"></i> A Voté
+                            </button>
+                            {% else %}
+                            <button class="btn btn-secondary w-100 rounded-pill fw-bold py-2" disabled>
+                                Votes Clos
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('resultsChart').getContext('2d');
+        const labels = {{ chart_labels| safe
+    }};
+    const data = {{ chart_data| safe }};
+
+    // Colors palette (Pink/Orange theme compatible)
+    const backgroundColors = [
+        'rgba(233, 30, 99, 0.8)',   // Pink
+        'rgba(255, 152, 0, 0.8)',   // Orange
+        'rgba(33, 150, 243, 0.8)',  // Blue
+        'rgba(76, 175, 80, 0.8)',   // Green
+        'rgba(156, 39, 176, 0.8)',  // Purple
+        'rgba(255, 193, 7, 0.8)'    // Amber
+    ];
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: backgroundColors,
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+    });
+</script>
+
+<!-- Candidate Details Modal -->
+<div class="modal fade" id="candidateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 p-lg-5">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-5 mb-3 mb-md-0">
+                        <img id="modalCandidateImage" src=""
+                            class="img-fluid rounded-3 shadow-sm w-100 object-fit-cover" style="height: 300px;">
+                    </div>
+                    <div class="col-md-7">
+                        <h2 id="modalCandidateName" class="display-6 fw-bold mb-3"></h2>
+                        <!-- Rank/ Badge placeholders can go here -->
+                        <div class="d-flex gap-2 mb-4">
+                            <span class="badge bg-primary rounded-pill px-3 py-2">
+                                <i class="fas fa-vote-yea me-1"></i> <span id="modalCandidateVotes"></span> Votes
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="fw-bold text-uppercase text-secondary small mb-3">À propos</h5>
+                    <p id="modalCandidateDesc" class="text-muted lead fs-6"></p>
+                </div>
+
+                <div id="modalCandidateVideo" class="mb-4 d-none">
+                    <a href="#" target="_blank" class="btn btn-outline-danger w-100 rounded-pill py-2">
+                        <i class="fab fa-youtube me-2"></i> Regarder la vidéo de présentation
+                    </a>
+                </div>
+
+                <div id="modalVoteAction" class="pt-3 border-top mt-4">
+                    <button onclick="openVoteModalFromDetail()"
+                        class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm">
+                        <i class="fas fa-heart me-2"></i> Voter pour ce candidat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Voting Modal (Secure) -->
+<div class="modal fade" id="voteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-primary text-white border-0 rounded-top-4 p-4">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-check-circle me-2"></i> Confirmer votre vote
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted mb-4 small">
+                    Pour garantir l'intégrité du concours, veuillez vous identifier. Chaque étudiant ne peut voter
+                    qu'une seule fois.
+                </p>
+
+                <form id="voteForm" onsubmit="submitVote(event)">
+                    <input type="hidden" id="voteCandidateId">
+                    <input type="hidden" id="voteContestSlug">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-uppercase">Votre Email</label>
+                        <input type="email" id="voterEmail" class="form-control form-control-lg bg-light border-0"
+                            placeholder="ex: jean.dupont@comsas.com" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase">Votre Matricule</label>
+                        <input type="text" id="voterMatricule" class="form-control form-control-lg bg-light border-0"
+                            placeholder="ex: 22GL123" required>
+                    </div>
+
+                    <button type="submit" id="btnConfirmVote"
+                        class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm">
+                        Confirmer le vote
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logic Scripts -->
+<script>
+    let currentCandidate = null;
+
+    // Open Candidate Details Modal
+    function showCandidateDetails(candidate) {
+        currentCandidate = candidate;
+
+        document.getElementById('modalCandidateName').innerText = candidate.name;
+        document.getElementById('modalCandidateDesc').innerText = candidate.description;
+        document.getElementById('modalCandidateVotes').innerText = candidate.votes_count;
+
+        const img = document.getElementById('modalCandidateImage');
+        if (candidate.image_url) {
+            img.src = candidate.image_url;
+        } else {
+            // Placeholder logic or hide
+            img.src = "https://via.placeholder.com/600x400?text=No+Image";
+        }
+
+        const vidDiv = document.getElementById('modalCandidateVideo');
+        if (candidate.video_url) {
+            vidDiv.classList.remove('d-none');
+            vidDiv.querySelector('a').href = candidate.video_url;
+        } else {
+            vidDiv.classList.add('d-none');
+        }
+
+        // Configure Vote Button in Detail Modal if open
+        const voteActionDiv = document.getElementById('modalVoteAction');
+        if (candidate.is_votable) {
+            voteActionDiv.classList.remove('d-none');
+        } else {
+            voteActionDiv.classList.add('d-none');
+        }
+
+        new bootstrap.Modal(document.getElementById('candidateModal')).show();
+    }
+
+    // Open Vote Modal (from Grid or Detail Modal)
+    function openVoteModal(candidateId, contestSlug) {
+        // If coming generically, use args. If coming from detail modal, use currentCandidate
+        if (!candidateId && currentCandidate) {
+            candidateId = currentCandidate.id;
+            contestSlug = '{{ contest.slug }}';
+        }
+
+        document.getElementById('voteCandidateId').value = candidateId;
+        document.getElementById('voteContestSlug').value = contestSlug;
+
+        // Hide candidate modal if open
+        const candModalEl = document.getElementById('candidateModal');
+        const candModal = bootstrap.Modal.getInstance(candModalEl);
+        if (candModal) {
+            candModal.hide();
+        }
+
+        new bootstrap.Modal(document.getElementById('voteModal')).show();
+    }
+
+    // Alias for detail modal button
+    function openVoteModalFromDetail() {
+        openVoteModal(null, null);
+    }
+
+    // Submit Vote
+    function submitVote(event) {
+        event.preventDefault();
+
+        const candidateId = document.getElementById('voteCandidateId').value;
+        const contestSlug = document.getElementById('voteContestSlug').value;
+        const email = document.getElementById('voterEmail').value;
+        const matricule = document.getElementById('voterMatricule').value;
+
+        const btn = document.getElementById('btnConfirmVote');
+        const originalText = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+
+        fetch(`/concours/${contestSlug}/vote/${candidateId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email, matricule: matricule })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Success
+                    btn.innerHTML = '<i class="fas fa-check"></i> Validé !';
+                    btn.classList.replace('btn-primary', 'btn-success');
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    alert(data.error || "Une erreur est survenue.");
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Erreur de connexion.");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            });
+    }
+</script>
+{% endblock %}

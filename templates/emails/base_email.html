@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email COMS.A.S</title>
+    <style>
+        /* Base styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .email-header {
+            background-color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #E91E63;
+        }
+
+        .email-body {
+            padding: 30px;
+        }
+
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        p {
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        a {
+            color: #E91E63;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #E91E63;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        /* Utilities */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: #6c757d;
+        }
+
+        .highlight {
+            background-color: #fdf2f5;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #E91E63;
+            margin: 20px 0;
+        }
+
+        /* Mobile */
+        @media only screen and (max-width: 600px) {
+            .email-body {
+                padding: 20px;
+            }
+
+            .email-container {
+                width: 100%;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div style="padding: 40px 0;">
+        <div class="email-container">
+            <!-- Header with Logo -->
+            <div class="email-header">
+                <div>
+                    <span style="font-size: 24px; font-weight: 800; color: #2c3e50;">COMS</span><span
+                        style="font-size: 24px; font-weight: 800; color: #E91E63;">.A.S</span>
+                </div>
+                <div style="font-size: 14px; color: #6c757d; margin-top: 5px;">Computer Science Association - UY1</div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="email-body">
+                {% block content %}{% endblock %}
+            </div>
+
+            <!-- Footer -->
+            <div class="email-footer">
+                <p>&copy; {% now "Y" %} Association des Anciens Élèves du Département d'Informatique. Tous droits
+                    réservés.</p>
+                <div class="social-links">
+                    <a href="https://comsas-uy1.com">Site Web</a> |
+                    <a href="#">LinkedIn</a> |
+                    <a href="#">Facebook</a>
+                </div>
+                <p style="margin-top: 10px;">Université de Yaoundé 1, Cameroun</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

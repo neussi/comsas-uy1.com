@@ -1,0 +1,422 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}{{ project.title_fr }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'admin_projects_list' %}">Projets</a>
+                </li>
+                <li class="breadcrumb-item active">{{ project.title_fr }}</li>
+            </ol>
+        </nav>
+        <h2>
+            <i class="fas fa-project-diagram me-2"></i>
+            {{ project.title_fr }}
+        </h2>
+    </div>
+    <div>
+        <a href="{% url 'admin_project_edit' project.pk %}" class="btn btn-primary me-2">
+            <i class="fas fa-edit me-1"></i>
+            Modifier
+        </a>
+        <a href="{% url 'admin_project_delete' project.pk %}" 
+           class="btn btn-danger"
+           onclick="return confirm('Supprimer ce projet ?')">
+            <i class="fas fa-trash me-1"></i>
+            Supprimer
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Informations principales -->
+    <div class="col-lg-8 mb-4">
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Informations du projet
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Image et statut -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        {% if project.image %}
+                            <img src="{{ project.image.url }}" alt="{{ project.title_fr }}" 
+                                 class="img-fluid rounded">
+                        {% else %}
+                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <i class="fas fa-project-diagram fa-3x text-white"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <h3>{{ project.title_fr }}</h3>
+                        <h5 class="text-muted">{{ project.title_en }}</h5>
+                        
+                        <div class="mb-3">
+                            <span class="badge 
+                                {% if project.status == 'planning' %}bg-secondary
+                                {% elif project.status == 'ongoing' %}bg-primary
+                                {% elif project.status == 'completed' %}bg-success
+                                {% elif project.status == 'suspended' %}bg-warning
+                                {% endif %} fs-6">
+                                {{ project.get_status_display }}
+                            </span>
+                            
+                            {% if project.is_featured %}
+                                <span class="badge bg-warning fs-6 ms-2">
+                                    <i class="fas fa-star me-1"></i>
+                                    En vedette
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Progression du budget -->
+                        <div class="mb-3">
+                            <h6>Progression du financement :</h6>
+                            <div class="progress mb-2" style="height: 25px;">
+                                <div class="progress-bar 
+                                    {% if project.progress_percentage >= 100 %}bg-success
+                                    {% elif project.progress_percentage >= 75 %}bg-info
+                                    {% elif project.progress_percentage >= 50 %}bg-warning
+                                    {% else %}bg-danger
+                                    {% endif %}" 
+                                    style="width: {{ project.progress_percentage }}%">
+                                    {{ project.progress_percentage|floatformat:1 }}%
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                {{ project.budget_collected|floatformat:0 }} FCFA / {{ project.budget_required|floatformat:0 }} FCFA
+                            </small>
+                        </div>
+                        
+                        <!-- Dates -->
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p><strong>Date de début :</strong><br>
+                                {{ project.start_date|date:"d/m/Y" }}</p>
+                            </div>
+                            <div class="col-sm-6">
+                                {% if project.end_date %}
+                                    <p><strong>Date de fin :</strong><br>
+                                    {{ project.end_date|date:"d/m/Y" }}</p>
+                                {% else %}
+                                    <p><strong>Date de fin :</strong><br>
+                                    <span class="text-muted">Non définie</span></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Description française -->
+                <div class="mb-4">
+                    <h5>Description (Français)</h5>
+                    <div class="border rounded p-3 bg-light">
+                        {{ project.description_fr|safe }}
+                    </div>
+                </div>
+                
+                <!-- Description anglaise -->
+                <div class="mb-4">
+                    <h5>Description (Anglais)</h5>
+                    <div class="border rounded p-3 bg-light">
+                        {{ project.description_en|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistiques et détails -->
+    <div class="col-lg-4 mb-4">
+        <!-- Statistiques financières -->
+        <div class="table-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Statistiques financières
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h2 class="text-primary">{{ project.progress_percentage|floatformat:1 }}%</h2>
+                    <p class="text-muted">Financement atteint</p>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Budget requis :</span>
+                    <strong>{{ project.budget_required|floatformat:0 }} FCFA</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Budget collecté :</span>
+                    <strong class="text-success">{{ project.budget_collected|floatformat:0 }} FCFA</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Reste à collecter :</span>
+                    {% widthratio project.budget_required 1 1 as required %}
+                    {% widthratio project.budget_collected 1 1 as collected %}
+                    <strong class="text-warning">
+                        {{ required|add:collected|add:"-"|add:collected|floatformat:0 }} FCFA
+                    </strong>
+                </div>
+                
+                {% if project.progress_percentage >= 100 %}
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-check-circle me-1"></i>
+                        <strong>Objectif atteint !</strong>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Informations détaillées -->
+        <div class="table-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info me-2"></i>
+                    Détails du projet
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Statut :</span>
+                    <span class="badge 
+                        {% if project.status == 'planning' %}bg-secondary
+                        {% elif project.status == 'ongoing' %}bg-primary
+                        {% elif project.status == 'completed' %}bg-success
+                        {% elif project.status == 'suspended' %}bg-warning
+                        {% endif %}">
+                        {{ project.get_status_display }}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>En vedette :</span>
+                    {% if project.is_featured %}
+                        <span class="badge bg-warning">Oui</span>
+                    {% else %}
+                        <span class="text-muted">Non</span>
+                    {% endif %}
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Créé le :</span>
+                    <span>{{ project.created_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Modifié le :</span>
+                    <span>{{ project.updated_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                
+                {% if project.end_date %}
+                    {% now "Y-m-d" as today %}
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span>Échéance :</span>
+                        {% if project.end_date|date:"Y-m-d" < today %}
+                            <span class="text-danger">Dépassée</span>
+                        {% else %}
+                            <span class="text-success">{{ project.end_date|timeuntil }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Actions rapides -->
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Actions rapides
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'admin_project_edit' project.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i>
+                        Modifier le projet
+                    </a>
+                    
+                    {% if project.status == 'planning' %}
+                        <button class="btn btn-outline-success" onclick="changeStatus('ongoing')">
+                            <i class="fas fa-play me-1"></i>
+                            Démarrer le projet
+                        </button>
+                    {% elif project.status == 'ongoing' %}
+                        <button class="btn btn-outline-info" onclick="changeStatus('suspended')">
+                            <i class="fas fa-pause me-1"></i>
+                            Suspendre
+                        </button>
+                        <button class="btn btn-outline-success" onclick="changeStatus('completed')">
+                            <i class="fas fa-check me-1"></i>
+                            Marquer terminé
+                        </button>
+                    {% elif project.status == 'suspended' %}
+                        <button class="btn btn-outline-primary" onclick="changeStatus('ongoing')">
+                            <i class="fas fa-play me-1"></i>
+                            Reprendre
+                        </button>
+                    {% endif %}
+                    
+                    <button class="btn btn-outline-warning" onclick="toggleFeatured()">
+                        <i class="fas fa-star me-1"></i>
+                        {% if project.is_featured %}Retirer de la vedette{% else %}Mettre en vedette{% endif %}
+                    </button>
+                    
+                    <hr>
+                    
+                    <a href="{% url 'admin_projects_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Retour à la liste
+                    </a>
+                    
+                    <a href="{% url 'admin_project_delete' project.pk %}" 
+                       class="btn btn-outline-danger"
+                       onclick="return confirm('Supprimer ce projet ?')">
+                        <i class="fas fa-trash me-1"></i>
+                        Supprimer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Timeline du projet -->
+<div class="row">
+    <div class="col-12">
+        <div class="table-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>
+                    Timeline du projet
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <h6>Projet créé</h6>
+                            <p class="text-muted">{{ project.created_at|date:"d/m/Y à H:i" }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if project.start_date %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker 
+                                {% now 'Y-m-d' as today %}
+                                {% if project.start_date|date:'Y-m-d' <= today %}bg-success{% else %}bg-secondary{% endif %}"></div>
+                            <div class="timeline-content">
+                                <h6>Date de début prévue</h6>
+                                <p class="text-muted">{{ project.start_date|date:"d/m/Y" }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if project.end_date %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <h6>Date de fin prévue</h6>
+                                <p class="text-muted">{{ project.end_date|date:"d/m/Y" }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if project.updated_at != project.created_at %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-warning"></div>
+                            <div class="timeline-content">
+                                <h6>Dernière modification</h6>
+                                <p class="text-muted">{{ project.updated_at|date:"d/m/Y à H:i" }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -25px;
+    top: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #dee2e6;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 3px solid #007bff;
+}
+
+.timeline-content h6 {
+    margin-bottom: 5px;
+    color: #495057;
+}
+
+.timeline-content p {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeStatus(newStatus) {
+    if (confirm('Changer le statut du projet ?')) {
+        // Cette fonction nécessiterait une vue AJAX pour être implémentée
+        alert(`Fonctionnalité à implémenter : changer le statut vers "${newStatus}"`);
+    }
+}
+
+function toggleFeatured() {
+    const action = {{ project.is_featured|yesno:"'retirer de la vedette','mettre en vedette'" }};
+    if (confirm(`Voulez-vous ${action} ce projet ?`)) {
+        // Cette fonction nécessiterait une vue AJAX pour être implémentée
+        alert(`Fonctionnalité à implémenter : ${action}`);
+    }
+}
+</script>
+{% endblock %}
