@@ -8,7 +8,45 @@ Le projet vise à fournir une plateforme web moderne et centralisée pour l'asso
 *   **Membre (Inscrit)** : Peut compléter son profil, s'inscrire aux événements, participer aux votes.
 *   **Administrateur** : Gère l'ensemble de la plateforme (validation membres, création contenus, exports).
 
-## 3. Besoins Fonctionnels
+## 3. Diagramme de Cas d'Utilisation
+
+```mermaid
+usecaseDiagram
+    actor "Visiteur" as V
+    actor "Membre" as M
+    actor "Administrateur" as A
+
+    package "COMS.A.S Website" {
+        usecase "Consulter Actualités/Projets" as UC1
+        usecase "S'inscrire (Devenir Membre)" as UC2
+        usecase "Se Connecter" as UC3
+        usecase "Gérer Profil" as UC4
+        usecase "S'inscrire à un Événement" as UC5
+        usecase "Voter (Élection/Concours)" as UC6
+        usecase "Valider Membres" as UC7
+        usecase "Gérer Contenus (News, Events)" as UC8
+        usecase "Gérer Parrainage" as UC9
+    }
+
+    V --> UC1
+    V --> UC2
+    V --> UC3
+
+    M --> UC1
+    M --> UC3
+    M --> UC4
+    M --> UC5
+    M --> UC6
+
+    A --> UC1
+    A --> UC3
+    A --> UC4
+    A --> UC7
+    A --> UC8
+    A --> UC9
+```
+
+## 4. Besoins Fonctionnels
 
 ### 3.1. Gestion des Membres
 *   **Inscription** : Formulaire détaillé (infos personnelles, académiques, professionnelles).

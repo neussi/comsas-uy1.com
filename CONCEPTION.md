@@ -34,7 +34,99 @@ Les principaux modèles Django (`models.py`) sont structurés comme suit :
 *   **Candidate** : Candidat lié à un `Contest`.
 *   **Vote** : Enregistrement d'un vote (`Contest`, `Candidate`, `voter_email` hashé).
 
-## 2. Sécurité et Permissions
+## 2. Diagramme de Classes (UML)
+
+```mermaid
+classDiagram
+    class User {
+        +username
+        +email
+        +password
+    }
+    class Member {
+        +nom_prenom
+        +telephone
+        +niveau
+        +matricule
+        +is_active
+        +generate_card()
+    }
+    class Project {
+        +title
+        +budget_required
+        +status
+    }
+    class Event {
+        +title
+        +date
+        +max_participants
+    }
+    class SponsorshipSession {
+        +name
+        +start_date
+        +is_active
+    }
+    class Mentor {
+        +expertise
+    }
+    class Mentee {
+        +needs
+    }
+    
+    User "1" -- "1" Member : OneToOne
+    Member "1" -- "*" Project : Lead/Member
+    Member "*" -- "*" Event : Register
+    SponsorshipSession "1" -- "*" Mentor
+    SponsorshipSession "1" -- "*" Mentee
+    Mentor "1" -- "1" Mentee : Match
+```
+
+## 3. Diagramme de Séquence (Processus de Vote)
+
+```mermaid
+sequenceDiagram
+    actor Helper as Membre
+    participant System as Système de Vote
+    participant DB as Base de Données
+
+    Helper->>System: Accède à la page de vote
+    System->>DB: Récupère les candidats
+    DB-->>System: Liste des candidats
+    System-->>Helper: Affiche les candidats
+
+    Helper->>System: Sélectionne un candidat et soumet
+    System->>System: Vérifie matricule et email
+    alt Informations Valides & Pas encore voté
+        System->>DB: Enregistre le vote (Hashed)
+        DB-->>System: Confirmation
+        System-->>Helper: Succès "Vote Pris en compte"
+    else Erreur (Doublon ou Invalide)
+        System-->>Helper: Erreur "Déjà voté ou Invalide"
+    end
+```
+
+## 4. Diagramme d'Objets (Exemple d'Instance)
+
+```mermaid
+classDiagram
+    class Member_Toto {
+        nom_prenom = "Toto Junior"
+        matricule = "12X345"
+        niveau = "L3"
+    }
+    class Event_Gala {
+        title = "Gala 2026"
+        date = "2026-06-15"
+    }
+    class Registration_01 {
+        date = "2026-02-01"
+    }
+
+    Member_Toto -- Registration_01 : Inscrit par
+    Registration_01 -- Event_Gala : Pour
+```
+
+## 5. Sécurité et Permissions
 
 *   **Rôles** :
     *   `Staff/Superuser` : Accès complet au `admin_dashboard`.

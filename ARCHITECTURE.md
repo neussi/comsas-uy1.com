@@ -24,6 +24,22 @@ graph TD
     DjangoApp --> EmailService[Service SMTP]
 ```
 
+## Diagramme de Déploiement
+
+```mermaid
+graph LR
+    Client[Client (Navigateur/Mobile)] -- HTTPS --> Nginx[Serveur Reverse Proxy (Nginx)]
+    Nginx -- Proxy --> Gunicorn[Serveur App (Gunicorn)]
+    
+    subgraph "Serveur Application"
+        Gunicorn -- WSGI --> Django[Instance Django]
+        Django -- Read/Write --> FS[Système de Fichiers (Static/Media)]
+    end
+    
+    Django -- SQL (5432) --> DB[(PostgreSQL)]
+    Django -- SMTP (587) --> Mail[Serveur Email (Google/Outlook)]
+```
+
 ## Structure des Dossiers
 
 *   **`comsas_website/`** : Cœur du projet (settings, urls, wsgi/asgi).
