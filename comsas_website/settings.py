@@ -13,7 +13,7 @@ SECRET_KEY = "django-insecure-s#06#%yxzr8w7inp@r#-7s3ie+43jx3g6w!_@4)qneruqdak$1
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['comsas-uy1.com', 'www.comsas-uy1.com', 'localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['comsas-uy1.com', 'www.comsas-uy1.com', 'localhost', '127.0.0.1', '167.86.88.92', '*']
 SITE_URL = 'https://comsas-uy1.com'
 
 # Application definition
@@ -74,12 +74,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'comsas_website.wsgi.application'
 
 # Database
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Override with PostgreSQL if environment variables are present
+if os.environ.get('DB_NAME') and os.environ.get('DB_USER'):
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

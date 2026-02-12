@@ -20,7 +20,7 @@ COPY . .
 # Variables d'environnement
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV DJANGO_SETTINGS_MODULE=aaelbm2_website.settings
+ENV DJANGO_SETTINGS_MODULE=comsas_website.settings
 
 # Créer les répertoires nécessaires
 RUN mkdir -p /app/staticfiles /app/media
@@ -36,4 +36,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/ || exit 1
 
 # Commande de démarrage
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "aaelbm2_website.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "comsas_website.wsgi:application"]

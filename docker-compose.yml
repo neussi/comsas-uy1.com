@@ -1,23 +1,45 @@
-version: '3.3'
+version: '3.8'
 
 services:
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME:-comsas_db}
+      - POSTGRES_USER=${DB_USER:-comsas_user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-comsas_password}
+    restart: always
+
   web:
     build: .
-    container_name: a2elbm2_web
+    container_name: comsas_web
     restart: always
     ports:
-      - "8336:8000"
+      - "35467:8000"
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+    env_file:
+      - .env
+    environment:
+      - DB_NAME=${DB_NAME:-comsas_db}
+      - DB_USER=${DB_USER:-comsas_user}
+      - DB_PASSWORD=${DB_PASSWORD:-comsas_password}
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      - db
     networks:
-      - a2elbm2_network
+      - comsas_network
 
 volumes:
   static_volume:
   media_volume:
+  postgres_data:
+
 
 networks:
-  a2elbm2_network:
+  comsas_network:
     driver: bridge
