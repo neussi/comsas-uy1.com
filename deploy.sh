@@ -56,7 +56,65 @@ docker-compose ps
 echo " Espace disque utilisé:"
 docker-compose exec -T web du -sh /app/staticfiles /app/media 2>/dev/null || echo "Répertoires en cours de création"
 
-echo " Déploiement terminé!"
+echo "✅ Déploiement terminé!"
+
+# =============================================================================
+# CONFIGURATION APACHE (AUTOMATISÉE)
+# =============================================================================
+
+echo "🔧 Configuration d'Apache..."
+
+APACHE_CONF="/etc/apache2/sites-available/comsas-uy1.conf"
+
+# Création du fichier de configuration
+sudo bash -c "cat > $APACHE_CONF" <<EOF
+<VirtualHost *:80>
+    ServerName comsas-uy1.com
+    ServerAlias www.comsas-uy1.com
+
+    # Préservation du host original
+    ProxyPreserveHost On
+
+    # Redirection du trafic vers ton backend local sur le port 35467
+    ProxyPass / http://localhost:35467/
+    ProxyPassReverse / http://localhost:35467/
+
+    # En-têtes utiles pour Django
+    RequestHeader set X-Forwarded-For expr=%{REMOTE_ADDR}
+    RequestHeader set X-Forwarded-Proto expr=%{REQUEST_SCHEME}
+
+    # Gestion des fichiers statiques et médias
+    Alias /static /home/npe-tech/Projets/Comsas/staticfiles
+    Alias /media  /home/npe-tech/Projets/Comsas/media
+
+    <Directory "/home/npe-tech/Projets/Comsas/staticfiles">
+        Require all granted
+    </Directory>
+
+    <Directory "/home/npe-tech/Projets/Comsas/media">
+        Require all granted
+    </Directory>
+
+    # Logs du site
+    ErrorLog \${APACHE_LOG_DIR}/comsas-uy1_error.log
+    CustomLog \${APACHE_LOG_DIR}/comsas-uy1_access.log combined
+
+    # Redirection vers HTTPS (si certbot est configuré, sinon commenter cette section)
+    # RewriteEngine On
+    # RewriteCond %{SERVER_NAME} =comsas-uy1.com [OR]
+    # RewriteCond %{SERVER_NAME} =www.comsas-uy1.com
+    # RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+EOF
+
+echo " Fichier de configuration créé : $APACHE_CONF"
+
+# Activation du site et redémarrage d'Apache
+echo "Activation du site..."
+sudo a2ensite comsas-uy1.conf
+sudo systemctl reload apache2
+
+echo " Configuration Apache appliquée !"
 
 # Afficher les derniers logs
 echo " Derniers logs (si problème):"
