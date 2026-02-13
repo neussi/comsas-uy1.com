@@ -14,11 +14,13 @@ from main.models import (
     Member, Project, Event, EventRegistration, 
     News, Gallery, Contact, SiteSettings,
     SponsorshipSession, Mentor, Mentee, Match,
-    Contest, Candidate, Vote
+    Contest, Candidate, Vote,
+    RequestDocument, Professor, Classroom, Delegate, BlogArticle
 )
 from .forms import (
     ProjectForm, EventForm, NewsForm, GalleryForm, SiteSettingsForm, MemberForm,
-    SponsorshipSessionForm, ContestForm, CandidateForm
+    SponsorshipSessionForm, ContestForm, CandidateForm,
+    RequestDocumentForm, ProfessorForm, ClassroomForm, DelegateForm, BlogArticleForm
 )
 from main.utils import send_member_card_email
 
@@ -347,6 +349,15 @@ def event_registrations(request, pk):
     }
     
     return render(request, 'admin_dashboard/events/registrations.html', context)
+
+@staff_member_required
+def delete_registration(request, pk):
+    """Supprimer une inscription"""
+    registration = get_object_or_404(EventRegistration, pk=pk)
+    event_pk = registration.event.pk
+    registration.delete()
+    messages.success(request, "Inscription supprimée avec succès.")
+    return redirect('admin_event_registrations', pk=event_pk)
 
 @staff_member_required
 def confirm_registration(request, pk):
@@ -898,4 +909,259 @@ class CandidateDeleteView(DeleteView):
     
     def form_valid(self, form):
         messages.success(self.request, 'Le candidat a été supprimé.')
+        return super().form_valid(form)
+# ============= GESTION DES REQUÊTES =============
+
+@staff_member_required
+def requests_list(request):
+    """Liste des modèles de requêtes"""
+    documents = RequestDocument.objects.all().order_by('-created_at')
+    
+    # Filtrage
+    doc_type = request.GET.get('type')
+    if doc_type:
+        documents = documents.filter(doc_type=doc_type)
+        
+    paginator = Paginator(documents, 10)
+    page_number = request.GET.get('page')
+    documents_page = paginator.get_page(page_number)
+    
+    context = {
+        'documents_page': documents_page,
+        'doc_types': RequestDocument.DOC_TYPES,
+        'current_type': doc_type,
+    }
+    return render(request, 'admin_dashboard/requests/list.html', context)
+
+@method_decorator(staff_member_required, name='dispatch')
+class RequestDocumentCreateView(CreateView):
+    model = RequestDocument
+    form_class = RequestDocumentForm
+    template_name = 'admin_dashboard/requests/form.html'
+    success_url = reverse_lazy('admin_requests_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Le document a été ajouté avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class RequestDocumentUpdateView(UpdateView):
+    model = RequestDocument
+    form_class = RequestDocumentForm
+    template_name = 'admin_dashboard/requests/form.html'
+    success_url = reverse_lazy('admin_requests_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Le document a été mis à jour avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class RequestDocumentDeleteView(DeleteView):
+    model = RequestDocument
+    template_name = 'admin_dashboard/requests/confirm_delete.html'
+    success_url = reverse_lazy('admin_requests_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Le document a été supprimé.')
+        return super().form_valid(form)
+
+# ============= GESTION DU DÉPARTEMENT =============
+
+# --- ENSEIGNANTS ---
+@staff_member_required
+def professors_list(request):
+    """Liste des enseignants"""
+    professors = Professor.objects.all().order_by('name')
+    
+    # Filtrage
+    grade = request.GET.get('grade')
+    if grade:
+        professors = professors.filter(grade=grade)
+        
+    paginator = Paginator(professors, 15)
+    page_number = request.GET.get('page')
+    professors_page = paginator.get_page(page_number)
+    
+    context = {
+        'professors_page': professors_page,
+        'grades': Professor.GRADES,
+        'current_grade': grade,
+    }
+    return render(request, 'admin_dashboard/department/professors_list.html', context)
+
+@method_decorator(staff_member_required, name='dispatch')
+class ProfessorCreateView(CreateView):
+    model = Professor
+    form_class = ProfessorForm
+    template_name = 'admin_dashboard/department/professor_form.html'
+    success_url = reverse_lazy('admin_professors_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'L\'enseignant a été ajouté avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class ProfessorUpdateView(UpdateView):
+    model = Professor
+    form_class = ProfessorForm
+    template_name = 'admin_dashboard/department/professor_form.html'
+    success_url = reverse_lazy('admin_professors_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'L\'enseignant a été mis à jour avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class ProfessorDeleteView(DeleteView):
+    model = Professor
+    template_name = 'admin_dashboard/department/professor_confirm_delete.html'
+    success_url = reverse_lazy('admin_professors_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'L\'enseignant a été supprimé.')
+        return super().form_valid(form)
+
+# --- SALLES ---
+@staff_member_required
+def classrooms_list(request):
+    """Liste des salles"""
+    classrooms = Classroom.objects.all().order_by('name')
+    
+    paginator = Paginator(classrooms, 15)
+    page_number = request.GET.get('page')
+    classrooms_page = paginator.get_page(page_number)
+    
+    context = {'classrooms_page': classrooms_page}
+    return render(request, 'admin_dashboard/department/classrooms_list.html', context)
+
+@method_decorator(staff_member_required, name='dispatch')
+class ClassroomCreateView(CreateView):
+    model = Classroom
+    form_class = ClassroomForm
+    template_name = 'admin_dashboard/department/classroom_form.html'
+    success_url = reverse_lazy('admin_classrooms_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'La salle a été ajoutée avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class ClassroomUpdateView(UpdateView):
+    model = Classroom
+    form_class = ClassroomForm
+    template_name = 'admin_dashboard/department/classroom_form.html'
+    success_url = reverse_lazy('admin_classrooms_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'La salle a été mise à jour avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class ClassroomDeleteView(DeleteView):
+    model = Classroom
+    template_name = 'admin_dashboard/department/classroom_confirm_delete.html'
+    success_url = reverse_lazy('admin_classrooms_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'La salle a été supprimée.')
+        return super().form_valid(form)
+
+# --- DÉLÉGUÉS ---
+@staff_member_required
+def delegates_list(request):
+    """Liste des délégués"""
+    delegates = Delegate.objects.all().order_by('level')
+    
+    paginator = Paginator(delegates, 15)
+    page_number = request.GET.get('page')
+    delegates_page = paginator.get_page(page_number)
+    
+    context = {'delegates_page': delegates_page}
+    return render(request, 'admin_dashboard/department/delegates_list.html', context)
+
+@method_decorator(staff_member_required, name='dispatch')
+class DelegateCreateView(CreateView):
+    model = Delegate
+    form_class = DelegateForm
+    template_name = 'admin_dashboard/department/delegate_form.html'
+    success_url = reverse_lazy('admin_delegates_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Le délégué a été ajouté avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class DelegateUpdateView(UpdateView):
+    model = Delegate
+    form_class = DelegateForm
+    template_name = 'admin_dashboard/department/delegate_form.html'
+    success_url = reverse_lazy('admin_delegates_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Le délégué a été mis à jour avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class DelegateDeleteView(DeleteView):
+    model = Delegate
+    template_name = 'admin_dashboard/department/delegate_confirm_delete.html'
+    success_url = reverse_lazy('admin_delegates_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Le délégué a été supprimé.')
+        return super().form_valid(form)
+
+# ============= GESTION DU BLOG =============
+
+@staff_member_required
+def blog_list(request):
+    """Liste des articles de blog"""
+    articles = BlogArticle.objects.all().order_by('-published_at')
+    
+    # Filtrage
+    category = request.GET.get('category')
+    if category:
+        articles = articles.filter(category=category)
+        
+    paginator = Paginator(articles, 10)
+    page_number = request.GET.get('page')
+    articles_page = paginator.get_page(page_number)
+    
+    context = {
+        'articles_page': articles_page,
+        'categories': BlogArticle.CATEGORIES,
+        'current_category': category,
+    }
+    return render(request, 'admin_dashboard/blog/list.html', context)
+
+@method_decorator(staff_member_required, name='dispatch')
+class BlogArticleCreateView(CreateView):
+    model = BlogArticle
+    form_class = BlogArticleForm
+    template_name = 'admin_dashboard/blog/form.html'
+    success_url = reverse_lazy('admin_blog_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'L\'article a été créé avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class BlogArticleUpdateView(UpdateView):
+    model = BlogArticle
+    form_class = BlogArticleForm
+    template_name = 'admin_dashboard/blog/form.html'
+    success_url = reverse_lazy('admin_blog_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'L\'article a été mis à jour avec succès.')
+        return super().form_valid(form)
+
+@method_decorator(staff_member_required, name='dispatch')
+class BlogArticleDeleteView(DeleteView):
+    model = BlogArticle
+    template_name = 'admin_dashboard/blog/confirm_delete.html'
+    success_url = reverse_lazy('admin_blog_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'L\'article a été supprimé.')
         return super().form_valid(form)

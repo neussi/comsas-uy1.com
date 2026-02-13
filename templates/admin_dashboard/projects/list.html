@@ -85,8 +85,7 @@
                                 </div>
                                 {% endif %}
                                 <div>
-                                    <h6 class="mb-1 text-dark fw-bold text-wrap" style="max-width: 250px;">{{
-                                        project.title_fr }}</h6>
+                                    <h6 class="mb-1 text-dark fw-bold text-wrap" style="max-width: 250px;">{{ project.title_fr }}</h6>
                                     {% if project.is_featured %}
                                     <span class="badge bg-warning text-dark py-1 px-2" style="font-size: 0.65rem;"><i
                                             class="fas fa-star me-1"></i>Mis en avant</span>
@@ -189,8 +188,7 @@
                     {% for num in projects_page.paginator.page_range %}
                     {% if projects_page.number == num %}
                     <li class="page-item active">
-                        <span class="page-link border-0 shadow-sm rounded-pill bg-primary px-3">{{ projects_page.number
-                            }}</span>
+                        <span class="page-link border-0 shadow-sm rounded-pill bg-primary px-3">{{ projects_page.number }}</span>
                     </li>
                     {% elif num > projects_page.number|add:'-3' and num < projects_page.number|add:'3' %} <li
                         class="page-item">

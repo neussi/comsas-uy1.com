@@ -1,0 +1,28 @@
+{% extends 'emails/base_email.html' %}
+
+{% block title %}Demande d'Accès Reçue - COMS.A.S{% endblock %}
+
+{% block content %}
+<h1>✅ Demande d'Accès Reçue</h1>
+
+<p>Bonjour <strong>{{ first_name }}</strong>,</p>
+
+<p>Nous avons bien reçu votre demande d'accès administrateur pour le dashboard COMS.A.S.</p>
+
+<div class="info-box">
+    <p><strong>Nom d'utilisateur:</strong> {{ username }}</p>
+    <p><strong>Rôle demandé:</strong> {{ requested_role }}</p>
+    <p><strong>Date de la demande:</strong> {{ date_demande|date:"d F Y à H:i" }}</p>
+</div>
+
+<h2>Prochaines Étapes</h2>
+<p>Votre demande sera examinée par les administrateurs dans les <strong>48 heures</strong>. Vous recevrez une
+    notification par email dès qu'une décision sera prise.</p>
+
+<p style="background-color: #EFF6FF; padding: 15px; border-radius: 4px; border-left: 3px solid #3B82F6;">
+    <strong>ℹ️ Information:</strong> Si votre demande est approuvée, vous recevrez vos identifiants de connexion ainsi
+    qu'un guide d'utilisation du dashboard.
+</p>
+
+<p>Merci pour votre intérêt à contribuer à COMS.A.S!</p>
+{% endblock %}

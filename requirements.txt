@@ -1,6 +1,18 @@
+# Django Framework
 django>=4.2.11,<5.0
-pillow
-django-modeltranslation
-django-crispy-forms
-crispy-bootstrap5
-django-ckeditor
+
+# Image Processing
+pillow>=10.0.0
+
+# Django Extensions
+django-modeltranslation>=0.18.0
+django-crispy-forms>=2.0
+crispy-bootstrap5>=0.7
+django-ckeditor>=6.7.0
+
+# PDF Generation & QR Codes
+reportlab>=4.0.0
+qrcode[pil]>=7.4.0
+
+# Email & Templates (included in Django)
+# No additional dependencies needed for HTML emails

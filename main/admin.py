@@ -250,30 +250,82 @@ from .models import RequestDocument, Professor, Classroom, Delegate, BlogArticle
 @admin.register(RequestDocument)
 class RequestDocumentAdmin(admin.ModelAdmin):
     list_display = ('title', 'doc_type', 'downloads_count', 'created_at')
-    list_filter = ('doc_type',)
+    list_filter = ('doc_type', 'created_at')
     search_fields = ('title', 'description')
+    fieldsets = (
+        ('Informations Générales', {
+            'fields': ('title', 'doc_type', 'description')
+        }),
+        ('Fichier & Aperçu', {
+            'fields': ('file', 'image_preview')
+        }),
+        ('Statistiques', {
+            'fields': ('downloads_count',),
+            'classes': ('collapse',)
+        }),
+    )
 
 @admin.register(Professor)
 class ProfessorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'grade', 'specialty', 'is_active')
+    list_display = ('name', 'grade', 'specialty', 'email', 'is_active')
     list_filter = ('grade', 'is_active')
-    search_fields = ('name', 'specialty')
+    search_fields = ('name', 'specialty', 'email')
+    fieldsets = (
+        ('Identité', {
+            'fields': ('name', 'grade', 'specialty', 'email', 'profile_photo')
+        }),
+        ('Bureau', {
+            'fields': ('office_description', 'office_photo')
+        }),
+        ('Statut', {
+            'fields': ('is_active',)
+        }),
+    )
 
 @admin.register(Classroom)
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = ('name', 'capacity', 'is_lab')
     list_filter = ('is_lab',)
-    search_fields = ('name',)
+    search_fields = ('name', 'location_description')
+    fieldsets = (
+        ('Détails de la salle', {
+            'fields': ('name', 'capacity', 'is_lab', 'photo')
+        }),
+        ('Localisation', {
+            'fields': ('location_description',)
+        }),
+    )
 
 @admin.register(Delegate)
 class DelegateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'level', 'phone', 'year')
+    list_display = ('name', 'level', 'year', 'phone', 'email')
     list_filter = ('level', 'year')
-    search_fields = ('name', 'email')
+    search_fields = ('name', 'email', 'phone')
+    fieldsets = (
+        ('Identité', {
+            'fields': ('name', 'email', 'phone', 'photo')
+        }),
+        ('Mandat', {
+            'fields': ('level', 'year', 'motto')
+        }),
+    )
 
 @admin.register(BlogArticle)
 class BlogArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'category', 'author', 'published_at', 'views_count', 'is_published')
-    list_filter = ('category', 'is_published')
+    list_filter = ('category', 'is_published', 'published_at')
     search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
+    date_hierarchy = 'published_at'
+    fieldsets = (
+        ('Contenu', {
+            'fields': ('title', 'slug', 'category', 'image', 'content')
+        }),
+        ('Publication', {
+            'fields': ('author', 'published_at', 'is_published')
+        }),
+        ('Statistiques', {
+            'fields': ('views_count',),
+            'classes': ('collapse',)
+        }),
+    )

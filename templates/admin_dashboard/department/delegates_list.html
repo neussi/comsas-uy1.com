@@ -1,0 +1,110 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Gestion des Délégués{% endblock %}
+{% block page_icon %}user-friends{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h4 class="fw-bold mb-0 text-dark">Délégués</h4>
+        <p class="text-muted small mb-0">Gérez les représentants des niveaux</p>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'admin_delegate_create' %}" class="btn btn-primary shadow-sm hover-lift">
+            <i class="fas fa-plus me-2"></i>Nouveau Délégué
+        </a>
+    </div>
+</div>
+
+<!-- Liste des délégués -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 py-4 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold text-dark">Liste des Délégués <span
+                class="badge bg-light text-primary rounded-pill ms-2">{{ delegates_page.paginator.count }}</span></h5>
+    </div>
+    <div class="card-body p-0">
+        {% if delegates_page.object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-nowrap">
+                <thead class="bg-light text-uppercase text-muted small">
+                    <tr>
+                        <th class="ps-4 border-0">Délégué</th>
+                        <th class="border-0">Niveau</th>
+                        <th class="border-0">Année</th>
+                        <th class="border-0">Contact</th>
+                        <th class="border-0 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for delegate in delegates_page.object_list %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                {% if delegate.photo %}
+                                <img src="{{ delegate.photo.url }}" class="rounded-circle me-3" width="40" height="40"
+                                    style="object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                {% endif %}
+                                <h6 class="mb-0 text-dark fw-bold">{{ delegate.name }}</h6>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ delegate.get_level_display }}</span>
+                        </td>
+                        <td>{{ delegate.year }}</td>
+                        <td>
+                            <div class="small">
+                                <div><i class="fas fa-envelope me-1 text-muted"></i>{{ delegate.email }}</div>
+                                <div><i class="fas fa-phone me-1 text-muted"></i>{{ delegate.phone }}</div>
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <a href="{% url 'admin_delegate_edit' delegate.pk %}"
+                                    class="btn btn-sm btn-light text-info rounded-circle me-1" title="Modifier">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a href="{% url 'admin_delegate_delete' delegate.pk %}"
+                                    class="btn btn-sm btn-light text-danger rounded-circle" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if delegates_page.has_other_pages %}
+        <div class="card-footer bg-white border-0 py-4">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if delegates_page.has_previous %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ delegates_page.previous_page_number }}">Précédent</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ delegates_page.number }}</span></li>
+                    {% if delegates_page.has_next %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ delegates_page.next_page_number }}">Suivant</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <p class="text-muted">Aucun délégué trouvé.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -38,7 +38,8 @@ urlpatterns = [
     path('events/create/', views.EventCreateView.as_view(), name='admin_event_create'),
     path('events/<int:pk>/edit/', views.EventUpdateView.as_view(), name='admin_event_edit'),
     path('events/<int:pk>/delete/', views.EventDeleteView.as_view(), name='admin_event_delete'),
-    path('events/<int:pk>/registrations/', views.event_registrations, name='admin_event_registrations'),
+    path('events/<int:pk>/reservations/', views.event_registrations, name='admin_event_registrations'),
+    path('registrations/<int:pk>/delete/', views.delete_registration, name='admin_delete_registration'),
     path('events/<int:pk>/registrations/export/', views.event_registrations_export_excel, name='admin_export_registrations'),
     path('registrations/<int:pk>/confirm/', views.confirm_registration, name='admin_confirm_registration'),
     
@@ -86,4 +87,35 @@ urlpatterns = [
     path('contests/<int:contest_pk>/candidates/add/', views.CandidateCreateView.as_view(), name='admin_candidate_create'),
     path('candidates/<int:pk>/edit/', views.CandidateUpdateView.as_view(), name='admin_candidate_edit'),
     path('candidates/<int:pk>/delete/', views.CandidateDeleteView.as_view(), name='admin_candidate_delete'),
+
+    # ============= GESTION DES REQUÊTES =============
+    path('requests/', views.requests_list, name='admin_requests_list'),
+    path('requests/create/', views.RequestDocumentCreateView.as_view(), name='admin_request_create'),
+    path('requests/<int:pk>/edit/', views.RequestDocumentUpdateView.as_view(), name='admin_request_edit'),
+    path('requests/<int:pk>/delete/', views.RequestDocumentDeleteView.as_view(), name='admin_request_delete'),
+
+    # ============= GESTION DU DÉPARTEMENT =============
+    # Enseignants
+    path('department/professors/', views.professors_list, name='admin_professors_list'),
+    path('department/professors/create/', views.ProfessorCreateView.as_view(), name='admin_professor_create'),
+    path('department/professors/<int:pk>/edit/', views.ProfessorUpdateView.as_view(), name='admin_professor_edit'),
+    path('department/professors/<int:pk>/delete/', views.ProfessorDeleteView.as_view(), name='admin_professor_delete'),
+    
+    # Salles
+    path('department/classrooms/', views.classrooms_list, name='admin_classrooms_list'),
+    path('department/classrooms/create/', views.ClassroomCreateView.as_view(), name='admin_classroom_create'),
+    path('department/classrooms/<int:pk>/edit/', views.ClassroomUpdateView.as_view(), name='admin_classroom_edit'),
+    path('department/classrooms/<int:pk>/delete/', views.ClassroomDeleteView.as_view(), name='admin_classroom_delete'),
+    
+    # Délégués
+    path('department/delegates/', views.delegates_list, name='admin_delegates_list'),
+    path('department/delegates/create/', views.DelegateCreateView.as_view(), name='admin_delegate_create'),
+    path('department/delegates/<int:pk>/edit/', views.DelegateUpdateView.as_view(), name='admin_delegate_edit'),
+    path('department/delegates/<int:pk>/delete/', views.DelegateDeleteView.as_view(), name='admin_delegate_delete'),
+
+    # ============= GESTION DU BLOG =============
+    path('blog/', views.blog_list, name='admin_blog_list'),
+    path('blog/create/', views.BlogArticleCreateView.as_view(), name='admin_blog_create'),
+    path('blog/<int:pk>/edit/', views.BlogArticleUpdateView.as_view(), name='admin_blog_edit'),
+    path('blog/<int:pk>/delete/', views.BlogArticleDeleteView.as_view(), name='admin_blog_delete'),
 ]

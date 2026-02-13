@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ album.title_fr }} - Galerie COMS.A.S{% endblock %}
+
+{% block content %}
+<!-- Hero Section (About Style) -->
+<section class="py-5 bg-white position-relative overflow-hidden"
+    style="min-height: 50vh; display: flex; align-items: center;">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'gallery' %}"
+                                class="text-decoration-none text-muted">Galerie</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ album.title_fr|truncatechars:30 }}
+                        </li>
+                    </ol>
+                </nav>
+                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-calendar-alt me-2"></i>{{ album.event_date|date:"d F Y" }}
+                </div>
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    {{ album.title_fr }}
+                </h1>
+                <p class="lead text-muted mb-4">
+                    {{ album.description_fr|default:"Découvrez les moments forts de cet événement." }}
+                </p>
+
+                <a href="#gallery-grid" class="btn btn-outline-primary rounded-pill px-4">
+                    Voir toutes les photos <i class="fas fa-arrow-down ms-2"></i>
+                </a>
+            </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <!-- Carousel Preview -->
+                {% if images %}
+                <div id="heroCarousel" class="carousel slide carousel-fade rounded-4 overflow-hidden shadow-lg"
+                    data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for item in images|slice:":5" %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="3000">
+                            {% if item.image %}
+                            <div class="ratio ratio-4x3">
+                                <img src="{{ item.image.url }}" class="d-block w-100 object-fit-cover"
+                                    alt="{{ item.title_fr }}">
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-light rounded-4 d-flex align-items-center justify-content-center shadow-sm p-5"
+                    style="height: 300px;">
+                    <i class="fas fa-images fa-5x text-primary opacity-25"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Full Gallery Grid -->
+<section id="gallery-grid" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Toutes les photos de l'album</h2>
+            <div class="height-4px width-50px bg-primary mx-auto mt-3 rounded-pill"></div>
+        </div>
+
+        {% if images %}
+        <div class="row g-3">
+            {% for item in images %}
+            <div class="col-sm-6 col-md-4 col-lg-3" data-aos="fade-up"
+                data-aos-delay="{{ forloop.counter0|add:1|divisibleby:4|yesno:'0,100,200,300' }}">
+                <div class="card h-100 border-0 shadow-sm hover-shadow transition gallery-item">
+                    {% if item.image %}
+                    <a href="{{ item.image.url }}" class="glightbox" data-gallery="album-gallery"
+                        data-description="{{ item.title_fr }}">
+                        <div class="ratio ratio-1x1 overflow-hidden rounded">
+                            <img src="{{ item.image.url }}"
+                                class="card-img-top object-fit-cover w-100 h-100 transform-scale"
+                                alt="{{ item.title_fr }}">
+                            <div class="gallery-overlay">
+                                <i class="fas fa-search-plus fa-2x text-white"></i>
+                            </div>
+                        </div>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="text-muted opacity-50 mb-3">
+                <i class="fas fa-images fa-4x"></i>
+            </div>
+            <h3>Aucune image dans cet album pour le moment</h3>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<style>
+    .transform-scale {
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover .transform-scale {
+        transform: scale(1.05);
+    }
+
+    .gallery-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .gallery-item:hover .gallery-overlay {
+        opacity: 1;
+    }
+
+    .height-4px {
+        height: 4px;
+    }
+
+    .width-50px {
+        width: 50px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script>
+    const lightbox = GLightbox({
+        touchNavigation: true,
+        loop: true,
+        autoplayVideos: true
+    });
+</script>
+{% endblock %}

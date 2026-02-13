@@ -150,8 +150,7 @@
                             <h6 class="fw-bold text-dark mb-1 text-truncate">{{ item.title_fr }}</h6>
                             <p class="text-muted small mb-2 text-truncate">{{ item.description_fr }}</p>
                             <div class="d-flex justify-content-between align-items-center small">
-                                <span class="text-muted"><i class="far fa-calendar-alt me-1"></i>{{
-                                    item.created_at|date:"d M Y" }}</span>
+                                <span class="text-muted"><i class="far fa-calendar-alt me-1"></i>{{ item.created_at|date:"d M Y" }}</span>
                             </div>
                         </div>
                     </div>
@@ -197,8 +196,7 @@
                             </td>
                             <td>
                                 <h6 class="mb-0 fw-bold text-dark">{{ item.title_fr }}</h6>
-                                <small class="text-muted text-truncate d-block" style="max-width: 300px;">{{
-                                    item.description_fr }}</small>
+                                <small class="text-muted text-truncate d-block" style="max-width: 300px;">{{ item.description_fr }}</small>
                             </td>
                             <td>
                                 <span class="badge bg-light text-dark border">{{ item.get_media_type_display }}</span>
@@ -241,8 +239,7 @@
                 {% endif %}
 
                 <li class="page-item active">
-                    <span class="page-link border-0 shadow-sm rounded-pill bg-primary px-3">{{ gallery_page.number
-                        }}</span>
+                    <span class="page-link border-0 shadow-sm rounded-pill bg-primary px-3">{{ gallery_page.number }}</span>
                 </li>
 
                 {% if gallery_page.has_next %}

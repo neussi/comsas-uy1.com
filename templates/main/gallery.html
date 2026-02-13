@@ -1,97 +1,189 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load custom_filters %}
 
 {% block title %}Galerie - COMS.A.S{% endblock %}
 
 {% block content %}
-<section class="py-5 bg-white text-center">
-    <div class="container py-4">
-        <h1 class="display-3 fw-bold mb-4">Notre <span class="text-primary">Galerie</span></h1>
-        <p class="lead text-muted mb-5">Revivez en images les moments forts de notre association.</p>
-
-        <!-- Filter Buttons (Optional, Javascript needed for implementation or just links) -->
-        <div class="d-flex justify-content-center gap-3 mb-5">
-            <button class="btn btn-dark rounded-pill px-4 active">Tout</button>
-            <button class="btn btn-outline-primary rounded-pill px-4">Images</button>
-            <button class="btn btn-outline-primary rounded-pill px-4">Vidéos</button>
+<!-- Hero Section (About Style) -->
+<section class="py-5 bg-white position-relative overflow-hidden"
+    style="min-height: 60vh; display: flex; align-items: center;">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-decoration-none text-muted">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Galerie</li>
+                    </ol>
+                </nav>
+                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-images me-2"></i>Souvenirs & Moments
+                </div>
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    Notre <span class="text-primary">Galerie</span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Plongez au cœur de nos activités et revivez les moments forts qui font vibrer la communauté
+                    COM.S.AS.
+                    Chaque image raconte une histoire, celle de l'excellence et de la passion.
+                </p>
+            </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="position-relative text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle position-absolute top-50 start-50 translates-middle"
+                        style="width: 400px; height: 400px; z-index: -1;"></div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="rounded-4 overflow-hidden shadow-sm mb-2 transform-hover">
+                                <img src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                                    class="img-fluid w-100" alt="Coding">
+                            </div>
+                            <div class="rounded-4 overflow-hidden shadow-sm transform-hover">
+                                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                                    class="img-fluid w-100" alt="Team">
+                            </div>
+                        </div>
+                        <div class="col-6 mt-4">
+                            <div class="rounded-4 overflow-hidden shadow-sm mb-2 transform-hover">
+                                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                                    class="img-fluid w-100" alt="Meeting">
+                            </div>
+                            <div class="rounded-4 overflow-hidden shadow-sm transform-hover">
+                                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                                    class="img-fluid w-100" alt="Discussion">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
+<!-- Albums Grid Section -->
 <section class="py-5 bg-light">
     <div class="container">
-
-        <!-- Images Section -->
-        {% if images %}
-        <div class="mb-5">
-            <h3 class="fw-bold mb-4 border-start border-5 border-primary ps-3">Images</h3>
-            <div class="row g-4 masonry-grid">
-                {% for item in images %}
-                <div class="col-md-4 mb-4 masonry-item">
-                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden position-relative group-hover h-100">
-                        {% if item.image %}
-                        <a href="{{ item.image.url }}" data-lightbox="gallery" data-title="{{ item.description }}">
-                            <img src="{{ item.image.url }}" alt="{{ item.title }}"
-                                class="img-fluid w-100 transform-scale-11 transition-all"
-                                style="height: 300px; object-fit: cover;">
-                        </a>
-                        {% else %}
-                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
-                            <i class="fas fa-image fa-3x text-muted opacity-25"></i>
-                        </div>
-                        {% endif %}
-                        <div
-                            class="card-body position-absolute bottom-0 start-0 w-100 bg-gradient-dark text-white p-3 translate-y-100 group-hover-translate-0 transition-all">
-                            <h6 class="fw-bold mb-1 text-white">{{ item.title }}</h6>
-                            <small class="opacity-75">{{ item.created_at|date:"d M Y" }}</small>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill">
+                <i class="fas fa-folder-open me-2"></i>Albums
+            </span>
+            <h2 class="fw-bold">Nos Derniers Événements</h2>
         </div>
-        {% endif %}
 
-        <!-- Videos Section -->
-        {% if videos %}
-        <div class="mb-5">
-            <h3 class="fw-bold mb-4 border-start border-5 border-danger ps-3">Vidéos</h3>
-            <div class="row g-4">
-                {% for item in videos %}
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                        <div class="ratio ratio-16x9 bg-dark">
-                            {% if item.video_url %}
-                            <iframe src="{{ item.video_url }}" allowfullscreen class="rounded-top-4"></iframe>
-                            {% elif item.video_file %}
-                            <video controls class="w-100 h-100 rounded-top-4">
-                                <source src="{{ item.video_file.url }}" type="video/mp4">
-                                Votre navigateur ne supporte pas la lecture de vidéos.
-                            </video>
+        {% if page_obj %}
+        <div class="row g-4">
+            {% for album in page_obj %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up"
+                data-aos-delay="{{ forloop.counter0|add:1|divisibleby:3|yesno:'0,100,200' }}">
+                <a href="{% url 'gallery_detail' album.pk %}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow-sm hover-lift transition overflow-hidden">
+                        <div class="position-relative" style="height: 250px;">
+                            {% if album.cover_image %}
+                            <img src="{{ album.cover_image.url }}"
+                                class="w-100 h-100 object-fit-cover transition-transform" alt="{{ album.title_fr }}">
+                            {% else %}
+                            <div
+                                class="w-100 h-100 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-images fa-3x text-muted opacity-50"></i>
+                            </div>
                             {% endif %}
+                            <div
+                                class="position-absolute bottom-0 start-0 w-100 p-3 bg-gradient-to-t from-black-50 to-transparent text-white">
+                                <span class="badge bg-primary mb-2">
+                                    <i class="fas fa-camera me-1"></i> {{ album.images.count }} Photos
+                                </span>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <h5 class="fw-bold">{{ item.title }}</h5>
-                            <p class="text-muted small mb-0">{{ item.description|truncatewords:20 }}</p>
+                            <div class="small text-muted mb-2">
+                                <i class="fas fa-calendar-alt me-1"></i> {{ album.event_date|date:"d F Y" }}
+                            </div>
+                            <h5 class="card-title fw-bold text-dark mb-2">{{ album.title_fr }}</h5>
+                            <p class="card-text text-muted small line-clamp-2">
+                                {{ album.description_fr|default:"Aucune description pour cet album." }}
+                            </p>
                         </div>
                     </div>
-                </div>
-                {% endfor %}
+                </a>
             </div>
+            {% endfor %}
         </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation" class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link rounded-circle mx-1" href="?page={{ page_obj.previous_page_number }}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link rounded-circle mx-1">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li class="page-item">
+                    <a class="page-link rounded-circle mx-1" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link rounded-circle mx-1" href="?page={{ page_obj.next_page_number }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+            </ul>
+        </nav>
         {% endif %}
 
-        {% if not images and not videos %}
+        {% else %}
         <div class="text-center py-5">
-            <div class="bg-white p-5 rounded-4 shadow-sm">
-                <i class="fas fa-images fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">La galerie est vide pour le moment.</h5>
+            <div class="bg-white p-5 rounded-4 shadow-sm mx-auto" style="max-width: 500px;">
+                <i class="fas fa-images fa-4x text-muted opacity-25 mb-4"></i>
+                <h4 class="fw-bold">Aucun album trouvé</h4>
+                <p class="text-muted">La galerie sera bientôt mise à jour avec nos derniers événements.</p>
             </div>
         </div>
         {% endif %}
     </div>
 </section>
 
-<!-- Lightbox CSS/JS dependencies should be in base.html or added here if needed -->
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+    }
+
+    .hover-lift:hover .transition-transform {
+        transform: scale(1.05);
+    }
+
+    .transition-transform {
+        transition: transform 0.3s ease;
+    }
+
+    .bg-gradient-to-t {
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    }
+
+    .transform-hover {
+        transition: transform 0.3s ease;
+    }
+
+    .transform-hover:hover {
+        transform: scale(1.02);
+    }
+</style>
 {% endblock %}

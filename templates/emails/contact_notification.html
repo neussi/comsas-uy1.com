@@ -1,0 +1,26 @@
+{% extends 'emails/base_email.html' %}
+
+{% block title %}Nouveau Message de Contact - COMS.A.S{% endblock %}
+
+{% block content %}
+<h1>📧 Nouveau Message de Contact</h1>
+
+<p>Bonjour,</p>
+
+<p>Un nouveau message a été envoyé via le formulaire de contact du site web.</p>
+
+<div class="info-box">
+    <p><strong>De:</strong> {{ nom_prenom }}</p>
+    <p><strong>Email:</strong> <a href="mailto:{{ email }}">{{ email }}</a></p>
+    <p><strong>Sujet:</strong> {{ sujet }}</p>
+</div>
+
+<h2>Message:</h2>
+<div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; border-left: 3px solid #EC4899;">
+    <p style="white-space: pre-wrap; color: #333;">{{ message }}</p>
+</div>
+
+<p style="margin-top: 30px; color: #888; font-size: 13px;">
+    <em>Ce message a été envoyé le {{ date_envoi|date:"d/m/Y à H:i" }}</em>
+</p>
+{% endblock %}

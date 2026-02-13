@@ -241,9 +241,7 @@
                 <div class="d-flex justify-content-between">
                     <span>Reste à collecter :</span>
                     <strong class="text-warning">
-                        {{
-                        object.budget_required|add:object.budget_collected|add:"-"|add:object.budget_collected|floatformat:0
-                        }} FCFA
+                        {{ object.budget_required|add:object.budget_collected|add:"-"|add:object.budget_collected|floatformat:0 }} FCFA
                     </strong>
                 </div>
             </div>

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Vérification Ticket - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light" style="min-height: 80vh; display: flex; align-items: center;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card border-0 shadow-lg text-center p-4">
+                    <div class="card-body">
+                        {% if valid %}
+                        <div class="mb-4 text-success">
+                            <i class="fas fa-check-circle fa-5x"></i>
+                        </div>
+                        <h2 class="fw-bold text-success mb-3">Ticket Valide</h2>
+                        <div class="bg-success bg-opacity-10 rounded-3 p-3 mb-4">
+                            <h5 class="fw-bold text-dark">{{ registration.event.title_fr }}</h5>
+                            <p class="mb-0 text-muted">{{ registration.event.date_event|date:"d F Y à H:i" }}</p>
+                        </div>
+                        <ul class="list-unstyled text-start bg-light p-3 rounded-3 mb-4 icon-list">
+                            <li class="mb-2"><i class="fas fa-user me-2 text-primary"></i> <strong>Nom:</strong> {{
+                                registration.nom_prenom }}</li>
+                            <li class="mb-2"><i class="fas fa-graduation-cap me-2 text-warning"></i>
+                                <strong>Promotion:</strong> {{ registration.promotion }}</li>
+                            <li><i class="fas fa-fingerprint me-2 text-secondary"></i> <strong>ID:</strong> <span
+                                    class="text-muted small">{{ registration.uuid|stringformat:"s"|slice:":8"
+                                    }}...</span></li>
+                        </ul>
+                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            <div>Ce participant est bien inscrit.</div>
+                        </div>
+                        {% else %}
+                        <div class="mb-4 text-danger">
+                            <i class="fas fa-times-circle fa-5x"></i>
+                        </div>
+                        <h2 class="fw-bold text-danger mb-3">Ticket Invalide</h2>
+                        <p class="text-muted mb-4">Le ticket scanné n'existe pas ou n'est plus valide.</p>
+                        <div class="alert alert-danger" role="alert">
+                            Accès refusé.
+                        </div>
+                        {% endif %}
+                        <a href="{% url 'home' %}" class="btn btn-outline-dark w-100 rounded-pill mt-3">
+                            <i class="fas fa-home me-2"></i> Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

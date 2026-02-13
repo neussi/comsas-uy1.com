@@ -1,0 +1,28 @@
+{% extends 'emails/base_email.html' %}
+
+{% block title %}Confirmation d'inscription - {{ event_title }}{% endblock %}
+
+{% block content %}
+<h1>🎉 Inscription Confirmée!</h1>
+
+<p>Bonjour <strong>{{ participant_name }}</strong>,</p>
+
+<p>Nous avons le plaisir de confirmer votre inscription à l'événement suivant:</p>
+
+<div class="info-box">
+    <p><strong>📅 Événement:</strong> {{ event_title }}</p>
+    <p><strong>🗓️ Date:</strong> {{ event_date|date:"d F Y à H:i" }}</p>
+    <p><strong>📍 Lieu:</strong> {{ event_location }}</p>
+</div>
+
+<h2>Votre Ticket</h2>
+<p>Votre ticket d'entrée est joint à cet email au format PDF. Veuillez le présenter (version numérique ou imprimée) à
+    l'entrée de l'événement.</p>
+
+<p style="background-color: #FFF7ED; padding: 15px; border-radius: 4px; border-left: 3px solid #F59E0B;">
+    <strong>⚠️ Important:</strong> Le QR code sur votre ticket sera scanné à l'entrée. Assurez-vous qu'il est bien
+    visible.
+</p>
+
+<p>Nous avons hâte de vous accueillir!</p>
+{% endblock %}

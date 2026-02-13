@@ -71,8 +71,7 @@
                                     <i class="far fa-calendar me-2"></i>{{ featured.created_at|date:"d F Y" }}
                                 </div>
                                 <h2 class="card-title fw-bold display-6 mb-4">{{ featured.title_fr }}</h2>
-                                <p class="card-text opacity-75 mb-5 lead">{{
-                                    featured.content_fr|striptags|truncatewords:30 }}</p>
+                                <p class="card-text opacity-75 mb-5 lead">{{ featured.content_fr|striptags|truncatewords:30 }}</p>
                                 <a href="{% url 'news_detail' featured.pk %}"
                                     class="btn btn-warning rounded-pill px-5 btn-lg text-dark fw-bold">
                                     Lire l'article complet
@@ -100,13 +99,11 @@
                     {% endif %}
                     <div class="card-body p-4">
                         <div class="mb-2 text-muted small">
-                            <span class="badge bg-light text-dark border me-2">{{ news.category|default:"Général"
-                                }}</span>
+                            <span class="badge bg-light text-dark border me-2">{{ news.category|default:"Général" }}</span>
                             <i class="far fa-clock me-1"></i>{{ news.created_at|date:"d M, Y" }}
                         </div>
                         <h5 class="card-title fw-bold mb-3 line-clamp-2">{{ news.title_fr }}</h5>
-                        <p class="card-text text-muted mb-4 small line-clamp-3">{{
-                            news.content_fr|striptags|truncatewords:20 }}</p>
+                        <p class="card-text text-muted mb-4 small line-clamp-3">{{ news.content_fr|striptags|truncatewords:20 }}</p>
                         <a href="{% url 'news_detail' news.pk %}"
                             class="text-primary text-decoration-none fw-bold stretched-link">
                             Lire la suite <i class="fas fa-arrow-right ms-1"></i>

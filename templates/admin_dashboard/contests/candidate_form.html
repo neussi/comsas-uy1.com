@@ -16,8 +16,7 @@
                 </li>
                 {% if form.instance.contest %}
                 <li class="breadcrumb-item">
-                    <a href="{% url 'admin_contest_detail' form.instance.contest.pk %}">{{ form.instance.contest.title
-                        }}</a>
+                    <a href="{% url 'admin_contest_detail' form.instance.contest.pk %}">{{ form.instance.contest.title }}</a>
                 </li>
                 {% endif %}
                 <li class="breadcrumb-item active">

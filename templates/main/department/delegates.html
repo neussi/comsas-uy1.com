@@ -1,93 +1,99 @@
-{% extends 'main/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Délégués - COMS.A.S{% endblock %}
+
 {% block content %}
-<section class="py-5 bg-white">
-    <div class="container">
-        <div class="row mb-5 text-center">
-            <div class="col-lg-8 mx-auto">
-                <h1 class="display-4 fw-bold mb-3">Vos Délégués</h1>
-                <p class="lead text-muted">Les représentants des étudiants par niveau pour l'année académique en cours.
+<!-- Hero Section -->
+<section class="py-5 bg-white position-relative overflow-hidden"
+    style="min-height: 40vh; display: flex; align-items: center;">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-decoration-none text-muted">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Représentants</li>
+                    </ol>
+                </nav>
+                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-user-friends me-2"></i>Délégués
+                </div>
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    Vos <span class="text-primary">Délégués</span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Retrouvez les représentants de chaque niveau (L1 à M2) qui assurent le lien entre les étudiants et
+                    l'administration.
                 </p>
             </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="position-relative text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle position-absolute top-50 start-50 translates-middle"
+                        style="width: 300px; height: 300px; z-index: -1;"></div>
+                    <i class="fas fa-bullhorn text-primary opacity-75" style="font-size: 10rem;"></i>
+                </div>
+            </div>
         </div>
+    </div>
+</section>
+
+<!-- Content Section -->
+<section class="py-5 bg-light">
+    <div class="container">
 
         {% regroup delegates by get_level_display as level_list %}
 
         {% for level in level_list %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <h3 class="border-bottom pb-2 mb-4 text-primary fw-bold">
-                    <i class="bi bi-mortarboard-fill me-2"></i>{{ level.grouper }}
-                </h3>
-            </div>
+        <div class="mb-5" data-aos="fade-up">
+            <h3 class="fw-bold border-bottom pb-3 mb-4 text-dark">
+                <i class="fas fa-layer-group me-2 text-primary"></i> {{ level.grouper }}
+            </h3>
 
-            {% for delegate in level.list %}
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100 border-0 shadow-sm text-center p-3 hover-scale">
-                    <div class="mx-auto mb-3 position-relative" style="width: 120px; height: 120px;">
-                        {% if delegate.photo %}
-                        <img src="{{ delegate.photo.url }}"
-                            class="rounded-circle w-100 h-100 object-fit-cover border border-4 border-light shadow"
-                            alt="{{ delegate.name }}">
-                        {% else %}
-                        <img src="https://ui-avatars.com/api/?name={{ delegate.name }}&background=0d6efd&color=fff&size=120"
-                            class="rounded-circle w-100 h-100 border border-4 border-light shadow"
-                            alt="{{ delegate.name }}">
-                        {% endif %}
-                        <span
-                            class="position-absolute bottom-0 end-0 badge rounded-pill bg-warning text-dark border border-white">
-                            {{ delegate.year }}
-                        </span>
-                    </div>
+            <div class="row g-4">
+                {% for delegate in level.list %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                {% if delegate.photo %}
+                                <img src="{{ delegate.photo.url }}" class="rounded-circle shadow-sm"
+                                    alt="{{ delegate.name }}" style="width: 80px; height: 80px; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                    style="width: 80px; height: 80px;">
+                                    <i class="fas fa-user fa-2x"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fw-bold mb-1">{{ delegate.name }}</h5>
+                                <p class="text-muted small mb-0 fst-italic">"{{ delegate.motto|default:'Toujours à votre écoute' }}"</p>
 
-                    <div class="card-body p-0">
-                        <h5 class="fw-bold mb-1">{{ delegate.name }}</h5>
-                        <p class="text-muted small mb-3">Délégué {{ delegate.get_level_display }}</p>
-
-                        {% if delegate.motto %}
-                        <figure class="text-center mb-3">
-                            <blockquote class="blockquote">
-                                <p class="small fst-italic text-secondary">"{{ delegate.motto }}"</p>
-                            </blockquote>
-                        </figure>
-                        {% endif %}
-                    </div>
-
-                    <div class="card-footer bg-white border-0 p-0 mt-3 d-flex justify-content-center gap-2">
-                        {% if delegate.phone %}
-                        <a href="https://wa.me/{{ delegate.phone|cut:'+'|cut:' ' }}"
-                            class="btn btn-outline-success rounded-circle" target="_blank" title="WhatsApp">
-                            <i class="bi bi-whatsapp"></i>
-                        </a>
-                        {% endif %}
-
-                        {% if delegate.email %}
-                        <a href="mailto:{{ delegate.email }}" class="btn btn-outline-secondary rounded-circle"
-                            title="Email">
-                            <i class="bi bi-envelope"></i>
-                        </a>
-                        {% endif %}
+                                <div class="mt-2">
+                                    {% if delegate.email %}
+                                    <a href="mailto:{{ delegate.email }}" class="text-secondary me-2" title="Email"><i
+                                            class="fas fa-envelope"></i></a>
+                                    {% endif %}
+                                    {% if delegate.phone %}
+                                    <a href="tel:{{ delegate.phone }}" class="text-secondary" title="Téléphone"><i
+                                            class="fas fa-phone-alt"></i></a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
         {% empty %}
-        <div class="text-center py-5">
+        <div class="col-12 text-center py-5">
             <p class="text-muted">Aucun délégué listé pour le moment.</p>
         </div>
         {% endfor %}
+
     </div>
 </section>
-
-<style>
-    .hover-scale {
-        transition: transform 0.3s ease;
-    }
-
-    .hover-scale:hover {
-        transform: translateY(-5px);
-    }
-</style>
 {% endblock %}

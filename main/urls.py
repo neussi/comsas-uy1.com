@@ -25,7 +25,7 @@ urlpatterns = [
     # Événements
     path('events/', views.events, name='events'),
     path('events/<int:pk>/', views.event_detail, name='event_detail'),
-    path('events/<int:pk>/register/success/', views.event_registration_success, name='event_registration_success'),
+    path('events/register/success/<uuid:uuid>/', views.event_registration_success, name='event_registration_success'),
     
     # Actualités
     path('news/', views.news, name='news'),
@@ -33,6 +33,7 @@ urlpatterns = [
     
     # Galerie
     path('gallery/', views.gallery, name='gallery'),
+    path('gallery/<int:pk>/', views.gallery_detail, name='gallery_detail'),
     
     # Dons
     path('donations/', views.donations, name='donations'),
@@ -69,7 +70,12 @@ urlpatterns = [
     
     # Blog
     path('blog/', views.blog_list, name='blog_list'),
-    path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('blog/<str:slug>/', views.blog_detail, name='blog_detail'),
+    path('blog/<str:slug>/like/', views.like_article, name='like_article'),
+    
+    # Ticketing
+    path('tickets/download/<uuid:uuid>/', views.download_ticket, name='download_ticket'),
+    path('tickets/verify/<uuid:uuid>/', views.verify_ticket, name='ticket_verify'),
 ]
 
 if settings.DEBUG:

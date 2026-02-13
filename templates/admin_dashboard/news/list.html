@@ -111,10 +111,8 @@
                                 </div>
                                 {% endif %}
                                 <div>
-                                    <h6 class="mb-1 text-dark fw-bold text-wrap" style="max-width: 250px;">{{
-                                        article.title_fr }}</h6>
-                                    <small class="text-muted d-block text-truncate" style="max-width: 250px;">{{
-                                        article.title_en }}</small>
+                                    <h6 class="mb-1 text-dark fw-bold text-wrap" style="max-width: 250px;">{{ article.title_fr }}</h6>
+                                    <small class="text-muted d-block text-truncate" style="max-width: 250px;">{{ article.title_en }}</small>
                                 </div>
                             </div>
                         </td>
@@ -129,8 +127,7 @@
                                     {{ article.author.username|first|upper }}
                                 </div>
                                 {% endif %}
-                                <span class="small fw-semibold text-dark">{{
-                                    article.author.get_full_name|default:article.author.username }}</span>
+                                <span class="small fw-semibold text-dark">{{ article.author.get_full_name|default:article.author.username }}</span>
                             </div>
                         </td>
                         <td>
@@ -193,8 +190,7 @@
                     {% endif %}
 
                     <li class="page-item active">
-                        <span class="page-link border-0 shadow-sm rounded-pill bg-primary px-3">{{ news_page.number
-                            }}</span>
+                        <span class="page-link border-0 shadow-sm rounded-pill bg-primary px-3">{{ news_page.number }}</span>
                     </li>
 
                     {% if news_page.has_next %}

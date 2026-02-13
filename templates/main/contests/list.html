@@ -1,26 +1,61 @@
-{% extends 'main/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Concours & Élections - COMS.A.S{% endblock %}
+
 {% block content %}
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row mb-5 text-center">
-            <div class="col-lg-8 mx-auto">
-                <h1 class="display-4 fw-bold mb-3">Compétitions & Concours</h1>
-                <p class="lead text-muted">Participez, votez et suivez les résultats des élections et concours du
-                    département.</p>
+<!-- Hero Section -->
+<section class="py-5 bg-white position-relative overflow-hidden"
+    style="min-height: 40vh; display: flex; align-items: center;">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-decoration-none text-muted">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Concours</li>
+                    </ol>
+                </nav>
+                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-trophy me-2"></i>Compétitions
+                </div>
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    Concours & <span class="text-primary">Élections</span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Participez à la vie du département : votez pour vos représentants, soutenez vos favoris aux concours
+                    Miss & Master, et suivez les résultats en direct.
+                </p>
+            </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="position-relative text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle position-absolute top-50 start-50 translates-middle"
+                        style="width: 300px; height: 300px; z-index: -1;"></div>
+                    <i class="fas fa-vote-yea text-primary opacity-75" style="font-size: 10rem;"></i>
+                </div>
             </div>
         </div>
+    </div>
+</section>
+
+<!-- Content Section -->
+<section class="py-5 bg-light">
+    <div class="container">
 
         <!-- Tabs -->
-        <ul class="nav nav-pills justify-content-center mb-5" id="pills-tab" role="tablist">
+        <ul class="nav nav-pills justify-content-center mb-5" id="pills-tab" role="tablist" data-aos="fade-up">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active px-4 rounded-pill" id="pills-active-tab" data-bs-toggle="pill"
-                    data-bs-target="#pills-active" type="button" role="tab">En cours</button>
+                <button class="nav-link active px-4 py-2 rounded-pill fw-bold" id="pills-active-tab"
+                    data-bs-toggle="pill" data-bs-target="#pills-active" type="button" role="tab">
+                    <i class="fas fa-play-circle me-2"></i>En cours
+                </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link px-4 rounded-pill" id="pills-past-tab" data-bs-toggle="pill"
-                    data-bs-target="#pills-past" type="button" role="tab">Terminés</button>
+                <button class="nav-link px-4 py-2 rounded-pill fw-bold" id="pills-past-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-past" type="button" role="tab">
+                    <i class="fas fa-history me-2"></i>Terminés
+                </button>
             </li>
         </ul>
 
@@ -29,42 +64,46 @@
             <div class="tab-pane fade show active" id="pills-active" role="tabpanel">
                 <div class="row g-4 justify-content-center">
                     {% for contest in active_contests %}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card h-100 border-0 shadow-lg hover-scale overflow-hidden">
+                    <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                        <div class="card h-100 border-0 shadow-lg hover-lift overflow-hidden">
                             <div class="position-relative">
                                 {% if contest.image %}
                                 <img src="{{ contest.image.url }}" class="card-img-top" alt="{{ contest.title }}"
                                     style="height: 250px; object-fit: cover;">
                                 {% else %}
-                                <div class="bg-gradient-primary h-100 d-flex align-items-center justify-content-center text-white"
-                                    style="height: 250px;">
-                                    <i class="bi bi-trophy display-1"></i>
+                                <div class="bg-primary h-100 d-flex align-items-center justify-content-center text-white"
+                                    style="height: 250px; background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
+                                    <i class="fas fa-trophy fa-5x opacity-50"></i>
                                 </div>
                                 {% endif %}
-                                <div class="position-absolute top-0 end-0 m-3 badge bg-danger animate-pulse">
-                                    <i class="bi bi-circle-fill small me-1"></i> EN DIRECT
+                                <div class="position-absolute top-0 end-0 m-3 badge bg-danger shadow-sm animate-pulse">
+                                    <i class="fas fa-circle small me-1"></i> EN DIRECT
                                 </div>
                             </div>
 
-                            <div class="card-body text-center p-4">
+                            <div class="card-body text-center p-4 d-flex flex-column">
                                 <h3 class="card-title fw-bold mb-2">{{ contest.title }}</h3>
                                 <p class="text-muted small mb-4">
-                                    <i class="bi bi-calendar-check me-1"></i> Fin le {{ contest.end_date|date:"d F Y à
-                                    H:i" }}
+                                    <i class="far fa-clock me-1"></i> Fin le {{ contest.end_date|date:"d F Y à H:i" }}
                                 </p>
-                                <p class="card-text mb-4">{{ contest.description|truncatewords:20 }}</p>
+                                <p class="card-text mb-4 text-muted">{{ contest.description|truncatewords:20 }}</p>
 
-                                <a href="{% url 'contest_detail' contest.slug %}"
-                                    class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">
-                                    <i class="bi bi-check-circle-fill me-2"></i> Voter maintenant
-                                </a>
+                                <div class="mt-auto">
+                                    <a href="{% url 'contest_detail' contest.slug %}"
+                                        class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm hover-lift">
+                                        <i class="fas fa-check-circle me-2"></i> Voter maintenant
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                     {% empty %}
                     <div class="col-12 text-center py-5">
-                        <i class="bi bi-calendar-x display-1 text-muted opacity-25"></i>
-                        <p class="mt-3 text-muted">Aucune compétition en cours.</p>
+                        <div class="mb-4">
+                            <i class="fas fa-calendar-times fa-4x text-muted opacity-25"></i>
+                        </div>
+                        <h4 class="text-muted">Aucune compétition en cours.</h4>
+                        <p class="text-muted">Revenez plus tard pour les prochaines élections !</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -74,13 +113,23 @@
             <div class="tab-pane fade" id="pills-past" role="tabpanel">
                 <div class="row g-4">
                     {% for contest in past_contests %}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card h-100 border-0 shadow-sm opacity-75">
-                            <div class="card-body">
-                                <h5 class="card-title fw-bold text-muted">{{ contest.title }}</h5>
-                                <p class="small text-muted mb-2">Terminé le {{ contest.end_date|date:"d M Y" }}</p>
+                    <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                        <div class="card h-100 border-0 shadow-sm opacity-75 hover-lift">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                                        style="width: 50px; height: 50px;">
+                                        <i class="fas fa-award text-secondary"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="card-title fw-bold mb-0 text-dark">{{ contest.title }}</h5>
+                                        <small class="text-muted">Terminé le {{ contest.end_date|date:"d M Y" }}</small>
+                                    </div>
+                                </div>
                                 <a href="{% url 'contest_detail' contest.slug %}"
-                                    class="btn btn-sm btn-outline-secondary mt-3">Voir les résultats</a>
+                                    class="btn btn-sm btn-outline-secondary w-100 rounded-pill">
+                                    <i class="fas fa-chart-bar me-2"></i>Voir les résultats
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -96,18 +145,6 @@
 </section>
 
 <style>
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .hover-scale {
-        transition: transform 0.3s ease;
-    }
-
-    .hover-scale:hover {
-        transform: translateY(-5px);
-    }
-
     @keyframes pulse {
         0% {
             transform: scale(1);
@@ -116,7 +153,6 @@
 
         50% {
             transform: scale(1.05);
-            opacity: 0.8;
         }
 
         100% {

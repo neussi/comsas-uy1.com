@@ -399,27 +399,70 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{% url 'admin_news_list' %}" class="menu-link {% if 'news' in request.resolver_match.url_name %}active{% endif %}"></a>
-                    <i class="fas fa-newspaper"></i>
-                    <div>Actualités</div>
+                <a href="{% url 'admin_news_list' %}"
+                    class="menu-link {% if 'news' in request.resolver_match.url_name %}active{% endif %}"></a>
+                <i class="fas fa-newspaper"></i>
+                <div>Actualités</div>
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{% url 'admin_gallery_list' %}" class="menu-link {% if 'gallery' in request.resolver_match.url_name %}active{% endif %}">
+                <a href="{% url 'admin_gallery_list' %}"
+                    class="menu-link {% if 'gallery' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-images"></i>
                     <div>Galerie</div>
                 </a>
             </div>
 
+            <div class="menu-header">Département</div>
+            <div class="menu-item">
+                <a href="{% url 'admin_professors_list' %}"
+                    class="menu-link {% if 'professor' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <div>Enseignants</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_classrooms_list' %}"
+                    class="menu-link {% if 'classroom' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-building"></i>
+                    <div>Salles</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_delegates_list' %}"
+                    class="menu-link {% if 'delegate' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-user-friends"></i>
+                    <div>Délégués</div>
+                </a>
+            </div>
+
+            <div class="menu-header">Ressources</div>
+            <div class="menu-item">
+                <a href="{% url 'admin_blog_list' %}"
+                    class="menu-link {% if 'blog' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-blog"></i>
+                    <div>Blog</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_requests_list' %}"
+                    class="menu-link {% if 'request' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-file-alt"></i>
+                    <div>Documents</div>
+                </a>
+            </div>
+
             <div class="menu-header">Parrainage & Concours</div>
             <div class="menu-item">
-                <a href="{% url 'admin_sponsorship_home' %}" class="menu-link {% if 'sponsorship' in request.resolver_match.url_name %}active{% endif %}">
+                <a href="{% url 'admin_sponsorship_home' %}"
+                    class="menu-link {% if 'sponsorship' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-handshake"></i>
                     <div>Parrainage</div>
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{% url 'admin_contests_home' %}" class="menu-link {% if 'contest' in request.resolver_match.url_name %}active{% endif %}">
+                <a href="{% url 'admin_contests_home' %}"
+                    class="menu-link {% if 'contest' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-trophy"></i>
                     <div>Concours / Vote</div>
                 </a>

@@ -1,85 +1,90 @@
-{% extends 'main/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Nos Salles - COMS.A.S{% endblock %}
+
 {% block content %}
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row mb-5 text-center">
-            <div class="col-lg-8 mx-auto">
-                <h1 class="display-4 fw-bold mb-3">Salles et Laboratoires</h1>
-                <p class="lead text-muted">Localisation et descriptif des salles de cours et laboratoires du
-                    département.</p>
+<!-- Hero Section -->
+<section class="py-5 bg-white position-relative overflow-hidden"
+    style="min-height: 40vh; display: flex; align-items: center;">
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="fade-right">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-decoration-none text-muted">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Infrastructures</li>
+                    </ol>
+                </nav>
+                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-building me-2"></i>Locaux
+                </div>
+                <h1 class="display-3 fw-bold mb-4 text-dark">
+                    Nos <span class="text-primary">Salles</span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Explorez les espaces dédiés à l'apprentissage : amphithéâtres, salles de travaux dirigés et
+                    laboratoires informatiques.
+                </p>
             </div>
-        </div>
-
-        <div class="row g-4">
-            {% for room in classrooms %}
-            <div class="col-md-6 mb-4">
-                <div class="card border-0 shadow-sm overflow-hidden h-100">
-                    <div class="row g-0 h-100">
-                        <div class="col-md-5 position-relative">
-                            {% if room.photo %}
-                            <img src="{{ room.photo.url }}" class="img-fluid h-100 object-fit-cover w-100"
-                                alt="{{ room.name }}" style="min-height: 250px;">
-                            {% else %}
-                            <div class="bg-secondary h-100 d-flex align-items-center justify-content-center text-white"
-                                style="min-height: 250px;">
-                                <i class="bi bi-person-workspace display-1"></i>
-                            </div>
-                            {% endif %}
-
-                            {% if room.is_lab %}
-                            <div class="position-absolute top-0 start-0 m-2">
-                                <span class="badge bg-warning text-dark"><i class="bi bi-pc-display me-1"></i>
-                                    Laboratoire</span>
-                            </div>
-                            {% else %}
-                            <div class="position-absolute top-0 start-0 m-2">
-                                <span class="badge bg-primary"><i class="bi bi-easel me-1"></i> Salle de Cours</span>
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-7">
-                            <div class="card-body d-flex flex-column h-100">
-                                <h3 class="card-title fw-bold mb-1">{{ room.name }}</h3>
-                                {% if room.capacity %}
-                                <div class="text-muted mb-3 small">
-                                    <i class="bi bi-people-fill me-1"></i> Capacité: {{ room.capacity }} places
-                                </div>
-                                {% endif %}
-
-                                <div class="card-text mb-3 flex-grow-1">
-                                    {{ room.location_description|safe }}
-                                </div>
-
-                                <div class="mt-auto">
-                                    <button class="btn btn-outline-primary w-100 rounded-pill" data-bs-toggle="modal"
-                                        data-bs-target="#roomModal{{ room.pk }}">
-                                        <i class="bi bi-arrows-fullscreen me-2"></i> Voir en grand
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="position-relative text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle position-absolute top-50 start-50 translates-middle"
+                        style="width: 300px; height: 300px; z-index: -1;"></div>
+                    <i class="fas fa-door-open text-primary opacity-75" style="font-size: 10rem;"></i>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
 
-            <!-- Modal -->
-            <div class="modal fade" id="roomModal{{ room.pk }}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content border-0">
-                        <div class="modal-body p-0 position-relative">
-                            <button type="button"
-                                class="btn-close position-absolute top-0 end-0 m-3 z-3 bg-white p-2 text-white"
-                                data-bs-dismiss="modal" aria-label="Close"></button>
-                            {% if room.photo %}
-                            <img src="{{ room.photo.url }}" class="img-fluid w-100" alt="{{ room.name }}">
-                            {% endif %}
-                            <div class="p-4 bg-white">
-                                <h4 class="fw-bold">{{ room.name }}</h4>
-                                <div class="">{{ room.location_description|safe }}</div>
-                            </div>
+<!-- Content Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            {% for room in classrooms %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="card h-100 border-0 shadow-sm hover-lift overflow-hidden">
+                    <div class="position-relative">
+                        {% if room.photo %}
+                        <img src="{{ room.photo.url }}" class="card-img-top" alt="{{ room.name }}"
+                            style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-secondary bg-opacity-10 text-center py-5" style="height: 200px;">
+                            <i class="fas fa-chalkboard fa-4x text-muted opacity-25 mt-3"></i>
                         </div>
+                        {% endif %}
+                        <div class="position-absolute top-0 end-0 m-3">
+                            {% if room.is_lab %}
+                            <span class="badge bg-primary shadow-sm"><i class="fas fa-laptop-code me-1"></i>
+                                Laboratoire</span>
+                            {% else %}
+                            <span class="badge bg-secondary shadow-sm"><i class="fas fa-book-reader me-1"></i> Salle de
+                                Cours</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3">{{ room.name }}</h4>
+
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2 d-flex align-items-center text-muted">
+                                <i class="fas fa-users me-3 text-primary opacity-50" style="width: 20px;"></i>
+                                <span>Capacité: <strong>{{ room.capacity }}</strong> places</span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center text-muted">
+                                <i class="fas fa-map-marker-alt me-3 text-danger opacity-50" style="width: 20px;"></i>
+                                <span>{{ room.location_description }}</span>
+                            </li>
+                        </ul>
+
+                        {% if room.description %}
+                        <p class="card-text text-muted small border-top pt-3 mt-3">
+                            {{ room.description|truncatewords:20 }}
+                        </p>
+                        {% endif %}
                     </div>
                 </div>
             </div>

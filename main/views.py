@@ -3,15 +3,15 @@ from django.contrib.auth.decorators import login_required
 import json
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 from .models import (
     Member, Project, Event, EventRegistration, 
-    News, Gallery, Contact, SiteSettings,
+    News, Gallery, GalleryAlbum, Contact, SiteSettings,
     SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote,
 )
@@ -19,6 +19,8 @@ from .forms import (
     MemberRegistrationForm, EventRegistrationForm, 
     ContactForm
 )
+from .utils import generate_ticket
+
 
 def home(request):
     """Page d'accueil"""
@@ -175,27 +177,40 @@ def member_registration(request):
             try:
                 # Email pour l'administration
                 admin_subject = 'Nouvelle demande d\'adhésion - COMS.A.S'
-                admin_message = f"""
-                Nouvelle demande d'adhésion reçue:
+                # Email HTML pour admin
+                from django.core.mail import EmailMultiAlternatives
                 
-                Nom et Prénom: {member.nom_prenom}
-                Matricule: {member.matricule}
-                Email: {member.email}
-                Téléphone: {member.telephone}
-                Lieu de naissance: {member.lieu_naissance}
-                Date de naissance: {member.date_naissance}
-                Photo: {'Oui' if member.photo else 'Non'}
+                html_content = render_to_string('emails/membership_request_notification.html', {
+                    'nom_prenom': member.nom_prenom,
+                    'matricule': member.matricule,
+                    'email': member.email,
+                    'telephone': member.telephone,
+                    'lieu_naissance': member.lieu_naissance,
+                    'date_naissance': member.date_naissance,
+                    'photo_status': 'Oui' if member.photo else 'Non',
+                    'admin_url': request.build_absolute_uri('/admin-dashboard/members/'),
+                })
                 
-                Veuillez vous connecter à l'administration pour valider ou rejeter cette demande.
-                """
+                admin_message = f"""Nouvelle demande d'adhésion reçue:
                 
-                send_mail(
+Nom et Prénom: {member.nom_prenom}
+Matricule: {member.matricule}
+Email: {member.email}
+Téléphone: {member.telephone}
+Lieu de naissance: {member.lieu_naissance}
+Date de naissance: {member.date_naissance}
+Photo: {'Oui' if member.photo else 'Non'}
+                
+Veuillez vous connecter à l'administration pour valider ou rejeter cette demande."""
+                
+                email = EmailMultiAlternatives(
                     admin_subject,
                     admin_message,
                     settings.EMAIL_HOST_USER,
                     [settings.ASSOCIATION_EMAIL],
-                    fail_silently=True,
                 )
+                email.attach_alternative(html_content, "text/html")
+                email.send(fail_silently=True)
                 
                 # Email de confirmation pour le membre
                 member_subject = 'Demande d\'adhésion reçue - COMS.A.S'
@@ -315,22 +330,46 @@ def event_detail(request, pk):
             if existing:
                 messages.warning(request, _('Vous êtes déjà inscrit à cet événement.'))
             else:
+                registration.is_confirmed = True
                 registration.save()
                 messages.success(request, _('Votre inscription a été enregistrée avec succès!'))
                 
-                # Envoyer notification
+                # Générer le ticket
                 try:
-                    send_mail(
-                        f'Nouvelle inscription - {event.title_fr}',
-                        f'Participant: {registration.nom_prenom}\nEmail: {registration.email}',
+                    generate_ticket(registration)
+                except Exception as e:
+                    print(f"Erreur génération ticket: {e}")
+
+                # Envoyer notification HTML avec pièces jointes
+                try:
+                    from django.template.loader import render_to_string
+                    from django.core.mail import EmailMultiAlternatives
+                    
+                    html_content = render_to_string('emails/event_registration_confirmation.html', {
+                        'participant_name': registration.nom_prenom,
+                        'event_title': event.title_fr,
+                        'event_date': event.date_event,
+                        'event_location': event.location,
+                    })
+                    
+                    subject = f'Confirmation inscription - {event.title_fr}'
+                    text_content = f'Bonjour {registration.nom_prenom},\n\nVotre inscription à l\'événement "{event.title_fr}" a bien été enregistrée.\n\nVous trouverez votre ticket en pièce jointe.\n\nCordialement,\nL\'équipe COMS.A.S'
+                    
+                    email = EmailMultiAlternatives(
+                        subject,
+                        text_content,
                         settings.EMAIL_HOST_USER,
-                        [settings.ASSOCIATION_EMAIL],
-                        fail_silently=True,
+                        [registration.email],
                     )
-                except:
-                    pass
+                    email.attach_alternative(html_content, "text/html")
+                    
+                    if registration.ticket_pdf:
+                        email.attach_file(registration.ticket_pdf.path)
+                    email.send(fail_silently=True)
+                except Exception as e:
+                    print(f"Erreur envoi email: {e}")
                 
-                return redirect('event_registration_success', pk=event.pk)
+                return redirect('event_registration_success', uuid=registration.uuid)
     else:
         form = EventRegistrationForm()
     
@@ -342,11 +381,38 @@ def event_detail(request, pk):
     
     return render(request, 'main/event_detail.html', context)
 
-def event_registration_success(request, pk):
+def event_registration_success(request, uuid):
     """Page de confirmation d'inscription à un événement"""
-    event = get_object_or_404(Event, pk=pk)
-    context = {'event': event}
+    registration = get_object_or_404(EventRegistration, uuid=uuid)
+    context = {
+        'event': registration.event,
+        'registration': registration
+    }
     return render(request, 'main/event_registration_success.html', context)
+
+def gallery(request):
+    """Page galerie / multimédia (Albums)"""
+    albums = GalleryAlbum.objects.all().order_by('-event_date')
+    
+    paginator = Paginator(albums, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj
+    }
+    return render(request, 'main/gallery.html', context)
+
+def gallery_detail(request, pk):
+    """Détail d'un album photo"""
+    album = get_object_or_404(GalleryAlbum, pk=pk)
+    images = album.images.all()
+    
+    context = {
+        'album': album,
+        'images': images
+    }
+    return render(request, 'main/gallery_detail.html', context)
 
 def news(request):
     """Page des actualités"""
@@ -376,20 +442,7 @@ def news_detail(request, pk):
     
     return render(request, 'main/news_detail.html', context)
 
-def gallery(request):
-    """Page de la galerie"""
-    # Images
-    images = Gallery.objects.filter(media_type='image').order_by('-created_at')
-    
-    # Vidéos
-    videos = Gallery.objects.filter(media_type='video').order_by('-created_at')
-    
-    context = {
-        'images': images,
-        'videos': videos,
-    }
-    
-    return render(request, 'main/gallery.html', context)
+
 
 def donations(request):
     """Page des dons et cotisations"""
@@ -415,17 +468,30 @@ def contact(request):
             contact_message = form.save()
             messages.success(request, _('Votre message a été envoyé avec succès! Nous vous répondrons bientôt.'))
             
-            # Envoyer notification par email
+            # Envoyer notification par email HTML
             try:
-                send_mail(
+                from django.template.loader import render_to_string
+                from django.core.mail import EmailMultiAlternatives
+                from django.utils import timezone
+                
+                html_content = render_to_string('emails/contact_notification.html', {
+                    'nom_prenom': contact_message.nom_prenom,
+                    'email': contact_message.email,
+                    'sujet': contact_message.sujet,
+                    'message': contact_message.message,
+                    'date_envoi': timezone.now(),
+                })
+                
+                email = EmailMultiAlternatives(
                     f'Nouveau message de contact - {contact_message.sujet}',
                     f'De: {contact_message.nom_prenom} ({contact_message.email})\n\nMessage:\n{contact_message.message}',
                     settings.EMAIL_HOST_USER,
                     [settings.ASSOCIATION_EMAIL],
-                    fail_silently=True,
                 )
-            except:
-                pass
+                email.attach_alternative(html_content, "text/html")
+                email.send(fail_silently=True)
+            except Exception as e:
+                print(f"Erreur envoi email: {e}")
             
             return redirect('contact_success')
     else:
@@ -816,3 +882,46 @@ def blog_detail(request, slug):
         'related_articles': related_articles,
     }
     return render(request, 'main/blog/detail.html', context)
+
+@csrf_exempt
+def like_article(request, slug):
+    """J'aime un article (AJAX)"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
+    
+    article = get_object_or_404(BlogArticle, slug=slug)
+    
+    # Simple suppression de doublon par session
+    session_key = f'liked_article_{article.pk}'
+    if not request.session.get(session_key, False):
+        article.likes_count += 1
+        article.save()
+        request.session[session_key] = True
+        return JsonResponse({'success': True, 'likes_count': article.likes_count})
+    
+    return JsonResponse({'success': False, 'error': 'Vous avez déjà aimé cet article.'})
+
+def download_ticket(request, uuid):
+    """Télécharger le ticket PDF"""
+    registration = get_object_or_404(EventRegistration, uuid=uuid)
+    if registration.ticket_pdf:
+        response = FileResponse(registration.ticket_pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="ticket_{registration.event.id}.pdf"'
+        return response
+    else:
+        # Regenerate if missing
+        try:
+            generate_ticket(registration)
+            return redirect('download_ticket', uuid=uuid)
+        except:
+            raise Http404("Ticket introuvable")
+
+def verify_ticket(request, uuid):
+    """Vérifier la validité d'un ticket via QR Code"""
+    try:
+        registration = EventRegistration.objects.get(uuid=uuid)
+        context = {'registration': registration, 'valid': True}
+    except EventRegistration.DoesNotExist:
+        context = {'valid': False}
+    
+    return render(request, 'main/ticket_verify.html', context)

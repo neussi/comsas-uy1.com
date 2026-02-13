@@ -1,0 +1,110 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Gestion des Salles{% endblock %}
+{% block page_icon %}building{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h4 class="fw-bold mb-0 text-dark">Salles & Laboratoires</h4>
+        <p class="text-muted small mb-0">Gérez les espaces d'enseignement</p>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'admin_classroom_create' %}" class="btn btn-primary shadow-sm hover-lift">
+            <i class="fas fa-plus me-2"></i>Nouvelle Salle
+        </a>
+    </div>
+</div>
+
+<!-- Liste des salles -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 py-4 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold text-dark">Liste des Salles <span
+                class="badge bg-light text-primary rounded-pill ms-2">{{ classrooms_page.paginator.count }}</span></h5>
+    </div>
+    <div class="card-body p-0">
+        {% if classrooms_page.object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-nowrap">
+                <thead class="bg-light text-uppercase text-muted small">
+                    <tr>
+                        <th class="ps-4 border-0">Nom</th>
+                        <th class="border-0">Capacité</th>
+                        <th class="border-0">Type</th>
+                        <th class="border-0">Localisation</th>
+                        <th class="border-0 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for room in classrooms_page.object_list %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                {% if room.photo %}
+                                <img src="{{ room.photo.url }}" class="rounded me-3" width="40" height="40"
+                                    style="object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light text-primary rounded d-flex align-items-center justify-content-center me-3"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-chalkboard"></i>
+                                </div>
+                                {% endif %}
+                                <h6 class="mb-0 text-dark fw-bold">{{ room.name }}</h6>
+                            </div>
+                        </td>
+                        <td>{{ room.capacity }} places</td>
+                        <td>
+                            {% if room.is_lab %}
+                            <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3">Laboratoire</span>
+                            {% else %}
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3">Salle de
+                                cours</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ room.location_description|truncatechars:30 }}</td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <a href="{% url 'admin_classroom_edit' room.pk %}"
+                                    class="btn btn-sm btn-light text-info rounded-circle me-1" title="Modifier">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a href="{% url 'admin_classroom_delete' room.pk %}"
+                                    class="btn btn-sm btn-light text-danger rounded-circle" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if classrooms_page.has_other_pages %}
+        <div class="card-footer bg-white border-0 py-4">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if classrooms_page.has_previous %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ classrooms_page.previous_page_number }}">Précédent</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ classrooms_page.number }}</span></li>
+                    {% if classrooms_page.has_next %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ classrooms_page.next_page_number }}">Suivant</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <p class="text-muted">Aucune salle trouvée.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

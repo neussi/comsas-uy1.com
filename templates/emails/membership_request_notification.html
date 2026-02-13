@@ -1,0 +1,29 @@
+{% extends 'emails/base_email.html' %}
+
+{% block title %}Nouvelle Demande d'Adhésion - COMS.A.S{% endblock %}
+
+{% block content %}
+<h1>👤 Nouvelle Demande d'Adhésion</h1>
+
+<p>Bonjour,</p>
+
+<p>Une nouvelle demande d'adhésion a été soumise et nécessite votre validation.</p>
+
+<div class="info-box">
+    <p><strong>Nom et Prénom:</strong> {{ nom_prenom }}</p>
+    <p><strong>Matricule:</strong> {{ matricule }}</p>
+    <p><strong>Email:</strong> <a href="mailto:{{ email }}">{{ email }}</a></p>
+    <p><strong>Téléphone:</strong> {{ telephone }}</p>
+    <p><strong>Lieu de naissance:</strong> {{ lieu_naissance }}</p>
+    <p><strong>Date de naissance:</strong> {{ date_naissance|date:"d/m/Y" }}</p>
+    <p><strong>Photo:</strong> {{ photo_status }}</p>
+</div>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ admin_url }}" class="button">Valider ou Rejeter la Demande</a>
+</div>
+
+<p style="color: #888; font-size: 13px;">
+    <em>Veuillez vous connecter à l'administration pour traiter cette demande.</em>
+</p>
+{% endblock %}

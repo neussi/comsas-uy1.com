@@ -1,0 +1,143 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Gestion des Documents{% endblock %}
+{% block page_icon %}file-alt{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h4 class="fw-bold mb-0 text-dark">Modèles de Requêtes</h4>
+        <p class="text-muted small mb-0">Gérez les documents téléchargeables</p>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'admin_request_create' %}" class="btn btn-primary shadow-sm hover-lift">
+            <i class="fas fa-plus me-2"></i>Nouveau Document
+        </a>
+    </div>
+</div>
+
+<!-- Filtres -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label for="type" class="form-label text-uppercase fw-bold text-muted x-small">Filtrer par
+                            type</label>
+                        <select class="form-select bg-light border-0 cursor-pointer" id="type" name="type">
+                            <option value="">Tous les types</option>
+                            {% for value, label in doc_types %}
+                            <option value="{{ value }}" {% if current_type == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1 fw-bold">
+                            <i class="fas fa-filter me-2"></i>Appliquer
+                        </button>
+                        <a href="{% url 'admin_requests_list' %}" class="btn btn-light text-muted"
+                            title="Réinitialiser">
+                            <i class="fas fa-sync-alt"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des documents -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 py-4 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold text-dark">Liste des Documents <span
+                class="badge bg-light text-primary rounded-pill ms-2">{{ documents_page.paginator.count }}</span></h5>
+    </div>
+    <div class="card-body p-0">
+        {% if documents_page.object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-nowrap">
+                <thead class="bg-light text-uppercase text-muted small">
+                    <tr>
+                        <th class="ps-4 border-0">Document</th>
+                        <th class="border-0">Type</th>
+                        <th class="border-0">Téléchargements</th>
+                        <th class="border-0">Date Création</th>
+                        <th class="border-0 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents_page.object_list %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light text-primary rounded-3 d-flex align-items-center justify-content-center me-3"
+                                    style="width: 40px; height: 40px;">
+                                    {% if doc.doc_type == 'pdf' %}
+                                    <i class="fas fa-file-pdf text-danger fa-lg"></i>
+                                    {% elif doc.doc_type == 'word' %}
+                                    <i class="fas fa-file-word text-primary fa-lg"></i>
+                                    {% else %}
+                                    <i class="fas fa-file-alt text-dark fa-lg"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-dark fw-bold">{{ doc.title }}</h6>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ doc.get_doc_type_display }}</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold">{{ doc.downloads_count }}</span>
+                        </td>
+                        <td>{{ doc.created_at|date:"d M Y" }}</td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <a href="{% url 'admin_request_edit' doc.pk %}"
+                                    class="btn btn-sm btn-light text-info rounded-circle me-1" title="Modifier">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a href="{% url 'admin_request_delete' doc.pk %}"
+                                    class="btn btn-sm btn-light text-danger rounded-circle" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if documents_page.has_other_pages %}
+        <div class="card-footer bg-white border-0 py-4">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if documents_page.has_previous %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ documents_page.previous_page_number }}">Précédent</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ documents_page.number }}</span></li>
+                    {% if documents_page.has_next %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ documents_page.next_page_number }}">Suivant</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <p class="text-muted">Aucun document trouvé.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

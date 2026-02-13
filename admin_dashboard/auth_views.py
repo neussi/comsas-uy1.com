@@ -232,14 +232,27 @@ def admin_register_view(request):
                     fail_silently=False,
                 )
             
-            # Email de confirmation au demandeur
-            send_mail(
-                'Demande d\'accès reçue - A²ELBM2',
-                f'Bonjour {data["first_name"]},\n\nNous avons bien reçu votre demande d\'accès administrateur. Elle sera examinée dans les plus brefs délais.\n\nCordialement,\nL\'équipe A²ELBM2',
+            # Email de confirmation au demandeur avec HTML
+            from django.core.mail import EmailMultiAlternatives
+            from django.utils import timezone
+            
+            html_content = render_to_string('emails/admin_access_confirmation.html', {
+                'first_name': data['first_name'],
+                'username': data['username'],
+                'requested_role': dict(form.fields['requested_role'].choices).get(data['requested_role'], data['requested_role']),
+                'date_demande': timezone.now(),
+            })
+            
+            text_content = f'Bonjour {data["first_name"]},\n\nNous avons bien reçu votre demande d\'accès administrateur. Elle sera examinée dans les plus brefs délais.\n\nCordialement,\nL\'équipe COMS.A.S'
+            
+            email = EmailMultiAlternatives(
+                'Demande d\'accès reçue - COMS.A.S',
+                text_content,
                 settings.DEFAULT_FROM_EMAIL,
                 [data['email']],
-                fail_silently=False,
             )
+            email.attach_alternative(html_content, "text/html")
+            email.send(fail_silently=False)
             
             messages.success(
                 request, 

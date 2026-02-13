@@ -24,7 +24,7 @@
                     <select class="form-select" name="specialty" onchange="this.form.submit()">
                         <option value="">Toutes les spécialités</option>
                         {% for value, label in specialties %}
-                        <option value="{{ value }}" {% if current_specialty==value %}selected{% endif %}>{{ label }}
+                        <option value="{{ value }}" {% if current_specialty == value %}selected{% endif %}>{{ label }}
                         </option>
                         {% endfor %}
                     </select>

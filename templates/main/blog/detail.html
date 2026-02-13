@@ -1,104 +1,216 @@
-{% extends 'main/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
+{% block title %}{{ article.title }} - Blog COMS.A.S{% endblock %}
+
 {% block content %}
-<article class="py-5 bg-white">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <!-- Header -->
-                <header class="mb-5 text-center">
-                    <div class="mb-3">
-                        <span class="badge bg-primary rounded-pill px-3 py-2">
-                            {{ article.get_category_display }}
-                        </span>
-                    </div>
-                    <h1 class="display-4 fw-bold mb-4">{{ article.title }}</h1>
+<!-- Hero Section (Article Header) -->
+<section class="py-5 bg-white position-relative overflow-hidden">
+    <div class="container position-relative z-1">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-9" data-aos="fade-up">
+                <nav aria-label="breadcrumb" class="mb-4 d-flex justify-content-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                                class="text-decoration-none text-muted">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'blog_list' %}"
+                                class="text-decoration-none text-muted">Blog</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Article</li>
+                    </ol>
+                </nav>
 
-                    <div class="d-flex align-items-center justify-content-center text-muted">
-                        <div class="d-flex align-items-center me-4">
-                            {% if article.author.photo %}
-                            <img src="{{ article.author.photo.url }}" class="rounded-circle me-2" width="40" height="40"
-                                style="object-fit: cover;">
-                            {% else %}
-                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2"
-                                style="width: 40px; height: 40px;">
-                                <i class="bi bi-person text-secondary fs-5"></i>
-                            </div>
-                            {% endif %}
-                            <div>
-                                <div class="fw-bold text-dark">{{ article.author.nom_prenom|default:"Anonyme" }}</div>
-                                <div class="small">{{ article.published_at|date:"d M Y" }}</div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center small">
-                            <span class="me-3"><i class="bi bi-clock me-1"></i> 5 min de lecture</span>
-                            <span><i class="bi bi-eye me-1"></i> {{ article.views_count }} vues</span>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- Featured Image -->
-                {% if article.image %}
-                <figure class="mb-5">
-                    <img src="{{ article.image.url }}" class="img-fluid rounded-4 shadow w-100"
-                        alt="{{ article.title }}" style="max-height: 500px; object-fit: cover;">
-                </figure>
-                {% endif %}
-
-                <!-- Content -->
-                <div class="article-content fs-5 lh-lg mb-5">
-                    {{ article.content|safe }}
+                <div class="mb-3">
+                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
+                        {{ article.get_category_display }}
+                    </span>
                 </div>
 
-                <!-- Footer / Share -->
-                <footer class="border-top pt-4">
-                    <div class="row align-items-center">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <h5 class="fw-bold mb-0">Partager cet article</h5>
-                        </div>
-                        <div class="col-md-6 text-md-end">
-                            <a href="#" class="btn btn-outline-primary rounded-circle me-2"><i
-                                    class="bi bi-facebook"></i></a>
-                            <a href="#" class="btn btn-outline-info rounded-circle me-2"><i
-                                    class="bi bi-twitter"></i></a>
-                            <a href="#" class="btn btn-outline-success rounded-circle"><i
-                                    class="bi bi-whatsapp"></i></a>
-                        </div>
-                    </div>
-                </footer>
-            </div>
-        </div>
-    </div>
-</article>
+                <h1 class="display-4 fw-bold mb-4 text-dark">{{ article.title }}</h1>
 
-<!-- Related Articles -->
-{% if related_articles %}
-<section class="py-5 bg-light">
-    <div class="container">
-        <h3 class="fw-bold mb-4 text-center">Articles similaires</h3>
-        <div class="row g-4">
-            {% for related in related_articles %}
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    {% if related.image %}
-                    <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.title }}"
-                        style="height: 180px; object-fit: cover;">
-                    {% endif %}
-                    <div class="card-body">
-                        <h6 class="card-title fw-bold">
-                            <a href="{% url 'blog_detail' related.slug %}"
-                                class="text-decoration-none text-dark stretched-link">
-                                {{ related.title|truncatechars:50 }}
-                            </a>
-                        </h6>
-                        <p class="card-text text-muted small">{{ related.published_at|date:"d M Y" }}</p>
+                <div class="d-flex align-items-center justify-content-center mt-4">
+                    <div class="d-flex align-items-center me-4">
+                        {% if article.author.photo %}
+                        <img src="{{ article.author.photo.url }}" class="rounded-circle shadow-sm me-2"
+                            alt="{{ article.author.nom_prenom }}" style="width: 48px; height: 48px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm"
+                            style="width: 48px; height: 48px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        {% endif %}
+                        <div class="text-start">
+                            <p class="mb-0 fw-bold small">{{ article.author.nom_prenom|default:"Rédaction COMS.A.S" }}
+                            </p>
+                            <p class="mb-0 text-muted small">{{ article.published_at|date:"d M Y" }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
     </div>
 </section>
-{% endif %}
+
+<!-- Content Section -->
+<section class="pb-5 bg-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Data Stats (Views & Likes) - Top -->
+                <div class="d-flex justify-content-end mb-3 text-muted small">
+                    <span class="me-3"><i class="far fa-eye me-1"></i> {{ article.views_count }} vues</span>
+                    <span id="likes-count-display"><i class="far fa-heart me-1"></i> {{ article.likes_count }}
+                        j'aime</span>
+                </div>
+
+                <!-- Featured Image -->
+                {% if article.image %}
+                <div class="mb-5 rounded-4 overflow-hidden shadow-lg" data-aos="fade-up" data-aos-delay="100">
+                    <img src="{{ article.image.url }}" class="img-fluid w-100" alt="{{ article.title }}"
+                        style="max-height: 500px; object-fit: cover;">
+                </div>
+                {% endif %}
+
+                <!-- Article Body -->
+                <div class="article-content fs-5 lh-lg mb-5" data-aos="fade-up" data-aos-delay="200">
+                    {{ article.content|safe }}
+                </div>
+
+                <!-- Interaction Section (Like & Share) -->
+                <div class="border-top border-bottom py-4 mb-5" data-aos="fade-up">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 mb-3 mb-md-0 d-flex justify-content-center justify-content-md-start">
+                            <button id="like-btn" class="btn btn-outline-danger rounded-pill px-4 py-2 hover-lift"
+                                onclick="likeArticle()">
+                                <i class="far fa-heart me-2" id="like-icon"></i> <span id="like-text">J'aime</span>
+                                <span class="badge bg-danger text-white ms-2" id="likes-count-btn">{{ article.likes_count }}</span>
+                            </button>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center justify-content-md-end align-items-center">
+                            <span class="fw-bold me-3">Partager :</span>
+                            <div class="d-flex gap-2">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                                    target="_blank" class="btn btn-light btn-sm rounded-circle text-primary shadow-sm"
+                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ article.title }}"
+                                    target="_blank" class="btn btn-light btn-sm rounded-circle text-info shadow-sm"
+                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}"
+                                    target="_blank" class="btn btn-light btn-sm rounded-circle text-primary shadow-sm"
+                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="https://wa.me/?text={{ article.title }}%20{{ request.build_absolute_uri }}"
+                                    target="_blank" class="btn btn-light btn-sm rounded-circle text-success shadow-sm"
+                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Articles -->
+                {% if related_articles %}
+                <div class="mb-5" data-aos="fade-up">
+                    <h3 class="fw-bold mb-4">Dans la même catégorie</h3>
+                    <div class="row g-4">
+                        {% for related in related_articles %}
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 shadow-sm hover-lift">
+                                <div class="row g-0 h-100">
+                                    <div class="col-4 overflow-hidden rounded-start">
+                                        {% if related.image %}
+                                        <img src="{{ related.image.url }}" class="img-fluid h-100 w-100"
+                                            alt="{{ related.title }}" style="object-fit: cover;">
+                                        {% else %}
+                                        <div
+                                            class="bg-light h-100 w-100 d-flex align-items-center justify-content-center text-muted">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body py-2">
+                                            <small class="text-muted d-block mb-1">{{ related.published_at|date:"d M Y" }}</small>
+                                            <h6 class="card-title fw-bold mb-0">
+                                                <a href="{% url 'blog_detail' related.slug %}"
+                                                    class="text-decoration-none text-dark stretched-link">
+                                                    {{ related.title|truncatechars:40 }}
+                                                </a>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Comments Placeholder (Optional) -->
+                <!-- 
+                <div class="p-4 bg-light rounded-4 text-center">
+                    <p class="mb-0 text-muted">Les commentaires sont désactivés pour cet article.</p>
+                </div>
+                -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Like AJAX Script -->
+<script>
+function likeArticle() {
+    const btn = document.getElementById('like-btn');
+    const icon = document.getElementById('like-icon');
+    const countBtn = document.getElementById('likes-count-btn');
+    const countDisplay = document.getElementById('likes-count-display');
+    
+    // Optimistic UI update check (better to rely on server response usually, but visual feedback is good)
+    // Here we'll just wait for fetch
+    
+    fetch('{% url "like_article" article.slug %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            countBtn.innerText = data.likes_count;
+            countDisplay.innerHTML = `<i class="fas fa-heart me-1 text-danger"></i> ${data.likes_count} j'aime`;
+            
+            // Activate button style
+            btn.classList.remove('btn-outline-danger');
+            btn.classList.add('btn-danger');
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+            
+            // Disable button
+            btn.disabled = true;
+            document.getElementById('like-text').innerText = 'Aimé';
+        } else {
+            console.warn(data.error);
+            // Maybe show a tooltip or toast
+            if(data.error.includes('déjà aimé')) {
+                 btn.classList.remove('btn-outline-danger');
+                 btn.classList.add('btn-danger');
+                 icon.classList.remove('far');
+                 icon.classList.add('fas');
+                 btn.disabled = true;
+                 document.getElementById('like-text').innerText = 'Aimé';
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
 {% endblock %}

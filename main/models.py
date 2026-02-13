@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
 from django.urls import reverse
 from django.utils import timezone
+import uuid
 
 class Member(models.Model):
     """Modèle pour les membres de l'association"""
@@ -131,6 +132,12 @@ class EventRegistration(models.Model):
     is_confirmed = models.BooleanField(default=False, verbose_name="Confirmé")
     registration_date = models.DateTimeField(auto_now_add=True)
     
+    # Ticketing System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    ticket_pdf = models.FileField(upload_to='tickets/pdfs/', blank=True, null=True, verbose_name="Ticket PDF")
+    qr_code = models.ImageField(upload_to='tickets/qrcodes/', blank=True, null=True, verbose_name="Code QR")
+
+    
     class Meta:
         verbose_name = "Inscription à l'événement"
         verbose_name_plural = "Inscriptions aux événements"
@@ -162,6 +169,24 @@ class News(models.Model):
     def __str__(self):
         return self.title_fr
 
+class GalleryAlbum(models.Model):
+    """Album photo pour regrouper les images"""
+    title_fr = models.CharField(max_length=200, verbose_name="Titre (Français)")
+    title_en = models.CharField(max_length=200, verbose_name="Titre (Anglais)")
+    description_fr = models.TextField(blank=True, verbose_name="Description (Français)")
+    description_en = models.TextField(blank=True, verbose_name="Description (Anglais)")
+    cover_image = models.ImageField(upload_to='gallery/albums/', blank=True, null=True, verbose_name="Image de couverture")
+    event_date = models.DateField(default=timezone.now, verbose_name="Date de l'événement")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Album Photo"
+        verbose_name_plural = "Albums Photos"
+        ordering = ['-event_date']
+
+    def __str__(self):
+        return self.title_fr
+
 class Gallery(models.Model):
     """Modèle pour la galerie multimédia"""
     MEDIA_TYPES = [
@@ -174,6 +199,7 @@ class Gallery(models.Model):
     description_fr = models.TextField(blank=True, verbose_name="Description (Français)")
     description_en = models.TextField(blank=True, verbose_name="Description (Anglais)")
     media_type = models.CharField(max_length=10, choices=MEDIA_TYPES, default='image')
+    album = models.ForeignKey(GalleryAlbum, on_delete=models.CASCADE, related_name='images', verbose_name="Album", null=True, blank=True)
     image = models.ImageField(upload_to='gallery/images/', blank=True, null=True)
     video_url = models.URLField(blank=True, null=True, verbose_name="URL de la vidéo")
     video_file = models.FileField(upload_to='gallery/videos/', blank=True, null=True)
@@ -576,6 +602,7 @@ class BlogArticle(models.Model):
     is_published = models.BooleanField(default=False, verbose_name="Publié")
     
     views_count = models.IntegerField(default=0, verbose_name="Vues")
+    likes_count = models.IntegerField(default=0, verbose_name="J'aime")
     
     class Meta:
         verbose_name = "Article de Blog"

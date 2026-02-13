@@ -243,3 +243,154 @@ class CandidateForm(forms.ModelForm):
             ),
             Submit('submit', _('Enregistrer le candidat'), css_class='btn btn-primary btn-lg w-100')
         )
+
+from main.models import RequestDocument, Professor, Classroom, Delegate, BlogArticle
+
+class RequestDocumentForm(forms.ModelForm):
+    """Formulaire pour les modèles de demandes"""
+    class Meta:
+        model = RequestDocument
+        fields = ['title', 'doc_type', 'description', 'file', 'image_preview']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Informations du document'),
+                'title',
+                Row(
+                    Column('doc_type', css_class='form-group col-md-6 mb-3'),
+                    Column('file', css_class='form-group col-md-6 mb-3'),
+                ),
+                'description',
+                'image_preview',
+            ),
+            Submit('submit', _('Enregistrer le document'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class ProfessorForm(forms.ModelForm):
+    """Formulaire pour les enseignants"""
+    class Meta:
+        model = Professor
+        fields = ['name', 'grade', 'specialty', 'office_description', 'office_photo', 'profile_photo', 'is_active', 'email']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Identité'),
+                Row(
+                    Column('name', css_class='form-group col-md-6 mb-3'),
+                    Column('email', css_class='form-group col-md-6 mb-3'),
+                ),
+                Row(
+                    Column('grade', css_class='form-group col-md-6 mb-3'),
+                    Column('specialty', css_class='form-group col-md-6 mb-3'),
+                ),
+                'profile_photo',
+            ),
+            Fieldset(
+                _('Bureau'),
+                'office_description',
+                'office_photo',
+            ),
+            Fieldset(
+                _('Statut'),
+                'is_active',
+            ),
+            Submit('submit', _('Enregistrer l\'enseignant'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class ClassroomForm(forms.ModelForm):
+    """Formulaire pour les salles"""
+    class Meta:
+        model = Classroom
+        fields = ['name', 'capacity', 'location_description', 'is_lab', 'photo']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Détails de la salle'),
+                Row(
+                    Column('name', css_class='form-group col-md-6 mb-3'),
+                    Column('capacity', css_class='form-group col-md-6 mb-3'),
+                ),
+                'is_lab',
+                'photo',
+            ),
+            Fieldset(
+                _('Localisation'),
+                'location_description',
+            ),
+            Submit('submit', _('Enregistrer la salle'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class DelegateForm(forms.ModelForm):
+    """Formulaire pour les délégués"""
+    class Meta:
+        model = Delegate
+        fields = ['name', 'level', 'year', 'phone', 'email', 'motto', 'photo']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Identité'),
+                Row(
+                    Column('name', css_class='form-group col-md-6 mb-3'),
+                    Column('email', css_class='form-group col-md-6 mb-3'),
+                ),
+                Row(
+                    Column('phone', css_class='form-group col-md-6 mb-3'),
+                    Column('photo', css_class='form-group col-md-6 mb-3'),
+                ),
+            ),
+            Fieldset(
+                _('Mandat'),
+                Row(
+                    Column('level', css_class='form-group col-md-4 mb-3'),
+                    Column('year', css_class='form-group col-md-4 mb-3'),
+                    Column('motto', css_class='form-group col-md-4 mb-3'),
+                ),
+            ),
+            Submit('submit', _('Enregistrer le délégué'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class BlogArticleForm(forms.ModelForm):
+    """Formulaire pour les articles de blog"""
+    class Meta:
+        model = BlogArticle
+        fields = ['title', 'slug', 'category', 'image', 'content', 'author', 'is_published', 'published_at']
+        widgets = {
+            'published_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Contenu'),
+                'title',
+                'slug',
+                Row(
+                    Column('category', css_class='form-group col-md-6 mb-3'),
+                    Column('image', css_class='form-group col-md-6 mb-3'),
+                ),
+                'content',
+            ),
+            Fieldset(
+                _('Publication'),
+                Row(
+                    Column('author', css_class='form-group col-md-4 mb-3'),
+                    Column('published_at', css_class='form-group col-md-4 mb-3'),
+                    Column('is_published', css_class='form-group col-md-4 mb-3'),
+                ),
+            ),
+            Submit('submit', _('Enregistrer l\'article'), css_class='btn btn-primary btn-lg w-100')
+        )

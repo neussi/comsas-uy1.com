@@ -4,16 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email COMS.A.S</title>
+    <title>{% block title %}COMS.A.S{% endblock %}</title>
     <style>
-        /* Base styles */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
-            line-height: 1.6;
+            background-color: #f5f5f5;
+            color: #333333;
+        }
+
+        .email-wrapper {
+            padding: 20px 0;
         }
 
         .email-container {
@@ -22,116 +24,186 @@
             background-color: #ffffff;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .email-header {
-            background-color: #ffffff;
-            padding: 20px;
+        .header {
+            background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
+            padding: 30px 20px;
             text-align: center;
-            border-bottom: 3px solid #E91E63;
         }
 
-        .email-body {
-            padding: 30px;
+        .logo {
+            max-width: 100px;
+            height: auto;
+            margin-bottom: 10px;
         }
 
-        .email-footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        /* Typography */
-        h1,
-        h2,
-        h3 {
-            color: #2c3e50;
-            margin-top: 0;
-        }
-
-        p {
-            margin-bottom: 16px;
-            font-size: 15px;
-        }
-
-        a {
-            color: #E91E63;
-            text-decoration: none;
+        .header-title {
+            color: #ffffff;
+            font-size: 24px;
             font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .btn {
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 40px 30px;
+            line-height: 1.6;
+        }
+
+        .content h1 {
+            color: #EC4899;
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .content h2 {
+            color: #333333;
+            font-size: 18px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .content p {
+            margin-bottom: 15px;
+            color: #555555;
+        }
+
+        .button {
             display: inline-block;
-            padding: 12px 24px;
-            background-color: #E91E63;
+            padding: 12px 30px;
+            background-color: #EC4899;
             color: #ffffff !important;
             text-decoration: none;
-            border-radius: 50px;
+            border-radius: 25px;
             font-weight: bold;
-            margin: 10px 0;
-        }
-
-        /* Utilities */
-        .text-center {
-            text-align: center;
-        }
-
-        .text-muted {
-            color: #6c757d;
-        }
-
-        .highlight {
-            background-color: #fdf2f5;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 4px solid #E91E63;
             margin: 20px 0;
         }
 
-        /* Mobile */
+        .info-box {
+            background-color: #FDF2F8;
+            border-left: 4px solid #EC4899;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            color: #333333;
+        }
+
+        .footer {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .footer-logo {
+            max-width: 70px;
+            height: auto;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .signature {
+            margin: 20px 0;
+            padding: 20px 0;
+            border-top: 1px solid #333333;
+        }
+
+        .signature p {
+            margin: 5px 0;
+            color: #cccccc;
+        }
+
+        .social-links {
+            margin: 15px 0;
+        }
+
+        .social-links a {
+            color: #EC4899;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+
+        .footer-note {
+            font-size: 12px;
+            color: #999999;
+            margin-top: 20px;
+        }
+
         @media only screen and (max-width: 600px) {
-            .email-body {
-                padding: 20px;
+            .email-container {
+                margin: 0;
+                border-radius: 0;
             }
 
-            .email-container {
-                width: 100%;
-                border-radius: 0;
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header {
+                padding: 25px 15px;
             }
         }
     </style>
 </head>
 
 <body>
-    <div style="padding: 40px 0;">
+    <div class="email-wrapper">
         <div class="email-container">
-            <!-- Header with Logo -->
-            <div class="email-header">
-                <div>
-                    <span style="font-size: 24px; font-weight: 800; color: #2c3e50;">COMS</span><span
-                        style="font-size: 24px; font-weight: 800; color: #E91E63;">.A.S</span>
-                </div>
-                <div style="font-size: 14px; color: #6c757d; margin-top: 5px;">Computer Science Association - UY1</div>
+            <!-- Header -->
+            <div class="header">
+                {% load static %}
+                <img src="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/comsas.png' %}{% else %}{{ logo_url }}{% endif %}"
+                    alt="COMS.A.S Logo" class="logo">
+                <h1 class="header-title">COMS.A.S</h1>
+                <p class="header-subtitle">Community of Mathematics and Statistics</p>
             </div>
 
-            <!-- Main Content -->
-            <div class="email-body">
-                {% block content %}{% endblock %}
+            <!-- Content -->
+            <div class="content">
+                {% block content %}
+                <!-- Email content goes here -->
+                {% endblock %}
             </div>
 
             <!-- Footer -->
-            <div class="email-footer">
-                <p>&copy; {% now "Y" %} Association des Anciens Élèves du Département d'Informatique. Tous droits
-                    réservés.</p>
-                <div class="social-links">
-                    <a href="https://comsas-uy1.com">Site Web</a> |
-                    <a href="#">LinkedIn</a> |
-                    <a href="#">Facebook</a>
+            <div class="footer">
+                {% load static %}
+                <img src="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/comsas.png' %}{% else %}{{ logo_url }}{% endif %}"
+                    alt="COMS.A.S" class="footer-logo">
+
+                <div class="signature">
+                    <p><strong>Cordialement,</strong></p>
+                    <p><strong>L'équipe COMS.A.S</strong></p>
+                    <p>Community of Mathematics and Statistics</p>
+                    <p>Université de Yaoundé 1</p>
                 </div>
-                <p style="margin-top: 10px;">Université de Yaoundé 1, Cameroun</p>
+
+                <div class="social-links">
+                    <a href="https://comsas-uy1.com">Site Web</a> •
+                    <a href="#">Facebook</a> •
+                    <a href="#">Instagram</a>
+                </div>
+
+                <p class="footer-note">
+                    Cet email a été envoyé automatiquement. Merci de ne pas y répondre directement.<br>
+                    Pour toute question, contactez-nous via notre formulaire de contact.
+                </p>
             </div>
         </div>
     </div>
