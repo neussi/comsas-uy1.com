@@ -718,3 +718,101 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+# =============================================================================
+# NOUVELLES VUES (REQ 2026-02-12)
+# =============================================================================
+
+from .models import RequestDocument, Professor, Classroom, Delegate, BlogArticle
+
+def request_documents(request):
+    """Liste des modèles de requêtes"""
+    documents = RequestDocument.objects.all().order_by('title')
+    
+    # Filtrer par type si demandé
+    doc_type = request.GET.get('type')
+    if doc_type:
+        documents = documents.filter(doc_type=doc_type)
+        
+    context = {
+        'documents': documents,
+        'current_type': doc_type,
+    }
+    return render(request, 'main/requests/list.html', context)
+
+def download_document(request, pk):
+    """Télécharger un document et incrémenter le compteur"""
+    document = get_object_or_404(RequestDocument, pk=pk)
+    document.downloads_count += 1
+    document.save()
+    
+    if document.file:
+        return redirect(document.file.url)
+    return redirect('request_documents')
+
+def department_professors(request):
+    """Liste des enseignants"""
+    professors = Professor.objects.filter(is_active=True).order_by('name')
+    context = {'professors': professors}
+    return render(request, 'main/department/professors.html', context)
+
+def department_classrooms(request):
+    """Liste des salles de cours"""
+    classrooms = Classroom.objects.all().order_by('name')
+    context = {'classrooms': classrooms}
+    return render(request, 'main/department/classrooms.html', context)
+
+def department_delegates(request):
+    """Liste des délégués"""
+    delegates = Delegate.objects.all().order_by('level', 'name')
+    
+    # Regrouper par niveau pour l'affichage
+    # Ou on peut le faire dans le template avec {% regroup %}
+    
+    context = {'delegates': delegates}
+    return render(request, 'main/department/delegates.html', context)
+
+def blog_list(request):
+    """Liste des articles de blog"""
+    articles_list = BlogArticle.objects.filter(is_published=True).order_by('-published_at')
+    
+    # Filtrer par catégorie
+    category = request.GET.get('category')
+    if category:
+        articles_list = articles_list.filter(category=category)
+    
+    # Pagination
+    paginator = Paginator(articles_list, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'current_category': category,
+        'categories': BlogArticle.CATEGORIES,
+    }
+    return render(request, 'main/blog/list.html', context)
+
+def blog_detail(request, slug):
+    """Détail d'un article de blog"""
+    article = get_object_or_404(BlogArticle, slug=slug, is_published=True)
+    
+    # Incrémenter les vues (simple)
+    # Idéalement utiliser session pour éviter doublons
+    session_key = f'viewed_article_{article.pk}'
+    if not request.session.get(session_key, False):
+        article.views_count += 1
+        article.save()
+        request.session[session_key] = True
+    
+    # Articles similaires
+    related_articles = BlogArticle.objects.filter(
+        category=article.category, 
+        is_published=True
+    ).exclude(pk=article.pk)[:3]
+    
+    context = {
+        'article': article,
+        'related_articles': related_articles,
+    }
+    return render(request, 'main/blog/detail.html', context)

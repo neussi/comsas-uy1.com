@@ -57,6 +57,19 @@ urlpatterns = [
     path('concours/<slug:slug>/', views.contest_detail, name='contest_detail'),
     path('concours/<slug:contest_slug>/vote/<int:candidate_id>/', views.vote_candidate, name='vote_candidate'),
 
+    # ============= NOUVELLES FONCTIONNALITÉS =============
+    # Modèles de requêtes
+    path('documents/', views.request_documents, name='request_documents'),
+    path('documents/download/<int:pk>/', views.download_document, name='download_document'),
+    
+    # Département
+    path('departement/enseignants/', views.department_professors, name='department_professors'),
+    path('departement/salles/', views.department_classrooms, name='department_classrooms'),
+    path('departement/delegues/', views.department_delegates, name='department_delegates'),
+    
+    # Blog
+    path('blog/', views.blog_list, name='blog_list'),
+    path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,104 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<article class="py-5 bg-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Header -->
+                <header class="mb-5 text-center">
+                    <div class="mb-3">
+                        <span class="badge bg-primary rounded-pill px-3 py-2">
+                            {{ article.get_category_display }}
+                        </span>
+                    </div>
+                    <h1 class="display-4 fw-bold mb-4">{{ article.title }}</h1>
+
+                    <div class="d-flex align-items-center justify-content-center text-muted">
+                        <div class="d-flex align-items-center me-4">
+                            {% if article.author.photo %}
+                            <img src="{{ article.author.photo.url }}" class="rounded-circle me-2" width="40" height="40"
+                                style="object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2"
+                                style="width: 40px; height: 40px;">
+                                <i class="bi bi-person text-secondary fs-5"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <div class="fw-bold text-dark">{{ article.author.nom_prenom|default:"Anonyme" }}</div>
+                                <div class="small">{{ article.published_at|date:"d M Y" }}</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center small">
+                            <span class="me-3"><i class="bi bi-clock me-1"></i> 5 min de lecture</span>
+                            <span><i class="bi bi-eye me-1"></i> {{ article.views_count }} vues</span>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Featured Image -->
+                {% if article.image %}
+                <figure class="mb-5">
+                    <img src="{{ article.image.url }}" class="img-fluid rounded-4 shadow w-100"
+                        alt="{{ article.title }}" style="max-height: 500px; object-fit: cover;">
+                </figure>
+                {% endif %}
+
+                <!-- Content -->
+                <div class="article-content fs-5 lh-lg mb-5">
+                    {{ article.content|safe }}
+                </div>
+
+                <!-- Footer / Share -->
+                <footer class="border-top pt-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <h5 class="fw-bold mb-0">Partager cet article</h5>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <a href="#" class="btn btn-outline-primary rounded-circle me-2"><i
+                                    class="bi bi-facebook"></i></a>
+                            <a href="#" class="btn btn-outline-info rounded-circle me-2"><i
+                                    class="bi bi-twitter"></i></a>
+                            <a href="#" class="btn btn-outline-success rounded-circle"><i
+                                    class="bi bi-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- Related Articles -->
+{% if related_articles %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <h3 class="fw-bold mb-4 text-center">Articles similaires</h3>
+        <div class="row g-4">
+            {% for related in related_articles %}
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    {% if related.image %}
+                    <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.title }}"
+                        style="height: 180px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">
+                            <a href="{% url 'blog_detail' related.slug %}"
+                                class="text-decoration-none text-dark stretched-link">
+                                {{ related.title|truncatechars:50 }}
+                            </a>
+                        </h6>
+                        <p class="card-text text-muted small">{{ related.published_at|date:"d M Y" }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

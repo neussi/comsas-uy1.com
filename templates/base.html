@@ -266,60 +266,66 @@
                             Accueil
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'mandate' %}active{% endif %}"
-                            href="{% url 'mandate' %}">
-                            Plan d'Action
+
+                    <!-- Département Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'department' in request.path or 'about' in request.path or 'mandate' in request.path or 'members' in request.path %}active{% endif %}"
+                            href="#" id="navbarDropdownDept" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Département
                         </a>
+                        <ul class="dropdown-menu border-0 shadow-sm" aria-labelledby="navbarDropdownDept">
+                            <li><a class="dropdown-item" href="{% url 'about' %}">À propos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'mandate' %}">Plan d'Action</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'department_professors' %}">Enseignants</a></li>
+                            <li><a class="dropdown-item" href="{% url 'department_classrooms' %}">Salles & Labs</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'members' %}">Bureau Exécutif</a></li>
+                            <li><a class="dropdown-item" href="{% url 'department_delegates' %}">Délégués</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}"
-                            href="{% url 'about' %}">
-                            À propos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'members' %}active{% endif %}"
-                            href="{% url 'members' %}">
-                            Bureau
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'sponsorship' in request.resolver_match.url_name %}active{% endif %}"
-                            href="{% url 'sponsorship_home' %}">
-                            Parrainage
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'project' in request.resolver_match.url_name %}active{% endif %}"
-                            href="{% url 'projects' %}">
-                            Projets
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'event' in request.resolver_match.url_name %}active{% endif %}"
-                            href="{% url 'events' %}">
+
+                    <!-- Activités Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'project' in request.path or 'event' in request.path or 'concours' in request.path or 'sponsorship' in request.path %}active{% endif %}"
+                            href="#" id="navbarDropdownAct" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             Activités
                         </a>
+                        <ul class="dropdown-menu border-0 shadow-sm" aria-labelledby="navbarDropdownAct">
+                            <li><a class="dropdown-item" href="{% url 'projects' %}">Projets</a></li>
+                            <li><a class="dropdown-item" href="{% url 'events' %}">Événements</a></li>
+                            <li><a class="dropdown-item" href="{% url 'contest_list' %}">Concours</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'sponsorship_home' %}">Parrainage</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'news' %}active{% endif %}"
-                            href="{% url 'news' %}">
-                            Actualités
+
+                    <!-- Ressources Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'documents' in request.path or 'blog' in request.path or 'gallery' in request.path %}active{% endif %}"
+                            href="#" id="navbarDropdownRes" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Ressources
                         </a>
+                        <ul class="dropdown-menu border-0 shadow-sm" aria-labelledby="navbarDropdownRes">
+                            <li><a class="dropdown-item" href="{% url 'request_documents' %}">Modèles de Demandes</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'blog_list' %}">Blog de l'Étudiant</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'gallery' %}">Galerie Multimédia</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'contest' in request.resolver_match.url_name %}active{% endif %}"
-                            href="{% url 'contest_list' %}">
-                            Concours
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}"
-                            href="{% url 'gallery' %}">
-                            Galerie
-                        </a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"
                             href="{% url 'contact' %}">

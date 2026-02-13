@@ -450,3 +450,137 @@ class Vote(models.Model):
 
     def __str__(self):
         return f"Vote pour {self.candidate} par {self.ip_address}"
+
+# =============================================================================
+# NOUVELLES FONCTIONNALITÉS (REQ 2026-02-12)
+# =============================================================================
+
+class RequestDocument(models.Model):
+    """Modèle de requête (PDF, Word, Image)"""
+    DOC_TYPES = [
+        ('pdf', 'PDF'),
+        ('word', 'Word'),
+        ('image', 'Image'),
+        ('text', 'Texte'),
+    ]
+    
+    title = models.CharField(max_length=200, verbose_name="Titre du modèle")
+    description = models.TextField(verbose_name="Description / Instructions", blank=True)
+    file = models.FileField(upload_to='requests/documents/', blank=True, null=True, verbose_name="Fichier (PDF, Docx...)")
+    image_preview = models.ImageField(upload_to='requests/previews/', blank=True, null=True, verbose_name="Aperçu (Image)")
+    doc_type = models.CharField(max_length=10, choices=DOC_TYPES, default='pdf', verbose_name="Type de fichier")
+    
+    downloads_count = models.IntegerField(default=0, verbose_name="Nombre de téléchargements")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Modèle de Requête"
+        verbose_name_plural = "Modèles de Requêtes"
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+class Professor(models.Model):
+    """Enseignant du département"""
+    GRADES = [
+        ('Pr', 'Professeur Titulaire'),
+        ('Mc', 'Maître de Conférences'),
+        ('Dr', 'Chargé de cours'),
+        ('Ass', 'Assistant'),
+        ('Mon', 'Moniteur'),
+    ]
+    
+    name = models.CharField(max_length=200, verbose_name="Nom complet")
+    grade = models.CharField(max_length=10, choices=GRADES, verbose_name="Grade", blank=True)
+    specialty = models.CharField(max_length=200, verbose_name="Spécialité", blank=True)
+    
+    office_description = RichTextField(verbose_name="Description/Localisation du Bureau", blank=True)
+    office_photo = models.ImageField(upload_to='department/offices/', blank=True, null=True, verbose_name="Photo de la porte du bureau")
+    profile_photo = models.ImageField(upload_to='department/professors/', blank=True, null=True, verbose_name="Photo de profil")
+    
+    email = models.EmailField(blank=True, verbose_name="Email professionnel")
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Enseignant"
+        verbose_name_plural = "Enseignants"
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.grade} {self.name}"
+
+class Classroom(models.Model):
+    """Salle de cours / Laboratoire"""
+    name = models.CharField(max_length=100, verbose_name="Nom de la salle (ex: S001)")
+    capacity = models.IntegerField(verbose_name="Capacité (places)", blank=True, null=True)
+    location_description = RichTextField(verbose_name="Description / Localisation")
+    photo = models.ImageField(upload_to='department/classrooms/', blank=True, null=True, verbose_name="Photo de la salle")
+    is_lab = models.BooleanField(default=False, verbose_name="Est un laboratoire")
+    
+    class Meta:
+        verbose_name = "Salle de cours"
+        verbose_name_plural = "Salles de cours"
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+class Delegate(models.Model):
+    """Délégué de classe"""
+    LEVEL_CHOICES = [
+        ('L1', 'Licence 1'),
+        ('L2', 'Licence 2'),
+        ('L3', 'Licence 3'),
+        ('M1', 'Master 1'),
+        ('M2', 'Master 2'),
+        ('INT-L1', 'INT-L1'),
+        ('INT-L2', 'INT-L2'),
+        ('INT-L3', 'INT-L3'),
+    ]
+    
+    name = models.CharField(max_length=200, verbose_name="Nom complet")
+    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, verbose_name="Niveau")
+    photo = models.ImageField(upload_to='department/delegates/', blank=True, null=True, verbose_name="Photo")
+    phone = models.CharField(max_length=20, verbose_name="Téléphone (WhatsApp)")
+    email = models.EmailField(blank=True, verbose_name="Email")
+    year = models.CharField(max_length=9, verbose_name="Année académique (ex: 2025-2026)", default="2025-2026")
+    motto = models.CharField(max_length=200, blank=True, verbose_name="Devise / Citation")
+    
+    class Meta:
+        verbose_name = "Délégué"
+        verbose_name_plural = "Délégués"
+        ordering = ['level', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.level})"
+
+class BlogArticle(models.Model):
+    """Article de blog (Conseils, Tutos...)"""
+    CATEGORIES = [
+        ('tuto', 'Tutoriel'),
+        ('conseil', 'Conseil Académique'),
+        ('stage', 'Stage & Emploi'),
+        ('master', 'Master & Recherche'),
+        ('vie', 'Vie Associative'),
+    ]
+    
+    title = models.CharField(max_length=200, verbose_name="Titre")
+    slug = models.SlugField(unique=True, help_text="URL conviviale")
+    image = models.ImageField(upload_to='blog/', blank=True, null=True, verbose_name="Image de couverture")
+    content = RichTextField(verbose_name="Contenu de l'article")
+    category = models.CharField(max_length=20, choices=CATEGORIES, default='conseil', verbose_name="Catégorie")
+    
+    author = models.ForeignKey(Member, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Auteur")
+    published_at = models.DateTimeField(verbose_name="Date de publication", default=timezone.now)
+    is_published = models.BooleanField(default=False, verbose_name="Publié")
+    
+    views_count = models.IntegerField(default=0, verbose_name="Vues")
+    
+    class Meta:
+        verbose_name = "Article de Blog"
+        verbose_name_plural = "Articles de Blog"
+        ordering = ['-published_at']
+
+    def __str__(self):
+        return self.title

@@ -1,0 +1,93 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row mb-5 text-center">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-4 fw-bold mb-3">Vos Délégués</h1>
+                <p class="lead text-muted">Les représentants des étudiants par niveau pour l'année académique en cours.
+                </p>
+            </div>
+        </div>
+
+        {% regroup delegates by get_level_display as level_list %}
+
+        {% for level in level_list %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="border-bottom pb-2 mb-4 text-primary fw-bold">
+                    <i class="bi bi-mortarboard-fill me-2"></i>{{ level.grouper }}
+                </h3>
+            </div>
+
+            {% for delegate in level.list %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-3 hover-scale">
+                    <div class="mx-auto mb-3 position-relative" style="width: 120px; height: 120px;">
+                        {% if delegate.photo %}
+                        <img src="{{ delegate.photo.url }}"
+                            class="rounded-circle w-100 h-100 object-fit-cover border border-4 border-light shadow"
+                            alt="{{ delegate.name }}">
+                        {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ delegate.name }}&background=0d6efd&color=fff&size=120"
+                            class="rounded-circle w-100 h-100 border border-4 border-light shadow"
+                            alt="{{ delegate.name }}">
+                        {% endif %}
+                        <span
+                            class="position-absolute bottom-0 end-0 badge rounded-pill bg-warning text-dark border border-white">
+                            {{ delegate.year }}
+                        </span>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <h5 class="fw-bold mb-1">{{ delegate.name }}</h5>
+                        <p class="text-muted small mb-3">Délégué {{ delegate.get_level_display }}</p>
+
+                        {% if delegate.motto %}
+                        <figure class="text-center mb-3">
+                            <blockquote class="blockquote">
+                                <p class="small fst-italic text-secondary">"{{ delegate.motto }}"</p>
+                            </blockquote>
+                        </figure>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-footer bg-white border-0 p-0 mt-3 d-flex justify-content-center gap-2">
+                        {% if delegate.phone %}
+                        <a href="https://wa.me/{{ delegate.phone|cut:'+'|cut:' ' }}"
+                            class="btn btn-outline-success rounded-circle" target="_blank" title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        {% endif %}
+
+                        {% if delegate.email %}
+                        <a href="mailto:{{ delegate.email }}" class="btn btn-outline-secondary rounded-circle"
+                            title="Email">
+                            <i class="bi bi-envelope"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% empty %}
+        <div class="text-center py-5">
+            <p class="text-muted">Aucun délégué listé pour le moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+    .hover-scale {
+        transition: transform 0.3s ease;
+    }
+
+    .hover-scale:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}

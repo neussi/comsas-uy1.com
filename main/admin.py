@@ -240,3 +240,40 @@ class MenteeAdmin(admin.ModelAdmin):
     list_filter = ('level', 'desired_specialty', 'session')
     search_fields = ('first_name', 'last_name', 'email')
     actions = [match_mentees, export_to_csv, export_sponsorship_pdf]
+
+# =============================================================================
+# ADMIN POUR NOUVELLES FONCTIONNALITÉS
+# =============================================================================
+
+from .models import RequestDocument, Professor, Classroom, Delegate, BlogArticle
+
+@admin.register(RequestDocument)
+class RequestDocumentAdmin(admin.ModelAdmin):
+    list_display = ('title', 'doc_type', 'downloads_count', 'created_at')
+    list_filter = ('doc_type',)
+    search_fields = ('title', 'description')
+
+@admin.register(Professor)
+class ProfessorAdmin(admin.ModelAdmin):
+    list_display = ('name', 'grade', 'specialty', 'is_active')
+    list_filter = ('grade', 'is_active')
+    search_fields = ('name', 'specialty')
+
+@admin.register(Classroom)
+class ClassroomAdmin(admin.ModelAdmin):
+    list_display = ('name', 'capacity', 'is_lab')
+    list_filter = ('is_lab',)
+    search_fields = ('name',)
+
+@admin.register(Delegate)
+class DelegateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'level', 'phone', 'year')
+    list_filter = ('level', 'year')
+    search_fields = ('name', 'email')
+
+@admin.register(BlogArticle)
+class BlogArticleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'category', 'author', 'published_at', 'views_count', 'is_published')
+    list_filter = ('category', 'is_published')
+    search_fields = ('title', 'content')
+    prepopulated_fields = {'slug': ('title',)}

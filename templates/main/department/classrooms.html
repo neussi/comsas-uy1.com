@@ -1,0 +1,94 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-5 text-center">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-4 fw-bold mb-3">Salles et Laboratoires</h1>
+                <p class="lead text-muted">Localisation et descriptif des salles de cours et laboratoires du
+                    département.</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for room in classrooms %}
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 shadow-sm overflow-hidden h-100">
+                    <div class="row g-0 h-100">
+                        <div class="col-md-5 position-relative">
+                            {% if room.photo %}
+                            <img src="{{ room.photo.url }}" class="img-fluid h-100 object-fit-cover w-100"
+                                alt="{{ room.name }}" style="min-height: 250px;">
+                            {% else %}
+                            <div class="bg-secondary h-100 d-flex align-items-center justify-content-center text-white"
+                                style="min-height: 250px;">
+                                <i class="bi bi-person-workspace display-1"></i>
+                            </div>
+                            {% endif %}
+
+                            {% if room.is_lab %}
+                            <div class="position-absolute top-0 start-0 m-2">
+                                <span class="badge bg-warning text-dark"><i class="bi bi-pc-display me-1"></i>
+                                    Laboratoire</span>
+                            </div>
+                            {% else %}
+                            <div class="position-absolute top-0 start-0 m-2">
+                                <span class="badge bg-primary"><i class="bi bi-easel me-1"></i> Salle de Cours</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-7">
+                            <div class="card-body d-flex flex-column h-100">
+                                <h3 class="card-title fw-bold mb-1">{{ room.name }}</h3>
+                                {% if room.capacity %}
+                                <div class="text-muted mb-3 small">
+                                    <i class="bi bi-people-fill me-1"></i> Capacité: {{ room.capacity }} places
+                                </div>
+                                {% endif %}
+
+                                <div class="card-text mb-3 flex-grow-1">
+                                    {{ room.location_description|safe }}
+                                </div>
+
+                                <div class="mt-auto">
+                                    <button class="btn btn-outline-primary w-100 rounded-pill" data-bs-toggle="modal"
+                                        data-bs-target="#roomModal{{ room.pk }}">
+                                        <i class="bi bi-arrows-fullscreen me-2"></i> Voir en grand
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="roomModal{{ room.pk }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content border-0">
+                        <div class="modal-body p-0 position-relative">
+                            <button type="button"
+                                class="btn-close position-absolute top-0 end-0 m-3 z-3 bg-white p-2 text-white"
+                                data-bs-dismiss="modal" aria-label="Close"></button>
+                            {% if room.photo %}
+                            <img src="{{ room.photo.url }}" class="img-fluid w-100" alt="{{ room.name }}">
+                            {% endif %}
+                            <div class="p-4 bg-white">
+                                <h4 class="fw-bold">{{ room.name }}</h4>
+                                <div class="">{{ room.location_description|safe }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Aucune salle répertoriée.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

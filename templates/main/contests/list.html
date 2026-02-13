@@ -1,137 +1,132 @@
-{% extends 'base.html' %}
+{% extends 'main/base.html' %}
 {% load static %}
 
-{% block title %}Concours & Votes - COMSAS{% endblock %}
-
 {% block content %}
-<!-- Hero Section -->
-<section class="py-5 bg-white position-relative overflow-hidden"
-    style="min-height: 40vh; display: flex; align-items: center;">
-    <div class="container position-relative z-1">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
-                <i class="fas fa-vote-yea me-2"></i>Espace Concours
-            </div>
-            <h1 class="display-4 fw-bold mb-4 text-dark">
-                Participez à la vie de <span class="text-primary">la communauté</span>
-            </h1>
-            <p class="lead text-muted mx-auto" style="max-width: 700px;">
-                Votez pour vos projets favoris, élisez vos miss et masters, et soutenez les talents de la COMSAS.
-            </p>
-        </div>
-    </div>
-
-    <!-- Background Decor -->
-    <div class="position-absolute top-0 start-0 w-100 h-100 text-center d-flex align-items-center justify-content-center"
-        style="z-index: 0; pointer-events: none;">
-        <div class="bg-warning bg-opacity-10 rounded-circle position-absolute top-50 start-50 translate-middle"
-            style="width: 600px; height: 600px; opacity: 0.3; filter: blur(80px);"></div>
-    </div>
-</section>
-
-<!-- Active Contests -->
 <section class="py-5 bg-light">
     <div class="container">
-        <div class="d-flex align-items-center mb-4">
-            <h2 class="fw-bold mb-0">En cours</h2>
-            <div class="ms-3 flex-grow-1 border-bottom"></div>
+        <div class="row mb-5 text-center">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-4 fw-bold mb-3">Compétitions & Concours</h1>
+                <p class="lead text-muted">Participez, votez et suivez les résultats des élections et concours du
+                    département.</p>
+            </div>
         </div>
 
-        {% if active_contests %}
-        <div class="row g-4">
-            {% for contest in active_contests %}
-            <div class="col-lg-6" data-aos="fade-up">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden hover-lift">
-                    <div class="row g-0 h-100">
-                        <div class="col-md-5 position-relative">
-                            {% if contest.image %}
-                            <img src="{{ contest.image.url }}" class="img-fluid h-100 w-100 object-fit-cover"
-                                alt="{{ contest.title }}" style="min-height: 250px;">
-                            {% else %}
-                            <div class="bg-primary h-100 w-100 d-flex align-items-center justify-content-center text-white"
-                                style="min-height: 250px;">
-                                <i class="fas fa-trophy fa-3x opacity-50"></i>
-                            </div>
-                            {% endif %}
+        <!-- Tabs -->
+        <ul class="nav nav-pills justify-content-center mb-5" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active px-4 rounded-pill" id="pills-active-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-active" type="button" role="tab">En cours</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4 rounded-pill" id="pills-past-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-past" type="button" role="tab">Terminés</button>
+            </li>
+        </ul>
 
-                            {% if contest.is_open %}
-                            <div class="position-absolute top-0 start-0 m-3">
-                                <span class="badge bg-success shadow-sm">
-                                    <i class="fas fa-check-circle me-1"></i> Votes ouverts
-                                </span>
-                            </div>
-                            {% else %}
-                            <div class="position-absolute top-0 start-0 m-3">
-                                <span class="badge bg-warning text-dark shadow-sm">
-                                    <i class="fas fa-clock me-1"></i> Bientôt / Terminé
-                                </span>
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-7">
-                            <div class="card-body d-flex flex-column h-100 p-4">
-                                <h3 class="h4 card-title fw-bold mb-2">{{ contest.title }}</h3>
-                                <p class="card-text text-muted small mb-3 line-clamp-3">
-                                    {{ contest.description }}
-                                </p>
-
-                                <div class="mt-auto">
-                                    <div class="d-flex justify-content-between text-muted small mb-3">
-                                        <span><i class="far fa-calendar-alt me-1"></i> Fin le {{
-                                            contest.end_date|date:"d M" }}</span>
-                                        <span><i class="fas fa-users me-1"></i> {{ contest.candidates.count }}
-                                            Candidats</span>
-                                    </div>
-                                    <a href="{% url 'contest_detail' contest.slug %}" class="btn btn-primary w-100">
-                                        Voir et Voter <i class="fas fa-arrow-right ms-2"></i>
-                                    </a>
+        <div class="tab-content" id="pills-tabContent">
+            <!-- Active Contests -->
+            <div class="tab-pane fade show active" id="pills-active" role="tabpanel">
+                <div class="row g-4 justify-content-center">
+                    {% for contest in active_contests %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-lg hover-scale overflow-hidden">
+                            <div class="position-relative">
+                                {% if contest.image %}
+                                <img src="{{ contest.image.url }}" class="card-img-top" alt="{{ contest.title }}"
+                                    style="height: 250px; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-gradient-primary h-100 d-flex align-items-center justify-content-center text-white"
+                                    style="height: 250px;">
+                                    <i class="bi bi-trophy display-1"></i>
+                                </div>
+                                {% endif %}
+                                <div class="position-absolute top-0 end-0 m-3 badge bg-danger animate-pulse">
+                                    <i class="bi bi-circle-fill small me-1"></i> EN DIRECT
                                 </div>
                             </div>
+
+                            <div class="card-body text-center p-4">
+                                <h3 class="card-title fw-bold mb-2">{{ contest.title }}</h3>
+                                <p class="text-muted small mb-4">
+                                    <i class="bi bi-calendar-check me-1"></i> Fin le {{ contest.end_date|date:"d F Y à
+                                    H:i" }}
+                                </p>
+                                <p class="card-text mb-4">{{ contest.description|truncatewords:20 }}</p>
+
+                                <a href="{% url 'contest_detail' contest.slug %}"
+                                    class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">
+                                    <i class="bi bi-check-circle-fill me-2"></i> Voter maintenant
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="text-center py-5">
-            <div class="mb-3 text-muted opacity-50">
-                <i class="fas fa-box-open fa-3x"></i>
-            </div>
-            <p class="lead text-muted">Aucun concours actif pour le moment.</p>
-        </div>
-        {% endif %}
-    </div>
-</section>
-
-<!-- Past Contests -->
-{% if past_contests %}
-<section class="py-5 bg-white">
-    <div class="container">
-        <div class="d-flex align-items-center mb-4">
-            <h2 class="fw-bold mb-0 text-muted fs-4">Terminés</h2>
-            <div class="ms-3 flex-grow-1 border-bottom"></div>
-        </div>
-
-        <div class="row g-4">
-            {% for contest in past_contests %}
-            <div class="col-md-6 col-lg-4" data-aos="fade-up">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="card-title text-muted">{{ contest.title }}</h5>
-                        <p class="card-text small text-muted mb-2">
-                            Terminé le {{ contest.end_date|date:"d M Y" }}
-                        </p>
-                        <a href="{% url 'contest_detail' contest.slug %}"
-                            class="btn btn-sm btn-outline-secondary stretched-link">
-                            Voir les résultats
-                        </a>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-calendar-x display-1 text-muted opacity-25"></i>
+                        <p class="mt-3 text-muted">Aucune compétition en cours.</p>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
+
+            <!-- Past Contests -->
+            <div class="tab-pane fade" id="pills-past" role="tabpanel">
+                <div class="row g-4">
+                    {% for contest in past_contests %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm opacity-75">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold text-muted">{{ contest.title }}</h5>
+                                <p class="small text-muted mb-2">Terminé le {{ contest.end_date|date:"d M Y" }}</p>
+                                <a href="{% url 'contest_detail' contest.slug %}"
+                                    class="btn btn-sm btn-outline-secondary mt-3">Voir les résultats</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">Aucune archive disponible.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 </section>
-{% endif %}
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .hover-scale {
+        transition: transform 0.3s ease;
+    }
+
+    .hover-scale:hover {
+        transform: translateY(-5px);
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.05);
+            opacity: 0.8;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .animate-pulse {
+        animation: pulse 2s infinite;
+    }
+</style>
 {% endblock %}
