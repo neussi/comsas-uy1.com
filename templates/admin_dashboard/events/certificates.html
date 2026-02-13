@@ -1,0 +1,178 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Attestations - {{ event.title_fr }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-certificate text-primary"></i> Attestations de Participation</h2>
+            <p class="text-muted mb-0">{{ event.title_fr }}</p>
+        </div>
+        <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Retour aux inscriptions
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-users"></i> Participants</h5>
+                    <h2 class="mb-0">{{ total_participants }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-check-circle"></i> Attestations Générées</h5>
+                    <h2 class="mb-0">{{ certificates_generated }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-clock"></i> En Attente</h5>
+                    <h2 class="mb-0">{{ total_participants|add:"-"|add:certificates_generated }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card {% if event.certificate_enabled %}bg-info{% else %}bg-secondary{% endif %} text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-toggle-on"></i> Statut</h5>
+                    <h3 class="mb-0">{% if event.certificate_enabled %}Activé{% else %}Désactivé{% endif %}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="fas fa-cogs"></i> Actions Rapides</h5>
+        </div>
+        <div class="card-body">
+            {% if event.certificate_enabled %}
+            <div class="btn-group" role="group">
+                <a href="{% url 'admin_generate_all_certificates' event.pk %}" class="btn btn-primary btn-lg"
+                    onclick="return confirm('Générer les attestations pour tous les participants confirmés?')">
+                    <i class="fas fa-magic"></i> Générer Toutes les Attestations
+                </a>
+
+                {% if certificates_generated > 0 %}
+                <a href="{% url 'admin_download_certificates_zip' event.pk %}" class="btn btn-success btn-lg">
+                    <i class="fas fa-download"></i> Télécharger ZIP ({{ certificates_generated }} fichiers)
+                </a>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                Les attestations sont désactivées pour cet événement.
+                <a href="{% url 'admin_event_edit' event.pk %}" class="alert-link">Modifier l'événement</a> pour les
+                activer.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Certificate Configuration -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="fas fa-sliders-h"></i> Configuration des Attestations</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Titre:</strong> {{ event.certificate_title|default:"Non défini" }}</p>
+                    <p><strong>Président:</strong> {{ event.certificate_president_name }}</p>
+                    <p><strong>Chef de département:</strong> {{ event.certificate_dept_head_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Description:</strong></p>
+                    <p class="text-muted">{{ event.certificate_description|default:"Description par
+                        défaut"|truncatewords:30 }}</p>
+                </div>
+            </div>
+            <a href="{% url 'admin_event_edit' event.pk %}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit"></i> Modifier la Configuration
+            </a>
+        </div>
+    </div>
+
+    <!-- Participants List -->
+    <div class="card">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="fas fa-list"></i> Liste des Participants</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Nom et Prénom</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Attestation</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registration in registrations %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong>{{ registration.nom_prenom }}</strong></td>
+                            <td>{{ registration.email }}</td>
+                            <td>{{ registration.telephone }}</td>
+                            <td>
+                                {% if registration.certificate_pdf %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check"></i> Générée
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-clock"></i> En attente
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if registration.certificate_pdf %}
+                                <a href="{{ registration.certificate_pdf.url }}" class="btn btn-sm btn-success"
+                                    target="_blank">
+                                    <i class="fas fa-download"></i> Télécharger
+                                </a>
+                                <a href="{% url 'admin_regenerate_certificate' registration.id %}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    onclick="return confirm('Régénérer cette attestation?')">
+                                    <i class="fas fa-sync"></i> Régénérer
+                                </a>
+                                {% else %}
+                                <a href="{% url 'admin_regenerate_certificate' registration.id %}"
+                                    class="btn btn-sm btn-primary">
+                                    <i class="fas fa-magic"></i> Générer
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <p>Aucun participant confirmé pour cet événement.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

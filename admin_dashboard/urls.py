@@ -2,6 +2,7 @@
 from django.urls import path, include
 from . import views
 from . import auth_views
+from . import certificate_views
 
 urlpatterns = [
 
@@ -42,6 +43,12 @@ urlpatterns = [
     path('registrations/<int:pk>/delete/', views.delete_registration, name='admin_delete_registration'),
     path('events/<int:pk>/registrations/export/', views.event_registrations_export_excel, name='admin_export_registrations'),
     path('registrations/<int:pk>/confirm/', views.confirm_registration, name='admin_confirm_registration'),
+    
+    # Certificate Management
+    path('events/<int:pk>/certificates/', certificate_views.event_certificates_manage, name='admin_event_certificates'),
+    path('events/<int:pk>/certificates/generate-all/', certificate_views.generate_all_certificates, name='admin_generate_all_certificates'),
+    path('events/<int:pk>/certificates/download-zip/', certificate_views.download_certificates_zip, name='admin_download_certificates_zip'),
+    path('registrations/<int:registration_id>/regenerate-certificate/', certificate_views.regenerate_certificate, name='admin_regenerate_certificate'),
     
     # ============= GESTION DES ACTUALITÉS =============
     path('news/', views.news_list, name='admin_news_list'),

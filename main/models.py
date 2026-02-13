@@ -105,6 +105,15 @@ class Event(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    # Certificate Configuration
+    certificate_enabled = models.BooleanField(default=True, verbose_name="Activer les attestations")
+    certificate_title = models.CharField(max_length=200, blank=True, verbose_name="Titre de l'attestation")
+    certificate_description = models.TextField(blank=True, verbose_name="Description pour l'attestation")
+    certificate_president_name = models.CharField(max_length=100, default="Président COMS.A.S", verbose_name="Nom du président")
+    certificate_president_title = models.CharField(max_length=100, default="Président du COMS.A.S", verbose_name="Titre du président")
+    certificate_dept_head_name = models.CharField(max_length=100, default="Chef de département", verbose_name="Nom du chef de département")
+    certificate_dept_head_title = models.CharField(max_length=100, default="Chef de département informatique", verbose_name="Titre du chef de département")
+    
     class Meta:
         verbose_name = "Événement"
         verbose_name_plural = "Événements"
@@ -136,7 +145,9 @@ class EventRegistration(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     ticket_pdf = models.FileField(upload_to='tickets/pdfs/', blank=True, null=True, verbose_name="Ticket PDF")
     qr_code = models.ImageField(upload_to='tickets/qrcodes/', blank=True, null=True, verbose_name="Code QR")
-
+    
+    # Certificate
+    certificate_pdf = models.FileField(upload_to='certificates/', blank=True, null=True, verbose_name="Attestation PDF")
     
     class Meta:
         verbose_name = "Inscription à l'événement"
