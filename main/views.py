@@ -530,22 +530,12 @@ def whatsapp_redirect(request):
 
 def handler404(request, exception=None):
     """Page d'erreur 404 personnalisée"""
-    context = {
-        'error_code': '404',
-        'error_title': 'Page non trouvée',
-        'error_message': 'Désolé, la page que vous recherchez n\'existe pas ou a été déplacée.',
-    }
-    return render(request, 'errors/404.html', context, status=404)
+    return render(request, '404.html', status=404)
 
 
 def handler500(request):
     """Page d'erreur 500 personnalisée"""
-    context = {
-        'error_code': '500',
-        'error_title': 'Erreur serveur',
-        'error_message': 'Une erreur interne s\'est produite. Notre équipe technique a été notifiée et travaille à résoudre le problème.',
-    }
-    return render(request, 'errors/500.html', context, status=500)
+    return render(request, '500.html', status=500)
 
 
 # ------------- SPONSORSHIP VIEWS -------------

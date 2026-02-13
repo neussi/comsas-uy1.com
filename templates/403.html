@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Accès Refusé | COMS.A.S</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a1a;
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 3rem 2rem;
+            max-width: 600px;
+        }
+
+        .error-code {
+            font-size: 140px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+            line-height: 1;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .error-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .error-message {
+            font-size: 1.15rem;
+            color: #666666;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(236, 72, 153, 0.5);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #EC4899;
+            border: 2px solid #EC4899;
+        }
+
+        .btn-secondary:hover {
+            background: #FFF1F7;
+            transform: translateY(-3px);
+        }
+
+        .logo {
+            margin-bottom: 2rem;
+        }
+
+        .logo-circle {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            box-shadow: 0 8px 30px rgba(236, 72, 153, 0.3);
+        }
+
+        .decoration {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .decoration-1 {
+            top: -200px;
+            left: -200px;
+        }
+
+        .decoration-2 {
+            bottom: -200px;
+            right: -200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="decoration decoration-1"></div>
+    <div class="decoration decoration-2"></div>
+
+    <div class="error-container">
+        <div class="logo">
+            <div class="logo-circle">C</div>
+        </div>
+
+        <div class="error-code">403</div>
+        <h1 class="error-title">Accès Refusé</h1>
+        <p class="error-message">
+            Vous n'avez pas les permissions nécessaires pour accéder à cette page.
+            Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur.
+        </p>
+
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary">Retour à l'Accueil</a>
+            <a href="javascript:history.back()" class="btn btn-secondary">Page Précédente</a>
+        </div>
+    </div>
+</body>
+
+</html>

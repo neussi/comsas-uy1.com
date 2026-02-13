@@ -29,8 +29,8 @@ def test_certificate_generation():
             'registration_deadline': timezone.now() + timezone.timedelta(days=5),
             'certificate_enabled': True,
             'certificate_title': 'SÉMINAIRE DE MAINTENANCE INFORMATIQUE',
-            'certificate_description': """Le computer science association (Club informatique) de l'université de Yaoundé 1 en abrégé COMS.A.S, par la voix de son président aux côtés du
-computer scientist network, certifie que le nommé a participé au séminaire de maintenance informatique tenu du 19 au 20 Novembre
+            'certificate_description': """Le computer science association (Club informatique) de l'université de Yaoundé 1 en abrégé COMS.A.S, par la voix de son président, 
+certifie que le nommé a participé au séminaire de maintenance informatique tenu du 19 au 20 Novembre
 2025 au centre universitaire des technologies et de l'information de cette université et qui avait pour module : maintenance matérielle,
 maintenance logicielle et mise en réseau des ordinateurs. Ce dernier a démontré un engagement sérieux dans l'apprentissage des technologies et
 des connaissances abordées. En foi de quoi la présente attestation est établie pour lui valoir ce que de droit.""",
