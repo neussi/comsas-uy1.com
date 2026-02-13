@@ -10,6 +10,8 @@ services:
       - POSTGRES_USER=${DB_USER:-comsas_user}
       - POSTGRES_PASSWORD=${DB_PASSWORD:-comsas_password}
     restart: always
+    networks:
+      - comsas_network
 
   web:
     build: .
