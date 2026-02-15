@@ -48,6 +48,10 @@ def home(request):
         is_active=True
     )
     
+    # Statistiques pour la home
+    total_members = Member.objects.filter(is_active=True).count()
+    completed_projects = Project.objects.filter(status='completed').count()
+    
     context = {
         'site_settings': site_settings,
         'featured_events': featured_events,
@@ -55,6 +59,8 @@ def home(request):
         'recent_news': recent_news,
         'featured_gallery': featured_gallery,
         'bureau_members': bureau_members,
+        'total_members': total_members,
+        'completed_projects': completed_projects,
     }
     
     return render(request, 'main/home.html', context)
