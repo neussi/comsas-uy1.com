@@ -244,7 +244,7 @@ class CandidateForm(forms.ModelForm):
             Submit('submit', _('Enregistrer le candidat'), css_class='btn btn-primary btn-lg w-100')
         )
 
-from main.models import RequestDocument, Professor, Classroom, Delegate, BlogArticle
+from main.models import RequestDocument, Professor, Classroom, Delegate, BlogArticle, Archive
 
 class RequestDocumentForm(forms.ModelForm):
     """Formulaire pour les modèles de demandes"""
@@ -394,3 +394,35 @@ class BlogArticleForm(forms.ModelForm):
             ),
             Submit('submit', _('Enregistrer l\'article'), css_class='btn btn-primary btn-lg w-100')
         )
+
+class ArchiveForm(forms.ModelForm):
+    """Formulaire pour les archives"""
+    
+    class Meta:
+        model = Archive
+        fields = ['title', 'description', 'file', 'academic_year', 'level', 'category']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Détails du document'),
+                'title',
+                Row(
+                    Column('academic_year', css_class='form-group col-md-6 mb-3'),
+                    Column('level', css_class='form-group col-md-6 mb-3'),
+                ),
+                'category',
+                'file',
+                'description',
+            ),
+            Submit('submit', _('Enregistrer l\'archive'), css_class='btn btn-primary btn-lg w-100')
+        )
+        
+        for field_name, field in self.fields.items():
+            if field_name != 'file':
+                field.widget.attrs.update({'class': 'form-control'})

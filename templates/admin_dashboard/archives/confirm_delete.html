@@ -1,0 +1,33 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block content %}
+<div class="container h-100 d-flex justify-content-center align-items-center" style="min-height: 50vh;">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-body text-center p-5">
+                <div class="mb-4">
+                    <i class="fas fa-exclamation-triangle text-danger fa-4x mb-3"></i>
+                    <h3>Confirmer la suppression</h3>
+                </div>
+
+                <p class="lead mb-4">
+                    Êtes-vous sûr de vouloir supprimer l'archive <strong>"{{ object.title }}"</strong> ?
+                    <br>
+                    <span class="text-danger small">Cette action est irréversible.</span>
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{% url 'admin_archive_list' %}"
+                            class="btn btn-secondary btn-lg px-4 me-md-2">Annuler</a>
+                        <button type="submit" class="btn btn-danger btn-lg px-4">
+                            <i class="fas fa-trash me-2"></i>Supprimer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

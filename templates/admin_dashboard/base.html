@@ -451,6 +451,13 @@
                     <div>Documents</div>
                 </a>
             </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_archive_list' %}"
+                    class="menu-link {% if 'archive' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-archive"></i>
+                    <div>Archives</div>
+                </a>
+            </div>
 
             <div class="menu-header">Parrainage & Concours</div>
             <div class="menu-item">

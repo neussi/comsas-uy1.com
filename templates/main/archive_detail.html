@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ archive.title }} - Archives - COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}"
+                        class="text-decoration-none text-muted">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'archives' %}"
+                        class="text-decoration-none text-muted">Archives</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ archive.title|truncatechars:30 }}</li>
+            </ol>
+        </nav>
+
+        <div class="row g-4">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                    <div class="card-body p-4 p-lg-5">
+                        <div class="d-flex align-items-center mb-4">
+                            <span class="badge bg-primary bg-opacity-10 text-primary me-2">{{ archive.get_level_display }}</span>
+                            <span class="badge bg-warning bg-opacity-10 text-warning me-2">{{ archive.get_category_display }}</span>
+                            <small class="text-muted ms-auto">
+                                <i class="far fa-calendar-alt me-1"></i> {{ archive.created_at|date:"d M Y" }}
+                            </small>
+                        </div>
+
+                        <h1 class="display-6 fw-bold mb-4">{{ archive.title }}</h1>
+
+                        <div class="d-flex align-items-center mb-4 text-muted small">
+                            <div class="me-4">
+                                <i class="far fa-eye me-1"></i> {{ archive.views_count }} vues
+                            </div>
+                            <div class="me-4">
+                                <i class="fas fa-download me-1"></i> {{ archive.downloads_count }} téléchargements
+                            </div>
+                            <div id="likes-count-display">
+                                <i class="far fa-heart me-1"></i> <span id="likes-count">{{ archive.likes_count }}</span> j'aime
+                            </div>
+                        </div>
+
+                        {% if archive.description %}
+                        <div class="mb-5 text-secondary lead" style="font-size: 1.1rem;">
+                            {{ archive.description|linebreaks }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-3 d-md-flex mb-5">
+                            <a href="{% url 'archive_download' archive.slug %}"
+                                class="btn btn-primary btn-lg rounded-pill px-5" target="_blank">
+                                <i class="fas fa-download me-2"></i>Télécharger le document
+                            </a>
+
+                            <button class="btn btn-outline-danger btn-lg rounded-pill px-4" id="like-btn"
+                                onclick="toggleLike()">
+                                <i class="{% if is_liked %}fas{% else %}far{% endif %} fa-heart me-2"></i>
+                                <span id="like-text">{% if is_liked %}Aimé{% else %}J'aime{% endif %}</span>
+                            </button>
+                        </div>
+
+                        <!-- Share -->
+                        <div class="border-top pt-4">
+                            <h5 class="h6 fw-bold mb-3">Partager ce document</h5>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary rounded-circle"
+                                    style="width: 40px; height: 40px;" onclick="shareFacebook()">
+                                    <i class="fab fa-facebook-f"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success rounded-circle"
+                                    style="width: 40px; height: 40px;" onclick="shareWhatsapp()">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info rounded-circle"
+                                    style="width: 40px; height: 40px;" onclick="shareTwitter()">
+                                    <i class="fab fa-twitter"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-circle"
+                                    style="width: 40px; height: 40px;" onclick="copyLink()">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 p-lg-5">
+                        <h3 class="h4 fw-bold mb-4">
+                            <i class="far fa-comments me-2 text-primary"></i>Commentaires ({{ comments.count }})
+                        </h3>
+
+                        <!-- Comment Form -->
+                        <form method="post" class="mb-5">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="author_name" class="form-label">Votre nom</label>
+                                <input type="text" class="form-control bg-light border-0" id="author_name"
+                                    name="author_name" placeholder="Ex: Anas Cherif" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Votre commentaire</label>
+                                <textarea class="form-control bg-light border-0" id="content" name="content" rows="3"
+                                    placeholder="Écrivez votre commentaire ici..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                Publier le commentaire
+                            </button>
+                        </form>
+
+                        <!-- Comments List -->
+                        <div class="comments-list">
+                            {% for comment in comments %}
+                            <div class="d-flex gap-3 mb-4 pb-4 border-bottom">
+                                <div class="flex-shrink-0">
+                                    <div class="avatar bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 50px; height: 50px; font-weight: bold;">
+                                        {{ comment.author_name|slice:":1"|upper }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ comment.author_name }}</h6>
+                                    <small class="text-muted d-block mb-2">{{ comment.created_at|date:"d M Y à H:i" }}</small>
+                                    <p class="mb-0 text-secondary">{{ comment.content }}</p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="far fa-comment-dots fa-3x mb-3 opacity-25"></i>
+                                <p>Soyez le premier à commenter ce document !</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Related Archives -->
+                {% if related_archives %}
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                        <h5 class="fw-bold mb-0">Documents similaires</h5>
+                    </div>
+                    <div class="card-body px-4 pb-4">
+                        <div class="list-group list-group-flush">
+                            {% for related in related_archives %}
+                            <a href="{% url 'archive_detail' related.slug %}"
+                                class="list-group-item list-group-item-action border-0 px-0 py-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3 mt-1 text-primary">
+                                        <i class="far fa-file-alt fa-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 text-dark">{{ related.title }}</h6>
+                                        <small class="text-muted">{{ related.created_at|date:"d M Y" }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Help Box -->
+                <div class="card border-0 shadow-sm rounded-4 bg-primary text-white overflow-hidden">
+                    <div class="card-body p-4 position-relative">
+                        <div class="position-absolute top-0 end-0 opacity-25" style="transform: translate(20%, -20%);">
+                            <i class="fas fa-info-circle fa-10x"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Besoin d'aide ?</h5>
+                        <p class="mb-4 position-relative z-1">Si vous ne trouvez pas le document que vous cherchez,
+                            n'hésitez pas à nous contacter.</p>
+                        <a href="{% url 'contact' %}"
+                            class="btn btn-light text-primary rounded-pill w-100 fw-bold position-relative z-1">Contactez-nous</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleLike() {
+        const btn = document.getElementById('like-btn');
+        const icon = btn.querySelector('i');
+        const countSpan = document.getElementById('likes-count');
+        const textSpan = document.getElementById('like-text');
+
+        fetch("{% url 'archive_like' archive.slug %}", {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    countSpan.textContent = data.likes_count;
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    textSpan.textContent = "Aimé";
+                    btn.classList.remove('btn-outline-danger');
+                    btn.classList.add('btn-danger', 'text-white');
+
+                    // Petite animation
+                    icon.style.transform = "scale(1.4)";
+                    setTimeout(() => icon.style.transform = "scale(1)", 200);
+                } else if (data.error) {
+                    // Déjà aimé (feedback optionnel)
+                    // alert(data.error); 
+                }
+            });
+    }
+
+    function shareFacebook() {
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+    }
+
+    function shareWhatsapp() {
+        const text = `Regarde ce document : {{ archive.title|escapejs }}\n${window.location.href}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function shareTwitter() {
+        const text = `Document intéressant : {{ archive.title|escapejs }}`;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+    }
+
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Lien copié !');
+        });
+    }
+</script>
+{% endblock %}

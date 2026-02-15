@@ -63,6 +63,12 @@ urlpatterns = [
     path('documents/', views.request_documents, name='request_documents'),
     path('documents/download/<int:pk>/', views.download_document, name='download_document'),
     
+    # Archives (PV, Documents)
+    path('archives/', views.archives_list, name='archives'),
+    path('archives/<slug:slug>/', views.archive_detail, name='archive_detail'),
+    path('archives/<slug:slug>/like/', views.archive_like, name='archive_like'),
+    path('archives/<slug:slug>/download/', views.archive_download, name='archive_download'),
+    
     # Département
     path('departement/enseignants/', views.department_professors, name='department_professors'),
     path('departement/salles/', views.department_classrooms, name='department_classrooms'),

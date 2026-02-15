@@ -70,8 +70,7 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white border-0 py-4 d-flex justify-content-between align-items-center">
         <h5 class="mb-0 fw-bold text-dark">Liste des Participants</h5>
-        <span class="badge bg-light text-dark rounded-pill border">Page {{ registrations_page.number }} sur {{
-            registrations_page.paginator.num_pages }}</span>
+        <span class="badge bg-light text-dark rounded-pill border">Page {{ registrations_page.number }} sur {{ registrations_page.paginator.num_pages }}</span>
     </div>
     <div class="card-body p-0">
         {% if registrations_page %}

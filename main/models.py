@@ -578,9 +578,9 @@ class Delegate(models.Model):
         ('L3', 'Licence 3'),
         ('M1', 'Master 1'),
         ('M2', 'Master 2'),
-        ('INT-L1', 'INT-L1'),
-        ('INT-L2', 'INT-L2'),
-        ('INT-L3', 'INT-L3'),
+        ('ICT-L1', 'ICT-L1'),
+        ('ICT-L2', 'ICT-L2'),
+        ('ICT-L3', 'ICT-L3'),
     ]
     
     name = models.CharField(max_length=200, verbose_name="Nom complet")
@@ -629,3 +629,74 @@ class BlogArticle(models.Model):
 
     def __str__(self):
         return self.title
+
+class Archive(models.Model):
+    """Modèle pour les archives (PV, documents, images)"""
+    
+    LEVEL_CHOICES = [
+        ('L1', 'Licence 1'),
+        ('L2', 'Licence 2'),
+        ('L3', 'Licence 3'),
+        ('M1', 'Master 1'),
+        ('M2', 'Master 2'),
+        ('ICT-L1', 'ICT-L1'),
+        ('ICT-L2', 'ICT-L2'),
+        ('ICT-L3', 'ICT-L3'),
+        ('OTHER', 'Autre'),
+    ]
+    
+    CATEGORY_CHOICES = [
+        ('PV', 'Procès Verbal'),
+        ('OTHER', 'Autre Document'),
+    ]
+    
+    title = models.CharField(max_length=200, verbose_name="Titre du document")
+    slug = models.SlugField(unique=True, blank=True, null=True, verbose_name="Slug URL")
+    description = models.TextField(blank=True, verbose_name="Description optionnelle")
+    file = models.FileField(upload_to='archives/%Y/%m/', verbose_name="Fichier (PDF, Image...)")
+    academic_year = models.CharField(max_length=9, default="2023-2024", verbose_name="Année Académique", help_text="Ex: 2023-2024")
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES, verbose_name="Niveau d'étude")
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default='PV', verbose_name="Catégorie")
+    
+    # Engagement stats
+    views_count = models.IntegerField(default=0, verbose_name="Vues")
+    downloads_count = models.IntegerField(default=0, verbose_name="Téléchargements")
+    likes_count = models.IntegerField(default=0, verbose_name="Likes")
+    
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date d'ajout")
+    
+    class Meta:
+        verbose_name = "Archive"
+        verbose_name_plural = "Archives"
+        ordering = ['-academic_year', '-created_at']
+        
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            base_slug = slugify(self.title)
+            # Ensure unique slug
+            unique_slug = base_slug
+            counter = 1
+            while Archive.objects.filter(slug=unique_slug).exists(): # Note: this check works on create, but might need exclusion for update if not careful. slug usually set once.
+                unique_slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = unique_slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.title} ({self.academic_year})"
+
+class ArchiveComment(models.Model):
+    """Commentaires sur les archives"""
+    archive = models.ForeignKey(Archive, on_delete=models.CASCADE, related_name='comments', verbose_name="Archive")
+    author_name = models.CharField(max_length=100, verbose_name="Nom complet", default="Anonyme")
+    content = models.TextField(verbose_name="Commentaire")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date")
+    
+    class Meta:
+        verbose_name = "Commentaire Archive"
+        verbose_name_plural = "Commentaires Archives"
+        ordering = ['-created_at']
+        
+    def __str__(self):
+        return f"Com de {self.author_name} sur {self.archive.title}"

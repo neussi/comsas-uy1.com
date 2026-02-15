@@ -13,7 +13,7 @@ from .models import (
     Member, Project, Event, EventRegistration, 
     News, Gallery, GalleryAlbum, Contact, SiteSettings,
     SponsorshipSession, Mentor, Mentee, Match,
-    Contest, Candidate, Vote,
+    Contest, Candidate, Vote, Archive, ArchiveComment,
 )
 from .forms import (
     MemberRegistrationForm, EventRegistrationForm, 
@@ -915,3 +915,105 @@ def verify_ticket(request, uuid):
         context = {'valid': False}
     
     return render(request, 'main/ticket_verify.html', context)
+
+def archives_list(request):
+    """Page des archives (PV, documents)"""
+    # Filtres
+    selected_level = request.GET.get('level')
+    selected_year = request.GET.get('year')
+    category_filter = request.GET.get('category')
+    
+    archives = Archive.objects.all().order_by('-academic_year', '-created_at')
+    
+    if selected_level:
+        archives = archives.filter(level=selected_level)
+    
+    if selected_year:
+        archives = archives.filter(academic_year=selected_year)
+        
+    if category_filter:
+        archives = archives.filter(category=category_filter)
+        
+    # Listes pour les filtres
+    years = Archive.objects.values_list('academic_year', flat=True).distinct().order_by('-academic_year')
+    
+    context = {
+        'archives': archives,
+        'level_choices': Archive.LEVEL_CHOICES,
+        'category_choices': Archive.CATEGORY_CHOICES,
+        'available_years': years,
+        'selected_level': selected_level,
+        'selected_year': selected_year,
+        'selected_category': category_filter,
+    }
+    return render(request, 'main/archives.html', context)
+
+def archive_detail(request, slug):
+    """Détail d'une archive"""
+    archive = get_object_or_404(Archive, slug=slug)
+    
+    # Incrémenter les vues (si pas déjà vu dans cette session)
+    session_key = f'viewed_archive_{archive.pk}'
+    if not request.session.get(session_key, False):
+        archive.views_count += 1
+        archive.save()
+        request.session[session_key] = True
+    
+    # Gestion des commentaires (POST)
+    if request.method == 'POST':
+        author_name = request.POST.get('author_name', 'Étudiant Anonyme').strip() or 'Étudiant Anonyme'
+        content = request.POST.get('content', '').strip()
+        
+        if content:
+            ArchiveComment.objects.create(
+                archive=archive,
+                author_name=author_name,
+                content=content
+            )
+            messages.success(request, "Merci ! Votre commentaire a été ajouté.")
+            return redirect('archive_detail', slug=slug)
+            
+    comments = archive.comments.all().order_by('-created_at')
+    
+    # Archives similaires (même niveau)
+    related_archives = Archive.objects.filter(
+        level=archive.level
+    ).exclude(pk=archive.pk)[:3]
+    
+    context = {
+        'archive': archive,
+        'comments': comments,
+        'related_archives': related_archives,
+        'is_liked': request.session.get(f'liked_archive_{archive.pk}', False)
+    }
+    return render(request, 'main/archive_detail.html', context)
+
+@csrf_exempt
+def archive_like(request, slug):
+    """Liker une archive (AJAX)"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
+    
+    try:
+        archive = get_object_or_404(Archive, slug=slug)
+        
+        session_key = f'liked_archive_{archive.pk}'
+        if not request.session.get(session_key, False):
+            archive.likes_count += 1
+            archive.save()
+            request.session[session_key] = True
+            return JsonResponse({'success': True, 'likes_count': archive.likes_count, 'liked': True})
+        
+        return JsonResponse({'success': False, 'error': 'Vous avez déjà aimé ce document.', 'liked': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+def archive_download(request, slug):
+    """Télécharger et compter"""
+    archive = get_object_or_404(Archive, slug=slug)
+    # Compter le téléchargement seulement si pas admin
+    if not request.user.is_staff:
+        archive.downloads_count += 1
+        archive.save()
+    
+    return redirect(archive.file.url)

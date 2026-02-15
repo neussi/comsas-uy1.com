@@ -111,8 +111,7 @@
                                         FCFA</span>
                                 </div>
                                 <div class="progress" style="height: 6px; width: 140px;">
-                                    {% widthratio project.budget_collected project.budget_required 100 as text_percent
-                                    %}
+                                    {% widthratio project.budget_collected project.budget_required 100 as text_percent %}
                                     <div class="progress-bar bg-success" role="progressbar"
                                         style="width: {{ text_percent }}%" aria-valuenow="{{ text_percent }}"
                                         aria-valuemin="0" aria-valuemax="100"></div>

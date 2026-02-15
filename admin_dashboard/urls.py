@@ -4,6 +4,7 @@ from . import views
 from . import auth_views
 from . import certificate_views
 from . import badge_views
+from . import archive_views
 
 urlpatterns = [
 
@@ -134,4 +135,10 @@ urlpatterns = [
     path('blog/create/', views.BlogArticleCreateView.as_view(), name='admin_blog_create'),
     path('blog/<int:pk>/edit/', views.BlogArticleUpdateView.as_view(), name='admin_blog_edit'),
     path('blog/<int:pk>/delete/', views.BlogArticleDeleteView.as_view(), name='admin_blog_delete'),
+    
+    # ============= GESTION DES ARCHIVES =============
+    path('archives/', archive_views.archive_list, name='admin_archive_list'),
+    path('archives/add/', archive_views.archive_create, name='admin_archive_create'),
+    path('archives/<int:pk>/edit/', archive_views.archive_edit, name='admin_archive_edit'),
+    path('archives/<int:pk>/delete/', archive_views.archive_delete, name='admin_archive_delete'),
 ]

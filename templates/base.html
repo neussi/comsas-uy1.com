@@ -318,12 +318,20 @@
                         <ul class="dropdown-menu border-0 shadow-sm" aria-labelledby="navbarDropdownRes">
                             <li><a class="dropdown-item" href="{% url 'request_documents' %}">Modèles de Demandes</a>
                             </li>
+
                             <li><a class="dropdown-item" href="{% url 'blog_list' %}">Blog de l'Étudiant</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" href="{% url 'gallery' %}">Galerie Multimédia</a></li>
                         </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'archives' in request.path %}active{% endif %}"
+                            href="{% url 'archives' %}">
+                            Archives
+                        </a>
                     </li>
 
                     <li class="nav-item">

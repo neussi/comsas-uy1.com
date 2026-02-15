@@ -96,8 +96,7 @@
                 </div>
                 <div class="col-md-6">
                     <p><strong>Description:</strong></p>
-                    <p class="text-muted">{{ event.certificate_description|default:"Description par
-                        défaut"|truncatewords:30 }}</p>
+                    <p class="text-muted">{{ event.certificate_description|default:"Description par défaut"|truncatewords:30 }}</p>
                 </div>
             </div>
             <a href="{% url 'admin_event_edit' event.pk %}" class="btn btn-sm btn-outline-primary">
