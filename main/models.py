@@ -686,6 +686,21 @@ class Archive(models.Model):
     def __str__(self):
         return f"{self.title} ({self.academic_year})"
 
+    @property
+    def is_image(self):
+        if not self.file: return False
+        try:
+            ext = self.file.name.lower().split('.')[-1]
+            return ext in ['jpg', 'jpeg', 'png', 'gif', 'webp']
+        except: return False
+
+    @property
+    def is_pdf(self):
+        if not self.file: return False
+        try:
+            return self.file.name.lower().endswith('.pdf')
+        except: return False
+
 class ArchiveComment(models.Model):
     """Commentaires sur les archives"""
     archive = models.ForeignKey(Archive, on_delete=models.CASCADE, related_name='comments', verbose_name="Archive")
