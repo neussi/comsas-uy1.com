@@ -186,6 +186,10 @@
                                     class="btn btn-sm btn-light text-success rounded-circle me-1" title="Attestations">
                                     <i class="fas fa-certificate"></i>
                                 </a>
+                                <a href="{% url 'admin_event_badges' event.pk %}"
+                                    class="btn btn-sm btn-light text-info rounded-circle me-1" title="Badges">
+                                    <i class="fas fa-id-badge"></i>
+                                </a>
                                 <a href="{% url 'admin_event_edit' event.pk %}"
                                     class="btn btn-sm btn-light text-primary rounded-circle me-1" title="Modifier">
                                     <i class="fas fa-pen"></i>

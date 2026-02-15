@@ -85,14 +85,16 @@ class EventRegistrationForm(forms.ModelForm):
     
     class Meta:
         model = EventRegistration
-        fields = ['nom_prenom', 'email', 'telephone', 'promotion', 'message']
+        fields = ['nom_prenom', 'email', 'telephone', 'promotion', 'message', 'photo']
         widgets = {
             'message': forms.Textarea(attrs={'rows': 4}),
+            'photo': forms.FileInput(attrs={'accept': 'image/*'}),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.form_enctype = 'multipart/form-data'
         self.helper.layout = Layout(
             Fieldset(
                 _('Inscription à l\'événement'),
@@ -104,6 +106,7 @@ class EventRegistrationForm(forms.ModelForm):
                     Column('email', css_class='form-group col-md-6 mb-3'),
                     Column('telephone', css_class='form-group col-md-6 mb-3'),
                 ),
+                'photo',  # Champ photo ajouté
                 'message',
             ),
             Submit('submit', _('S\'inscrire à l\'événement'), css_class='btn btn-success btn-lg')
@@ -111,10 +114,29 @@ class EventRegistrationForm(forms.ModelForm):
         
         # Ajouter des classes CSS
         for field_name, field in self.fields.items():
-            field.widget.attrs.update({
-                'class': 'form-control',
-                'placeholder': field.label
-            })
+            if field_name != 'photo':
+                field.widget.attrs.update({
+                    'class': 'form-control',
+                    'placeholder': field.label
+                })
+            else:
+                field.widget.attrs.update({
+                    'class': 'form-control'
+                })
+
+    def clean_photo(self):
+        """Validation de la photo"""
+        photo = self.cleaned_data.get('photo')
+        if photo:
+            # Vérifier la taille du fichier (max 5MB)
+            if photo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError(_("La taille de l'image ne doit pas dépasser 5 MB."))
+            
+            # Vérifier le type de fichier
+            if not photo.content_type.startswith('image/'):
+                raise forms.ValidationError(_("Le fichier doit être une image."))
+        
+        return photo
 
 class ContactForm(forms.ModelForm):
     """Formulaire de contact"""

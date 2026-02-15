@@ -20,6 +20,9 @@
         <a href="{% url 'admin_event_certificates' event.pk %}" class="btn btn-success me-2 shadow-sm hover-lift">
             <i class="fas fa-certificate me-2"></i>Attestations
         </a>
+        <a href="{% url 'admin_event_badges' event.pk %}" class="btn btn-warning me-2 shadow-sm hover-lift text-white">
+            <i class="fas fa-id-badge me-2"></i>Badges
+        </a>
         <a href="{% url 'admin_export_registrations' event.pk %}" class="btn btn-info shadow-sm hover-lift">
             <i class="fas fa-file-excel me-2"></i>Exporter Excel
         </a>

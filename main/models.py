@@ -114,6 +114,9 @@ class Event(models.Model):
     certificate_dept_head_name = models.CharField(max_length=100, default="Chef de département", verbose_name="Nom du chef de département")
     certificate_dept_head_title = models.CharField(max_length=100, default="Chef de département informatique", verbose_name="Titre du chef de département")
     
+    # Badge Configuration
+    badge_enabled = models.BooleanField(default=True, verbose_name="Activer les badges")
+
     class Meta:
         verbose_name = "Événement"
         verbose_name_plural = "Événements"
@@ -138,6 +141,7 @@ class EventRegistration(models.Model):
     telephone = models.CharField(max_length=20, verbose_name="Numéro de téléphone")
     promotion = models.CharField(max_length=20, verbose_name="Promotion")
     message = models.TextField(blank=True, verbose_name="Message/Commentaire")
+    photo = models.ImageField(upload_to='participants/photos/', blank=True, null=True, verbose_name="Photo du participant", help_text="Photo pour le badge (optionnel)")
     is_confirmed = models.BooleanField(default=False, verbose_name="Confirmé")
     registration_date = models.DateTimeField(auto_now_add=True)
     
@@ -148,6 +152,9 @@ class EventRegistration(models.Model):
     
     # Certificate
     certificate_pdf = models.FileField(upload_to='certificates/', blank=True, null=True, verbose_name="Attestation PDF")
+    
+    # Badge
+    badge_pdf = models.FileField(upload_to='badges/', blank=True, null=True, verbose_name="Badge PDF")
     
     class Meta:
         verbose_name = "Inscription à l'événement"

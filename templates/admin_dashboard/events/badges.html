@@ -1,0 +1,150 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Badges - {{ event.title_fr }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="h3 mb-2 text-gray-800">Gestion des Badges</h1>
+        <p class="mb-4">{{ event.title_fr }} - {{ event.date_event|date:"d F Y" }}</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'admin_events_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Retour aux événements
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Total Confirmed -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Confirmés</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_confirmed }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badges Generated -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Badges Générés</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ badges_generated }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-id-badge fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badges Pending -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">En Attente</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ badges_pending }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-spinner fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Actions de Génération</h6>
+            </div>
+            <div class="card-body">
+                <p>Vous pouvez générer les badges pour tous les participants confirmés en une seule fois.</p>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'admin_generate_all_badges' event.pk %}" class="btn btn-primary">
+                        <i class="fas fa-cogs me-1"></i> Générer Tous les Badges
+                    </a>
+
+                    {% if badges_generated > 0 %}
+                    <a href="{% url 'admin_download_badges_zip' event.pk %}" class="btn btn-success">
+                        <i class="fas fa-file-archive me-1"></i> Télécharger Tout (ZIP)
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- List -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Liste des Participants</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Nom & Prénom</th>
+                        <th>Email</th>
+                        <th>Statut Badge</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reg in registrations %}
+                    <tr>
+                        <td>{{ reg.nom_prenom }}</td>
+                        <td>{{ reg.email }}</td>
+                        <td>
+                            {% if reg.badge_pdf %}
+                            <span class="badge bg-success">Généré</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Non généré</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                {% if reg.badge_pdf %}
+                                <a href="{{ reg.badge_pdf.url }}" target="_blank" class="btn btn-info btn-sm"
+                                    title="Voir PDF">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'admin_regenerate_badge' reg.id %}" class="btn btn-primary btn-sm"
+                                    title="Régénérer">
+                                    <i class="fas fa-sync-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">Aucune inscription confirmée pour le moment.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
