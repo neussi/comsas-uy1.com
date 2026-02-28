@@ -368,6 +368,68 @@
         {% endblock %}
     </main>
 
+    <!-- Nos Partenaires Section -->
+    <section class="py-5 bg-white border-top">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h6 class="text-uppercase fw-bold text-primary mb-2" style="letter-spacing: 2px;">Ils nous accompagnent
+                </h6>
+                <h3 class="fw-bold mb-0">Nos Partenaires</h3>
+            </div>
+            <div class="row align-items-center justify-content-center g-4 opacity-75">
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/uy1.png' %}" alt="Université de Yaoundé 1"
+                        class="img-fluid sponsor-logo" style="max-height: 70px; mix-blend-mode: multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/comsas.png' %}" alt="COMSAS" class="img-fluid sponsor-logo"
+                        style="max-height: 70px; mix-blend-mode: multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/npe.png' %}" alt="NPE" class="img-fluid sponsor-logo"
+                        style="max-height: 70px; mix-blend-mode: multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/aefas.png' %}" alt="AEFAS" class="img-fluid sponsor-logo"
+                        style="max-height: 70px; mix-blend-mode: multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/da.png' %}" alt="DA" class="img-fluid sponsor-logo"
+                        style="max-height: 70px; mix-blend-mode: multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/ddt.png' %}" alt="DDT" class="img-fluid sponsor-logo"
+                        style="max-height: 70px; mix-blend-mode: multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/pts.png' %}" alt="PTS" class="img-fluid sponsor-logo"
+                        style="max-height: 70px; mix-blend-mode: multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/qts.png' %}" alt="QTS" class="img-fluid sponsor-logo"
+                        style="max-height: 70px; mix-blend-mode: multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/a2elbm2.png' %}" alt="A2ELBM2" class="img-fluid sponsor-logo"
+                        style="max-height: 70px; mix-blend-mode: multiply;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .sponsor-logo {
+            filter: grayscale(100%);
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        .sponsor-logo:hover {
+            filter: grayscale(0%);
+            transform: scale(1.1);
+        }
+    </style>
+
     <!-- Footer Clean Design -->
     <footer class="footer bg-dark text-light py-5">
         <div class="container">
