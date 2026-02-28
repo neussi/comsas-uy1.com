@@ -84,14 +84,14 @@ sudo bash -c "cat > $APACHE_CONF" <<EOF
     RequestHeader set X-Forwarded-Proto expr=%{REQUEST_SCHEME}
 
     # Gestion des fichiers statiques et médias
-    Alias /static /home/npe-tech/Projets/Comsas/staticfiles
-    Alias /media  /home/npe-tech/Projets/Comsas/media
+    Alias /static /root/system-sh/comsas-uy1.com/staticfiles
+    Alias /media  /root/system-sh/comsas-uy1.com/media
 
-    <Directory "/home/npe-tech/Projets/Comsas/staticfiles">
+    <Directory "/root/system-sh/comsas-uy1.com/staticfiles">
         Require all granted
     </Directory>
 
-    <Directory "/home/npe-tech/Projets/Comsas/media">
+    <Directory "/root/system-sh/comsas-uy1.com/media">
         Require all granted
     </Directory>
 

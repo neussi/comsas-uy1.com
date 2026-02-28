@@ -16,5 +16,5 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD || 'propenta2025' }}
         port: 22
         script: |
-          cd /home/npe-tech/Projets/Comsas
+          cd /root/system-sh/comsas-uy1.com
           bash deploy.sh
