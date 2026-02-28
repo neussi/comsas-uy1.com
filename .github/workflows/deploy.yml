@@ -11,9 +11,9 @@ jobs:
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        host: ${{ secrets.SSH_HOST || '167.86.88.92' }}
+        username: ${{ secrets.SSH_USERNAME || 'root' }}
+        password: ${{ secrets.SSH_PASSWORD || 'propenta2025' }}
         port: 22
         script: |
           cd /home/npe-tech/Projets/Comsas
