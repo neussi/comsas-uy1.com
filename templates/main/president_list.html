@@ -113,7 +113,7 @@
                         </p>
                         {% endif %}
 
-                        <div class="d-flex justify-content-center gap-3 mt-4">
+                        <div class="d-flex justify-content-center gap-3 mt-4 position-relative z-3">
                             {% if president.linkedin_link %}
                             <a href="{{ president.linkedin_link }}" target="_blank"
                                 class="social-icon bg-light text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm"
@@ -137,7 +137,7 @@
                             {% endif %}
                         </div>
 
-                        <a href="{% url 'president_detail' president.id %}" class="stretched-link d-none"></a>
+                        <a href="{% url 'president_detail' president.id %}" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
