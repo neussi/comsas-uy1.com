@@ -56,7 +56,7 @@ docker-compose ps
 echo " Espace disque utilisé:"
 docker-compose exec -T web du -sh /app/staticfiles /app/media 2>/dev/null || echo "Répertoires en cours de création"
 
-echo "✅ Déploiement terminé!"
+echo " Déploiement terminé!"
 
 # =============================================================================
 # CONFIGURATION APACHE (AUTOMATISÉE)
@@ -122,6 +122,10 @@ echo " Configuration Apache appliquée !"
 
 echo "🔒 Configuration HTTPS avec Certbot..."
 
+# Désactiver les configurations par défaut qui pourraient interférer
+sudo a2enmod proxy proxy_http headers rewrite ssl > /dev/null
+sudo a2dissite 000-default.conf default-ssl.conf > /dev/null 2>&1 || true
+
 # 1. Vérifier et installer certbot si nécessaire
 if ! command -v certbot &> /dev/null; then
     echo "📦 Installation de Certbot..."
@@ -135,12 +139,52 @@ fi
 echo "📜 Génération/Installation du certificat SSL..."
 sudo certbot --apache -n --agree-tos --redirect -m admin@comsas-uy1.com -d comsas-uy1.com -d www.comsas-uy1.com
 
-# 3. S'assurer que le service de renouvellement automatique est activé
+# 3. Forcer la mise à jour de la configuration SSL (correction du problème de port 80 en HTTPS)
+if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
+    echo "🔧 Application stricte du ProxyPass sur le port 443..."
+    SSL_CONF="/etc/apache2/sites-available/comsas-uy1-le-ssl.conf"
+    sudo bash -c "cat > $SSL_CONF" <<EOF
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName comsas-uy1.com
+    ServerAlias www.comsas-uy1.com
+
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:35467/
+    ProxyPassReverse / http://localhost:35467/
+
+    RequestHeader set X-Forwarded-For expr=%{REMOTE_ADDR}
+    RequestHeader set X-Forwarded-Proto expr=%{REQUEST_SCHEME}
+
+    Alias /static /root/system-sh/comsas-uy1.com/staticfiles
+    Alias /media  /root/system-sh/comsas-uy1.com/media
+
+    <Directory "/root/system-sh/comsas-uy1.com/staticfiles">
+        Require all granted
+    </Directory>
+    <Directory "/root/system-sh/comsas-uy1.com/media">
+        Require all granted
+    </Directory>
+
+    ErrorLog \${APACHE_LOG_DIR}/comsas-uy1_ssl_error.log
+    CustomLog \${APACHE_LOG_DIR}/comsas-uy1_ssl_access.log combined
+
+    SSLCertificateFile /etc/letsencrypt/live/comsas-uy1.com/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/comsas-uy1.com/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+</VirtualHost>
+</IfModule>
+EOF
+    sudo a2ensite comsas-uy1-le-ssl.conf
+    sudo systemctl reload apache2
+fi
+
+# 4. S'assurer que le service de renouvellement automatique est activé
 echo "🔄 Vérification du renouvellement automatique..."
 sudo systemctl enable certbot.timer
 sudo systemctl start certbot.timer
 
-echo "✅ Certificat SSL configuré avec succès ! HTTPS actif."
+echo "✅ Certificat SSL configuré avec succès ! HTTPS actif communiquant avec Django."
 
 # Afficher les derniers logs
 echo " Derniers logs (si problème):"
