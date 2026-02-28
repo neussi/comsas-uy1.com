@@ -223,14 +223,46 @@ class Gallery(models.Model):
     video_file = models.FileField(upload_to='gallery/videos/', blank=True, null=True)
     is_featured = models.BooleanField(default=False, verbose_name="En vedette")
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
-        verbose_name = "Élément de galerie"
-        verbose_name_plural = "Galerie"
+        verbose_name = "Média interactif"
+        verbose_name_plural = "Médias interactifs"
         ordering = ['-created_at']
-    
+
     def __str__(self):
-        return self.title_fr
+        return f"{self.title_fr} ({self.get_media_type_display()})"
+
+class PastPresident(models.Model):
+    """Modèle pour les anciens présidents (et le président actuel) de l'association"""
+    name = models.CharField(max_length=200, verbose_name="Nom et Prénom")
+    mandate_start = models.PositiveIntegerField(verbose_name="Année de début de mandat", help_text="Ex: 2018")
+    mandate_end = models.PositiveIntegerField(verbose_name="Année de fin de mandat", help_text="Ex: 2019", blank=True, null=True)
+    current_function = models.CharField(max_length=200, verbose_name="Fonction actuelle", blank=True, null=True, help_text="Ex: Ingénieur Logiciel chez Google")
+    bio = RichTextField(verbose_name="Biographie / Mot du Président")
+    photo = models.ImageField(upload_to='presidents/', verbose_name="Photo de Profil")
+    is_current = models.BooleanField(default=False, verbose_name="Est le président actuel ?")
+    
+    facebook_link = models.URLField(blank=True, null=True, verbose_name="Lien Facebook")
+    linkedin_link = models.URLField(blank=True, null=True, verbose_name="Lien LinkedIn")
+    twitter_link = models.URLField(blank=True, null=True, verbose_name="Lien Twitter/X")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Président"
+        verbose_name_plural = "Présidents"
+        ordering = ['-mandate_start']
+
+    def __str__(self):
+        mandate = f"{self.mandate_start}"
+        if self.mandate_end:
+            mandate += f" - {self.mandate_end}"
+        else:
+            mandate += " - Présent"
+        
+        status = " (Actuel)" if self.is_current else ""
+        return f"{self.name} | {mandate}{status}"
 
 class Contact(models.Model):
     """Modèle pour les messages de contact"""

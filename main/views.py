@@ -785,7 +785,7 @@ def get_client_ip(request):
 # NOUVELLES VUES (REQ 2026-02-12)
 # =============================================================================
 
-from .models import RequestDocument, Professor, Classroom, Delegate, BlogArticle
+from .models import RequestDocument, Professor, Classroom, Delegate, BlogArticle, PastPresident
 
 def request_documents(request):
     """Liste des modèles de requêtes"""
@@ -1014,12 +1014,29 @@ def archive_like(request, slug):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
+@login_required
 def archive_download(request, slug):
     """Télécharger et compter"""
-    archive = get_object_or_404(Archive, slug=slug)
-    # Compter le téléchargement seulement si pas admin
-    if not request.user.is_staff:
-        archive.downloads_count += 1
-        archive.save()
+    archive = get_object_or_404(Archive, slug=slug, is_published=True)
+    archive.downloads_count += 1
+    archive.save()
     
     return redirect(archive.file.url)
+
+def president_list(request):
+    """Liste de tous les présidents"""
+    presidents = PastPresident.objects.all().order_by('-mandate_start')
+    
+    context = {
+        'presidents': presidents,
+    }
+    return render(request, 'main/president_list.html', context)
+
+def president_detail(request, president_id):
+    """Détail d'un président spécifique"""
+    president = get_object_or_404(PastPresident, id=president_id)
+    
+    context = {
+        'president': president,
+    }
+    return render(request, 'main/president_detail.html', context)

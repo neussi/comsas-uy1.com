@@ -12,6 +12,10 @@ urlpatterns = [
     path('mandate/', views.mandate, name='mandate'),
     path('profile/', views.member_profile, name='profile'),
     
+    # Anciens Présidents
+    path('presidents/', views.president_list, name='president_list'),
+    path('presidents/<int:president_id>/', views.president_detail, name='president_detail'),
+
     # Membres
     path('members/', views.members, name='members'),
     path('membre/<int:pk>/', views.public_member_profile, name='member_profile'),

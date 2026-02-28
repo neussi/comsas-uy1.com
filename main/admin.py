@@ -245,7 +245,29 @@ class MenteeAdmin(admin.ModelAdmin):
 # ADMIN POUR NOUVELLES FONCTIONNALITÉS
 # =============================================================================
 
-from .models import RequestDocument, Professor, Classroom, Delegate, BlogArticle
+from .models import RequestDocument, Professor, Classroom, Delegate, BlogArticle, PastPresident
+
+@admin.register(PastPresident)
+class PastPresidentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'mandate_start', 'mandate_end', 'is_current')
+    list_filter = ('is_current', 'mandate_start')
+    search_fields = ('name', 'current_function')
+    ordering = ('-mandate_start',)
+    fieldsets = (
+        ('Identité', {
+            'fields': ('name', 'photo', 'current_function')
+        }),
+        ('Mandat', {
+            'fields': ('mandate_start', 'mandate_end', 'is_current')
+        }),
+        ('Contenu', {
+            'fields': ('bio',)
+        }),
+        ('Réseaux Sociaux', {
+            'fields': ('facebook_link', 'linkedin_link', 'twitter_link'),
+            'classes': ('collapse',)
+        }),
+    )
 
 @admin.register(RequestDocument)
 class RequestDocumentAdmin(admin.ModelAdmin):

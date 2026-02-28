@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profil de {{ president.name }} - COMS.A.S{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 bg-white position-relative overflow-hidden" style="min-height: 35vh;">
+    <!-- Abstract background -->
+    <div class="position-absolute w-100 h-100 start-0 top-0" style="
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.05) 0%, rgba(25, 135, 84, 0.05) 100%);
+        pointer-events: none;
+    "></div>
+
+    <div class="container position-relative z-1 h-100 d-flex flex-column justify-content-center">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4" data-aos="fade-down">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted"><i
+                            class="fas fa-home"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'president_list' %}"
+                        class="text-decoration-none text-muted">Anciens Présidents</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ president.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Profile Detail Section -->
+<section class="py-5" style="margin-top: -100px; position: relative; z-index: 10;">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Left Column: Photo & Quick Info -->
+            <div class="col-lg-4" data-aos="fade-up">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden sticky-lg-top" style="top: 100px;">
+                    <div class="position-relative" style="height: 450px;">
+                        {% if president.photo %}
+                        <img src="{{ president.photo.url }}" class="w-100 h-100 object-fit-cover"
+                            alt="{{ president.name }}">
+                        {% else %}
+                        <div
+                            class="w-100 h-100 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-user-tie fa-7x text-secondary opacity-50"></i>
+                        </div>
+                        {% endif %}
+
+                        {% if president.is_current %}
+                        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-3 w-100 text-center">
+                            <span class="badge bg-success rounded-pill px-4 py-2 shadow theme-glow"
+                                style="font-size: 1rem;">
+                                <i class="fas fa-star text-warning me-1"></i> Président Actuel
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body p-4 text-center bg-white">
+                        <div class="mb-4">
+                            <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm mb-2"
+                                style="font-size: 1rem;">
+                                Mandat: {{ president.mandate_start }} - {% if president.mandate_end %}{{
+                                president.mandate_end }}{% else %}Présent{% endif %}
+                            </span>
+                        </div>
+
+                        {% if president.current_function %}
+                        <div class="mb-4 text-start">
+                            <p class="text-muted fw-bold mb-1 text-uppercase"
+                                style="font-size: 0.85rem; letter-spacing: 1px;">Fonction Actuelle</p>
+                            <p class="mb-0 fw-semibold text-dark"><i class="fas fa-briefcase me-2 text-primary"></i> {{
+                                president.current_function }}</p>
+                        </div>
+                        <hr class="text-muted opacity-25">
+                        {% endif %}
+
+                        <div class="d-flex justify-content-center gap-3">
+                            {% if president.linkedin_link %}
+                            <a href="{{ president.linkedin_link }}" target="_blank"
+                                class="btn btn-outline-primary rounded-circle shadow-sm"
+                                style="width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fab fa-linkedin-in fa-lg"></i>
+                            </a>
+                            {% endif %}
+                            {% if president.twitter_link %}
+                            <a href="{{ president.twitter_link }}" target="_blank"
+                                class="btn btn-outline-dark rounded-circle shadow-sm"
+                                style="width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fab fa-x-twitter fa-lg"></i>
+                            </a>
+                            {% endif %}
+                            {% if president.facebook_link %}
+                            <a href="{{ president.facebook_link }}" target="_blank"
+                                class="btn btn-outline-primary rounded-circle shadow-sm"
+                                style="width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fab fa-facebook-f fa-lg"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Biography -->
+            <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="bg-white rounded-4 shadow-sm p-5 h-100">
+                    <h1 class="display-5 fw-bold mb-2">{{ president.name }}</h1>
+                    <div class="d-flex align-items-center mb-5 text-muted">
+                        <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                        <span>Présidence: {{ president.mandate_start }} - {% if president.mandate_end %}{{
+                            president.mandate_end }}{% else %}Présent{% endif %}</span>
+                    </div>
+
+                    <div class="position-relative mb-4">
+                        <span class="position-absolute top-0 start-0 translate-middle text-primary opacity-25"
+                            style="font-size: 5rem; z-index: 0; margin-left: 20px; line-height: 1;">
+                            <i class="fas fa-quote-left"></i>
+                        </span>
+                        <h3 class="fw-bold position-relative z-1 d-inline-block pb-2 mb-4"
+                            style="border-bottom: 3px solid var(--bs-primary);">
+                            Mot du Président & Biographie
+                        </h3>
+                    </div>
+
+                    <div class="president-bio-content text-muted" style="font-size: 1.1rem; line-height: 1.8;">
+                        {% if president.bio %}
+                        {{ president.bio|safe }}
+                        {% else %}
+                        <p class="fst-italic text-center py-5">
+                            La biographie de ce président est en cours de rédaction.
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-5 pt-4 border-top text-center">
+                        <a href="{% url 'president_list' %}"
+                            class="btn btn-outline-primary rounded-pill px-4 hover-lift">
+                            <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Scoped styles for the biography area (which receives HTML from CKEditor) */
+    .president-bio-content h1,
+    .president-bio-content h2,
+    .president-bio-content h3 {
+        color: var(--bs-dark);
+        font-weight: 700;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .president-bio-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    .president-bio-content ul,
+    .president-bio-content ol {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+    }
+
+    .president-bio-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    .president-bio-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+    }
+
+    .theme-glow {
+        box-shadow: 0 0 15px rgba(25, 135, 84, 0.4) !important;
+    }
+</style>
+{% endblock %}

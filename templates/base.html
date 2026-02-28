@@ -269,23 +269,30 @@
 
                     <!-- Département Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {% if 'department' in request.path or 'about' in request.path or 'mandate' in request.path or 'members' in request.path %}active{% endif %}"
-                            href="#" id="navbarDropdownDept" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {% if 'department' in request.path or 'about' in request.path or 'mandate' in request.path or 'members' in request.path or 'presidents' in request.path %}active{% endif %}"
+                            href="#" id="deptDropdown" role="button" data-bs-toggle="dropdown">
                             Département
                         </a>
-                        <ul class="dropdown-menu border-0 shadow-sm" aria-labelledby="navbarDropdownDept">
-                            <li><a class="dropdown-item" href="{% url 'about' %}">À propos</a></li>
+                        <ul class="dropdown-menu border-0 shadow-sm" aria-labelledby="deptDropdown">
+                            <!-- Présentation -->
+                            <li>
+                                <h6 class="dropdown-header text-primary fw-bold">Présentation</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'about' %}">À propos du Club</a></li>
                             <li><a class="dropdown-item" href="{% url 'mandate' %}">Plan d'Action</a></li>
+
                             <li>
                                 <hr class="dropdown-divider">
+                            </li>
+
+                            <!-- Acteurs -->
+                            <li>
+                                <h6 class="dropdown-header text-primary fw-bold">Acteurs & Organisation</h6>
                             </li>
                             <li><a class="dropdown-item" href="{% url 'department_professors' %}">Enseignants</a></li>
-                            <li><a class="dropdown-item" href="{% url 'department_classrooms' %}">Salles & Labs</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
                             <li><a class="dropdown-item" href="{% url 'members' %}">Bureau Exécutif</a></li>
+                            <li><a class="dropdown-item" href="{% url 'president_list' %}">Anciens Présidents <span
+                                        class="badge bg-primary ms-1">Nouveau</span></a></li>
                             <li><a class="dropdown-item" href="{% url 'department_delegates' %}">Délégués</a></li>
                         </ul>
                     </li>
