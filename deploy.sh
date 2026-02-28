@@ -116,6 +116,32 @@ sudo systemctl reload apache2
 
 echo " Configuration Apache appliquée !"
 
+# =============================================================================
+# CONFIGURATION HTTPS (CERTBOT)
+# =============================================================================
+
+echo "🔒 Configuration HTTPS avec Certbot..."
+
+# 1. Vérifier et installer certbot si nécessaire
+if ! command -v certbot &> /dev/null; then
+    echo "📦 Installation de Certbot..."
+    sudo apt-get update
+    sudo apt-get install -y certbot python3-certbot-apache
+fi
+
+# 2. Obtenir et configurer le certificat SSL pour Apache (non interactif)
+# Si le certificat existe déjà, Certbot va l'utiliser et reconfigurer Apache 
+# (en rajoutant les redirections si elles ont été supprimées par la réécriture du fichier .conf)
+echo "📜 Génération/Installation du certificat SSL..."
+sudo certbot --apache -n --agree-tos --redirect -m admin@comsas-uy1.com -d comsas-uy1.com -d www.comsas-uy1.com
+
+# 3. S'assurer que le service de renouvellement automatique est activé
+echo "🔄 Vérification du renouvellement automatique..."
+sudo systemctl enable certbot.timer
+sudo systemctl start certbot.timer
+
+echo "✅ Certificat SSL configuré avec succès ! HTTPS actif."
+
 # Afficher les derniers logs
 echo " Derniers logs (si problème):"
 docker-compose logs --tail=10 web
