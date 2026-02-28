@@ -120,7 +120,7 @@ echo " Configuration Apache appliquée !"
 # CONFIGURATION HTTPS (CERTBOT)
 # =============================================================================
 
-echo "🔒 Configuration HTTPS avec Certbot..."
+echo " Configuration HTTPS avec Certbot..."
 
 # Désactiver les configurations par défaut qui pourraient interférer
 sudo a2enmod proxy proxy_http headers rewrite ssl > /dev/null
@@ -128,7 +128,7 @@ sudo a2dissite 000-default.conf default-ssl.conf > /dev/null 2>&1 || true
 
 # 1. Vérifier et installer certbot si nécessaire
 if ! command -v certbot &> /dev/null; then
-    echo "📦 Installation de Certbot..."
+    echo "Installation de Certbot..."
     sudo apt-get update
     sudo apt-get install -y certbot python3-certbot-apache
 fi
@@ -136,7 +136,7 @@ fi
 # 2. Obtenir et configurer le certificat SSL pour Apache (non interactif)
 # Si le certificat existe déjà, Certbot va l'utiliser et reconfigurer Apache 
 # (en rajoutant les redirections si elles ont été supprimées par la réécriture du fichier .conf)
-echo "📜 Génération/Installation du certificat SSL..."
+echo " Génération/Installation du certificat SSL..."
 sudo certbot --apache -n --agree-tos --redirect -m admin@comsas-uy1.com -d comsas-uy1.com -d www.comsas-uy1.com
 
 # 3. Forcer la mise à jour de la configuration SSL (correction du problème de port 80 en HTTPS)
@@ -180,11 +180,11 @@ EOF
 fi
 
 # 4. S'assurer que le service de renouvellement automatique est activé
-echo "🔄 Vérification du renouvellement automatique..."
+echo " Vérification du renouvellement automatique..."
 sudo systemctl enable certbot.timer
 sudo systemctl start certbot.timer
 
-echo "✅ Certificat SSL configuré avec succès ! HTTPS actif communiquant avec Django."
+echo "Certificat SSL configuré avec succès ! HTTPS actif communiquant avec Django."
 
 # Afficher les derniers logs
 echo " Derniers logs (si problème):"
