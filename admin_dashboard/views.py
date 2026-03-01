@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
+from django.db import models
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -703,19 +704,7 @@ def sponsorship_auto_match(request):
         for mentee in mentees:
             # NEW MATCHING ALGORITHM
             # 1. Get all eligible mentors (active session, not full)
-            candidates = Mentor.objects.annotate(num_mentees=Count('match_set')).filter(
-                # Note: Count('match') because Match model links Mentor-Mentee. 
-                # Wait, existing code used Count('mentee') but Match model is correct?
-                # Let's check Mentor model related_name if any. 
-                # Mentor has no explicit related_name on Match FK. default is match_set.
-                # But previously code used Count('mentee')? Maybe Mentee had FK to Mentor?
-                # Ah, existing Mentee model (before my change) had 'mentor' FK!
-                # My NEW Mentee model REMOVED 'mentor' FK in favor of Match model?
-                # YES. "professional_domain_1 & 2 Removed...".
-                # And I removed the 'mentor' field from Mentee class definition in Step 2219.
-                # So `Count('mentee')` will FAIL if I don't fix it.
-                # It should be `Count('match')` (default related name for Match.mentor FK).
-                # OR I should check Match model definition.
+            candidates = Mentor.objects.annotate(num_mentees=Count('match')).filter(
                 session=active_session,
             ).filter(num_mentees__lt=models.F('max_mentees'))
             

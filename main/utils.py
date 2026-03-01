@@ -12,74 +12,225 @@ from django.core.mail import EmailMessage
 from reportlab.lib import colors
 
 def generate_member_card(member):
-    """Génère une carte de membre PDF (format carte de visite)"""
+    """
+    Génère une carte de membre professionnelle au format PDF.
+    Taille standard CR80 (85.6mm x 53.98mm).
+    """
+    # We need mm from reportlab.lib.units
+    from reportlab.lib.units import mm
+    
+    # Dimensions carte de crédit standard
+    width, height = 85.6 * mm, 54 * mm
     buffer = BytesIO()
-    # Format carte de visite
-    card_width = 3.37 * inch
-    card_height = 2.125 * inch
     
-    p = canvas.Canvas(buffer, pagesize=(card_width, card_height))
+    c = canvas.Canvas(buffer, pagesize=(width, height))
     
-    # Background
-    p.setFillColor(colors.white)
-    p.rect(0, 0, card_width, card_height, fill=1)
+    # --- FOND & DESIGN ---
+    # Fond blanc
+    c.setFillColorRGB(1, 1, 1)
+    c.rect(0, 0, width, height, fill=1, stroke=0)
     
-    # Header
-    p.setFillColor(colors.darkblue)
-    p.rect(0, card_height - 0.5*inch, card_width, 0.5*inch, fill=1, stroke=0)
+    # Formes décoratives aux angles (Rose #E91E63)
+    c.setFillColorRGB(0.91, 0.12, 0.39) 
     
-    p.setFillColor(colors.white)
-    p.setFont("Helvetica-Bold", 12)
-    p.drawString(0.2*inch, card_height - 0.35*inch, "COMS.A.S")
+    # Angle Haut-Droit
+    p1 = c.beginPath()
+    p1.moveTo(width, height)
+    p1.lineTo(width - 20*mm, height)
+    p1.lineTo(width, height - 20*mm)
+    p1.close()
+    c.drawPath(p1, fill=1, stroke=0)
     
-    # Member Info
-    p.setFillColor(colors.black)
-    p.setFont("Helvetica-Bold", 10)
-    p.drawString(0.2*inch, card_height - 0.8*inch, member.nom_prenom[:25] + "..." if len(member.nom_prenom) > 25 else member.nom_prenom)
+    # Angle Bas-Gauche
+    p2 = c.beginPath()
+    p2.moveTo(0, 0)
+    p2.lineTo(0, 20*mm)
+    p2.lineTo(20*mm, 0)
+    p2.close()
+    c.drawPath(p2, fill=1, stroke=0)
+
+    # --- LOGO & EN-TÊTE ---
+    # Logo: Haut Gauche
+    logo_file = 'comsas.png'
+    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', logo_file)
+    header_y = height - 12*mm
     
-    p.setFont("Helvetica", 8)
-    y = card_height - 1.0*inch
-    p.drawString(0.2*inch, y, f"Matricule: {member.matricule or 'N/A'}")
-    y -= 0.15*inch
-    p.drawString(0.2*inch, y, f"Niveau: {member.get_niveau_display() or member.promotion or ''}")
-    y -= 0.15*inch
-    p.drawString(0.2*inch, y, f"Statut: {member.get_member_type_display()}")
+    if os.path.exists(logo_path):
+        try:
+            c.drawImage(logo_path, 3*mm, height - 13*mm, width=10*mm, height=10*mm, mask='auto', preserveAspectRatio=True)
+        except:
+            pass
+            
+    # Titre Principal
+    c.setFillColorRGB(0, 0, 0)
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(15*mm, height - 8*mm, "Computer Science Association")
     
-    # Footer
-    p.setFont("Helvetica", 6)
-    p.drawCentredString(card_width/2, 0.1*inch, "Carte de Membre - COMS.A.S UY1")
+    # Sous-titre
+    c.setFont("Helvetica", 6)
+    c.setFillColorRGB(0.3, 0.3, 0.3)
+    c.drawString(15*mm, height - 11*mm, "Club Informatique de l'Université de Yaoundé 1")
     
-    p.showPage()
-    p.save()
+    # Ligne de séparation fine
+    c.setStrokeColorRGB(0.91, 0.12, 0.39)
+    c.setLineWidth(0.5)
+    c.line(3*mm, height - 15*mm, width - 3*mm, height - 15*mm)
+    
+    # --- PHOTO (Gauche) ---
+    photo_x = 4*mm
+    photo_y = 14*mm 
+    photo_w = 20*mm
+    photo_h = 24*mm
+    
+    # Cadre photo
+    c.setStrokeColorRGB(0.8, 0.8, 0.8)
+    c.rect(photo_x, photo_y, photo_w, photo_h, fill=0, stroke=1)
+    
+    if member.photo:
+        try:
+            c.drawImage(member.photo.path, photo_x, photo_y, width=photo_w, height=photo_h, mask='auto', preserveAspectRatio=True, anchor='c')
+        except:
+            c.setFont("Helvetica", 5)
+            c.drawCentredString(photo_x + photo_w/2, photo_y + photo_h/2, "Photo")
+    else:
+        c.setFont("Helvetica", 5)
+        c.drawCentredString(photo_x + photo_w/2, photo_y + photo_h/2, "No Photo")
+            
+    # --- INFORMATIONS (Centre/Droite) ---
+    text_x = 28*mm
+    
+    # Titre de la carte
+    c.setFont("Helvetica-Bold", 9)
+    c.setFillColorRGB(0.91, 0.12, 0.39) # Pink
+    c.drawString(text_x, 34*mm, "CARTE DE MEMBRE")
+    
+    # Texte de certification
+    c.setFont("Helvetica", 7)
+    c.setFillColorRGB(0, 0, 0)
+    c.drawString(text_x, 30*mm, "Nous certifions que :")
+    
+    # Nom du membre
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(text_x, 26*mm, f"{member.nom_prenom.upper()}")
+    
+    # Statut / Poste
+    status_line = "Membre Actif"
+    if member.member_type == 'bureau' and getattr(member, 'poste_bureau', None):
+         status_line = member.poste_bureau
+    elif member.member_type == 'founder':
+         status_line = "Membre Fondateur"
+         
+    c.setFont("Helvetica", 8)
+    c.setFillColorRGB(0.2, 0.2, 0.2)
+    c.drawString(text_x, 22*mm, status_line)
+    
+    # Détails Ligne 1: Matricule et Niveau
+    c.setFont("Helvetica", 7)
+    c.drawString(text_x, 18.5*mm, f"Matricule: {member.matricule or 'N/A'}")
+    
+    niveau_text = getattr(member, 'get_niveau_display', lambda: getattr(member, 'niveau', 'N/A'))() or getattr(member, 'promotion', 'N/A')
+    c.drawString(text_x + 28*mm, 18.5*mm, f"Niveau: {niveau_text}")
+
+    # Détails Ligne 2: Téléphone
+    c.drawString(text_x, 15.5*mm, f"Tél: {member.telephone or 'N/A'}")
+
+    # --- PIED DE PAGE & SIGNATURE ---
+    
+    # QR Code (Bas Droite)
+    qr_size = 12*mm
+    qr_x = width - qr_size - 3*mm
+    qr_y = 3*mm 
+    
+    try:
+        profile_url = settings.SITE_URL + reverse('member_profile', args=[member.id])
+    except:
+        profile_url = getattr(settings, 'SITE_URL', 'https://comsas-uy1.com') + f"/membre/{member.id}"
+        
+    qr = qrcode.QRCode(box_size=2, border=0)
+    qr.add_data(profile_url)
+    qr.make(fit=True)
+    qr_img = qr.make_image(fill_color="black", back_color="white")
+    qr_buffer = BytesIO()
+    qr_img.save(qr_buffer)
+    qr_buffer.seek(0)
+    
+    c.drawImage(ImageReader(qr_buffer), qr_x, qr_y, width=qr_size, height=qr_size)
+    
+    # Signature (Image) - Bas Centre
+    # Positionnement plus serré
+    label_x = text_x + 15*mm # Décalé un peu vers la droite pour centrer dans l'espace vide
+    label_y = 12*mm 
+    
+    c.setFont("Helvetica-Oblique", 6)
+    c.setFillColorRGB(0, 0, 0)
+    c.drawCentredString(label_x, label_y, "Le Président du COMS.A.S")
+    
+    sig_file = os.path.join(settings.BASE_DIR, 'static', 'images', 'signature.png')
+    
+    if os.path.exists(sig_file):
+        try:
+            # Signature
+            c.drawImage(sig_file, label_x - 15*mm, 3*mm, width=30*mm, height=8.5*mm, mask='auto', preserveAspectRatio=True)
+            
+            # Nom
+            c.setFont("Helvetica-Bold", 6)
+            c.drawCentredString(label_x, 2*mm, "Neussi Patrice .E ")
+        except Exception as e:
+            c.setFont("Helvetica", 5)
+            c.drawCentredString(label_x, 5*mm, "Neussi Patrice .E")
+    else:
+        c.setFont("Helvetica-Bold", 6)
+        c.drawCentredString(label_x, 5*mm, "Neussi Patrice .E")
+    
+    c.showPage()
+    c.save()
     
     buffer.seek(0)
     return buffer
 
 def send_member_card_email(member, pdf_buffer):
-    """Envoie la carte de membre par email avec template HTML"""
-    from django.template.loader import render_to_string
-    from django.core.mail import EmailMultiAlternatives
-    
-    html_content = render_to_string('emails/member_card_email.html', {
-        'member_name': member.nom_prenom,
-        'matricule': member.matricule,
-        'member_type': member.get_member_type_display(),
-        'date_adhesion': member.date_adhesion,
-    })
-    
-    subject = "Votre Carte de Membre COMS.A.S"
-    text_content = f"Bonjour {member.nom_prenom},\n\nVeuillez trouver ci-joint votre carte de membre numérique.\n\nCordialement,\nL'équipe COMS.A.S"
-    
-    email = EmailMultiAlternatives(
-        subject,
-        text_content,
-        settings.EMAIL_HOST_USER,
-        [member.email],
-    )
-    
-    email.attach_alternative(html_content, "text/html")
-    email.attach(f'carte_membre_{member.matricule}.pdf', pdf_buffer.getvalue(), 'application/pdf')
-    email.send(fail_silently=True)
+    """
+    Envoie l'email de validation avec la carte de membre.
+    """
+    try:
+        # Envoyer Email
+        email_subject = "Votre adhésion au COMS.A.S est validée !"
+        
+        try:
+             profile_url = f"{settings.SITE_URL}{reverse('member_profile', args=[member.id])}"
+        except:
+             profile_url = getattr(settings, 'SITE_URL', 'https://comsas-uy1.com') + f"/membre/{member.id}/"
+             
+        # Context for template
+        context = {
+            'member': member,
+            'profile_url': profile_url,
+            'site_url': getattr(settings, 'SITE_URL', 'https://comsas-uy1.com'),
+        }
+        
+        # Render HTML
+        from django.template.loader import render_to_string
+        from django.utils.html import strip_tags
+        from django.core.mail import EmailMultiAlternatives
+        
+        html_content = render_to_string('emails/member_card.html', context)
+        text_content = strip_tags(html_content)
+
+        email = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [member.email],
+        )
+        email.attach_alternative(html_content, "text/html")
+        email.attach(f'carte_membre_{member.matricule or member.id}.pdf', pdf_buffer.getvalue(), 'application/pdf')
+        
+        email.send(fail_silently=False)
+        return True
+            
+    except Exception as e:
+        print(f"Erreur envoi email validation pour {member.nom_prenom}: {e}")
+        return False
 
 
 def generate_ticket(registration):

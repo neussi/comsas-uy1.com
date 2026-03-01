@@ -176,9 +176,25 @@ def generate_badge(registration):
 
     # Draw Photo
     has_photo = False
+    img_path = None
+    
     if registration.photo:
+        img_path = registration.photo.path
+    else:
+        # Fallback to Member profile photo if the email matches
+        from main.models import Member
+        linked_member = Member.objects.filter(email=registration.email).first()
+        if not linked_member:
+            linked_member = Member.objects.filter(nom_prenom__iexact=registration.nom_prenom).first()
+        if linked_member and getattr(linked_member, 'photo', None):
+            try:
+                img_path = linked_member.photo.path
+            except ValueError:
+                pass
+
+    if img_path:
         try:
-            avatar_img = create_circular_mask(registration.photo.path, size=(600, 600))
+            avatar_img = create_circular_mask(img_path, size=(600, 600))
             if avatar_img:
                 img_buffer = BytesIO()
                 avatar_img.save(img_buffer, format='PNG')

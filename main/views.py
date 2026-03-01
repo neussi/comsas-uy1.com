@@ -322,7 +322,7 @@ def event_detail(request, pk):
     can_register = event.is_registration_open
     
     if request.method == 'POST' and can_register:
-        form = EventRegistrationForm(request.POST)
+        form = EventRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             registration = form.save(commit=False)
             registration.event = event

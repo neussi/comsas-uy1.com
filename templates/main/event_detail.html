@@ -91,7 +91,7 @@
                     class="card border-0 shadow-sm rounded-4 p-4 bg-white border-top border-5 border-warning">
                     <h3 class="fw-bold mb-4">Inscription</h3>
                     <p class="text-muted mb-4">Remplissez le formulaire ci-dessous pour participer.</p>
-                    <form method="post" action="">
+                    <form method="post" action="{% url 'event_detail' event.id %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form|crispy }}
                         <button type="submit" class="btn btn-primary rounded-pill px-5 mt-3 fw-bold">Confirmer
