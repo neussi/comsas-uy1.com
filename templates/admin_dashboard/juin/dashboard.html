@@ -6,8 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 fw-bold mb-0">🎓 J.U.IN 2026</h1>
-            <p class="text-muted mb-0">{% if edition %}{{ edition.edition_number }}ème Édition — {{
-                edition.theme|truncatechars:60 }}{% else %}Aucune édition active{% endif %}</p>
+            <p class="text-muted mb-0">{% if edition %}{{ edition.edition_number }}ème Édition — {{  edition.theme|truncatechars:60 }}{% else %}Aucune édition active{% endif %}</p>
         </div>
         <div class="d-flex gap-2">
             <a href="{% url 'admin_juin_edition_manage' %}" class="btn btn-outline-primary"><i

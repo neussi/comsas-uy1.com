@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'modeltranslation',
     'crispy_forms',
     'crispy_bootstrap5',
+    'django.contrib.sitemaps',
     
     # Local apps
     'main',

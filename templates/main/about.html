@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}À propos - COMS.A.S | Excellence & Innovation{% endblock %}
+{% block title %}À propos - COM.S.AS | Club Informatique de l'UY1{% endblock %}
+
+{% block meta_description %}Découvrez l'histoire, la vision et les missions du COM.S.AS, le club informatique officiel de la Faculté des Sciences de l'Université de Yaoundé I depuis plus de 20 ans.{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -79,17 +81,9 @@
     }
 
     @keyframes float {
-        0% {
-            transform: translateY(0px) rotate(0deg);
-        }
-
-        50% {
-            transform: translateY(-20px) rotate(5deg);
-        }
-
-        100% {
-            transform: translateY(0px) rotate(0deg);
-        }
+        0%   { transform: translateY(0px) rotate(0deg); }
+        50%  { transform: translateY(-20px) rotate(5deg); }
+        100% { transform: translateY(0px) rotate(0deg); }
     }
 </style>
 {% endblock %}
@@ -109,24 +103,22 @@
 
         <div class="row align-items-center">
             <div class="col-lg-7" data-aos="fade-up">
-                <div
-                    class="d-inline-flex align-items-center py-2 px-3 badge bg-primary bg-opacity-10 text-primary rounded-pill mb-4">
+                <div class="d-inline-flex align-items-center py-2 px-3 badge bg-primary bg-opacity-10 text-primary rounded-pill mb-4">
                     <span class="pulse-dot me-2"></span>
-                    <span class="fw-bold small text-uppercase" style="letter-spacing: 1px;">Au cœur de
-                        l'innovation</span>
+                    <span class="fw-bold small text-uppercase" style="letter-spacing: 1px;">Club Informatique Officiel · UY1</span>
                 </div>
                 <h1 class="display-2 fw-extrabold mb-4 lh-tight">
                     Forger les <span class="text-gradient">Leaders</span> <br>du Numérique
                 </h1>
                 <p class="lead text-muted mb-5 fs-4" style="max-width: 600px;">
-                    Le Computer Sciences Association est une pépinière de talents dédiée à l'excellence technologique à
-                    l'Université de Yaoundé 1.
+                    Le <strong>Computer Science Association</strong> est le club informatique officiel de la Faculté des Sciences
+                    de l'Université de Yaoundé I — une pépinière de talents dédiée à l'excellence technologique depuis 2004.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
                     <a href="#mission" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg">
                         Découvrir <i class="fas fa-chevron-right ms-2 small"></i>
                     </a>
-                    <a href="{% url 'contact' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5">
+                    <a href="{% url 'member_registration' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5">
                         Nous rejoindre
                     </a>
                 </div>
@@ -161,14 +153,14 @@
             </div>
             <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
                 <div class="stat-badge h-100">
-                    <h2 class="fw-bold mb-1 text-success">50+</h2>
-                    <p class="text-muted small mb-0 fw-semibold text-uppercase">Projets Réalisés</p>
+                    <h2 class="fw-bold mb-1 text-success">8</h2>
+                    <p class="text-muted small mb-0 fw-semibold text-uppercase">Commissions</p>
                 </div>
             </div>
             <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="400">
                 <div class="stat-badge h-100">
-                    <h2 class="fw-bold mb-1 text-info">15+</h2>
-                    <p class="text-muted small mb-0 fw-semibold text-uppercase">Entreprises Partenaires</p>
+                    <h2 class="fw-bold mb-1 text-info">2004</h2>
+                    <p class="text-muted small mb-0 fw-semibold text-uppercase">Année de Fondation</p>
                 </div>
             </div>
         </div>
@@ -180,12 +172,17 @@
     <div class="container py-5">
         <div class="row align-items-center g-5">
             <div class="col-lg-6" data-aos="fade-right">
-                <h6 class="text-primary fw-bold text-uppercase mb-3" style="letter-spacing: 2px;">Notre Vision</h6>
-                <h2 class="display-4 fw-bold mb-4">Plus qu'un Club, <br><span class="text-gradient">Une Famille</span>
-                </h2>
+                <h6 class="text-primary fw-bold text-uppercase mb-3" style="letter-spacing: 2px;">Qui sommes-nous ?</h6>
+                <h2 class="display-4 fw-bold mb-4">Plus qu'un Club, <br><span class="text-gradient">Une Communauté</span></h2>
+                <p class="text-muted mb-4 fs-5">
+                    Placé sous la supervision du Département d'Informatique et rattaché à l'<strong>Association des
+                    Étudiants de la Faculté des Sciences (A.E.FAS.)</strong>, le COM.S.AS constitue un cadre d'excellence
+                    où les étudiants développent leurs compétences, expriment leur créativité et construisent leur avenir professionnel.
+                </p>
                 <p class="text-muted mb-5 fs-5">
-                    Fondé sur les piliers de la fraternité et du partage intellectuel, le COM.S.AS s'efforce de combler
-                    le fossé entre la théorie académique et les exigences du marché technologique mondial.
+                    Depuis 2004, l'association s'est imposée progressivement comme un acteur incontournable de l'écosystème
+                    numérique camerounais, tissant des partenariats avec des institutions publiques, des entreprises privées
+                    et des organisations internationales bien au-delà des frontières de l'UY1.
                 </p>
 
                 <div class="row g-4">
@@ -195,9 +192,8 @@
                                 <i class="fas fa-graduation-cap fa-2x"></i>
                             </div>
                             <div>
-                                <h5 class="fw-bold mb-1">Pédagogie</h5>
-                                <p class="text-muted small mb-0">Ateliers, formations et groupes d'études spécialisés.
-                                </p>
+                                <h5 class="fw-bold mb-1">Mission Académique</h5>
+                                <p class="text-muted small mb-0">Promouvoir l'excellence, la recherche et les échanges scientifiques entre étudiants et chercheurs.</p>
                             </div>
                         </div>
                     </div>
@@ -207,8 +203,8 @@
                                 <i class="fas fa-rocket fa-2x"></i>
                             </div>
                             <div>
-                                <h5 class="fw-bold mb-1">Innovation</h5>
-                                <p class="text-muted small mb-0">Hackathons et incubation de projets étudiants.</p>
+                                <h5 class="fw-bold mb-1">Mission Entrepreneuriale</h5>
+                                <p class="text-muted small mb-0">Stimuler l'esprit d'entreprise et accompagner les porteurs de projets innovants vers l'incubation.</p>
                             </div>
                         </div>
                     </div>
@@ -218,26 +214,26 @@
                 <div class="row g-4">
                     <div class="col-6 pt-5">
                         <div class="glass-card p-4 mb-4">
-                            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
-                            <h5 class="fw-bold">Intégrité</h5>
-                            <p class="text-muted small mb-0">Le respect de l'éthique professionnelle.</p>
+                            <i class="fas fa-briefcase fa-3x text-primary mb-3"></i>
+                            <h5 class="fw-bold">Professionnelle</h5>
+                            <p class="text-muted small mb-0">Créer des opportunités de stage et d'emploi, développer le réseau professionnel des membres.</p>
                         </div>
                         <div class="glass-card p-4">
-                            <i class="fas fa-hand-holding-heart fa-3x text-success mb-3"></i>
-                            <h5 class="fw-bold">Partage</h5>
-                            <p class="text-muted small mb-0">Le "Peer-to-Peer learning" comme ADN.</p>
+                            <i class="fas fa-globe-africa fa-3x text-success mb-3"></i>
+                            <h5 class="fw-bold">Sociale</h5>
+                            <p class="text-muted small mb-0">Démocratiser l'accès au numérique et contribuer à la réduction de la fracture digitale au Cameroun.</p>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="glass-card p-4 mb-4">
                             <i class="fas fa-users fa-3x text-secondary mb-3"></i>
                             <h5 class="fw-bold">Cohésion</h5>
-                            <p class="text-muted small mb-0">Une communauté soudée et inspirante.</p>
+                            <p class="text-muted small mb-0">Une communauté soudée et inspirante au sein de la Faculté des Sciences de l'UY1.</p>
                         </div>
                         <div class="glass-card p-4">
                             <i class="fas fa-gem fa-3x text-info mb-3"></i>
                             <h5 class="fw-bold">Excellence</h5>
-                            <p class="text-muted small mb-0">Viser les plus hauts standards mondiaux.</p>
+                            <p class="text-muted small mb-0">Viser les plus hauts standards, de l'Université de Yaoundé I à la scène internationale.</p>
                         </div>
                     </div>
                 </div>
@@ -253,7 +249,7 @@
             <h2 class="display-5 fw-bold mb-3">Notre <span class="text-primary">Héritage</span></h2>
             <p class="text-muted" style="max-width: 600px; margin: 0 auto;">
                 Depuis sa création, le COM.S.AS a traversé les décennies en s'adaptant continuellement aux révolutions
-                technologiques.
+                technologiques, témoignant d'une longévité et d'une résilience remarquables dans le paysage associatif camerounais.
             </p>
         </div>
 
@@ -262,21 +258,23 @@
                 <div class="timeline-modern">
                     <div class="mb-5 position-relative" data-aos="fade-left">
                         <div class="timeline-dot-modern"></div>
-                        <h4 class="fw-bold text-primary mb-2">Les Origines</h4>
-                        <p class="text-muted">Création du club pour dynamiser la vie estudiantine au sein de la Faculté
-                            des Sciences de l'Université de Yaoundé 1.</p>
+                        <h4 class="fw-bold text-primary mb-1">2004 — Les Origines</h4>
+                        <p class="text-muted">Fondation du COM.S.AS par des étudiants du Département d'Informatique animés d'une vision commune : créer un espace de valorisation des compétences numériques au sein de l'Université de Yaoundé I.</p>
                     </div>
                     <div class="mb-5 position-relative" data-aos="fade-left" data-aos-delay="100">
                         <div class="timeline-dot-modern"></div>
-                        <h4 class="fw-bold text-primary mb-2">L'Institution J.U.IN</h4>
-                        <p class="text-muted">Lancement des Journées Universitaires de l'Informatique, devenues
-                            aujourd'hui le plus grand événement IT universitaire du pays.</p>
+                        <h4 class="fw-bold text-primary mb-1">L'Institution J.U.IN</h4>
+                        <p class="text-muted">Lancement des <strong>Journées Universitaires de l'Informatique</strong>, organisées chaque année sur une semaine entière — conférences, ateliers, hackathon, concours de pitch, expositions de projets et soirée de gala. Plus de <strong>20 éditions</strong> organisées à ce jour, avec couverture médiatique nationale.</p>
+                    </div>
+                    <div class="mb-5 position-relative" data-aos="fade-left" data-aos-delay="150">
+                        <div class="timeline-dot-modern"></div>
+                        <h4 class="fw-bold text-primary mb-1">Croissance & Partenariats</h4>
+                        <p class="text-muted">Le COM.S.AS noue des partenariats avec des institutions publiques, des entreprises privées et des organisations internationales, consolidant son rayonnement bien au-delà des frontières de l'UY1 et s'imposant comme référence nationale.</p>
                     </div>
                     <div class="mb-0 position-relative" data-aos="fade-left" data-aos-delay="200">
                         <div class="timeline-dot-modern"></div>
-                        <h4 class="fw-bold text-primary mb-2">L'Ère Numérique 2.0</h4>
-                        <p class="text-muted">Modernisation des outils, incubation de startups et rayonnement
-                            international des membres de l'association.</p>
+                        <h4 class="fw-bold text-primary mb-1">2026 — Une Nouvelle Ère</h4>
+                        <p class="text-muted">La <strong>J.U.IN 2026</strong> s'annonce comme une édition exceptionnelle, portée par un bureau exécutif engagé et 8 commissions spécialisées, pour continuer d'écrire l'histoire du numérique camerounais.</p>
                     </div>
                 </div>
             </div>
@@ -284,8 +282,60 @@
     </div>
 </section>
 
-<!-- President Word -->
+<!-- Activités Section -->
 <section class="py-5 bg-white">
+    <div class="container py-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h6 class="text-primary fw-bold text-uppercase mb-3" style="letter-spacing: 2px;">Nos Activités</h6>
+            <h2 class="display-5 fw-bold mb-3">Ce qui anime notre <span class="text-gradient">communauté</span></h2>
+            <p class="text-muted" style="max-width: 600px; margin: 0 auto;">
+                Des activités conçues pour transformer des étudiants passionnés en professionnels accomplis.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-star fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">J.U.IN</h5>
+                    <p class="text-muted small mb-0">L'événement tech universitaire de référence au Cameroun — une semaine de conférences, hackathon, pitch contest et soirée de gala.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-secondary bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-laptop-code fa-2x text-secondary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Ateliers & Formations</h5>
+                    <p class="text-muted small mb-0">Sessions pratiques tout au long de l'année : dev web & mobile, IA, cybersécurité, entrepreneuriat numérique. Ouvert à tous les étudiants de la Faculté.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-trophy fa-2x text-warning"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Compétitions</h5>
+                    <p class="text-muted small mb-0">Hackathons et concours d'innovation au niveau national et international pour valoriser les talents de la communauté informatique de l'UY1.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-users fa-2x text-success"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Conférences & Networking</h5>
+                    <p class="text-muted small mb-0">Rencontres professionnelles régulières avec des experts du secteur numérique, des entrepreneurs et des recruteurs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- President Word -->
+<section class="py-5 bg-light">
     <div class="container py-5">
         <div class="glass-card p-5 overflow-hidden position-relative border-0 shadow-lg">
             <div class="position-absolute top-0 end-0 p-5 opacity-10">
@@ -293,25 +343,114 @@
             </div>
             <div class="row align-items-center g-5 position-relative z-1">
                 <div class="col-lg-4 text-center">
-                    <img src="{% static 'images/comsas.png' %}" alt="Président"
-                        class="img-fluid rounded-circle border border-5 border-white shadow-lg mb-4"
-                        style="width: 250px; height: 250px; object-fit: cover;">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-4 shadow-lg border border-5 border-white"
+                         style="width: 200px; height: 200px;">
+                        <span class="display-4 fw-bold text-primary">MA</span>
+                    </div>
+                    <h5 class="fw-bold mb-1">MFENJOU ANAS CHERIF</h5>
+                    <small class="text-primary text-uppercase fw-bold d-block">Président du COM.S.AS</small>
+                    <small class="text-muted d-block mb-3">Président du Comité d'Organisation · J.U.IN 2026</small>
+                    <div class="d-flex flex-column gap-2 align-items-center">
+                        <a href="mailto:cherif.mfenjou@facsciences-uy1.cm" class="text-muted small text-decoration-none">
+                            <i class="fas fa-envelope text-primary me-1"></i> cherif.mfenjou@facsciences-uy1.cm
+                        </a>
+                        <a href="tel:+237657097369" class="text-muted small text-decoration-none">
+                            <i class="fas fa-phone text-primary me-1"></i> +237 657 09 73 69
+                        </a>
+                    </div>
                 </div>
                 <div class="col-lg-8" data-aos="fade-up">
                     <span class="badge bg-primary px-3 py-2 rounded-pill mb-4">Mot du Président</span>
-                    <h2 class="display-6 fw-bold mb-4 italic">"Nous construisons le pont entre vos rêves et les serveurs
-                        du monde entier."</h2>
+                    <h2 class="display-6 fw-bold mb-4 fst-italic">"Nous construisons le pont entre vos rêves et les serveurs du monde entier."</h2>
                     <p class="text-muted lead mb-4">
-                        Favoriser l'épanouissement technologique et professionnel de nos membres est notre mission
-                        première. Ensemble, nous transformons des étudiants passionnés en ingénieurs d'exception.
+                        Favoriser l'épanouissement technologique et professionnel de nos membres est notre mission première.
+                        Ensemble, nous transformons des étudiants passionnés en ingénieurs d'exception — en codant, innovant
+                        et entreprenant chaque jour au sein de la Faculté des Sciences de l'UY1.
                     </p>
                     <div class="d-flex align-items-center gap-3">
-                        <div class="bg-primary p-1 rounded-circle" style="width: 50px; height: 5px;"></div>
-                        <div>
-                            <h5 class="fw-bold mb-0">Patrice Eugene NEUSSI NJIETCHEU</h5>
-                            <small class="text-primary text-uppercase fw-bold">Président Exécutif 2025-2026</small>
-                        </div>
+                        <div class="bg-primary rounded-pill" style="width: 50px; height: 4px;"></div>
+                        <span class="text-muted small fst-italic">« Coder · Innover · Entreprendre »</span>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Commissions Section -->
+<section class="py-5 bg-white">
+    <div class="container py-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h6 class="text-primary fw-bold text-uppercase mb-3" style="letter-spacing: 2px;">Organisation</h6>
+            <h2 class="display-5 fw-bold mb-3">Les <span class="text-gradient">8 Commissions</span> Spécialisées</h2>
+            <p class="text-muted" style="max-width: 600px; margin: 0 auto;">
+                Le bureau exécutif est assisté de 8 commissions couvrant l'ensemble des aspects de la vie associative et de l'organisation des J.U.IN.
+            </p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-bullhorn fa-2x text-primary"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0">Communication</h6>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="150">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-secondary bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-microphone-alt fa-2x text-secondary"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0">Conférences & Contenus</h6>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-project-diagram fa-2x text-success"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0">Projets & Expositions</h6>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="250">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-handshake fa-2x text-warning"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0">Partenariats & Sponsors</h6>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-info bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-paint-brush fa-2x text-info"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0">Design & Infographie</h6>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="350">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-clipboard-list fa-2x text-primary"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0">Protocole & Logistique</h6>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-secondary bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-music fa-2x text-secondary"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0">Divertissements & Animations</h6>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="450">
+                <div class="glass-card p-4 h-100 text-center">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-4 d-inline-block mb-3">
+                        <i class="fas fa-glass-cheers fa-2x text-success"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0">Soirée de Gala</h6>
                 </div>
             </div>
         </div>
@@ -322,10 +461,16 @@
 <section class="py-5 text-center">
     <div class="container py-5" data-aos="zoom-in">
         <h2 class="display-5 fw-bold mb-4">Prêt à écrire l'histoire avec nous ?</h2>
-        <p class="text-muted mb-5 fs-5">Rejoignez une communauté d'élite et propulsez votre carrière.</p>
+        <p class="text-muted mb-3 fs-5">
+            Le COM.S.AS est ouvert à tout étudiant de la Faculté des Sciences de l'UY1 partageant une passion pour l'informatique, le numérique et l'innovation.
+        </p>
+        <p class="text-muted mb-5">
+            <i class="fas fa-envelope text-primary me-2"></i> comsas@facsciences-uy1.cm &nbsp;|&nbsp;
+            <i class="fas fa-phone text-primary me-2"></i> +237 657 09 73 69 / +237 650 97 05 26 &nbsp;|&nbsp;
+            <i class="fas fa-map-marker-alt text-primary me-2"></i> Faculté des Sciences, UY1 · B.P. 812 Yaoundé
+        </p>
         <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'member_registration' %}" class="btn btn-primary btn-lg rounded-pill px-5">Devenir
-                Membre</a>
+            <a href="{% url 'member_registration' %}" class="btn btn-primary btn-lg rounded-pill px-5">Devenir Membre</a>
             <a href="{% url 'contact' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5">Contactez-nous</a>
         </div>
     </div>

@@ -14,7 +14,7 @@ from .models import (
     News, Gallery, GalleryAlbum, Contact, SiteSettings,
     SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote, Archive, ArchiveComment,
-    JUINEdition, JUINCommission, JUINCommissionApplication, 
+    JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
     JUINActivity, JUINDonation, JUINSponsor
 )
 from .forms import (

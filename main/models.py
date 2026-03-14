@@ -934,7 +934,7 @@ class JUINCompetition(models.Model):
     ]
     edition = models.ForeignKey(JUINEdition, on_delete=models.CASCADE, related_name='competitions', verbose_name="Édition")
     name = models.CharField(max_length=200, verbose_name="Nom de la compétition")
-    slug = models.SlugField(blank=True, null=True, help_text="Laissé vide, sera généré automatiquement")
+    slug = models.SlugField(blank=True, null=False, help_text="Laissé vide, sera généré automatiquement")
     comp_type = models.CharField(max_length=20, choices=COMP_TYPES, default='computer', verbose_name="Type")
     description = models.TextField(verbose_name="Description")
     rules = models.TextField(blank=True, verbose_name="Règles / Conditions d'admission")
@@ -946,12 +946,25 @@ class JUINCompetition(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            # Éviter les doublons
+            counter = 1
+            while JUINCompetition.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = "Compétition J.U.IN"
         verbose_name_plural = "Compétitions J.U.IN"
 
     def __str__(self):
         return f"{self.name} — J.U.IN {self.edition.edition_number}"
+
 
 
 class JUINTeam(models.Model):

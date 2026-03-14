@@ -3,174 +3,628 @@
 
 {% block title %}Inscription — {{ competition.name }} | J.U.IN 2026{% endblock %}
 
-{% block content %}
-<section class="py-5 bg-white overflow-hidden" style="min-height: 100vh; position: relative;">
-    <!-- Background Decor -->
-    <div class="position-absolute top-0 end-0 p-5 opacity-5 d-none d-lg-block">
-        <i
-            class="fas {% if competition.comp_type == 'sport' %}fa-futbol{% elif competition.comp_type == 'gaming' %}fa-gamepad{% else %}fa-laptop-code{% endif %} fa-10x"></i>
-    </div>
-
-    <div class="container py-5 position-relative z-1">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card border-0 shadow-lg rounded-5 overflow-hidden">
-                    <div class="row g-0">
-                        <!-- Left Side: Competition Info -->
-                        <div class="col-lg-4 bg-dark text-white p-4 p-lg-5 d-flex flex-column justify-content-between">
-                            <div>
-                                <a href="{% url 'juin' %}#competitions"
-                                    class="text-white-50 text-decoration-none small mb-4 d-inline-block">
-                                    <i class="fas fa-arrow-left me-2"></i>Retour aux compétitions
-                                </a>
-                                <div class="badge bg-primary rounded-pill mb-3 px-3">{{
-                                    competition.get_comp_type_display }}</div>
-                                <h1 class="h2 fw-bold mb-4">{{ competition.name }}</h1>
-                                <p class="text-white-50 small mb-4">{{ competition.description }}</p>
-
-                                <div class="space-y-4">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="bg-white bg-opacity-10 p-2 rounded-3 text-primary">
-                                            <i class="fas fa-users"></i>
-                                        </div>
-                                        <div>
-                                            <div class="small fw-bold">Max Équipes</div>
-                                            <div class="text-white-50">{{ competition.max_teams }}</div>
-                                        </div>
-                                    </div>
-                                    {% if competition.start_date %}
-                                    <div class="d-flex align-items-center gap-3 mt-4">
-                                        <div class="bg-white bg-opacity-10 p-2 rounded-3 text-warning">
-                                            <i class="fas fa-calendar-alt"></i>
-                                        </div>
-                                        <div>
-                                            <div class="small fw-bold">Début estimé</div>
-                                            <div class="text-white-50">{{ competition.start_date|date:"d F Y — H:i" }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="mt-5 p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-10">
-                                <h6 class="fw-bold mb-2 small"><i class="fas fa-info-circle me-2 text-primary"></i>Note
-                                    importante</h6>
-                                <p class="mb-0 text-white-50" style="font-size: 0.75rem;">
-                                    Toutes les inscriptions sont soumises à validation par le comité d'organisation.
-                                    Assurez-vous que les informations de contact du capitaine sont correctes.
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Right Side: Registration Form -->
-                        <div class="col-lg-8 p-4 p-lg-5">
-                            <h2 class="fw-bold mb-2">Formulaire d'Inscription</h2>
-                            <p class="text-muted mb-4 small">Complétez avec soin les détails de votre équipe ou
-                                candidature individuelle.</p>
-
-                            <form method="post" enctype="multipart/form-data" class="needs-validation">
-                                {% csrf_token %}
-
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <h5 class="fw-bold border-bottom pb-2 mb-3 small text-uppercase"
-                                            style="letter-spacing: 1px;">L'Équipe</h5>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Nom de l'équipe / Candidat</label>
-                                            {{ form.name }}
-                                            {% if form.name.errors %}<div class="text-danger small">{{
-                                                form.name.errors.0 }}</div>{% endif %}
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Nombre de membres</label>
-                                            {{ form.members_count }}
-                                            {% if form.members_count.errors %}<div class="text-danger small">{{
-                                                form.members_count.errors.0 }}</div>{% endif %}
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <h5 class="fw-bold border-bottom pb-2 mb-3 small text-uppercase"
-                                            style="letter-spacing: 1px;">Le Capitaine</h5>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Nom complet</label>
-                                            {{ form.captain_name }}
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Email</label>
-                                            {{ form.captain_email }}
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">WhatsApp</label>
-                                            {{ form.captain_phone }}
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12">
-                                        <h5 class="fw-bold border-bottom pb-2 mb-3 small text-uppercase"
-                                            style="letter-spacing: 1px;">Détails Additionnels</h5>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Liste des membres (Noms &
-                                                Prénoms)</label>
-                                            {{ form.members_list }}
-                                            <div class="form-text">Notez un membre par ligne pour une meilleure
-                                                lisibilité.</div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div
-                                                class="col-md-{% if competition.comp_type == 'sport' %}12{% else %}6{% endif %}">
-                                                <div class="mb-3">
-                                                    <label class="form-label small fw-bold">{{ form.project_title.label
-                                                        }}</label>
-                                                    {{ form.project_title }}
-                                                </div>
-                                            </div>
-                                            {% if competition.comp_type != 'sport' %}
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label small fw-bold">Logo de l'équipe /
-                                                        Projet</label>
-                                                    {{ form.logo }}
-                                                </div>
-                                            </div>
-                                            {% endif %}
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">{{ form.project_description.label
-                                                }}</label>
-                                            {{ form.project_description }}
-                                        </div>
-                                    </div>
-
-                                    {% if form.non_field_errors %}
-                                    <div class="col-12">
-                                        <div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>
-                                    </div>
-                                    {% endif %}
-
-                                    <div class="col-12 text-end pt-3">
-                                        <button type="submit"
-                                            class="btn btn-primary rounded-pill px-5 btn-lg fw-bold shadow">
-                                            <i class="fas fa-check-circle me-2"></i>Valider l'inscription
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.25rem rgba(233, 30, 99, 0.1);
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+        --gradient-dark: linear-gradient(135deg, #2d0617 0%, #1a0a10 100%);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    /* ── Page wrapper ── */
+    .compete-page {
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        padding: 60px 0 80px;
+    }
+
+    .compete-page::before {
+        content: '';
+        position: fixed;
+        top: -20%;
+        right: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(233,30,99,.06) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .compete-page::after {
+        content: '';
+        position: fixed;
+        bottom: -10%;
+        left: -10%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(233,30,99,.04) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* ── Breadcrumb ── */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: .82rem;
+        font-weight: 600;
+        transition: color .2s;
+        margin-bottom: 32px;
+    }
+
+    .back-link:hover { color: var(--rose); }
+
+    .back-link i {
+        width: 28px;
+        height: 28px;
+        background: var(--rose-pale);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .7rem;
+        color: var(--rose);
+        transition: background .2s;
+    }
+
+    .back-link:hover i { background: var(--rose); color: white; }
+
+    /* ── Main card ── */
+    .compete-card {
+        background: var(--blanc);
+        border-radius: 32px;
+        overflow: hidden;
+        box-shadow:
+            0 4px 6px rgba(0,0,0,.02),
+            0 20px 60px rgba(233,30,99,.1),
+            0 1px 0 rgba(255,255,255,.8) inset;
+        border: 1px solid rgba(233,30,99,.08);
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ── Left panel ── */
+    .left-panel {
+        background: var(--gradient-dark);
+        padding: 48px 40px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        min-height: 500px;
+    }
+
+    .left-panel::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: var(--gradient);
+    }
+
+    .left-panel::after {
+        content: '';
+        position: absolute;
+        bottom: -60px;
+        right: -60px;
+        width: 240px;
+        height: 240px;
+        background: radial-gradient(circle, rgba(233,30,99,.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .comp-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(233,30,99,.2);
+        border: 1px solid rgba(233,30,99,.35);
+        color: var(--rose-light);
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+
+    .left-panel h1 {
+        font-size: 1.9rem;
+        font-weight: 900;
+        color: white;
+        line-height: 1.2;
+        margin-bottom: 16px;
+    }
+
+    .left-panel p {
+        color: rgba(255,255,255,.45);
+        font-size: .88rem;
+        line-height: 1.7;
+        margin-bottom: 32px;
+    }
+
+    /* ── Info rows ── */
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(255,255,255,.07);
+        border: 1px solid rgba(255,255,255,.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--rose-light);
+        font-size: .9rem;
+    }
+
+    .info-label {
+        font-size: .68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: rgba(255,255,255,.35);
+        margin-bottom: 2px;
+    }
+
+    .info-value {
+        font-size: .9rem;
+        font-weight: 600;
+        color: rgba(255,255,255,.8);
+    }
+
+    /* ── Note box ── */
+    .note-box {
+        background: rgba(255,255,255,.04);
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin-top: auto;
+    }
+
+    .note-box h6 {
+        font-size: .78rem;
+        font-weight: 700;
+        color: rgba(255,255,255,.7);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .note-box h6 i { color: var(--rose-light); }
+
+    .note-box p {
+        font-size: .75rem;
+        color: rgba(255,255,255,.35);
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    /* ── Deco icon ── */
+    .deco-icon {
+        position: absolute;
+        bottom: 80px;
+        right: -20px;
+        font-size: 8rem;
+        opacity: .04;
+        color: white;
+        pointer-events: none;
+    }
+
+    /* ── Right panel ── */
+    .right-panel {
+        padding: 48px 44px;
+        background: var(--blanc);
+    }
+
+    .right-panel h2 {
+        font-size: 1.7rem;
+        font-weight: 900;
+        color: var(--text-dark);
+        margin-bottom: 6px;
+    }
+
+    .right-panel > p {
+        color: var(--text-muted);
+        font-size: .88rem;
+        margin-bottom: 36px;
+    }
+
+    /* ── Section headers ── */
+    .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: .72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--rose);
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--rose-border);
+    }
+
+    .form-section-title i {
+        width: 28px;
+        height: 28px;
+        background: var(--rose-pale);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .75rem;
+        flex-shrink: 0;
+    }
+
+    /* ── Form controls ── */
+    .form-label {
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-control,
+    .form-select,
+    textarea.form-control {
+        border: 1.5px solid rgba(233,30,99,.15);
+        border-radius: 12px;
+        padding: 11px 15px;
+        font-size: .88rem;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--text-dark);
+        background: var(--blanc-off);
+        transition: border-color .25s, box-shadow .25s, background .25s;
+        width: 100%;
+    }
+
+    .form-control:focus,
+    .form-select:focus,
+    textarea.form-control:focus {
+        border-color: var(--rose);
+        background: var(--blanc);
+        box-shadow: 0 0 0 4px rgba(233,30,99,.1);
+        outline: none;
+    }
+
+    .form-control::placeholder,
+    textarea.form-control::placeholder {
+        color: rgba(138,96,112,.4);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-text {
+        font-size: .72rem;
+        color: var(--text-muted);
+        margin-top: 5px;
+    }
+
+    /* ── File input ── */
+    input[type="file"].form-control {
+        padding: 9px 12px;
+        cursor: pointer;
+    }
+
+    input[type="file"].form-control::-webkit-file-upload-button {
+        background: var(--rose-pale);
+        border: 1px solid var(--rose-border);
+        color: var(--rose);
+        border-radius: 8px;
+        padding: 4px 12px;
+        font-size: .75rem;
+        font-weight: 700;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: background .2s;
+    }
+
+    input[type="file"].form-control::-webkit-file-upload-button:hover {
+        background: var(--rose);
+        color: white;
+        border-color: var(--rose);
+    }
+
+    /* ── Error ── */
+    .field-error {
+        font-size: .75rem;
+        color: #e91e63;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .field-error::before {
+        content: '!';
+        width: 14px;
+        height: 14px;
+        background: rgba(233,30,99,.12);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .6rem;
+        font-weight: 900;
+        flex-shrink: 0;
+    }
+
+    /* ── Submit button ── */
+    .btn-submit {
+        background: var(--gradient);
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 48px;
+        box-shadow: 0 8px 24px rgba(233,30,99,.35);
+        transition: transform .2s, box-shadow .2s, opacity .2s;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(233,30,99,.45);
+        opacity: .95;
+        color: white;
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    /* ── Alert non-field errors ── */
+    .alert-field {
+        background: rgba(233,30,99,.08);
+        border: 1px solid rgba(233,30,99,.25);
+        color: var(--rose-dark);
+        border-radius: 14px;
+        padding: 14px 18px;
+        font-size: .85rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    /* ── Divider ── */
+    .form-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--rose-border), transparent);
+        margin: 28px 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 991px) {
+        .left-panel { min-height: unset; padding: 36px 28px; }
+        .right-panel { padding: 36px 28px; }
+        .deco-icon { display: none; }
+    }
+
+    @media (max-width: 575px) {
+        .compete-page { padding: 32px 0 60px; }
+        .left-panel, .right-panel { padding: 28px 20px; }
+        .btn-submit { width: 100%; justify-content: center; }
     }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="compete-page">
+    <div class="container position-relative" style="z-index:1;">
+
+        <!-- Retour -->
+        <a href="{% url 'juin' %}#competitions" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Retour aux compétitions
+        </a>
+
+        <div class="compete-card">
+            <div class="row g-0">
+
+                <!-- ══ LEFT PANEL ══ -->
+                <div class="col-lg-4">
+                    <div class="left-panel">
+
+                        <div>
+                            <div class="comp-type-badge">
+                                {% if competition.comp_type == 'sport' %}<i class="fas fa-futbol"></i>
+                                {% elif competition.comp_type == 'gaming' %}<i class="fas fa-gamepad"></i>
+                                {% else %}<i class="fas fa-laptop-code"></i>{% endif %}
+                                {{ competition.get_comp_type_display }}
+                            </div>
+
+                            <h1>{{ competition.name }}</h1>
+                            <p>{{ competition.description }}</p>
+
+                            <div class="info-row">
+                                <div class="info-icon"><i class="fas fa-users"></i></div>
+                                <div>
+                                    <div class="info-label">Max Équipes</div>
+                                    <div class="info-value">{{ competition.max_teams }} équipes</div>
+                                </div>
+                            </div>
+
+                            {% if competition.start_date %}
+                            <div class="info-row">
+                                <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <div>
+                                    <div class="info-label">Début estimé</div>
+                                    <div class="info-value">{{ competition.start_date|date:"d F Y — H:i" }}</div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="info-row">
+                                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <div>
+                                    <div class="info-label">Lieu</div>
+                                    <div class="info-value">Campus UY1 — Yaoundé</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Deco -->
+                        <i class="deco-icon fas {% if competition.comp_type == 'sport' %}fa-futbol{% elif competition.comp_type == 'gaming' %}fa-gamepad{% else %}fa-laptop-code{% endif %}"></i>
+
+                        <!-- Note -->
+                        <div class="note-box">
+                            <h6><i class="fas fa-shield-alt"></i>Validation requise</h6>
+                            <p>Toutes les inscriptions sont soumises à validation par le comité d'organisation. Assurez-vous que les informations du capitaine sont correctes.</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ══ RIGHT PANEL ══ -->
+                <div class="col-lg-8">
+                    <div class="right-panel">
+
+                        <h2>Formulaire d'Inscription</h2>
+                        <p>Complétez avec soin les détails de votre équipe ou candidature individuelle.</p>
+
+                        <form method="post" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+
+                            <!-- Section 1 : L'Équipe -->
+                            <div class="form-section-title">
+                                <i class="fas fa-flag"></i>
+                                L'Équipe
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-7">
+                                    <label class="form-label">Nom de l'équipe / Candidat *</label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                    <div class="field-error">{{ form.name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Nombre de membres *</label>
+                                    {{ form.members_count }}
+                                    {% if form.members_count.errors %}
+                                    <div class="field-error">{{ form.members_count.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Liste des membres <span style="color:var(--text-muted);font-weight:400;">— un par ligne</span></label>
+                                    {{ form.members_list }}
+                                    <div class="form-text"><i class="fas fa-info-circle me-1"></i>Notez un membre par ligne : Nom Prénom — Établissement</div>
+                                </div>
+                            </div>
+
+                            <div class="form-divider"></div>
+
+                            <!-- Section 2 : Le Capitaine -->
+                            <div class="form-section-title">
+                                <i class="fas fa-user-tie"></i>
+                                Le Capitaine
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-12">
+                                    <label class="form-label">Nom complet *</label>
+                                    {{ form.captain_name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Adresse e-mail *</label>
+                                    {{ form.captain_email }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">WhatsApp *</label>
+                                    {{ form.captain_phone }}
+                                </div>
+                            </div>
+
+                            <div class="form-divider"></div>
+
+                            <!-- Section 3 : Projet / Détails -->
+                            <div class="form-section-title">
+                                <i class="fas fa-lightbulb"></i>
+                                {% if competition.comp_type == 'sport' %}Détails{% else %}Projet{% endif %}
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-{% if competition.comp_type == 'sport' %}12{% else %}6{% endif %}">
+                                    <label class="form-label">{{ form.project_title.label }}</label>
+                                    {{ form.project_title }}
+                                </div>
+                                {% if competition.comp_type != 'sport' %}
+                                <div class="col-md-6">
+                                    <label class="form-label">Logo de l'équipe / Projet <span style="color:var(--text-muted);font-weight:400;">— optionnel</span></label>
+                                    {{ form.logo }}
+                                </div>
+                                {% endif %}
+                                <div class="col-12">
+                                    <label class="form-label">{{ form.project_description.label }}</label>
+                                    {{ form.project_description }}
+                                </div>
+                            </div>
+
+                            <!-- Non-field errors -->
+                            {% if form.non_field_errors %}
+                            <div class="alert-field mb-4">
+                                <i class="fas fa-exclamation-circle mt-1" style="color:var(--rose);flex-shrink:0;"></i>
+                                <span>{{ form.non_field_errors.0 }}</span>
+                            </div>
+                            {% endif %}
+
+                            <!-- Submit -->
+                            <div class="d-flex justify-content-end pt-2">
+                                <button type="submit" class="btn-submit">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Valider l'inscription
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

@@ -3,6 +3,17 @@
 
 {% block title %}J.U.IN 2026 — 20ème Édition | COMS.A.S{% endblock %}
 
+{% block meta_description %}Participez au J.U.IN 2026 (Journées Universitaires de l'Informatique), le plus grand
+événement tech étudiant du Cameroun organisé par le COM.S.AS. Hackathons, conférences, et innovation.{% endblock %}
+
+{% block meta_keywords %}juin 2026, journées universitaires de l'informatique, comsas juin, hackathon cameroun, tech
+event yaounde, uy1 informatique{% endblock %}
+
+{% block og_title %}J.U.IN 2026 — Le Jubilé d'Émeraude du COM.S.AS{% endblock %}
+{% block og_description %}Rejoignez-nous pour la 20ème édition des Journées Universitaires de l'Informatique.
+Innovation, compétitions et networking au cœur de l'UY1.{% endblock %}
+{% block og_image %}{% static 'images/comsas.png' %}{% endblock %}
+
 {% block extra_css %}
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet">
@@ -100,8 +111,15 @@
     }
 
     @keyframes floatUpDown {
-        0%, 100% { transform: translateY(0) rotate(0deg); }
-        50% { transform: translateY(-22px) rotate(6deg); }
+
+        0%,
+        100% {
+            transform: translateY(0) rotate(0deg);
+        }
+
+        50% {
+            transform: translateY(-22px) rotate(6deg);
+        }
     }
 
     /* ── Pulse dot ── */
@@ -124,8 +142,17 @@
     }
 
     @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: .8; }
-        50% { transform: scale(1.8); opacity: 0; }
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: .8;
+        }
+
+        50% {
+            transform: scale(1.8);
+            opacity: 0;
+        }
     }
 
     /* ── Theme box ── */
@@ -282,8 +309,14 @@
         padding-right: 8px;
     }
 
-    .timeline-scroll::-webkit-scrollbar { width: 4px; }
-    .timeline-scroll::-webkit-scrollbar-track { background: transparent; }
+    .timeline-scroll::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .timeline-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
     .timeline-scroll::-webkit-scrollbar-thumb {
         background: rgba(233, 30, 99, .25);
         border-radius: 4px;
@@ -356,7 +389,9 @@
         box-shadow: 0 24px 56px rgba(233, 30, 99, .18);
     }
 
-    .axe-card:hover::after { opacity: 1; }
+    .axe-card:hover::after {
+        opacity: 1;
+    }
 
     .axe-icon-wrap {
         width: 60px;
@@ -371,13 +406,19 @@
         margin-bottom: 20px;
     }
 
-    .axe-card ul { padding-left: 16px; }
+    .axe-card ul {
+        padding-left: 16px;
+    }
+
     .axe-card ul li {
         color: var(--text-muted);
         line-height: 2;
         font-size: .88rem;
     }
-    .axe-card h6 { color: var(--rose); }
+
+    .axe-card h6 {
+        color: var(--rose);
+    }
 
     /* ── Partner cards ── */
     .partner-card {
@@ -527,7 +568,9 @@
         outline: none;
     }
 
-    .form-dark-card .form-control::placeholder { color: rgba(255, 255, 255, .3); }
+    .form-dark-card .form-control::placeholder {
+        color: rgba(255, 255, 255, .3);
+    }
 
     .form-dark-card select option {
         background: #1a0a10;
@@ -626,15 +669,18 @@
                 </h1>
 
                 <div class="theme-box mb-4">
-                    <div class="small fw-bold text-uppercase mb-1" style="color:var(--rose);letter-spacing:2px;">Thème 2026</div>
+                    <div class="small fw-bold text-uppercase mb-1" style="color:var(--rose);letter-spacing:2px;">Thème
+                        2026</div>
                     <p class="mb-0 fw-semibold" style="color:var(--text-dark);line-height:1.6;">
-                        {% if edition %}{{ edition.theme }}{% else %}« Le Numérique au Service de l'Entrepreneuriat et de l'Innovation Jeune : Catalyseur de Progrès et d'Opportunités »{% endif %}
+                        {% if edition %}{{ edition.theme }}{% else %}« Le Numérique au Service de l'Entrepreneuriat et
+                        de l'Innovation Jeune : Catalyseur de Progrès et d'Opportunités »{% endif %}
                     </p>
                 </div>
 
                 <p class="lead mb-4" style="color:var(--text-muted);">
                     <i class="fas fa-map-marker-alt me-2" style="color:var(--rose);"></i>
-                    {% if edition %}{{ edition.location }}{% else %}Campus UY1 — Esplanade Extension 1, Faculté des Sciences{% endif %}
+                    {% if edition %}{{ edition.location }}{% else %}Campus UY1 — Esplanade Extension 1, Faculté des
+                    Sciences{% endif %}
                 </p>
 
                 <div class="d-flex flex-wrap gap-3">
@@ -683,24 +729,31 @@
                             <div style="font-size:1.8rem;font-weight:900;" class="text-gradient">
                                 {% if edition %}{{ edition.edition_number }}{% else %}20{% endif %}+
                             </div>
-                            <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);">Éditions</div>
+                            <div
+                                style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);">
+                                Éditions</div>
                         </div>
                         <div class="col-4">
                             <div style="font-size:1.8rem;font-weight:900;" class="text-gradient">
                                 {{ edition.commissions.count|default:"10" }}
                             </div>
-                            <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);">Commissions</div>
+                            <div
+                                style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);">
+                                Commissions</div>
                         </div>
                         <div class="col-4">
                             <div style="font-size:1.8rem;font-weight:900;" class="text-gradient">
                                 {{ institutions.count|default:"4" }}
                             </div>
-                            <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);">Établissements</div>
+                            <div
+                                style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);">
+                                Établissements</div>
                         </div>
                     </div>
 
                     <div class="text-center mt-4">
-                        <div style="font-size:.7rem;font-weight:700;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;">
+                        <div
+                            style="font-size:.7rem;font-weight:700;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;">
                             {% if edition %}{{ edition.slogan }}{% else %}Coder &bull; Innover &bull; Entreprendre{% endif %}
                         </div>
                         <a href="{% url 'juin_guide' %}" class="text-decoration-none small mt-2 d-block"
@@ -776,7 +829,8 @@
                             <div class="mission-icon"><i class="fas fa-graduation-cap fa-lg"></i></div>
                             <div>
                                 <h6 class="fw-bold mb-1" style="color:var(--text-dark);">Mission académique</h6>
-                                <p class="small mb-0" style="color:var(--text-muted);">Excellence, recherche, innovation</p>
+                                <p class="small mb-0" style="color:var(--text-muted);">Excellence, recherche, innovation
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -944,7 +998,8 @@
                     {% else %}
                     <div class="partner-abbr">{{ partner.company_name|slice:":4"|upper }}</div>
                     {% endif %}
-                    <h6 class="fw-bold mb-1" style="font-size:.88rem;color:var(--text-dark);">{{ partner.company_name }}</h6>
+                    <h6 class="fw-bold mb-1" style="font-size:.88rem;color:var(--text-dark);">{{ partner.company_name }}
+                    </h6>
                     <p style="font-size:.76rem;color:var(--text-muted);" class="mb-0">{{ partner.description|truncatechars:60 }}</p>
                 </div>
             </div>
@@ -958,17 +1013,15 @@
 
         <div class="mt-5 pt-4 text-center" style="border-top:1px dashed rgba(233,30,99,.25);">
             <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 mb-4" style="opacity:.5;">
-                {# ── CORRECTION CLÉ : on évite if/for/if imbriqués en utilisant un with + for simple ── #}
-                {% with sponsors=edition.sponsors.all %}
-                {% for sponsor in sponsors|slice:":4" %}
-                {% if sponsor.logo %}
-                <img src="{{ sponsor.logo.url }}" alt="{{ sponsor.company_name }}"
-                    style="max-height:35px;filter:grayscale(100%);">
-                {% endif %}
+                {% for sponsor in edition.sponsors.all|slice:":4" %}
+                    {% if sponsor.logo %}
+                    <img src="{{ sponsor.logo.url }}" alt="{{ sponsor.company_name }}"
+                        style="max-height:35px;filter:grayscale(100%);">
+                    {% endif %}
                 {% endfor %}
-                {% endwith %}
             </div>
-            <a href="{% url 'juin_sponsors' %}" class="btn btn-outline-juin rounded-pill px-4 me-2">Voir tous les sponsors</a>
+            <a href="{% url 'juin_sponsors' %}" class="btn btn-outline-juin rounded-pill px-4 me-2">Voir tous les
+                sponsors</a>
             <a href="{% url 'juin_become_partner' %}" class="btn btn-juin rounded-pill px-4">Devenir Sponsor</a>
         </div>
     </div>
@@ -1000,7 +1053,8 @@
                     <div class="col-6">
                         <div class="comm-mini">
                             <i class="fas {{ comm.icon|default:'fa-users' }} fa-2x mb-2"></i>
-                            <h6 class="fw-bold mb-0" style="font-size:.85rem;color:var(--text-dark);">{{ comm.name }}</h6>
+                            <h6 class="fw-bold mb-0" style="font-size:.85rem;color:var(--text-dark);">{{ comm.name }}
+                            </h6>
                         </div>
                     </div>
                     {% endfor %}
@@ -1073,7 +1127,8 @@
                 <i class="fas fa-calendar-plus fa-2x" style="color:var(--rose);"></i>
             </div>
             <h5 class="fw-bold mb-2" style="color:var(--text-dark);">Programme à venir</h5>
-            <p style="color:var(--text-muted);">Le programme détaillé sera publié prochainement.<br>Suivez-nous sur les réseaux sociaux !</p>
+            <p style="color:var(--text-muted);">Le programme détaillé sera publié prochainement.<br>Suivez-nous sur les
+                réseaux sociaux !</p>
         </div>
         {% endif %}
 
@@ -1129,7 +1184,7 @@
                     <div class="p-4 flex-grow-1 d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="small fw-bold text-uppercase" style="color:var(--rose);">{{ comp.get_comp_type_display }}</span>
-                            <span class="small" style="color:var(--text-muted);"><i class="fas fa-users me-1"></i>Max {{ comp.max_teams }} équipes</span>
+                            <span class="small" style="color:var(--text-muted);"><i class="fas fa-users me-1"></i>Max {{comp.max_teams }} équipes</span>
                         </div>
                         <h5 class="fw-bold mb-2" style="color:var(--text-dark);">{{ comp.name }}</h5>
                         <p class="small flex-grow-1" style="color:var(--text-muted);">{{ comp.description|truncatechars:100 }}</p>
@@ -1139,7 +1194,8 @@
                                 S'inscrire <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                             {% endif %}
-                            <a href="{% url 'juin_competitions' %}" class="btn btn-outline-juin rounded-pill">Détails &amp; Équipes</a>
+                            <a href="{% url 'juin_competitions' %}" class="btn btn-outline-juin rounded-pill">Détails
+                                &amp; Équipes</a>
                         </div>
                     </div>
                 </div>
@@ -1180,7 +1236,8 @@
             </div>
         </div>
         <div class="text-center mt-4">
-            <p class="fst-italic" style="color:var(--text-muted);">Les compétitions officielles seront annoncées sous peu.</p>
+            <p class="fst-italic" style="color:var(--text-muted);">Les compétitions officielles seront annoncées sous
+                peu.</p>
         </div>
         {% endif %}
     </div>
@@ -1197,7 +1254,8 @@
                     <div class="text-center mb-5">
                         <div class="section-badge"><i class="fas fa-user-plus"></i>Rejoindre le J.U.IN 2026</div>
                         <h2 class="display-6 fw-bold mb-2" style="color:var(--blanc);">Postuler à une commission</h2>
-                        <p style="color:rgba(255,255,255,.5);">Remplis le formulaire — un email de confirmation te sera envoyé.</p>
+                        <p style="color:rgba(255,255,255,.5);">Remplis le formulaire — un email de confirmation te sera
+                            envoyé.</p>
                     </div>
 
                     {% if edition and edition.applications_open %}
@@ -1216,42 +1274,48 @@
                                 <label class="form-label">Nom et Prénom *</label>
                                 {{ apply_form.nom_prenom }}
                                 {% if apply_form.nom_prenom.errors %}
-                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{ apply_form.nom_prenom.errors.0 }}</div>
+                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{
+                                    apply_form.nom_prenom.errors.0 }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Adresse e-mail *</label>
                                 {{ apply_form.email }}
                                 {% if apply_form.email.errors %}
-                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{ apply_form.email.errors.0 }}</div>
+                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{ apply_form.email.errors.0
+                                    }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Téléphone *</label>
                                 {{ apply_form.telephone }}
                                 {% if apply_form.telephone.errors %}
-                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{ apply_form.telephone.errors.0 }}</div>
+                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{
+                                    apply_form.telephone.errors.0 }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Commission souhaitée *</label>
                                 {{ apply_form.commission }}
                                 {% if apply_form.commission.errors %}
-                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{ apply_form.commission.errors.0 }}</div>
+                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{
+                                    apply_form.commission.errors.0 }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Établissement *</label>
                                 {{ apply_form.etablissement }}
                                 {% if apply_form.etablissement.errors %}
-                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{ apply_form.etablissement.errors.0 }}</div>
+                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{
+                                    apply_form.etablissement.errors.0 }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Niveau d'études *</label>
                                 {{ apply_form.niveau }}
                                 {% if apply_form.niveau.errors %}
-                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{ apply_form.niveau.errors.0 }}</div>
+                                <div style="color:#f9a8c4;font-size:.78rem;margin-top:4px;">{{
+                                    apply_form.niveau.errors.0 }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-12">
@@ -1260,14 +1324,17 @@
                             </div>
                             <div class="col-12">
                                 <label class="form-label">
-                                    Photo portrait <span style="color:rgba(255,255,255,.35);font-weight:400;">— optionnel</span>
+                                    Photo portrait <span style="color:rgba(255,255,255,.35);font-weight:400;">—
+                                        optionnel</span>
                                 </label>
                                 {{ apply_form.photo }}
-                                <div style="color:rgba(255,255,255,.35);font-size:.74rem;margin-top:4px;">JPG/PNG, max 5 MB. Affichée sur votre carte de commission.</div>
+                                <div style="color:rgba(255,255,255,.35);font-size:.74rem;margin-top:4px;">JPG/PNG, max 5
+                                    MB. Affichée sur votre carte de commission.</div>
                             </div>
                             {% if apply_form.non_field_errors %}
                             <div class="col-12">
-                                <div style="background:rgba(233,30,99,.15);border:1px solid rgba(233,30,99,.4);color:#f9a8c4;border-radius:12px;padding:12px 16px;">
+                                <div
+                                    style="background:rgba(233,30,99,.15);border:1px solid rgba(233,30,99,.4);color:#f9a8c4;border-radius:12px;padding:12px 16px;">
                                     {{ apply_form.non_field_errors.0 }}
                                 </div>
                             </div>
@@ -1288,7 +1355,8 @@
                         </div>
                         <h4 class="fw-bold mb-3" style="color:var(--blanc);">Inscriptions prochainement</h4>
                         <p class="mx-auto" style="color:rgba(255,255,255,0.4); max-width: 400px;">
-                            Les candidatures pour les commissions de la 20ème édition ouvriront très bientôt. Préparez votre motivation !
+                            Les candidatures pour les commissions de la 20ème édition ouvriront très bientôt. Préparez
+                            votre motivation !
                         </p>
                     </div>
                     {% endif %}
@@ -1327,7 +1395,8 @@
 
             {% if total_raised > 0 %}
             <div class="mt-5 pt-4">
-                <div class="text-white-50 small mb-2 text-uppercase fw-bold" style="letter-spacing: 2px;">Dons collectés</div>
+                <div class="text-white-50 small mb-2 text-uppercase fw-bold" style="letter-spacing: 2px;">Dons collectés
+                </div>
                 <div class="h3 fw-900 text-white">{{ total_raised|floatformat:0 }} <span class="small">FCFA</span></div>
             </div>
             {% endif %}
@@ -1343,7 +1412,8 @@
         <div class="d-inline-flex align-items-center py-2 px-3 rounded-pill mb-4"
             style="background:var(--rose-pale);border:1px solid var(--rose-border);">
             <span class="pulse-dot me-2"></span>
-            <span class="fw-bold small text-uppercase" style="letter-spacing:1px;color:var(--rose);">J.U.IN 2026 — 20ème Édition</span>
+            <span class="fw-bold small text-uppercase" style="letter-spacing:1px;color:var(--rose);">J.U.IN 2026 — 20ème
+                Édition</span>
         </div>
         <h2 class="display-4 fw-bold mb-4" style="font-weight:900;">
             Prêt à écrire <span class="text-gradient">l'histoire</span> ?

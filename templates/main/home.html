@@ -2,55 +2,49 @@
 {% load static %}
 {% load custom_filters %}
 
-{% block title %}Accueil - COM.S.AS{% endblock %}
+{% block title %}Accueil - COM.S.AS | Club Informatique de l'UY1{% endblock %}
+{% block meta_description %}Bienvenue sur le site officiel du COM.S.AS, le club informatique officiel de la Faculté des Sciences de l'Université de Yaoundé I. Rejoignez la communauté tech étudiante de référence au Cameroun.{% endblock %}
+{% block meta_keywords %}comsas, comsas-uy1, club informatique cameroun, uy1, informatique association, juin, yaounde tech, etudiant informatique{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
+
+<!-- ═══════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════ -->
 <section class="position-relative overflow-hidden bg-white" style="padding-top: 80px; padding-bottom: 60px;">
-    <!-- Tech Background Particles (Subtle) -->
     <div id="particles-js" class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 0; opacity: 0.4;"></div>
 
     <div class="container position-relative z-2">
         <div class="row align-items-center flex-column-reverse flex-lg-row">
-            <!-- Text Content -->
             <div class="col-lg-7 mt-5 mt-lg-0 text-center text-lg-start" data-aos="fade-right">
                 <div class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-light rounded-pill border">
-                    <span class="text-primary fw-bold small text-uppercase ls-1">Club Informatique UY1</span>
+                    <span class="text-primary fw-bold small text-uppercase ls-1">Club Informatique Officiel · UY1 · Depuis 2004</span>
                 </div>
 
                 <h1 class="display-3 fw-bolder mb-4 text-dark lh-sm">
                     Rejoignez l'élite du <br>
-                    <span class="text-primary typing-effect"
-                        data-words='["Code.", "Design.", "Réseau.", "I.A.", "Numérique."]'></span>
+                    <span class="text-primary typing-effect" data-words='["Code.", "Design.", "Réseau.", "I.A.", "Numérique."]'></span>
                     <span class="cursor">|</span>
                 </h1>
 
                 <p class="lead text-muted mb-5 mx-auto mx-lg-0" style="max-width: 600px;">
-                    Le <strong>COM.S.AS</strong> forme, connecte et propulse les étudiants passionnés par la
-                    technologie.
-                    Développez vos compétences, bâtissez votre réseau.
+                    Le <strong>COM.S.AS</strong> est le club informatique officiel de la Faculté des Sciences
+                    de l'Université de Yaoundé I. Nous formons, connectons et propulsons les étudiants passionnés
+                    par la technologie vers l'excellence depuis plus de 20 ans.
                 </p>
 
                 <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
-                    <a href="{% url 'member_registration' %}"
-                        class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm hover-lift">
-                        Devenir Membre
-                    </a>
-                    <a href="{% url 'projects' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5 hover-lift">
-                        Nos Projets
-                    </a>
+                    <a href="{% url 'member_registration' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm hover-lift">Devenir Membre</a>
+                    <a href="{% url 'projects' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5 hover-lift">Nos Projets</a>
                 </div>
 
-                <!-- Stats (Clean Row) -->
                 <div class="row mt-5 pt-4 border-top g-4 justify-content-center justify-content-lg-start">
                     <div class="col-auto text-center text-lg-start px-4 border-end">
-                        <span class="h2 d-block fw-bold text-dark counter"
-                            data-target="{{ total_members|default:'500' }}">0</span>
+                        <span class="h2 d-block fw-bold text-dark counter" data-target="{{ total_members|default:'2000' }}">0</span>
                         <span class="small text-muted text-uppercase">Membres</span>
                     </div>
                     <div class="col-auto text-center text-lg-start px-4 border-end">
-                        <span class="h2 d-block fw-bold text-secondary counter"
-                            data-target="{{ completed_projects|default:'20' }}">0</span>
+                        <span class="h2 d-block fw-bold text-secondary counter" data-target="{{ completed_projects|default:'20' }}">0</span>
                         <span class="small text-muted text-uppercase">Projets</span>
                     </div>
                     <div class="col-auto text-center text-lg-start px-4">
@@ -60,34 +54,21 @@
                 </div>
             </div>
 
-            <!-- Hero Visual (Dynamic Tech) -->
             <div class="col-lg-5 mb-4 mb-lg-0" data-aos="fade-left">
                 <div class="position-relative mx-auto" style="max-width: 450px;">
-                    <!-- Rotating Code Ring -->
-                    <div class="position-absolute top-50 start-50 translate-middle border border-dashed border-primary border-opacity-25 rounded-circle orbit-slow"
-                        style="width: 110%; padding-bottom: 110%; z-index: -1;"></div>
-
-                    <!-- Main Logo with Pulse -->
+                    <div class="position-absolute top-50 start-50 translate-middle border border-dashed border-primary border-opacity-25 rounded-circle orbit-slow" style="width: 110%; padding-bottom: 110%; z-index: -1;"></div>
                     <div class="text-center p-4 position-relative">
-                        <div class="position-absolute top-50 start-50 translate-middle bg-primary opacity-10 rounded-circle pulse-ring"
-                            style="width: 300px; height: 300px;"></div>
-                        <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS"
-                            class="img-fluid position-relative z-2 hover-scale"
-                            style="max-height: 320px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
+                        <div class="position-absolute top-50 start-50 translate-middle bg-primary opacity-10 rounded-circle pulse-ring" style="width: 300px; height: 300px;"></div>
+                        <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS" class="img-fluid position-relative z-2 hover-scale" style="max-height: 320px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
                     </div>
-
-                    <!-- Floating Tech Cards (Dynamic) -->
                     <div class="d-none d-sm-block">
-                        <div
-                            class="position-absolute top-0 end-0 bg-white p-3 rounded-4 shadow-sm border animate-float">
+                        <div class="position-absolute top-0 end-0 bg-white p-3 rounded-4 shadow-sm border animate-float">
                             <i class="fab fa-python fa-2x text-primary"></i>
                         </div>
-                        <div class="position-absolute bottom-0 start-0 bg-white p-3 rounded-4 shadow-sm border animate-float"
-                            style="animation-delay: 1s;">
+                        <div class="position-absolute bottom-0 start-0 bg-white p-3 rounded-4 shadow-sm border animate-float" style="animation-delay: 1s;">
                             <i class="fas fa-terminal fa-2x text-secondary"></i>
                         </div>
-                        <div class="position-absolute top-50 start-0 translate-middle-x bg-dark text-white p-3 rounded-4 shadow-sm border animate-float"
-                            style="animation-delay: 2s;">
+                        <div class="position-absolute top-50 start-0 translate-middle-x bg-dark text-white p-3 rounded-4 shadow-sm border animate-float" style="animation-delay: 2s;">
                             <span class="font-monospace fw-bold">&lt;/&gt;</span>
                         </div>
                     </div>
@@ -97,7 +78,9 @@
     </div>
 </section>
 
-<!-- Tech Stack Marquee (New Dynamic Section) -->
+<!-- ═══════════════════════════════════════════
+     MARQUEE TECHNO
+═══════════════════════════════════════════ -->
 <section class="py-4 bg-light border-top border-bottom overflow-hidden">
     <div class="container-fluid">
         <p class="text-center text-muted small text-uppercase fw-bold ls-1 mb-3">Nos Technologies Préférées</p>
@@ -111,7 +94,6 @@
                 <i class="fab fa-linux fa-3x" title="Linux"></i>
                 <i class="fab fa-aws fa-3x" title="AWS"></i>
                 <i class="fas fa-database fa-3x" title="SQL"></i>
-                <!-- Duplicate for seamless loop -->
                 <i class="fab fa-python fa-3x"></i>
                 <i class="fab fa-js fa-3x"></i>
                 <i class="fab fa-react fa-3x"></i>
@@ -123,83 +105,186 @@
     </div>
 </section>
 
-<!-- J.U.IN 2026 Teaser Section (Premium) -->
+<!-- ═══════════════════════════════════════════
+     QUI SOMMES-NOUS — PRÉSENTATION CAPTIVANTE
+═══════════════════════════════════════════ -->
+<section class="py-5 bg-white" id="presentation">
+    <div class="container py-4">
+        <!-- Titre centré -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <div class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-light rounded-pill border">
+                    <span class="text-primary fw-bold small text-uppercase ls-1">Fondé en 2004 · Faculté des Sciences · UY1</span>
+                </div>
+                <h2 class="fw-bolder display-5 mb-3 text-dark">Plus qu'un club, <span class="text-primary">une communauté d'élite</span></h2>
+                <p class="lead text-muted">
+                    Le <strong>Computer Science Association (COM.S.AS)</strong> est le club informatique officiel de
+                    la Faculté des Sciences de l'Université de Yaoundé I, placé sous la supervision du
+                    Département d'Informatique et rattaché à l'<strong>A.E.FAS.</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- Bloc principal texte + visuel -->
+        <div class="row align-items-center g-5 mb-5">
+            <div class="col-lg-5" data-aos="fade-right">
+                <!-- Grande stat stylisée -->
+                <div class="comsas-big-stat mb-4">
+                    <div class="comsas-big-stat__inner">
+                        <span class="comsas-big-stat__number text-primary">20<sup>+</sup></span>
+                        <span class="comsas-big-stat__label">ans d'excellence numérique</span>
+                    </div>
+                    <div class="comsas-big-stat__inner">
+                        <span class="comsas-big-stat__number">2000<sup>+</sup></span>
+                        <span class="comsas-big-stat__label">membres actifs</span>
+                    </div>
+                    <div class="comsas-big-stat__inner">
+                        <span class="comsas-big-stat__number text-primary">20<sup>+</sup></span>
+                        <span class="comsas-big-stat__label">éditions J.U.IN organisées</span>
+                    </div>
+                    <div class="comsas-big-stat__inner">
+                        <span class="comsas-big-stat__number">8</span>
+                        <span class="comsas-big-stat__label">commissions spécialisées</span>
+                    </div>
+                </div>
+                <a href="{% url 'about' %}" class="btn btn-outline-dark rounded-pill px-4 hover-lift">
+                    Notre histoire complète <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+
+            <div class="col-lg-7" data-aos="fade-left">
+                <p class="fs-5 text-muted mb-4">
+                    Fondé en <strong class="text-dark">2004</strong> par des étudiants du Département d'Informatique
+                    animés d'une vision commune, le COM.S.AS s'est imposé progressivement comme un acteur
+                    <strong class="text-dark">incontournable de l'écosystème numérique camerounais</strong>.
+                </p>
+                <p class="text-muted mb-4">
+                    Au fil des années, l'association a tissé des partenariats avec des institutions publiques,
+                    des entreprises privées et des organisations internationales, consolidant son rayonnement
+                    bien au-delà des frontières de l'UY1.
+                </p>
+                <!-- 4 missions inline -->
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary flex-shrink-0">
+                                <i class="fas fa-graduation-cap fa-lg"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small">Mission Académique</div>
+                                <div class="text-muted" style="font-size:.82rem;">Excellence, recherche et innovation technologique.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-secondary bg-opacity-10 p-2 rounded-3 text-secondary flex-shrink-0">
+                                <i class="fas fa-briefcase fa-lg"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small">Mission Professionnelle</div>
+                                <div class="text-muted" style="font-size:.82rem;">Stages, emplois et réseau solide.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-dark bg-opacity-10 p-2 rounded-3 text-dark flex-shrink-0">
+                                <i class="fas fa-lightbulb fa-lg"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small">Mission Entrepreneuriale</div>
+                                <div class="text-muted" style="font-size:.82rem;">Incubation de projets innovants.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary flex-shrink-0">
+                                <i class="fas fa-globe-africa fa-lg"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small">Mission Sociale</div>
+                                <div class="text-muted" style="font-size:.82rem;">Réduire la fracture numérique.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     J.U.IN TEASER
+═══════════════════════════════════════════ -->
 {% if juin_edition %}
 <section class="py-5 bg-dark position-relative overflow-hidden text-white">
-    <!-- Decore background -->
     <div class="position-absolute top-0 end-0 p-5 opacity-10">
         <i class="fas fa-microchip fa-10x"></i>
     </div>
-
     <div class="container position-relative z-1">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-                <div
-                    class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill">
-                    <span class="text-primary fw-bold small text-uppercase ls-1">Événement Phare</span>
+                <div class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill">
+                    <span class="text-primary fw-bold small text-uppercase ls-1">Événement Phare · 20+ Éditions</span>
                 </div>
                 <h2 class="display-5 fw-bold mb-3 text-white">
                     J.U.IN <span class="text-primary">{{ juin_edition.number|default:"2026" }}</span>
                 </h2>
                 <h4 class="fw-light mb-4 text-white-50">{{ juin_edition.theme }}</h4>
-                <p class="lead mb-5 text-white-50">
-                    Les Journées Universitaires de l'Informatique reviennent pour une édition exceptionnelle.
-                    Rejoignez-nous pour 3 jours d'innovation, de partage et de compétition.
+                <p class="lead mb-3 text-white-50">
+                    Les <strong class="text-white">Journées Universitaires de l'Informatique</strong>, l'événement
+                    tech universitaire de référence au Cameroun. Organisées chaque année depuis 2004.
                 </p>
-
+                <p class="text-white-50 mb-4 small">
+                    <i class="fas fa-check-circle text-primary me-2"></i>Conférences & ateliers pratiques &nbsp;·&nbsp;
+                    <i class="fas fa-check-circle text-primary me-2 ms-1"></i>Hackathon &nbsp;·&nbsp;
+                    <i class="fas fa-check-circle text-primary me-2 ms-1"></i>Pitch contest &nbsp;·&nbsp;
+                    <i class="fas fa-check-circle text-primary me-2 ms-1"></i>Soirée de gala
+                </p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="{% url 'juin' %}" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm hover-lift">
-                        Découvrir le programme
-                    </a>
-                    <a href="{% url 'juin' %}#soutenir"
-                        class="btn btn-outline-light btn-lg rounded-pill px-4 hover-lift">
-                        Soutenir l'édition
-                    </a>
+                    <a href="{% url 'juin' %}" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm hover-lift">Découvrir le programme</a>
+                    <a href="{% url 'juin' %}#soutenir" class="btn btn-outline-light btn-lg rounded-pill px-4 hover-lift">Soutenir l'édition</a>
                 </div>
             </div>
-
             <div class="col-lg-5 offset-lg-1" data-aos="fade-left">
-                <div
-                    class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 p-4 text-center backdrop-blur shadow-lg">
+                <div class="card border border-white border-opacity-25 rounded-4 p-4 text-center shadow-lg" style="background: rgba(0,0,0,0.45);">
                     <h5 class="text-uppercase small ls-2 mb-4 text-primary">Le compte à rebours est lancé</h5>
-                    <div class="row g-2" id="home-juin-countdown"
-                        data-date="{{ juin_edition.start_date|date:'Y-m-d H:i:s' }}">
+                    <div class="row g-2" id="home-juin-countdown" data-date="{{ juin_edition.start_date|date:'Y-m-d' }}">
                         <div class="col-3">
                             <div class="p-3 bg-dark bg-opacity-50 rounded-3">
                                 <span class="h2 d-block fw-bold mb-0 text-white" id="home-days">00</span>
-                                <small class="text-white-50 x-small">Jours</small>
+                                <small class="text-white x-small">Jours</small>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="p-3 bg-dark bg-opacity-50 rounded-3">
                                 <span class="h2 d-block fw-bold mb-0 text-white" id="home-hours">00</span>
-                                <small class="text-white-50 x-small">H</small>
+                                <small class="text-white x-small">H</small>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="p-3 bg-dark bg-opacity-50 rounded-3">
                                 <span class="h2 d-block fw-bold mb-0 text-white" id="home-minutes">00</span>
-                                <small class="text-white-50 x-small">Min</small>
+                                <small class="text-white x-small">Min</small>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="p-3 bg-dark bg-opacity-50 rounded-3">
-                                <span class="h2 d-block fw-bold mb-0 text-white text-primary"
-                                    id="home-seconds">00</span>
-                                <small class="text-white-50 x-small">Sec</small>
+                                <span class="h2 d-block fw-bold mb-0 text-white" id="home-seconds">00</span>
+                                <small class="text-white x-small">Sec</small>
                             </div>
                         </div>
                     </div>
-
-                    <div class="mt-4 pt-4 border-top border-white border-opacity-10">
-                        <div class="d-flex align-items-center justify-content-center gap-2 mb-2 text-white-50">
+                    <div class="mt-4 pt-4 border-top border-white border-opacity-25">
+                        <div class="d-flex align-items-center justify-content-center gap-2 mb-2 text-white">
                             <i class="fas fa-map-marker-alt text-primary"></i>
-                            <span>{{ juin_edition.location|default:"Département d'Informatique, UY1" }}</span>
+                            <span class="fw-semibold">{{ juin_edition.location|default:"Département d'Informatique, UY1" }}</span>
                         </div>
-                        <div class="d-flex align-items-center justify-content-center gap-2 text-white-50">
+                        <div class="d-flex align-items-center justify-content-center gap-2 text-white">
                             <i class="fas fa-calendar-check text-primary"></i>
-                            <span>{{ juin_edition.start_date|date:"d" }} au {{ juin_edition.end_date|date:"d M Y"
-                                }}</span>
+                            <span class="fw-semibold">{{ juin_edition.start_date|date:"d" }} au {{ juin_edition.end_date|date:"d M Y" }}</span>
                         </div>
                     </div>
                 </div>
@@ -209,19 +294,18 @@
 </section>
 {% endif %}
 
-
-<!-- Nos Piliers (Activités) -->
+<!-- ═══════════════════════════════════════════
+     NOS PILIERS (ACTIVITÉS)
+═══════════════════════════════════════════ -->
 <section class="py-5 bg-white">
     <div class="container">
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8 text-center" data-aos="fade-up">
                 <h2 class="fw-bold mb-3">Ce que nous faisons</h2>
-                <p class="text-muted">Nos activités sont conçues pour booster votre carrière.</p>
+                <p class="text-muted">Des activités conçues pour transformer des étudiants passionnés en professionnels accomplis.</p>
             </div>
         </div>
-
         <div class="row g-4">
-            <!-- Formation -->
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="card h-100 border-0 shadow-sm bg-light hover-card-tech p-4 transition-all">
                     <div class="mb-4">
@@ -230,12 +314,9 @@
                         </div>
                     </div>
                     <h4 class="fw-bold mb-3">Formation & Ateliers</h4>
-                    <p class="text-muted mb-0">Des sessions pratiques sur le développement web, mobile, l'IA et la
-                        cybersécurité.</p>
+                    <p class="text-muted mb-0">Dev web et mobile, IA, cybersécurité, entrepreneuriat numérique. Ouvert à tous les étudiants de la Faculté des Sciences.</p>
                 </div>
             </div>
-
-            <!-- Projets -->
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="card h-100 border-0 shadow-sm bg-light hover-card-tech p-4 transition-all">
                     <div class="mb-4">
@@ -244,11 +325,9 @@
                         </div>
                     </div>
                     <h4 class="fw-bold mb-3">Projets & Innovation</h4>
-                    <p class="text-muted mb-0">Travaillez sur des projets concrets. De l'idée au déploiement.</p>
+                    <p class="text-muted mb-0">Travaillez sur des projets concrets. De l'idée au déploiement, en équipe, pour un impact réel.</p>
                 </div>
             </div>
-
-            <!-- Hackathons -->
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="card h-100 border-0 shadow-sm bg-light hover-card-tech p-4 transition-all">
                     <div class="mb-4">
@@ -256,16 +335,17 @@
                             <i class="fas fa-trophy fa-2x"></i>
                         </div>
                     </div>
-                    <h4 class="fw-bold mb-3">Hackathons</h4>
-                    <p class="text-muted mb-0">Des compétitions de code intenses pour tester vos limites et gagner des
-                        prix.</p>
+                    <h4 class="fw-bold mb-3">Hackathons & Concours</h4>
+                    <p class="text-muted mb-0">Compétitions nationales et internationales pour tester vos limites et valoriser les talents de l'UY1.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Terminal Section (Visuel Tech demandé) -->
+<!-- ═══════════════════════════════════════════
+     TERMINAL SECTION
+═══════════════════════════════════════════ -->
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row align-items-center">
@@ -275,8 +355,7 @@
                 </span>
                 <h2 class="fw-bold mb-4">Parlez-vous <span class="text-primary">Code</span> ?</h2>
                 <p class="lead text-muted mb-4">
-                    Au COM.S.AS, le code est notre langage universel. Que vous soyez débutant ou expert, il y a une
-                    place pour vous.
+                    Au COM.S.AS, le code est notre langage universel. Que vous soyez débutant ou expert, il y a une place pour vous.
                 </p>
                 <div class="d-flex flex-wrap gap-2">
                     <span class="badge bg-white text-dark border p-2">#Python</span>
@@ -284,28 +363,27 @@
                     <span class="badge bg-white text-dark border p-2">#React</span>
                     <span class="badge bg-white text-dark border p-2">#Flutter</span>
                     <span class="badge bg-white text-dark border p-2">#DevOps</span>
+                    <span class="badge bg-white text-dark border p-2">#IA</span>
+                    <span class="badge bg-white text-dark border p-2">#Cybersécurité</span>
                 </div>
             </div>
             <div class="col-lg-6" data-aos="fade-left">
-                <!-- Fake Terminal Window -->
-                <div class="card bg-dark text-white border-0 shadow-lg rounded-3"
-                    style="font-family: 'Courier New', monospace;">
+                <div class="card bg-dark text-white border-0 shadow-lg rounded-3" style="font-family: 'Courier New', monospace;">
                     <div class="card-header bg-secondary bg-opacity-25 border-bottom border-secondary d-flex gap-2">
                         <div class="rounded-circle bg-danger" style="width: 12px; height: 12px;"></div>
                         <div class="rounded-circle bg-warning" style="width: 12px; height: 12px;"></div>
                         <div class="rounded-circle bg-success" style="width: 12px; height: 12px;"></div>
                     </div>
                     <div class="card-body p-4">
-                        <p class="mb-1"><span class="text-success">user@comsas:~$</span> python3 join_club_maintenant.py
-                        </p>
-                        <p class="mb-1 text-muted">Loading dependencies...</p>
+                        <p class="mb-1"><span class="text-success">user@comsas:~$</span> python3 join_club.py</p>
+                        <p class="mb-1 text-muted">Initialisation du COM.S.AS...</p>
                         <p class="mb-3 text-white">
-                            > Passion detected... <span class="text-success">OK</span><br>
-                            > Motivation... <span class="text-success">100%</span><br>
-                            > Skills... <span class="text-warning">Loading...</span>
+                            > Club fondé en 2004... <span class="text-success">OK</span><br>
+                            > 2000+ membres actifs... <span class="text-success">OK</span><br>
+                            > 20+ éditions J.U.IN... <span class="text-success">OK</span><br>
+                            > Votre place dans la communauté... <span class="text-warning">En attente...</span>
                         </p>
-                        <p class="mb-0 text-white typewriter">Bienvenue dans la communauté ! <span
-                                class="cursor">_</span></p>
+                        <p class="mb-0 text-white typewriter">Bienvenue dans la communauté ! <span class="cursor">_</span></p>
                     </div>
                 </div>
             </div>
@@ -313,7 +391,9 @@
     </div>
 </section>
 
-<!-- Featured Events -->
+<!-- ═══════════════════════════════════════════
+     ÉVÉNEMENTS
+═══════════════════════════════════════════ -->
 {% if featured_events %}
 <section class="py-5 bg-white">
     <div class="container">
@@ -321,18 +401,15 @@
             <h2 class="fw-bold mb-0">Prochains Événements</h2>
             <a href="{% url 'events' %}" class="btn btn-outline-primary rounded-pill btn-sm">Voir tout</a>
         </div>
-
         <div class="row g-4">
             {% for event in featured_events %}
             <div class="col-md-4" data-aos="fade-up">
                 <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
                     <div class="position-relative">
                         {% if event.image %}
-                        <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title_fr }}"
-                            style="height: 200px; object-fit: cover;">
+                        <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title_fr }}" style="height: 200px; object-fit: cover;">
                         {% else %}
-                        <div class="bg-light d-flex align-items-center justify-content-center text-muted"
-                            style="height: 200px;">
+                        <div class="bg-light d-flex align-items-center justify-content-center text-muted" style="height: 200px;">
                             <i class="fas fa-calendar-alt fa-3x"></i>
                         </div>
                         {% endif %}
@@ -342,11 +419,8 @@
                     </div>
                     <div class="card-body">
                         <h5 class="fw-bold mb-2">{{ event.title_fr }}</h5>
-                        <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1"></i> {{ event.location }}
-                        </p>
-                        <a href="{% url 'event_detail' event.pk %}"
-                            class="text-primary text-decoration-none fw-bold small">Détails <i
-                                class="fas fa-arrow-right"></i></a>
+                        <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1"></i> {{ event.location }}</p>
+                        <a href="{% url 'event_detail' event.pk %}" class="text-primary text-decoration-none fw-bold small">Détails <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -356,7 +430,9 @@
 </section>
 {% endif %}
 
-<!-- Projects Highlight -->
+<!-- ═══════════════════════════════════════════
+     PROJETS
+═══════════════════════════════════════════ -->
 {% if featured_projects %}
 <section class="py-5 bg-light">
     <div class="container">
@@ -364,14 +440,12 @@
             <h2 class="fw-bold">Nos Réalisations</h2>
             <p class="text-muted">L'innovation par la pratique.</p>
         </div>
-
         <div class="row g-4 justify-content-center">
             {% for project in featured_projects|slice:":3" %}
             <div class="col-md-6 col-lg-4" data-aos="fade-up">
                 <div class="card border-0 shadow-sm h-100 p-3 rounded-4">
                     <div class="d-flex justify-content-between mb-3">
-                        <div class="rounded-circle bg-light p-2 d-flex align-items-center justify-content-center"
-                            style="width: 50px; height: 50px;">
+                        <div class="rounded-circle bg-light p-2 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                             <i class="fas fa-laptop-code text-primary"></i>
                         </div>
                         {% if project.status == 'ongoing' %}
@@ -383,8 +457,7 @@
                     <h5 class="fw-bold">{{ project.title_fr }}</h5>
                     <p class="text-muted small line-clamp-3">{{ project.description_fr|striptags }}</p>
                     <div class="mt-auto pt-3 border-top">
-                        <a href="{% url 'project_detail' project.pk %}"
-                            class="btn btn-outline-dark btn-sm rounded-pill w-100">Voir le projet</a>
+                        <a href="{% url 'project_detail' project.pk %}" class="btn btn-outline-dark btn-sm rounded-pill w-100">Voir le projet</a>
                     </div>
                 </div>
             </div>
@@ -394,17 +467,20 @@
 </section>
 {% endif %}
 
-<!-- CTA (Dark Footer Style) -->
+<!-- ═══════════════════════════════════════════
+     CTA FINAL
+═══════════════════════════════════════════ -->
 <section class="py-5 bg-dark text-white position-relative overflow-hidden">
-    <!-- Matrix Effect Background (Abstract css) -->
-    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5"
-        style="background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent); background-size: 50px 50px;">
-    </div>
-
+    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background-image: linear-gradient(0deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent); background-size: 50px 50px;"></div>
     <div class="container text-center position-relative z-1">
-        <h2 class="fw-bold mb-3">Prêt à nous rejoindre ?</h2>
-        <p class="text-white-50 mb-4 mx-auto" style="max-width: 600px;">
-            L'adhésion est ouverte. Intégrez une communauté qui vous tire vers le haut.
+        <h2 class="fw-bold mb-3 text-white">Prêt à rejoindre la communauté ?</h2>
+        <p class="text-white-50 mb-2 mx-auto" style="max-width: 600px;">
+            Le COM.S.AS est ouvert à tout étudiant de la Faculté des Sciences de l'UY1 partageant une passion pour l'informatique, le numérique et l'innovation.
+        </p>
+        <p class="text-white-50 mb-4 small">
+            <i class="fas fa-envelope text-primary me-1"></i> comsas@facsciences-uy1.cm &nbsp;·&nbsp;
+            <i class="fas fa-phone text-primary ms-2 me-1"></i> +237 657 09 73 69 &nbsp;·&nbsp;
+            <i class="fas fa-map-marker-alt text-primary ms-2 me-1"></i> Faculté des Sciences, UY1
         </p>
         <div class="d-flex justify-content-center gap-3">
             <a href="{% url 'member_registration' %}" class="btn btn-primary rounded-pill px-4">Devenir Membre</a>
@@ -413,213 +489,136 @@
     </div>
 </section>
 
-<!-- Styles & Scripts -->
+<!-- ═══════════════════════════════════════════
+     STYLES
+═══════════════════════════════════════════ -->
 <style>
-    .ls-1 {
-        letter-spacing: 1px;
-    }
+    .ls-1 { letter-spacing: 1px; }
 
-    /* Animations */
-    .animate-float {
-        animation: float 6s ease-in-out infinite;
-    }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-    @keyframes float {
+    .orbit-slow { animation: spin 20s linear infinite; }
+    @keyframes spin { 100%{transform:translate(-50%,-50%) rotate(360deg)} }
 
-        0%,
-        100% {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-10px);
-        }
-    }
-
-    .orbit-slow {
-        animation: spin 20s linear infinite;
-    }
-
-    @keyframes spin {
-        100% {
-            transform: translate(-50%, -50%) rotate(360deg);
-        }
-    }
-
-    .pulse-ring {
-        animation: pulse 3s infinite;
-    }
-
+    .pulse-ring { animation: pulse 3s infinite; }
     @keyframes pulse {
-        0% {
-            transform: translate(-50%, -50%) scale(0.8);
-            opacity: 0.5;
-        }
-
-        100% {
-            transform: translate(-50%, -50%) scale(1.2);
-            opacity: 0;
-        }
+        0%  { transform:translate(-50%,-50%) scale(0.8); opacity:.5; }
+        100%{ transform:translate(-50%,-50%) scale(1.2); opacity:0; }
     }
 
-    /* Hover Effects */
-    .hover-lift:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    .hover-lift:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(0,0,0,.1)!important; }
+    .hover-scale:hover { transform:scale(1.05); transition:transform .3s ease; }
+    .hover-card-tech:hover { background:white!important; transform:translateY(-5px); box-shadow:0 15px 30px rgba(0,0,0,.08)!important; }
+    .transition-all { transition:all .3s ease; }
+
+    .cursor { animation:blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .marquee { overflow:hidden; white-space:nowrap; position:relative; }
+    .marquee-content { display:inline-flex; animation:marquee 30s linear infinite; }
+    @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    .grayscale-hover { filter:grayscale(100%); transition:filter .3s; }
+    .grayscale-hover:hover { filter:grayscale(0%); }
+
+    /* ─── Big Stats COM.S.AS ─── */
+    .comsas-big-stat {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
     }
-
-    .hover-scale:hover {
-        transform: scale(1.05);
-        transition: transform 0.3s ease;
+    .comsas-big-stat__inner {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 16px;
+        padding: 1.4rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: transform .3s, box-shadow .3s;
     }
-
-    .hover-card-tech:hover {
-        background: white !important;
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08) !important;
+    .comsas-big-stat__inner:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 24px rgba(0,0,0,.07);
     }
-
-    .transition-all {
-        transition: all 0.3s ease;
+    .comsas-big-stat__number {
+        font-size: 2.2rem;
+        font-weight: 800;
+        line-height: 1;
+        color: #212529;
     }
-
-    /* Typewriter Cursor */
-    .cursor {
-        animation: blink 1s infinite;
+    .comsas-big-stat__number sup {
+        font-size: 1rem;
+        font-weight: 700;
     }
-
-    @keyframes blink {
-
-        0%,
-        100% {
-            opacity: 1;
-        }
-
-        50% {
-            opacity: 0;
-        }
-    }
-
-    /* Marquee */
-    .marquee {
-        overflow: hidden;
-        white-space: nowrap;
-        position: relative;
-    }
-
-    .marquee-content {
-        display: inline-flex;
-        animation: marquee 30s linear infinite;
-    }
-
-    @keyframes marquee {
-        0% {
-            transform: translateX(0);
-        }
-
-        100% {
-            transform: translateX(-50%);
-        }
-    }
-
-    .grayscale-hover {
-        filter: grayscale(100%);
-        transition: filter 0.3s;
-    }
-
-    .grayscale-hover:hover {
-        filter: grayscale(0%);
+    .comsas-big-stat__label {
+        font-size: .75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6c757d;
+        margin-top: .4rem;
     }
 </style>
 
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════════ -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Simple Typewriter Effect
-        const textElement = document.querySelector('.typing-effect');
-        if (textElement) {
-            const words = JSON.parse(textElement.getAttribute('data-words'));
-            let wordIndex = 0;
-            let charIndex = 0;
-            let isDeleting = false;
-            let currentText = '';
-
-            function type() {
-                const currentWord = words[wordIndex];
-                if (isDeleting) {
-                    currentText = currentWord.substring(0, charIndex - 1);
-                    charIndex--;
-                } else {
-                    currentText = currentWord.substring(0, charIndex + 1);
-                    charIndex++;
-                }
-
-                textElement.textContent = currentText;
-
-                let typeSpeed = isDeleting ? 100 : 200;
-
-                if (!isDeleting && charIndex === currentWord.length) {
-                    typeSpeed = 2000; // Pause at end
-                    isDeleting = true;
-                } else if (isDeleting && charIndex === 0) {
-                    isDeleting = false;
-                    wordIndex = (wordIndex + 1) % words.length;
-                    typeSpeed = 500;
-                }
-
-                setTimeout(type, typeSpeed);
+document.addEventListener('DOMContentLoaded', function () {
+    // Typewriter
+    const textElement = document.querySelector('.typing-effect');
+    if (textElement) {
+        const words = JSON.parse(textElement.getAttribute('data-words'));
+        let wordIndex = 0, charIndex = 0, isDeleting = false;
+        function type() {
+            const currentWord = words[wordIndex];
+            if (isDeleting) {
+                textElement.textContent = currentWord.substring(0, --charIndex);
+            } else {
+                textElement.textContent = currentWord.substring(0, ++charIndex);
             }
-            type();
+            let typeSpeed = isDeleting ? 100 : 200;
+            if (!isDeleting && charIndex === currentWord.length) { typeSpeed = 2000; isDeleting = true; }
+            else if (isDeleting && charIndex === 0) { isDeleting = false; wordIndex = (wordIndex + 1) % words.length; typeSpeed = 500; }
+            setTimeout(type, typeSpeed);
         }
+        type();
+    }
 
-        // Counters
-        const counters = document.querySelectorAll('.counter');
-        counters.forEach(counter => {
-            const target = +counter.getAttribute('data-target');
-            const inc = target / 100;
-            const updateCount = () => {
-                const count = +counter.innerText;
-                if (count < target) {
-                    counter.innerText = Math.ceil(count + inc);
-                    setTimeout(updateCount, 20);
-                } else {
-                    counter.innerText = target;
-                }
-            };
-            updateCount();
-        });
-
-        // JUIN Teaser Countdown
-        const countdownElement = document.getElementById('home-juin-countdown');
-        if (countdownElement) {
-            const targetDate = new Date(countdownElement.getAttribute('data-date')).getTime();
-
-            function updateCountdown() {
-                const now = new Date().getTime();
-                const distance = targetDate - now;
-
-                if (distance < 0) {
-                    document.getElementById('home-days').innerText = "00";
-                    document.getElementById('home-hours').innerText = "00";
-                    document.getElementById('home-minutes').innerText = "00";
-                    document.getElementById('home-seconds').innerText = "00";
-                    return;
-                }
-
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                document.getElementById('home-days').innerText = days.toString().padStart(2, '0');
-                document.getElementById('home-hours').innerText = hours.toString().padStart(2, '0');
-                document.getElementById('home-minutes').innerText = minutes.toString().padStart(2, '0');
-                document.getElementById('home-seconds').innerText = seconds.toString().padStart(2, '0');
-            }
-
-            setInterval(updateCountdown, 1000);
-            updateCountdown();
-        }
+    // Counters
+    document.querySelectorAll('.counter').forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const inc = target / 100;
+        const update = () => {
+            const count = +counter.innerText;
+            if (count < target) { counter.innerText = Math.ceil(count + inc); setTimeout(update, 20); }
+            else { counter.innerText = target; }
+        };
+        update();
     });
 
+    // Countdown J.U.IN
+    const cdEl = document.getElementById('home-juin-countdown');
+    if (cdEl) {
+        const targetDate = new Date(cdEl.getAttribute('data-date')).getTime();
+        function updateCountdown() {
+            const distance = targetDate - new Date().getTime();
+            const ids = ['home-days','home-hours','home-minutes','home-seconds'];
+            if (distance < 0) { ids.forEach(id => document.getElementById(id).innerText = "00"); return; }
+            const vals = [
+                Math.floor(distance / 86400000),
+                Math.floor((distance % 86400000) / 3600000),
+                Math.floor((distance % 3600000) / 60000),
+                Math.floor((distance % 60000) / 1000)
+            ];
+            ids.forEach((id, i) => document.getElementById(id).innerText = vals[i].toString().padStart(2,'0'));
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    }
+});
 </script>
+
 {% endblock %}

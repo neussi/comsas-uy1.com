@@ -22,6 +22,10 @@ urlpatterns = [
 
     # Raccourci de connexion admin demandé par l'utilisateur
     path('login_admin/', include('admin_dashboard.auth_urls')),
+    
+    
+    # SEO (robots.txt, sitemap.xml)
+    path('', include('main.seo_urls')),
 ]
 
 # ========================= HANDLERS D'ERREURS =========================

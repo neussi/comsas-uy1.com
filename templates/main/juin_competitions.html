@@ -3,170 +3,695 @@
 
 {% block title %}Compétitions & Équipes — J.U.IN 2026 | COMS.A.S{% endblock %}
 
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+        --gradient-dark: linear-gradient(135deg, #2d0617 0%, #1a0a10 100%);
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    /* ── Page ── */
+    .competitions-page {
+        min-height: 100vh;
+        padding: 64px 0 100px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .competitions-page::before {
+        content: '';
+        position: fixed;
+        top: -15%;
+        right: -8%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(233,30,99,.05) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* ── Hero header ── */
+    .page-hero {
+        text-align: center;
+        margin-bottom: 56px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .section-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--rose-pale);
+        border: 1px solid var(--rose-border);
+        color: var(--rose);
+        padding: 6px 18px;
+        border-radius: 50px;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: .82rem;
+        font-weight: 600;
+        margin-bottom: 36px;
+        transition: color .2s;
+    }
+
+    .back-link i {
+        width: 28px;
+        height: 28px;
+        background: var(--rose-pale);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .7rem;
+        color: var(--rose);
+        transition: background .2s;
+    }
+
+    .back-link:hover { color: var(--rose); }
+    .back-link:hover i { background: var(--rose); color: white; }
+
+    /* ── Competition block ── */
+    .comp-block {
+        background: var(--blanc);
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 8px 40px var(--rose-shadow);
+        border: 1px solid rgba(233,30,99,.07);
+        position: relative;
+        z-index: 1;
+        transition: box-shadow .35s;
+    }
+
+    .comp-block:hover {
+        box-shadow: 0 16px 56px rgba(233,30,99,.18);
+    }
+
+    /* ── Left image panel ── */
+    .comp-image-panel {
+        position: relative;
+        min-height: 280px;
+        background: var(--gradient-dark);
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+    }
+
+    .comp-image-panel img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: .7;
+    }
+
+    .comp-image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(10,2,6,.92) 0%, rgba(10,2,6,.3) 60%, transparent 100%);
+    }
+
+    .comp-image-content {
+        position: relative;
+        z-index: 2;
+        padding: 28px 30px;
+        width: 100%;
+    }
+
+    .comp-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(233,30,99,.25);
+        border: 1px solid rgba(233,30,99,.4);
+        color: var(--rose-light);
+        padding: 4px 14px;
+        border-radius: 50px;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+
+    .comp-image-content h2 {
+        font-size: 1.55rem;
+        font-weight: 900;
+        color: white;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .comp-deco-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 7rem;
+        opacity: .05;
+        color: white;
+        pointer-events: none;
+    }
+
+    /* ── Right body ── */
+    .comp-body {
+        padding: 36px 40px;
+    }
+
+    /* ── Meta stats ── */
+    .comp-stats-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .comp-stat {
+        background: var(--blanc-off);
+        border: 1px solid var(--rose-border);
+        border-radius: 14px;
+        padding: 14px 20px;
+        text-align: center;
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .comp-stat .num {
+        font-size: 1.5rem;
+        font-weight: 900;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+    }
+
+    .comp-stat .lbl {
+        font-size: .62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    /* ── Description ── */
+    .comp-desc {
+        color: var(--text-muted);
+        font-size: .9rem;
+        line-height: 1.7;
+        margin-bottom: 20px;
+    }
+
+    /* ── Rules box ── */
+    .rules-box {
+        background: var(--rose-pale);
+        border: 1px solid var(--rose-border);
+        border-radius: 16px;
+        padding: 16px 20px;
+        margin-bottom: 28px;
+    }
+
+    .rules-box h6 {
+        font-size: .76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--rose);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .rules-box p, .rules-box div {
+        font-size: .82rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    /* ── CTA button ── */
+    .btn-juin {
+        background: var(--gradient);
+        color: white;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 28px;
+        font-size: .9rem;
+        box-shadow: 0 6px 20px var(--rose-shadow);
+        transition: transform .2s, box-shadow .2s, opacity .2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-juin:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(233,30,99,.4);
+        opacity: .95;
+        color: white;
+    }
+
+    .btn-closed {
+        background: rgba(138,96,112,.1);
+        color: var(--text-muted);
+        font-weight: 700;
+        border: 1.5px solid rgba(138,96,112,.2);
+        border-radius: 50px;
+        padding: 12px 28px;
+        font-size: .9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: not-allowed;
+    }
+
+    /* ── Divider ── */
+    .section-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--rose-border), transparent);
+        margin: 28px 0;
+    }
+
+    /* ── Teams section title ── */
+    .teams-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .teams-title h5 {
+        font-size: .8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .teams-title h5 i {
+        color: var(--rose);
+    }
+
+    .teams-count {
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--rose);
+        background: var(--rose-pale);
+        border: 1px solid var(--rose-border);
+        padding: 3px 12px;
+        border-radius: 50px;
+    }
+
+    /* ── Team cards ── */
+    .team-card {
+        background: var(--blanc-off);
+        border-radius: 18px;
+        padding: 16px 18px;
+        border: 1.5px solid rgba(233,30,99,.08);
+        transition: all .3s cubic-bezier(.175,.885,.32,1.275);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .team-card:hover {
+        transform: translateY(-4px) scale(1.02);
+        border-color: var(--rose-border);
+        box-shadow: 0 12px 28px var(--rose-shadow);
+        background: var(--blanc);
+    }
+
+    .team-card.approved {
+        border-color: rgba(16,185,129,.25);
+        background: rgba(16,185,129,.03);
+    }
+
+    .team-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--rose-border);
+        flex-shrink: 0;
+    }
+
+    .team-avatar-placeholder {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: var(--rose-pale);
+        border: 2px solid var(--rose-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--rose);
+        font-size: .9rem;
+    }
+
+    .team-name {
+        font-size: .9rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 2px;
+    }
+
+    .team-captain {
+        font-size: .74rem;
+        color: var(--text-muted);
+    }
+
+    /* ── Status badges ── */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 50px;
+        font-size: .65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .status-badge.approved {
+        background: rgba(16,185,129,.12);
+        color: #065f46;
+    }
+
+    .status-badge.pending {
+        background: rgba(245,158,11,.12);
+        color: #92400e;
+    }
+
+    .status-badge.rejected {
+        background: rgba(239,68,68,.12);
+        color: #991b1b;
+    }
+
+    .team-project {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--rose-border);
+        font-size: .76rem;
+        color: var(--rose);
+        font-weight: 700;
+    }
+
+    /* ── Empty teams ── */
+    .teams-empty {
+        text-align: center;
+        padding: 32px 20px;
+        border: 2px dashed var(--rose-border);
+        border-radius: 18px;
+        color: var(--text-muted);
+        font-size: .88rem;
+    }
+
+    .teams-empty i {
+        font-size: 2rem;
+        color: var(--rose-light);
+        opacity: .4;
+        margin-bottom: 10px;
+    }
+
+    /* ── Empty page ── */
+    .page-empty {
+        text-align: center;
+        padding: 80px 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+        background: var(--rose-pale);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 2.4rem;
+        color: var(--rose-light);
+    }
+
+    /* ── Progress bar ── */
+    .teams-progress {
+        height: 6px;
+        background: var(--rose-pale);
+        border-radius: 50px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .teams-progress-fill {
+        height: 100%;
+        background: var(--gradient);
+        border-radius: 50px;
+        transition: width .6s ease;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 991px) {
+        .comp-body { padding: 28px 24px; }
+        .comp-image-panel { min-height: 220px; }
+    }
+
+    @media (max-width: 575px) {
+        .competitions-page { padding: 40px 0 60px; }
+        .comp-body { padding: 24px 18px; }
+        .comp-stats-row { gap: 8px; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="py-5 bg-light" style="min-height: 100vh;">
-    <div class="container py-5">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h1 class="display-4 fw-bold mb-3">Tableau des <span class="text-primary">Compétitions</span></h1>
-            <p class="text-muted lead">Suivez l'évolution des tournois et découvrez les équipes engagées.</p>
+<div class="competitions-page">
+    <div class="container position-relative" style="z-index:1;">
+
+        <!-- Retour -->
+        <a href="{% url 'juin' %}#competitions" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Retour à l'accueil
+        </a>
+
+        <!-- Hero -->
+        <div class="page-hero" data-aos="fade-up">
+            <div class="section-badge"><i class="fas fa-trophy"></i>Challenge & Fun</div>
+            <h1 class="display-4 fw-bold mb-3">
+                Tableau des <span class="text-gradient">Compétitions</span>
+            </h1>
+            <p class="lead" style="color:var(--text-muted);max-width:520px;margin:0 auto;">
+                Suivez l'évolution des tournois et découvrez les équipes engagées.
+            </p>
         </div>
 
         {% if competitions %}
-        <div class="row g-5">
+        <div class="d-flex flex-column gap-5">
             {% for comp in competitions %}
-            <div class="col-12" data-aos="fade-up">
-                <div class="card border-0 shadow-lg rounded-5 overflow-hidden">
-                    <div class="row g-0">
-                        <div class="col-lg-4">
-                            <div class="position-relative h-100 min-vh-25">
-                                {% if comp.image %}
-                                <img src="{{ comp.image.url }}" class="img-fluid h-100 w-100" style="object-fit:cover;"
-                                    alt="{{ comp.name }}">
-                                {% else %}
-                                <div
-                                    class="h-100 w-100 d-flex align-items-center justify-content-center bg-dark text-white">
-                                    <i
-                                        class="fas {% if comp.comp_type == 'sport' %}fa-futbol{% elif comp.comp_type == 'gaming' %}fa-gamepad{% else %}fa-laptop-code{% endif %} fa-5x opacity-25"></i>
+            <div class="comp-block" data-aos="fade-up">
+                <div class="row g-0">
+
+                    <!-- ── Image panel ── -->
+                    <div class="col-lg-4">
+                        <div class="comp-image-panel">
+                            {% if comp.image %}
+                            <img src="{{ comp.image.url }}" alt="{{ comp.name }}">
+                            {% endif %}
+                            <div class="comp-image-overlay"></div>
+                            <i class="comp-deco-icon fas {% if comp.comp_type == 'sport' %}fa-futbol{% elif comp.comp_type == 'gaming' %}fa-gamepad{% else %}fa-laptop-code{% endif %}"></i>
+                            <div class="comp-image-content">
+                                <div class="comp-type-badge">
+                                    {% if comp.comp_type == 'sport' %}<i class="fas fa-futbol"></i>
+                                    {% elif comp.comp_type == 'gaming' %}<i class="fas fa-gamepad"></i>
+                                    {% else %}<i class="fas fa-laptop-code"></i>{% endif %}
+                                    {{ comp.get_comp_type_display }}
                                 </div>
-                                {% endif %}
-                                <div class="position-absolute bottom-0 start-0 w-100 p-4 bg-gradient-dark">
-                                    <span
-                                        class="badge bg-{{ comp.comp_type|default:'primary' }} rounded-pill mb-2 px-3">{{
-                                        comp.get_comp_type_display }}</span>
-                                    <h2 class="text-white fw-bold mb-0">{{ comp.name }}</h2>
-                                </div>
+                                <h2>{{ comp.name }}</h2>
                             </div>
                         </div>
-                        <div class="col-lg-8">
-                            <div class="card-body p-4 p-lg-5">
-                                <div class="row mb-4">
-                                    <div class="col-md-8">
-                                        <h5 class="fw-bold mb-3">À propos du tournoi</h5>
-                                        <p class="text-muted">{{ comp.description }}</p>
-                                        {% if comp.rules %}
-                                        <div class="p-3 bg-light rounded-4 small">
-                                            <h6 class="fw-bold mb-2"><i
-                                                    class="fas fa-scroll me-2 text-primary"></i>Règles & Conditions</h6>
-                                            {{ comp.rules|linebreaks }}
+                    </div>
+
+                    <!-- ── Body ── -->
+                    <div class="col-lg-8">
+                        <div class="comp-body">
+
+                            <!-- Stats + CTA -->
+                            <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+                                <div class="comp-stats-row flex-grow-1">
+                                    <div class="comp-stat">
+                                        <div class="num">{{ comp.teams.count }}</div>
+                                        <div class="lbl">Équipes inscrites</div>
+                                    </div>
+                                    <div class="comp-stat">
+                                        <div class="num">{{ comp.max_teams }}</div>
+                                        <div class="lbl">Places max</div>
+                                    </div>
+                                    <div class="comp-stat">
+                                        {% with pct=comp.teams.count|stringformat:"s" %}
+                                        <div class="num">{{ comp.max_teams|add:"-0" }}</div>
+                                        {% endwith %}
+                                        <div class="lbl">Restantes</div>
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    {% if comp.is_open %}
+                                    <a href="{% url 'juin_compete' comp.slug %}" class="btn-juin">
+                                        <i class="fas fa-plus-circle"></i>S'inscrire
+                                    </a>
+                                    {% else %}
+                                    <span class="btn-closed">
+                                        <i class="fas fa-lock"></i>Fermé
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Barre de remplissage -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span style="font-size:.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Remplissage</span>
+                                    <span style="font-size:.72rem;font-weight:700;color:var(--rose);">{{ comp.teams.count }} / {{ comp.max_teams }}</span>
+                                </div>
+                                <div class="teams-progress">
+                                    <div class="teams-progress-fill" style="width: {% widthratio comp.teams.count comp.max_teams 100 %}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <p class="comp-desc">{{ comp.description }}</p>
+
+                            {% if comp.rules %}
+                            <div class="rules-box">
+                                <h6><i class="fas fa-scroll"></i>Règles & Conditions</h6>
+                                <div>{{ comp.rules|linebreaks }}</div>
+                            </div>
+                            {% endif %}
+
+                            <div class="section-divider"></div>
+
+                            <!-- Teams -->
+                            <div class="teams-title">
+                                <h5><i class="fas fa-users"></i>Équipes engagées</h5>
+                                <span class="teams-count">{{ comp.teams.count }} équipe{{ comp.teams.count|pluralize }}</span>
+                            </div>
+
+                            <div class="row g-3">
+                                {% for team in comp.teams.all %}
+                                <div class="col-md-6 col-xl-4">
+                                    <div class="team-card {% if team.statut == 'approved' %}approved{% endif %}">
+                                        <div class="d-flex align-items-center gap-3">
+                                            {% if team.logo %}
+                                            <img src="{{ team.logo.url }}" class="team-avatar" alt="{{ team.name }}">
+                                            {% else %}
+                                            <div class="team-avatar-placeholder">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div class="flex-grow-1 min-width-0">
+                                                <div class="team-name">{{ team.name }}</div>
+                                                <div class="team-captain">Cap. {{ team.captain_name }}</div>
+                                                <div class="mt-1">
+                                                    {% if team.statut == 'approved' %}
+                                                    <span class="status-badge approved"><i class="fas fa-check-circle"></i>Validée</span>
+                                                    {% elif team.statut == 'pending' %}
+                                                    <span class="status-badge pending"><i class="fas fa-clock"></i>En attente</span>
+                                                    {% else %}
+                                                    <span class="status-badge rejected"><i class="fas fa-times-circle"></i>Refusée</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if team.project_title %}
+                                        <div class="team-project">
+                                            <i class="fas fa-lightbulb me-1"></i>{{ team.project_title|truncatechars:32 }}
                                         </div>
                                         {% endif %}
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="d-grid gap-3">
-                                            <div class="text-center p-3 bg-white border rounded-4 shadow-sm">
-                                                <div class="h3 fw-black text-primary mb-0">{{ comp.teams.count }} / {{
-                                                    comp.max_teams }}</div>
-                                                <small class="text-muted text-uppercase fw-bold"
-                                                    style="font-size: 0.6rem;">Équipes inscrites</small>
-                                            </div>
-                                            {% if comp.is_open %}
-                                            <a href="{% url 'juin_compete' comp.slug %}"
-                                                class="btn btn-primary rounded-pill py-3 fw-bold">
-                                                S'inscrire Maintenant
-                                            </a>
-                                            {% else %}
-                                            <button class="btn btn-secondary rounded-pill py-3 fw-bold"
-                                                disabled>Inscriptions Closes</button>
-                                            {% endif %}
-                                        </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12">
+                                    <div class="teams-empty">
+                                        <div><i class="fas fa-flag-checkered d-block mb-2"></i></div>
+                                        Aucune équipe inscrite pour l'instant.<br>
+                                        <strong style="color:var(--rose);">Soyez les premiers !</strong>
                                     </div>
                                 </div>
-
-                                <h5 class="fw-bold mb-4">Équipes engagées</h5>
-                                <div class="row g-3">
-                                    {% for team in comp.teams.all %}
-                                    <div class="col-md-6 col-xl-4">
-                                        <div
-                                            class="card border-0 shadow-sm rounded-4 p-3 h-100 {% if team.statut == 'approved' %}border-start border-4 border-success{% endif %}">
-                                            <div class="d-flex align-items-center gap-3">
-                                                {% if team.logo %}
-                                                <img src="{{ team.logo.url }}" class="rounded-circle"
-                                                    style="width:50px; height:50px; object-fit:cover;"
-                                                    alt="{{ team.name }}">
-                                                {% else %}
-                                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
-                                                    style="width:50px; height:50px;">
-                                                    <i class="fas fa-users text-muted"></i>
-                                                </div>
-                                                {% endif %}
-                                                <div>
-                                                    <h6 class="fw-bold mb-0">{{ team.name }}</h6>
-                                                    <small class="text-muted">Cap. {{ team.captain_name }}</small>
-                                                    <div class="mt-1">
-                                                        {% if team.statut == 'approved' %}
-                                                        <span
-                                                            class="badge bg-success-subtle text-success small">Validée</span>
-                                                        {% elif team.statut == 'pending' %}
-                                                        <span class="badge bg-warning-subtle text-warning small">En
-                                                            attente</span>
-                                                        {% else %}
-                                                        <span
-                                                            class="badge bg-danger-subtle text-danger small">Refusée</span>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {% if team.project_title %}
-                                            <div class="mt-3 small border-top pt-2">
-                                                <span class="d-block fw-bold text-primary">{{
-                                                    team.project_title|truncatechars:30 }}</span>
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% empty %}
-                                    <div class="col-12">
-                                        <div class="p-4 text-center border-dashed rounded-4">
-                                            <p class="text-muted mb-0">Aucune équipe n'est encore inscrite. Soyez les
-                                                premiers !</p>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
+                                {% endfor %}
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
+
         {% else %}
-        <div class="text-center py-5">
-            <i class="fas fa-trophy fa-5x text-muted opacity-25 mb-4"></i>
-            <h3>Les compétitions arrivent...</h3>
-            <p class="text-muted">Préparez vos équipes, l'adrénaline monte !</p>
-            <a href="{% url 'juin' %}" class="btn btn-primary rounded-pill px-5 mt-3">Retour à l'accueil</a>
+        <div class="page-empty" data-aos="zoom-in">
+            <div class="empty-icon"><i class="fas fa-trophy"></i></div>
+            <h3 class="fw-bold mb-3" style="color:var(--text-dark);">Les compétitions arrivent...</h3>
+            <p style="color:var(--text-muted);max-width:380px;margin:0 auto 28px;">
+                Préparez vos équipes, l'adrénaline monte pour le Jubilé d'Émeraude !
+            </p>
+            <a href="{% url 'juin' %}" class="btn-juin">
+                <i class="fas fa-arrow-left"></i>Retour à l'accueil
+            </a>
         </div>
         {% endif %}
+
     </div>
-</section>
-
-<style>
-    .min-vh-25 {
-        min-height: 250px;
-    }
-
-    .bg-gradient-dark {
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-    }
-
-    .border-dashed {
-        border: 2px dashed #dee2e6;
-    }
-
-    .badge.bg-success-subtle {
-        background-color: #d1fae5;
-        color: #065f46;
-    }
-
-    .badge.bg-warning-subtle {
-        background-color: #fef3c7;
-        color: #92400e;
-    }
-
-    .badge.bg-danger-subtle {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-</style>
+</div>
 {% endblock %}
