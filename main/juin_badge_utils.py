@@ -524,7 +524,7 @@ def build_badge(
     # Texte footer
     p.setFillColor(C_WHITE); p.setFont("Helvetica-Bold", 6.8)
     p.drawCentredString(W / 2, 10 * mm,
-                        f"J.U.IN {edition_number}e Édition  —  08–12 Juin 2026  —  UY1, Yaoundé")
+                        f"J.U.IN {edition_number}e Édition  —  01–05 Juin 2026  —  UY1, Yaoundé")
     p.setFillColor(C_ROSE_SOFT); p.setFont("Helvetica", 6)
     p.drawCentredString(W / 2, 6 * mm, "Coder  •  Innover  •  Entreprendre")
 
