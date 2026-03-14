@@ -1,0 +1,473 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nos Sponsors & Partenaires — J.U.IN {{ edition.number }} | COMS.A.S{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   VARIABLES — blanc + rose uniquement
+═══════════════════════════════════════ */
+:root {
+    --rose:        #E91E63;
+    --rose-light:  #f06292;
+    --rose-dark:   #c2185b;
+    --rose-pale:   rgba(233, 30, 99, .08);
+    --rose-border: rgba(233, 30, 99, .2);
+    --rose-shadow: rgba(233, 30, 99, .12);
+    --blanc:       #ffffff;
+    --blanc-off:   #fdf5f8;
+    --text-dark:   #1a0a10;
+    --text-muted:  #8a6070;
+    --gradient:    linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-dark);
+    background: var(--blanc);
+}
+
+/* ── Gradient text ── */
+.text-gradient {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* ── Pulse dot ── */
+.pulse-dot {
+    width: 8px; height: 8px; background: var(--rose);
+    border-radius: 50%; display: inline-block; position: relative;
+}
+.pulse-dot::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%;
+    background: rgba(233,30,99,.3); animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%,100% { transform: scale(1); opacity: .8; }
+    50%      { transform: scale(1.8); opacity: 0; }
+}
+
+/* ── Hero ── */
+.hero-sponsors {
+    min-height: 42vh;
+    display: flex;
+    align-items: center;
+    background:
+        radial-gradient(ellipse 70% 60% at 90% 10%, rgba(233,30,99,.09) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 5% 95%, rgba(233,30,99,.06) 0%, transparent 55%),
+        var(--blanc);
+    position: relative;
+    overflow: hidden;
+}
+.hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(233,30,99,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(233,30,99,.04) 1px, transparent 1px);
+    background-size: 52px 52px;
+    pointer-events: none;
+}
+
+/* ── Section badge ── */
+.section-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--rose-pale); border: 1px solid var(--rose-border);
+    color: var(--rose); padding: 6px 18px; border-radius: 50px;
+    font-size: .74rem; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; margin-bottom: 18px;
+}
+
+/* ── Tier label ── */
+.tier-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 1rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--rose); margin-bottom: 28px;
+}
+.tier-label .tier-line {
+    height: 2px; flex: 1; max-width: 60px;
+    background: var(--gradient); border-radius: 2px; opacity: .4;
+}
+
+/* ── Sponsor card ── */
+.sponsor-card {
+    background: var(--blanc);
+    border-radius: 24px;
+    border: 1.5px solid var(--rose-border);
+    box-shadow: 0 6px 28px var(--rose-shadow);
+    padding: 32px 24px;
+    text-align: center;
+    transition: transform .35s cubic-bezier(.165,.84,.44,1), box-shadow .35s, border-color .35s;
+    position: relative;
+    overflow: hidden;
+}
+.sponsor-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--gradient);
+    opacity: 0; transition: opacity .35s;
+}
+.sponsor-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 56px rgba(233,30,99,.18);
+    border-color: var(--rose);
+}
+.sponsor-card:hover::before { opacity: 1; }
+
+.sponsor-card .logo-wrap {
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+}
+.sponsor-card .logo-placeholder {
+    background: var(--rose-pale);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--rose); font-size: 1.8rem;
+}
+
+/* Gold tier — légèrement plus grand */
+.sponsor-card.gold { padding: 36px 28px; }
+.sponsor-card.gold .logo-wrap { margin-bottom: 22px; }
+
+/* ── Pill sponsor (bronze / partenaire) ── */
+.sponsor-pill {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 22px;
+    background: var(--blanc);
+    border: 1.5px solid var(--rose-border);
+    border-radius: 50px;
+    box-shadow: 0 4px 16px var(--rose-shadow);
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+}
+.sponsor-pill:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(233,30,99,.18);
+    border-color: var(--rose);
+}
+
+/* ── Institution row ── */
+.institution-logo {
+    filter: grayscale(100%);
+    opacity: .55;
+    transition: filter .3s, opacity .3s;
+    max-height: 60px; max-width: 150px; object-fit: contain;
+}
+.institution-logo:hover { filter: grayscale(0%); opacity: 1; }
+
+/* ── Séparateur rosé ── */
+.rose-divider {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(233,30,99,.25), transparent);
+    margin: 48px 0;
+}
+
+/* ── CTA card ── */
+.cta-card {
+    background: linear-gradient(135deg, #2d0617 0%, #1a0a10 100%);
+    border-radius: 28px;
+    padding: 56px 48px;
+    box-shadow: 0 40px 80px rgba(233,30,99,.2);
+    border: 1px solid rgba(233,30,99,.2);
+    position: relative; overflow: hidden;
+    text-align: center;
+}
+.cta-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: var(--gradient);
+}
+
+/* ── Boutons ── */
+.btn-juin {
+    background: var(--gradient); color: var(--blanc);
+    font-weight: 700; border: none;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+}
+.btn-juin:hover {
+    color: var(--blanc); opacity: .9; transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(233,30,99,.4);
+}
+.btn-outline-juin {
+    border: 2px solid var(--rose); color: var(--rose);
+    background: transparent; font-weight: 700; transition: all .2s;
+}
+.btn-outline-juin:hover {
+    background: var(--gradient); border-color: transparent; color: var(--blanc);
+}
+.btn-ghost-light {
+    border: 2px solid rgba(255,255,255,.5); color: var(--blanc);
+    background: transparent; font-weight: 700; transition: all .2s;
+}
+.btn-ghost-light:hover {
+    background: var(--blanc); color: var(--text-dark); border-color: var(--blanc);
+}
+
+/* ── Empty state ── */
+.empty-icon-wrap {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: var(--rose-pale);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    color: var(--rose); font-size: 2rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero-sponsors py-5">
+    <div class="hero-grid"></div>
+    <div class="container position-relative text-center py-4" style="z-index:2;">
+
+        <nav aria-label="breadcrumb" class="mb-4 d-flex justify-content-center">
+            <ol class="breadcrumb mb-0" style="font-size:.82rem;">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}" class="text-decoration-none" style="color:var(--text-muted);">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'juin' %}" class="text-decoration-none" style="color:var(--text-muted);">J.U.IN 2026</a>
+                </li>
+                <li class="breadcrumb-item active" style="color:var(--text-muted);">Sponsors</li>
+            </ol>
+        </nav>
+
+        <div class="d-inline-flex align-items-center py-2 px-3 rounded-pill mb-4"
+             style="background:var(--rose-pale);border:1px solid var(--rose-border);">
+            <span class="pulse-dot me-2"></span>
+            <span class="fw-bold small text-uppercase" style="letter-spacing:1px;color:var(--rose);">J.U.IN 2026 — 20ème Édition</span>
+        </div>
+
+        <h1 class="display-4 fw-bold mb-3" style="font-weight:900;">
+            Sponsors &amp; <span class="text-gradient">Partenaires</span>
+        </h1>
+        <p class="lead mx-auto" style="max-width:680px;color:var(--text-muted);">
+            Merci à toutes les institutions et entreprises qui rendent cet événement possible.
+            Leur soutien est le moteur de l'innovation au sein de notre communauté.
+        </p>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SPONSORS GRID
+══════════════════════════════════════════ -->
+<section class="py-5" style="background:var(--blanc);">
+    <div class="container py-4">
+
+        {% if has_sponsors %}
+
+            <!-- ── OR ── -->
+            {% if tiers.gold %}
+            <div class="mb-5 text-center">
+                <div class="tier-label justify-content-center">
+                    <span class="tier-line"></span>
+                    <i class="fas fa-crown me-2"></i>Sponsors Or
+                    <span class="tier-line"></span>
+                </div>
+                <div class="row g-4 justify-content-center">
+                    {% for sponsor in tiers.gold %}
+                    <div class="col-md-4 col-lg-3" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0 }}0">
+                        <div class="sponsor-card gold h-100">
+                            <div class="logo-wrap" style="height:120px;">
+                                {% if sponsor.logo %}
+                                <img src="{{ sponsor.logo.url }}" alt="{{ sponsor.company_name }}"
+                                     style="max-height:100%;max-width:100%;object-fit:contain;">
+                                {% else %}
+                                <div class="logo-placeholder" style="width:80px;height:80px;">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <h5 class="fw-bold mb-2" style="color:var(--text-dark);">{{ sponsor.company_name }}</h5>
+                            {% if sponsor.website %}
+                            <a href="{{ sponsor.website }}" target="_blank"
+                               class="small text-decoration-none fw-bold"
+                               style="color:var(--rose);">
+                                Visiter le site <i class="fas fa-external-link-alt ms-1" style="font-size:.7rem;"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <hr class="rose-divider">
+            {% endif %}
+
+            <!-- ── ARGENT ── -->
+            {% if tiers.silver %}
+            <div class="mb-5 text-center">
+                <div class="tier-label justify-content-center">
+                    <span class="tier-line"></span>
+                    <i class="fas fa-medal me-2"></i>Sponsors Argent
+                    <span class="tier-line"></span>
+                </div>
+                <div class="row g-4 justify-content-center">
+                    {% for sponsor in tiers.silver %}
+                    <div class="col-6 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}0">
+                        <div class="sponsor-card h-100">
+                            <div class="logo-wrap" style="height:80px;">
+                                {% if sponsor.logo %}
+                                <img src="{{ sponsor.logo.url }}" alt="{{ sponsor.company_name }}"
+                                     style="max-height:100%;max-width:100%;object-fit:contain;">
+                                {% else %}
+                                <div class="logo-placeholder" style="width:60px;height:60px;">
+                                    <i class="fas fa-building" style="font-size:1.2rem;"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <h6 class="fw-bold mb-0 small" style="color:var(--text-dark);">{{ sponsor.company_name }}</h6>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <hr class="rose-divider">
+            {% endif %}
+
+            <!-- ── BRONZE & PARTENAIRES ── -->
+            {% if tiers.bronze or tiers.partner %}
+            <div class="mb-5 text-center">
+                <div class="tier-label justify-content-center">
+                    <span class="tier-line"></span>
+                    <i class="fas fa-handshake me-2"></i>Partenaires &amp; Soutiens
+                    <span class="tier-line"></span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-center gap-3" data-aos="fade-up">
+                    {% for sponsor in tiers.bronze %}
+                    <div class="sponsor-pill" title="{{ sponsor.company_name }} (Bronze)">
+                        {% if sponsor.logo %}
+                        <img src="{{ sponsor.logo.url }}" alt="{{ sponsor.company_name }}"
+                             style="height:28px;max-width:110px;object-fit:contain;">
+                        {% else %}
+                        <span class="small fw-bold" style="color:var(--text-dark);">{{ sponsor.company_name }}</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    {% for sponsor in tiers.partner %}
+                    <div class="sponsor-pill" title="{{ sponsor.company_name }} (Partenaire)">
+                        {% if sponsor.logo %}
+                        <img src="{{ sponsor.logo.url }}" alt="{{ sponsor.company_name }}"
+                             style="height:28px;max-width:110px;object-fit:contain;">
+                        {% else %}
+                        <span class="small fw-bold" style="color:var(--text-dark);">{{ sponsor.company_name }}</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <hr class="rose-divider">
+            {% endif %}
+
+            <!-- ── INSTITUTIONS ── -->
+            {% if tiers.institution %}
+            <div class="mb-4 text-center" data-aos="fade-up">
+                <div class="tier-label justify-content-center" style="font-size:.72rem;">
+                    <span class="tier-line"></span>
+                    Institutions
+                    <span class="tier-line"></span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-center gap-5 align-items-center mt-2">
+                    {% for sponsor in tiers.institution %}
+                    {% if sponsor.logo %}
+                    <img src="{{ sponsor.logo.url }}" alt="{{ sponsor.company_name }}"
+                         title="{{ sponsor.company_name }}" class="institution-logo">
+                    {% else %}
+                    <span class="fw-bold" style="color:var(--text-muted);opacity:.55;">{{ sponsor.company_name }}</span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+        {% else %}
+
+            <!-- ── EMPTY STATE ── -->
+            <div class="text-center py-5" data-aos="fade-up">
+                <div class="empty-icon-wrap">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h3 class="fw-bold mb-2" style="color:var(--text-dark);">Aucun sponsor affiché pour le moment</h3>
+                <p class="mb-5" style="color:var(--text-muted);">La liste des partenaires officiels sera publiée progressivement.</p>
+                <a href="{% url 'juin_become_partner' %}" class="btn btn-juin rounded-pill px-5 btn-lg shadow">
+                    <i class="fas fa-handshake me-2"></i>Devenir Partenaire
+                </a>
+            </div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA — DEVENIR SPONSOR
+══════════════════════════════════════════ -->
+<section class="py-5" style="background:var(--blanc-off);">
+    <div class="container py-3">
+        <div class="cta-card" data-aos="zoom-in">
+            <!-- Déco blob -->
+            <div style="position:absolute;top:-80px;right:-80px;width:280px;height:280px;
+                        border-radius:50%;background:rgba(233,30,99,.07);pointer-events:none;"></div>
+            <div style="position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;
+                        border-radius:50%;background:rgba(233,30,99,.05);pointer-events:none;"></div>
+
+            <div class="position-relative" style="z-index:2;">
+                <div class="section-badge justify-content-center">
+                    <i class="fas fa-star"></i>Opportunité de partenariat
+                </div>
+                <h2 class="display-5 fw-bold mb-3" style="color:var(--blanc);font-weight:900;">
+                    Votre entreprise veut soutenir<br><span class="text-gradient">l'innovation ?</span>
+                </h2>
+                <p class="mb-5 mx-auto" style="max-width:580px;color:rgba(255,255,255,.55);font-size:1.05rem;">
+                    Rejoignez le pool des partenaires du J.U.IN 2026 et bénéficiez d'une visibilité unique
+                    auprès des futurs ingénieurs du Cameroun et de la sous-région.
+                </p>
+
+                <!-- Mini stats -->
+                <div class="row g-3 justify-content-center mb-5">
+                    <div class="col-auto">
+                        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+                                    border-radius:18px;padding:18px 28px;text-align:center;">
+                            <div style="font-size:1.8rem;font-weight:900;" class="text-gradient">10K+</div>
+                            <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.4);">Participants</div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+                                    border-radius:18px;padding:18px 28px;text-align:center;">
+                            <div style="font-size:1.8rem;font-weight:900;" class="text-gradient">4+</div>
+                            <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.4);">Établissements</div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+                                    border-radius:18px;padding:18px 28px;text-align:center;">
+                            <div style="font-size:1.8rem;font-weight:900;" class="text-gradient">5j</div>
+                            <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.4);">Jours d'événement</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{% url 'juin_become_partner' %}" class="btn btn-juin btn-lg rounded-pill px-5 shadow-lg">
+                        <i class="fas fa-file-alt me-2"></i>Consulter le dossier de sponsoring
+                    </a>
+                    <a href="{% url 'juin' %}" class="btn btn-ghost-light btn-lg rounded-pill px-5">
+                        <i class="fas fa-arrow-left me-2"></i>Retour au J.U.IN
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

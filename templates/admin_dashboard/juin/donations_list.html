@@ -1,0 +1,117 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Dons J.U.IN 2026{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0">💰 Dons & Soutiens J.U.IN 2026</h1>
+            <p class="text-muted mb-0">
+                Total confirmé : <strong class="text-success">{{ total|floatformat:0 }} FCFA</strong>
+            </p>
+        </div>
+        <a href="{% url 'admin_juin_dashboard' %}" class="btn btn-outline-secondary btn-sm">← Retour</a>
+    </div>
+
+    <!-- Filter -->
+    <form method="get" class="mb-3">
+        <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" name="confirmed" id="confFilter" value="1"
+                {% if confirmed_filter %}checked{% endif %}
+                onchange="this.form.submit()">
+            <label class="form-check-label small" for="confFilter">
+                Afficher uniquement les dons confirmés
+            </label>
+        </div>
+    </form>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Donateur</th>
+                        <th>Montant</th>
+                        <th>Mode</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Confirmation</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for don in donations_page %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold small">{{ don.display_name }}</div>
+                            {% if don.email %}
+                            <div class="text-muted" style="font-size:.72rem;">{{ don.email }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold text-success">{{ don.montant|floatformat:0 }} F</td>
+                        <td>
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary small">
+                                {{ don.get_type_paiement_display }}
+                            </span>
+                        </td>
+                        <td class="small text-muted fst-italic">
+                            {{ don.message|default:"—"|truncatechars:50 }}
+                        </td>
+                        <td class="small text-muted">{{ don.date_don|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if don.is_confirmed %}
+                            <span class="badge bg-success">✅ Confirmé</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">⏳ En attente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="donation_id" value="{{ don.pk }}">
+                                <button type="submit"
+                                    class="btn btn-sm {% if don.is_confirmed %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                                    {% if don.is_confirmed %}Annuler{% else %}Confirmer{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            Aucun don enregistré pour le moment.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if donations_page.has_other_pages %}
+        <div class="card-footer bg-white d-flex justify-content-center">
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    {% if donations_page.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ donations_page.previous_page_number }}{% if confirmed_filter %}&confirmed=1{% endif %}">‹</a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item active">
+                        <a class="page-link">
+                            {{ donations_page.number }}/{{ donations_page.paginator.num_pages }}
+                        </a>
+                    </li>
+                    {% if donations_page.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ donations_page.next_page_number }}{% if confirmed_filter %}&confirmed=1{% endif %}">›</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

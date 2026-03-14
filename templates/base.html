@@ -347,7 +347,27 @@
                             Contact
                         </a>
                     </li>
+
+                    <!-- J.U.IN 2026 Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'juin' in request.path %}active{% endif %}" href="#"
+                            id="juinDropdown" role="button" data-bs-toggle="dropdown">
+                            J.U.IN 2026 <span class="badge bg-primary ms-1" style="font-size: 0.6rem;">Nouveau</span>
+                        </a>
+                        <ul class="dropdown-menu border-0 shadow-sm" aria-labelledby="juinDropdown">
+                            <li><a class="dropdown-item fw-bold" href="{% url 'juin' %}">Édition Courante</a></li>
+                            <li><a class="dropdown-item" href="{% url 'juin_become_partner' %}">Devenir Partenaire</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'juin_sponsors' %}">Nos Sponsors</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-primary fw-semibold"
+                                    href="{% url 'juin' %}#soutenir">Soutenir l'Événement</a></li>
+                        </ul>
+                    </li>
                 </ul>
+
 
                 <div class="d-flex align-items-center">
                     <!-- Language Selector -->

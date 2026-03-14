@@ -86,6 +86,25 @@ urlpatterns = [
     # Ticketing
     path('tickets/download/<uuid:uuid>/', views.download_ticket, name='download_ticket'),
     path('tickets/verify/<uuid:uuid>/', views.verify_ticket, name='ticket_verify'),
+
+    # ============= J.U.IN 2026 =============
+    path('juin/', views.juin_page, name='juin'),
+    path('juin/activites/', views.juin_activities_all, name='juin_activities'),
+    path('juin/competitions/', views.juin_competitions_status, name='juin_competitions'),
+    path('juin/compete/<slug:competition_slug>/', views.juin_competition_register, name='juin_compete'),
+    
+    path('juin/commissions/', views.juin_commissions_list, name='juin_commissions'),
+    path('juin/postuler/', views.juin_apply_commission, name='juin_apply'),
+    path('juin/postuler/succes/', views.juin_apply_success, name='juin_apply_success'),
+    path('juin/commission/<slug:slug>/', views.juin_commission_detail, name='juin_commission_detail'),
+    path('juin/soutenir/', views.juin_donate, name='juin_donate'),
+    path('juin/guide/', views.juin_guide, name='juin_guide'),
+    path('juin/sponsors/', views.juin_sponsors_list, name='juin_sponsors'),
+    path('juin/devenir-partenaire/', views.juin_sponsor_request, name='juin_become_partner'),
+    
+    # FreemoPay Webhooks & Async checks
+    path('api/payments/webhook/freemopay/', views.juin_payment_webhook, name='juin_freemopay_webhook'),
+    path('api/payments/status/<uuid:external_id>/', views.juin_payment_status_check, name='juin_payment_status'),
 ]
 
 if settings.DEBUG:

@@ -244,6 +244,11 @@ def split_string(value, delimiter):
     except (AttributeError, TypeError):
         return [value]
 
+@register.filter(name='split')
+def split_filter(value, delimiter):
+    """Alias pour split_string"""
+    return split_string(value, delimiter)
+
 @register.filter
 def join_with(value, separator):
     """Joint les éléments d'une liste avec un séparateur"""

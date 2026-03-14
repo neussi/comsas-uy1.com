@@ -14,5 +14,6 @@ django-ckeditor>=6.7.0
 reportlab>=4.0.0
 qrcode[pil]>=7.4.0
 
-# Email & Templates (included in Django)
-# No additional dependencies needed for HTML emails
+# HTTP Client for FreemoPay
+requests>=2.31.0
+

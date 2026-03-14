@@ -141,4 +141,39 @@ urlpatterns = [
     path('archives/add/', archive_views.archive_create, name='admin_archive_create'),
     path('archives/<int:pk>/edit/', archive_views.archive_edit, name='admin_archive_edit'),
     path('archives/<int:pk>/delete/', archive_views.archive_delete, name='admin_archive_delete'),
+
+    # ============= J.U.IN 2026 =============
+    path('juin/', views.juin_dashboard, name='admin_juin_dashboard'),
+    path('juin/edition/', views.juin_edition_manage, name='admin_juin_edition_manage'),
+    
+    path('juin/commissions/', views.juin_commissions_manage, name='admin_juin_commissions'),
+    path('juin/commissions/add/', views.juin_commission_create, name='admin_juin_commission_create'),
+    path('juin/commissions/<int:pk>/edit/', views.juin_commission_edit, name='admin_juin_commission_edit'),
+    path('juin/commissions/<int:pk>/delete/', views.juin_commission_delete, name='admin_juin_commission_delete'),
+
+    path('juin/candidatures/', views.juin_applications_list, name='admin_juin_applications'),
+    path('juin/candidatures/<int:pk>/', views.juin_application_detail, name='admin_juin_application_detail'),
+    path('juin/candidatures/<int:pk>/badge/', views.juin_generate_badge, name='admin_juin_generate_badge'),
+    
+    path('juin/activites/', views.juin_activities_list, name='admin_juin_activities'),
+    path('juin/activites/add/', views.juin_activity_create, name='admin_juin_activity_create'),
+    path('juin/activites/<int:pk>/edit/', views.juin_activity_edit, name='admin_juin_activity_edit'),
+    path('juin/activites/<int:pk>/delete/', views.juin_activity_delete, name='admin_juin_activity_delete'),
+    path('juin/activites/<int:pk>/toggle/', views.juin_activity_toggle_featured, name='admin_juin_activity_toggle'),
+    
+    path('juin/dons/', views.juin_donations_list, name='admin_juin_donations'),
+    
+    path('juin/sponsors/', views.juin_sponsors_list, name='admin_juin_sponsors'),
+    path('juin/sponsors/add/', views.juin_sponsor_create, name='admin_juin_sponsor_create'),
+    path('juin/sponsors/<int:pk>/edit/', views.juin_sponsor_edit, name='admin_juin_sponsor_edit'),
+    path('juin/sponsors/<int:pk>/', views.juin_sponsor_detail, name='admin_juin_sponsor_detail'),
+
+    path('juin/competitions/', views.juin_competitions_list, name='admin_juin_competitions'),
+    path('juin/competitions/add/', views.juin_competition_create, name='admin_juin_competition_create'),
+    path('juin/competitions/<int:pk>/edit/', views.juin_competition_edit, name='admin_juin_competition_edit'),
+    path('juin/competitions/<int:pk>/delete/', views.juin_competition_delete, name='admin_juin_competition_delete'),
+
+    path('juin/equipes/', views.juin_teams_list, name='admin_juin_teams'),
+    path('juin/equipes/<int:pk>/edit/', views.juin_team_edit, name='admin_juin_team_edit'),
+    path('juin/equipes/<int:pk>/delete/', views.juin_team_delete, name='admin_juin_team_delete'),
 ]

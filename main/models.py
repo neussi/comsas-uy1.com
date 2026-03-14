@@ -747,3 +747,351 @@ class ArchiveComment(models.Model):
         
     def __str__(self):
         return f"Com de {self.author_name} sur {self.archive.title}"
+
+
+# =============================================================================
+# J.U.IN 2026 — JOURNÉES UNIVERSITAIRES DE L'INFORMATIQUE
+# =============================================================================
+
+class JUINEdition(models.Model):
+    """Édition du J.U.IN"""
+    SCHOOL_CHOICES = [
+        ('UY1', 'Université de Yaoundé I — Faculté des Sciences'),
+        ('ENSPY', 'École Nationale Supérieure Polytechnique de Yaoundé'),
+        ('STJEAN', 'Institut Saint-Jean'),
+        ('SUPPTIC', "SUP'PTIC"),
+        ('OTHER', 'Autre'),
+    ]
+
+    edition_number = models.PositiveIntegerField(verbose_name="Numéro d'édition", default=20)
+    title = models.CharField(max_length=300, verbose_name="Titre de l'édition")
+    theme = models.CharField(max_length=500, verbose_name="Thème")
+    slogan = models.CharField(max_length=200, default="Coder • Innover • Entreprendre", verbose_name="Slogan")
+    description = models.TextField(verbose_name="Description / Argumentaire scientifique")
+    start_date = models.DateField(verbose_name="Date de début")
+    end_date = models.DateField(verbose_name="Date de fin")
+    location = models.CharField(max_length=300, verbose_name="Lieu", default="Campus UY1 — Esplanade extension 1")
+    cover_image = models.ImageField(upload_to='juin/covers/', blank=True, null=True, verbose_name="Image de couverture")
+    is_active = models.BooleanField(default=True, verbose_name="Édition active (courante)")
+    applications_open = models.BooleanField(default=True, verbose_name="Inscriptions aux commissions ouvertes")
+    donations_open = models.BooleanField(default=True, verbose_name="Dons ouverts")
+    president_name = models.CharField(max_length=200, default="MFENJOU ANAS CHERIF", verbose_name="Président du comité")
+    president_contact = models.CharField(max_length=50, blank=True, verbose_name="Contact président")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Édition J.U.IN"
+        verbose_name_plural = "Éditions J.U.IN"
+        ordering = ['-edition_number']
+
+    def __str__(self):
+        return f"J.U.IN {self.edition_number}ème — {self.title}"
+
+
+class JUINCommission(models.Model):
+    """Commission du J.U.IN"""
+    ICON_CHOICES = [
+        ('fa-bullhorn', 'Communication'),
+        ('fa-microphone', 'Conférences'),
+        ('fa-laptop-code', 'Projets & Innovations'),
+        ('fa-handshake', 'Partenariats'),
+        ('fa-paint-brush', 'Design & Infographie'),
+        ('fa-truck', 'Logistique'),
+        ('fa-shield-alt', 'Protocole'),
+        ('fa-utensils', 'Gastronomie'),
+        ('fa-music', 'Animation & Divertissement'),
+        ('fa-glass-cheers', 'Soirée de Gala'),
+    ]
+
+    edition = models.ForeignKey(JUINEdition, on_delete=models.CASCADE, related_name='commissions', verbose_name="Édition")
+    name = models.CharField(max_length=200, verbose_name="Nom de la commission")
+    slug = models.SlugField(unique=True, blank=True, null=True, verbose_name="Slug")
+    code = models.CharField(max_length=30, verbose_name="Code (ex: CELLCOM-JUIN)")
+    description = models.TextField(verbose_name="Description / Mission")
+    icon = models.CharField(max_length=50, choices=ICON_CHOICES, default='fa-bullhorn', verbose_name="Icône FontAwesome")
+    color = models.CharField(max_length=20, default='primary', verbose_name="Couleur Bootstrap (primary, success…)")
+    chef_nom = models.CharField(max_length=200, blank=True, verbose_name="Nom du/de la Chef·fe")
+    chef_contact = models.CharField(max_length=100, blank=True, verbose_name="Contact Chef·fe")
+    order = models.PositiveIntegerField(default=0, verbose_name="Ordre d'affichage")
+
+    class Meta:
+        verbose_name = "Commission J.U.IN"
+        verbose_name_plural = "Commissions J.U.IN"
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return f"{self.code} — {self.name}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    @property
+    def approved_members(self):
+        return self.applications.filter(statut='approved').order_by('commission_role')
+
+
+class JUINCommissionApplication(models.Model):
+    """Candidature à une commission du J.U.IN"""
+    STATUT_CHOICES = [
+        ('pending', '⏳ En attente'),
+        ('approved', '✅ Approuvé'),
+        ('rejected', '❌ Rejeté'),
+    ]
+    ROLE_CHOICES = [
+        ('president', 'Président(e)'),
+        ('vice_president', 'Vice-Président(e)'),
+        ('rapporteur', 'Rapporteur(e) Principal(e)'),
+        ('rapporteur_adj', 'Rapporteur(e) Adjoint(e)'),
+        ('membre', 'Membre'),
+    ]
+    LEVEL_CHOICES = [
+        ('L1', 'Licence 1'), ('L2', 'Licence 2'), ('L3', 'Licence 3'),
+        ('ICT-L1', 'ICT-L1'), ('ICT-L2', 'ICT-L2'), ('ICT-L3', 'ICT-L3'),
+        ('M1', 'Master 1'), ('M2', 'Master 2'), ('PhD', 'Doctorat'), ('OTHER', 'Autre'),
+    ]
+    SCHOOL_CHOICES = [
+        ('UY1-INFO', 'UY1 — Département Informatique (COM.S.AS)'),
+        ('ENSPY', 'ENSPY — École Nationale Supérieure Polytechnique'),
+        ('STJEAN', 'Institut Saint-Jean'),
+        ('SUPPTIC', "SUP'PTIC"),
+        ('OTHER', 'Autre établissement'),
+    ]
+
+    commission = models.ForeignKey(JUINCommission, on_delete=models.CASCADE, related_name='applications', verbose_name="Commission souhaitée")
+    nom_prenom = models.CharField(max_length=200, verbose_name="Nom et Prénom")
+    email = models.EmailField(verbose_name="Adresse e-mail")
+    telephone = models.CharField(max_length=20, verbose_name="Numéro de téléphone")
+    etablissement = models.CharField(max_length=20, choices=SCHOOL_CHOICES, verbose_name="Établissement")
+    niveau = models.CharField(max_length=20, choices=LEVEL_CHOICES, verbose_name="Niveau d'études")
+    photo = models.ImageField(upload_to='juin/applicants/', blank=True, null=True, verbose_name="Photo (portrait)")
+    motivation = models.TextField(verbose_name="Message de motivation", blank=True)
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='pending', verbose_name="Statut")
+    commission_role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='membre', verbose_name="Rôle dans la commission")
+    date_postulation = models.DateTimeField(auto_now_add=True, verbose_name="Date de candidature")
+    date_traitement = models.DateTimeField(null=True, blank=True, verbose_name="Date de traitement")
+    motif_rejet = models.TextField(blank=True, verbose_name="Motif du rejet (si rejeté)")
+
+    class Meta:
+        verbose_name = "Candidature Commission J.U.IN"
+        verbose_name_plural = "Candidatures Commissions J.U.IN"
+        ordering = ['-date_postulation']
+
+    def __str__(self):
+        return f"{self.nom_prenom} → {self.commission.code} ({self.get_statut_display()})"
+
+    def save(self, *args, **kwargs):
+        # Remove unique_together workaround (done via form validation instead)
+        super().save(*args, **kwargs)
+
+
+class JUINActivity(models.Model):
+    """Activité / Agenda du J.U.IN"""
+    TYPE_CHOICES = [
+        ('conference', 'Conférence / Séminaire'),
+        ('hackathon', 'Hackathon / Challenge'),
+        ('atelier', 'Atelier pratique'),
+        ('exposition', 'Exposition de projets'),
+        ('pitch', 'Concours de Pitch'),
+        ('sport', 'Activité Sportive (Foot, Basket...)'),
+        ('gala', 'Soirée de Gala'),
+        ('ceremonie', 'Cérémonie officielle'),
+        ('autre', 'Autre'),
+    ]
+
+    edition = models.ForeignKey(JUINEdition, on_delete=models.CASCADE, related_name='activities', verbose_name="Édition")
+    title = models.CharField(max_length=200, verbose_name="Titre de l'activité")
+    description = models.TextField(verbose_name="Description")
+    activity_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='conference', verbose_name="Type")
+    date_activity = models.DateTimeField(verbose_name="Date et heure")
+    location = models.CharField(max_length=200, blank=True, verbose_name="Salle / Lieu")
+    speaker = models.CharField(max_length=200, blank=True, verbose_name="Intervenant(s)")
+    cover_image = models.ImageField(upload_to='juin/activities/', blank=True, null=True, verbose_name="Photo / Affiche")
+    gallery_album = models.ForeignKey('GalleryAlbum', on_delete=models.SET_NULL, null=True, blank=True,
+                                      related_name='juin_activities', verbose_name="Album galerie lié")
+    is_featured = models.BooleanField(default=False, verbose_name="Activité phare")
+    order = models.PositiveIntegerField(default=0, verbose_name="Ordre")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Activité J.U.IN"
+        verbose_name_plural = "Activités J.U.IN"
+        ordering = ['date_activity', 'order']
+
+    def __str__(self):
+        return f"{self.get_activity_type_display()} — {self.title}"
+
+
+class JUINCompetition(models.Model):
+    """Compétition spécifique au J.U.IN (Informatique ou Sport)"""
+    COMP_TYPES = [
+        ('computer', '💻 Informatique (Hackathon, Pitch, Cyber...)'),
+        ('sport', '⚽ Sportive (Football, Basketball, Handball...)'),
+        ('gaming', '🎮 E-Sport / Gaming'),
+        ('other', 'Autre'),
+    ]
+    edition = models.ForeignKey(JUINEdition, on_delete=models.CASCADE, related_name='competitions', verbose_name="Édition")
+    name = models.CharField(max_length=200, verbose_name="Nom de la compétition")
+    slug = models.SlugField(blank=True, null=True, help_text="Laissé vide, sera généré automatiquement")
+    comp_type = models.CharField(max_length=20, choices=COMP_TYPES, default='computer', verbose_name="Type")
+    description = models.TextField(verbose_name="Description")
+    rules = models.TextField(blank=True, verbose_name="Règles / Conditions d'admission")
+    image = models.ImageField(upload_to='juin/competitions/', blank=True, null=True, verbose_name="Image illustrative")
+    
+    max_teams = models.PositiveIntegerField(default=16, verbose_name="Nombre maximum d'équipes")
+    is_open = models.BooleanField(default=True, verbose_name="Inscriptions ouvertes")
+    start_date = models.DateTimeField(verbose_name="Date et heure de début", blank=True, null=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Compétition J.U.IN"
+        verbose_name_plural = "Compétitions J.U.IN"
+
+    def __str__(self):
+        return f"{self.name} — J.U.IN {self.edition.edition_number}"
+
+
+class JUINTeam(models.Model):
+    """Équipe ou Candidat inscrit à une compétition"""
+    STATUT_CHOICES = [
+        ('pending', '⏳ En attente'),
+        ('approved', '✅ Validée'),
+        ('rejected', '❌ Refusée'),
+    ]
+    competition = models.ForeignKey(JUINCompetition, on_delete=models.CASCADE, related_name='teams', verbose_name="Compétition")
+    name = models.CharField(max_length=200, verbose_name="Nom de l'équipe")
+    
+    captain_name = models.CharField(max_length=200, verbose_name="Nom du Capitaine / Responsable")
+    captain_phone = models.CharField(max_length=30, verbose_name="Téléphone (WhatsApp)")
+    captain_email = models.EmailField(verbose_name="Email")
+    
+    members_count = models.PositiveIntegerField(default=1, verbose_name="Nombre de membres")
+    members_list = models.TextField(verbose_name="Liste des membres (Noms & Prénoms)", help_text="Un par ligne")
+    
+    project_title = models.CharField(max_length=200, blank=True, verbose_name="Titre du projet (si informatique)")
+    project_description = models.TextField(blank=True, verbose_name="Description du projet / Composition équipe")
+    
+    logo = models.ImageField(upload_to='juin/teams/', blank=True, null=True, verbose_name="Logo ou Photo d'équipe")
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='pending', verbose_name="Statut")
+    
+    date_registration = models.DateTimeField(auto_now_add=True, verbose_name="Date d'inscription")
+
+    class Meta:
+        verbose_name = "Équipe / Candidat J.U.IN"
+        verbose_name_plural = "Équipes / Candidats J.U.IN"
+        ordering = ['-date_registration']
+
+    def __str__(self):
+        return f"{self.name} ({self.competition.name})"
+
+
+class JUINDonation(models.Model):
+    """Don / Soutien à l'édition J.U.IN avec paiement Mobile Money"""
+    PAYMENT_CHOICES = [
+        ('mtn', 'MTN Mobile Money'),
+        ('orange', 'Orange Money'),
+        ('cb', 'Carte Bancaire'),
+        ('especes', 'Espèces'),
+        ('autre', 'Autre'),
+    ]
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('initiated', 'Initié — en cours'),
+        ('completed', 'Payé ✅'),
+        ('failed', 'Échoué'),
+        ('cancelled', 'Annulé'),
+    ]
+
+    edition = models.ForeignKey(JUINEdition, on_delete=models.CASCADE, related_name='donations', verbose_name="Édition")
+    nom_prenom = models.CharField(max_length=200, verbose_name="Nom du donateur")
+    email = models.EmailField(blank=True, verbose_name="Email (optionnel)")
+    telephone = models.CharField(max_length=30, blank=True, verbose_name="Téléphone Mobile Money")
+    montant = models.DecimalField(max_digits=12, decimal_places=0, verbose_name="Montant (FCFA)")
+    type_paiement = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='mtn', verbose_name="Mode de paiement")
+    message = models.CharField(max_length=300, blank=True, verbose_name="Message public (optionnel)")
+    is_anonymous = models.BooleanField(default=False, verbose_name="Afficher anonymement")
+    is_confirmed = models.BooleanField(default=False, verbose_name="Don confirmé/reçu")
+    date_don = models.DateTimeField(auto_now_add=True, verbose_name="Date du don")
+    # FreemoPay payment tracking
+    freemopay_reference = models.CharField(max_length=200, blank=True, verbose_name="Référence FreemoPay")
+    payment_status = models.CharField(
+        max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending',
+        verbose_name="Statut paiement"
+    )
+    external_id = models.CharField(max_length=100, blank=True, verbose_name="ID externe (UUID)")
+
+    class Meta:
+        verbose_name = "Don J.U.IN"
+        verbose_name_plural = "Dons J.U.IN"
+        ordering = ['-date_don']
+
+    def __str__(self):
+        return f"{self.nom_prenom} — {self.montant} FCFA ({self.get_type_paiement_display()})"
+
+    @property
+    def display_name(self):
+        return "Donateur Anonyme" if self.is_anonymous else self.nom_prenom
+
+
+class JUINSponsor(models.Model):
+    """Sponsors et partenaires du J.U.IN 2026"""
+    TIER_CHOICES = [
+        ('gold', '🥇 Sponsor Or (500 000 F+)'),
+        ('silver', '🥈 Sponsor Argent (200 000 F+)'),
+        ('bronze', '🥉 Sponsor Bronze (100 000 F+)'),
+        ('partner', '🤝 Partenaire Technique'),
+        ('institution', '🏛️ Institution / Soutien académique'),
+        ('media', '📺 Partenaire Médias'),
+    ]
+    STATUT_CHOICES = [
+        ('pending', '⏳ Demande en attente'),
+        ('approved', '✅ Approuvé — visible'),
+        ('rejected', '❌ Refusé'),
+    ]
+
+    edition = models.ForeignKey(
+        JUINEdition, on_delete=models.CASCADE, related_name='sponsors',
+        verbose_name="Édition"
+    )
+    company_name = models.CharField(max_length=200, verbose_name="Nom de l'entreprise / institution")
+    logo = models.ImageField(upload_to='juin/sponsors/', blank=True, null=True, verbose_name="Logo")
+    website = models.URLField(blank=True, verbose_name="Site web")
+    tier = models.CharField(max_length=20, choices=TIER_CHOICES, default='bronze', verbose_name="Niveau de partenariat")
+    
+    # Contact de la demande
+    contact_name = models.CharField(max_length=200, verbose_name="Nom du responsable")
+    contact_email = models.EmailField(verbose_name="Email de contact")
+    contact_phone = models.CharField(max_length=30, blank=True, verbose_name="Téléphone")
+    
+    # Description
+    description = models.TextField(blank=True, verbose_name="Description / offre de partenariat")
+    contribution = models.CharField(max_length=500, blank=True, verbose_name="Contribution proposée (financière, matérielle, services...)")
+    
+    # Statut
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='pending', verbose_name="Statut")
+    is_featured = models.BooleanField(default=False, verbose_name="Mettre en avant")
+    order = models.PositiveIntegerField(default=0, verbose_name="Ordre d'affichage")
+    
+    # Admin notes
+    admin_notes = models.TextField(blank=True, verbose_name="Notes internes (admin)")
+    date_demande = models.DateTimeField(auto_now_add=True, verbose_name="Date de la demande")
+    date_traitement = models.DateTimeField(null=True, blank=True, verbose_name="Date de traitement")
+
+    class Meta:
+        verbose_name = "Sponsor / Partenaire J.U.IN"
+        verbose_name_plural = "Sponsors / Partenaires J.U.IN"
+        ordering = ['order', 'tier', 'company_name']
+
+    def __str__(self):
+        return f"{self.company_name} — {self.get_tier_display()} ({self.get_statut_display()})"
+
+    @property
+    def tier_color(self):
+        colors = {
+            'gold': '#eab308', 'silver': '#94a3b8', 'bronze': '#b45309',
+            'partner': '#06b6d4', 'institution': '#8b5cf6', 'media': '#f43f5e',
+        }
+        return colors.get(self.tier, '#6b7280')

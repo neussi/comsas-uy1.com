@@ -236,10 +236,80 @@
         <div class="cta-content" data-aos="zoom-in">
             <h2 class="cta-title">Rejoignez Notre Mission</h2>
             <p class="cta-subtitle">Ensemble, construisons l'avenir de l'éducation</p>
-            <a href="#donation-methods" class="btn-final-cta">
+            <a href="#donation-form" class="btn-final-cta">
                 <span>Faire un Don Maintenant</span>
                 <i class="fas fa-heart ms-2"></i>
             </a>
+        </div>
+    </div>
+</section>
+
+<!-- Donation Form Section -->
+<section id="donation-form" class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="row g-0">
+                        <div
+                            class="col-lg-5 bg-primary text-white p-4 p-lg-5 d-flex flex-column justify-content-center">
+                            <h3 class="fw-bold mb-4">Pourquoi donner ?</h3>
+                            <ul class="list-unstyled space-y-3">
+                                <li class="d-flex gap-2 mb-3">
+                                    <i class="fas fa-check-circle mt-1"></i>
+                                    <span>Soutenir l'excellence académique des étudiants en informatique.</span>
+                                </li>
+                                <li class="d-flex gap-2 mb-3">
+                                    <i class="fas fa-check-circle mt-1"></i>
+                                    <span>Financer des projets d'innovation et des hackathons.</span>
+                                </li>
+                                <li class="d-flex gap-2 mb-3">
+                                    <i class="fas fa-check-circle mt-1"></i>
+                                    <span>Améliorer les infrastructures numériques de notre communauté.</span>
+                                </li>
+                            </ul>
+                            <div
+                                class="mt-4 p-3 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-20">
+                                <small><i class="fas fa-shield-alt me-2"></i>Paiement sécurisé via FreemoPay.</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-7 p-4 p-lg-5 bg-white">
+                            <h4 class="fw-bold mb-3">Formulaire de Don</h4>
+                            <form method="post" action="{% url 'juin_donate' %}" class="needs-validation">
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold text-muted">Nom complet</label>
+                                        {{ donate_form.nom_prenom }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Email (facultatif)</label>
+                                        {{ donate_form.email }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Montant (FCFA)</label>
+                                        {{ donate_form.montant }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Opérateur</label>
+                                        {{ donate_form.type_paiement }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">N° Mobile Money</label>
+                                        {{ donate_form.telephone }}
+                                    </div>
+                                    <div class="col-12 text-end mt-4">
+                                        <button type="submit"
+                                            class="btn btn-primary rounded-pill px-5 fw-bold btn-lg shadow-sm">
+                                            Valider mon don <i class="fas fa-chevron-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

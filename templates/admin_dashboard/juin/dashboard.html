@@ -1,0 +1,119 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+{% block title %}J.U.IN 2026 — Tableau de bord{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0">🎓 J.U.IN 2026</h1>
+            <p class="text-muted mb-0">{% if edition %}{{ edition.edition_number }}ème Édition — {{
+                edition.theme|truncatechars:60 }}{% else %}Aucune édition active{% endif %}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_juin_edition_manage' %}" class="btn btn-outline-primary"><i
+                    class="fas fa-cog me-1"></i>Paramètres</a>
+            <a href="{% url 'admin_juin_commissions' %}" class="btn btn-outline-info"><i
+                    class="fas fa-list me-1"></i>Commissions</a>
+            <a href="{% url 'admin_juin_competitions' %}" class="btn btn-outline-success"><i
+                    class="fas fa-trophy me-1"></i>Compétitions</a>
+            <a href="{% url 'admin_juin_teams' %}" class="btn btn-outline-dark"><i
+                    class="fas fa-users-cog me-1"></i>Équipes</a>
+            <a href="{% url 'admin_juin_applications' %}" class="btn btn-primary"><i
+                    class="fas fa-users me-1"></i>Candidatures</a>
+            <a href="{% url 'admin_juin_sponsors' %}" class="btn btn-dark"><i
+                    class="fas fa-handshake me-1"></i>Sponsors</a>
+            <a href="{% url 'juin' %}" target="_blank" class="btn btn-outline-secondary"><i
+                    class="fas fa-external-link-alt me-1"></i>Voir la page</a>
+        </div>
+
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center p-3 h-100">
+                <div class="text-warning fs-3 fw-bold">{{ stats.pending|default:0 }}</div>
+                <div class="text-muted small">En attente</div>
+                <a href="{% url 'admin_juin_applications' %}?statut=pending"
+                    class="btn btn-sm btn-outline-warning mt-2">Traiter</a>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center p-3 h-100">
+                <div class="text-success fs-3 fw-bold">{{ stats.approved|default:0 }}</div>
+                <div class="text-muted small">Approuvés</div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center p-3 h-100">
+                <div class="text-info fs-3 fw-bold">{{ stats.activities|default:0 }}</div>
+                <div class="text-muted small">Activités</div>
+                <a href="{% url 'admin_juin_activities' %}" class="btn btn-sm btn-outline-info mt-2">Gérer</a>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center p-3 h-100">
+                <div class="text-success fs-3 fw-bold">{{ stats.competitions|default:0 }}</div>
+                <div class="text-muted small">Compétitions</div>
+                <a href="{% url 'admin_juin_competitions' %}" class="btn btn-sm btn-outline-success mt-2">Voir</a>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center p-3 h-100">
+                <div class="text-dark fs-3 fw-bold">{{ stats.teams|default:0 }}</div>
+                <div class="text-muted small">Équipes</div>
+                <a href="{% url 'admin_juin_teams' %}" class="btn btn-sm btn-outline-dark mt-2">Gérer</a>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center p-3 h-100">
+                <div class="text-primary fs-3 fw-bold">{{ stats.total_donations|default:0|floatformat:0 }} F</div>
+                <div class="text-muted small">Dons confirmés</div>
+                <a href="{% url 'admin_juin_donations' %}" class="btn btn-sm btn-outline-primary mt-2">Voir</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent applications -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-bold">Candidatures récentes</div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Candidat</th>
+                        <th>Commission</th>
+                        <th>Établissement</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in recent_apps %}
+                    <tr>
+                        <td class="fw-semibold">{{ app.nom_prenom }}</td>
+                        <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ app.commission.code }}</span>
+                        </td>
+                        <td class="small text-muted">{{ app.get_etablissement_display }}</td>
+                        <td class="small text-muted">{{ app.date_postulation|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if app.statut == 'approved' %}<span class="badge bg-success">Approuvé</span>
+                            {% elif app.statut == 'rejected' %}<span class="badge bg-danger">Rejeté</span>
+                            {% else %}<span class="badge bg-warning text-dark">En attente</span>{% endif %}
+                        </td>
+                        <td><a href="{% url 'admin_juin_application_detail' app.pk %}"
+                                class="btn btn-sm btn-outline-secondary">Voir</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">Aucune candidature pour le moment.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white"><a href="{% url 'admin_juin_applications' %}"
+                class="btn btn-sm btn-primary">Voir toutes les candidatures →</a></div>
+    </div>
+</div>
+{% endblock %}

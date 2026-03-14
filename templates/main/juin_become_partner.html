@@ -1,0 +1,553 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Devenir Partenaire — J.U.IN 2026 | COMS.A.S{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   VARIABLES — blanc + rose uniquement
+═══════════════════════════════════════ */
+:root {
+    --rose:        #E91E63;
+    --rose-light:  #f06292;
+    --rose-dark:   #c2185b;
+    --rose-pale:   rgba(233, 30, 99, .08);
+    --rose-border: rgba(233, 30, 99, .2);
+    --rose-shadow: rgba(233, 30, 99, .12);
+    --blanc:       #ffffff;
+    --blanc-off:   #fdf5f8;
+    --text-dark:   #1a0a10;
+    --text-muted:  #8a6070;
+    --gradient:    linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-dark);
+    background: var(--blanc);
+}
+
+/* ── Gradient text ── */
+.text-gradient {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* ── Pulse dot ── */
+.pulse-dot {
+    width: 8px; height: 8px; background: var(--rose);
+    border-radius: 50%; display: inline-block; position: relative;
+}
+.pulse-dot::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%;
+    background: rgba(233,30,99,.3); animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%,100% { transform: scale(1); opacity: .8; }
+    50%      { transform: scale(1.8); opacity: 0; }
+}
+
+/* ── Hero ── */
+.hero-partner {
+    min-height: 48vh;
+    display: flex;
+    align-items: center;
+    background:
+        radial-gradient(ellipse 60% 70% at 95% 50%, rgba(233,30,99,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 5% 20%, rgba(233,30,99,.07) 0%, transparent 60%),
+        linear-gradient(160deg, #1a0a10 0%, #2d0617 50%, #1a0a10 100%);
+    position: relative;
+    overflow: hidden;
+}
+.hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(233,30,99,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(233,30,99,.06) 1px, transparent 1px);
+    background-size: 52px 52px;
+    pointer-events: none;
+}
+.hero-icon-bg {
+    position: absolute; right: -2%; top: 50%;
+    transform: translateY(-50%);
+    font-size: 18rem;
+    color: rgba(233,30,99,.05);
+    pointer-events: none; line-height: 1;
+}
+
+/* ── Section badge ── */
+.section-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--rose-pale); border: 1px solid var(--rose-border);
+    color: var(--rose); padding: 6px 18px; border-radius: 50px;
+    font-size: .74rem; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; margin-bottom: 18px;
+}
+
+/* ── Hero badge ── */
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(233,30,99,.15);
+    border: 1px solid rgba(233,30,99,.3);
+    color: var(--rose-light);
+    padding: 6px 18px; border-radius: 50px;
+    font-size: .74rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 20px;
+}
+
+/* ── Stats hero ── */
+.hero-stat {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50px; padding: 10px 22px;
+    color: rgba(255,255,255,.8); font-size: .85rem; font-weight: 600;
+}
+.hero-stat i { color: var(--rose-light); }
+
+/* ── Séparateur rosé ── */
+.rose-divider {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(233,30,99,.2), transparent);
+    margin: 40px 0;
+}
+
+/* ── Form card ── */
+.form-dark-card {
+    background: linear-gradient(145deg, #2d0617 0%, #1a0a10 100%);
+    border-radius: 28px;
+    padding: 48px 42px;
+    box-shadow: 0 40px 80px rgba(233,30,99,.2);
+    border: 1px solid rgba(233,30,99,.2);
+    position: relative; overflow: hidden;
+}
+.form-dark-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: var(--gradient);
+}
+
+/* Override crispy/Bootstrap pour le dark card */
+.form-dark-card .form-control,
+.form-dark-card .form-select,
+.form-dark-card textarea {
+    background: rgba(255,255,255,.07) !important;
+    border: 1px solid rgba(255,255,255,.14) !important;
+    color: var(--blanc) !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    transition: all .3s ease;
+}
+.form-dark-card .form-control:focus,
+.form-dark-card .form-select:focus,
+.form-dark-card textarea:focus {
+    background: rgba(255,255,255,.1) !important;
+    border-color: var(--rose-light) !important;
+    box-shadow: 0 0 0 4px rgba(233,30,99,.15) !important;
+    outline: none;
+}
+.form-dark-card .form-control::placeholder,
+.form-dark-card textarea::placeholder { color: rgba(255,255,255,.25) !important; }
+.form-dark-card select option { background: #1a0a10; color: var(--blanc); }
+.form-dark-card label,
+.form-dark-card .form-label {
+    color: rgba(255,255,255,.55) !important;
+    font-size: .8rem !important; font-weight: 600 !important;
+}
+.form-dark-card .form-text,
+.form-dark-card small.text-muted {
+    color: rgba(255,255,255,.3) !important;
+}
+.form-dark-card .invalid-feedback { color: #f9a8c4 !important; }
+.form-dark-card .is-invalid {
+    border-color: rgba(233,30,99,.6) !important;
+}
+
+/* Séparateur de section dans le form */
+.form-section-title {
+    color: var(--rose-light);
+    font-size: .72rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 2px;
+    margin: 28px 0 18px;
+    display: flex; align-items: center; gap: 10px;
+}
+.form-section-title::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: rgba(233,30,99,.2);
+}
+
+/* ── Sidebar cards ── */
+.sidebar-why {
+    background: var(--blanc);
+    border-radius: 24px;
+    padding: 32px 28px;
+    border: 1.5px solid var(--rose-border);
+    box-shadow: 0 8px 32px var(--rose-shadow);
+    position: relative; overflow: hidden;
+}
+.sidebar-why::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--gradient);
+}
+
+.why-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(233,30,99,.08);
+}
+.why-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+.why-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--rose-pale); color: var(--rose);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .9rem; flex-shrink: 0; margin-top: 2px;
+}
+
+.why-item .why-title {
+    font-weight: 800; font-size: .88rem;
+    color: var(--text-dark); margin-bottom: 2px;
+}
+.why-item .why-desc {
+    font-size: .82rem; color: var(--text-muted); line-height: 1.5;
+}
+
+/* ── Tiers card ── */
+.tiers-card {
+    background: var(--blanc-off);
+    border-radius: 24px;
+    padding: 28px 24px;
+    border: 1px solid var(--rose-border);
+    box-shadow: 0 4px 20px var(--rose-shadow);
+    margin-top: 24px;
+}
+.tier-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(233,30,99,.08);
+}
+.tier-row:last-child { border-bottom: none; padding-bottom: 0; }
+.tier-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.tier-name { font-weight: 700; font-size: .88rem; color: var(--text-dark); }
+.tier-desc { font-size: .76rem; color: var(--text-muted); margin-top: 1px; }
+
+/* ── Help card ── */
+.help-card {
+    background: linear-gradient(135deg, #2d0617 0%, #1a0a10 100%);
+    border-radius: 24px;
+    padding: 28px 24px;
+    border: 1px solid rgba(233,30,99,.2);
+    margin-top: 24px;
+    position: relative; overflow: hidden;
+}
+.help-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--gradient);
+}
+
+/* ── Boutons ── */
+.btn-juin {
+    background: var(--gradient); color: var(--blanc);
+    font-weight: 700; border: none;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+}
+.btn-juin:hover {
+    color: var(--blanc); opacity: .9; transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(233,30,99,.4);
+}
+.btn-outline-juin {
+    border: 2px solid var(--rose); color: var(--rose);
+    background: transparent; font-weight: 700; transition: all .2s;
+}
+.btn-outline-juin:hover {
+    background: var(--gradient); border-color: transparent; color: var(--blanc);
+}
+.btn-ghost-white {
+    border: 2px solid rgba(255,255,255,.3); color: rgba(255,255,255,.8);
+    background: transparent; font-weight: 700; transition: all .2s;
+}
+.btn-ghost-white:hover {
+    background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.5); color: var(--blanc);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero-partner py-5">
+    <div class="hero-grid"></div>
+    <div class="hero-icon-bg"><i class="fas fa-handshake"></i></div>
+
+    <div class="container position-relative py-5" style="z-index:2;">
+
+        <nav aria-label="breadcrumb" class="mb-4" data-aos="fade-up">
+            <ol class="breadcrumb mb-0" style="font-size:.82rem;">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}" class="text-decoration-none" style="color:rgba(255,255,255,.35);">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'juin' %}" class="text-decoration-none" style="color:rgba(255,255,255,.35);">J.U.IN 2026</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'juin_sponsors' %}" class="text-decoration-none" style="color:rgba(255,255,255,.35);">Sponsors</a>
+                </li>
+                <li class="breadcrumb-item active" style="color:rgba(255,255,255,.6);">Devenir Partenaire</li>
+            </ol>
+        </nav>
+
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-7" data-aos="fade-right">
+
+                <div class="hero-badge">
+                    <span class="pulse-dot"></span>
+                    Opportunités de partenariat
+                </div>
+
+                <h1 class="display-3 fw-bold text-white mb-3 lh-tight" style="font-weight:900;">
+                    Devenez <span class="text-gradient">Partenaire</span><br>du J.U.IN 2026
+                </h1>
+                <p class="mb-4" style="color:rgba(255,255,255,.5);font-size:1.05rem;max-width:560px;line-height:1.7;">
+                    Associez votre image à l'événement technologique phare de l'Université de Yaoundé I.
+                    Accédez à un vivier de talents, gagnez en visibilité et soutenez l'innovation camerounaise.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="hero-stat">
+                        <i class="fas fa-users"></i> 10 000+ participants attendus
+                    </div>
+                    <div class="hero-stat">
+                        <i class="fas fa-university"></i> 4+ établissements
+                    </div>
+                    <div class="hero-stat">
+                        <i class="fas fa-trophy"></i> 20ème édition
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-5 text-lg-end" data-aos="fade-left" data-aos-delay="100">
+                <a href="#formulaire" class="btn btn-juin btn-lg rounded-pill px-5 shadow-lg me-2">
+                    <i class="fas fa-file-signature me-2"></i>Soumettre ma demande
+                </a>
+                <a href="{% url 'juin_sponsors' %}" class="btn btn-ghost-white btn-lg rounded-pill px-4 mt-2 mt-lg-0">
+                    <i class="fas fa-eye me-2"></i>Voir les sponsors
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FORMULAIRE + SIDEBAR
+══════════════════════════════════════════ -->
+<section class="py-5" id="formulaire"
+         style="background:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(233,30,99,.05), transparent 55%), var(--blanc-off);">
+    <div class="container py-5">
+        <div class="row g-5 align-items-start">
+
+            <!-- ── Formulaire ── -->
+            <div class="col-lg-7" data-aos="fade-right">
+                <div class="form-dark-card">
+
+                    <div class="text-center mb-5">
+                        <div class="section-badge justify-content-center">
+                            <i class="fas fa-handshake"></i>Formulaire de demande
+                        </div>
+                        <h2 class="display-6 fw-bold mb-2" style="color:var(--blanc);">
+                            Votre dossier de partenariat
+                        </h2>
+                        <p style="color:rgba(255,255,255,.4);">
+                            Remplissez ce formulaire — notre équipe vous contactera sous 48h.
+                        </p>
+                    </div>
+
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                    {% endfor %}
+
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Entreprise -->
+                        <div class="form-section-title">
+                            <i class="fas fa-building me-1"></i>Informations sur l'entreprise
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form.company_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.tier|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.website|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.logo|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Contact -->
+                        <div class="form-section-title">
+                            <i class="fas fa-user-tie me-1"></i>Contact responsable
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                {{ form.contact_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.contact_email|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.contact_phone|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Proposition -->
+                        <div class="form-section-title">
+                            <i class="fas fa-lightbulb me-1"></i>Votre proposition
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                {{ form.description|as_crispy_field }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.contribution|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4 pt-2">
+                            <button type="submit" class="btn btn-juin btn-lg rounded-pill px-5 shadow-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Soumettre ma demande
+                            </button>
+                            <div class="mt-3" style="color:rgba(255,255,255,.25);font-size:.76rem;">
+                                <i class="fas fa-lock me-1"></i>Vos données sont traitées de façon confidentielle.
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+            <!-- ── Sidebar ── -->
+            <div class="col-lg-5" data-aos="fade-left" data-aos-delay="100">
+                <div class="sticky-top" style="top:100px;">
+
+                    <!-- Pourquoi parrainer -->
+                    <div class="sidebar-why">
+                        <div class="section-badge mb-3"><i class="fas fa-star"></i>Pourquoi parrainer ?</div>
+                        <h4 class="fw-bold mb-4" style="color:var(--text-dark);">
+                            Les bénéfices <span class="text-gradient">concrets</span>
+                        </h4>
+
+                        <div class="why-item">
+                            <div class="why-icon"><i class="fas fa-eye"></i></div>
+                            <div>
+                                <div class="why-title">Visibilité maximale</div>
+                                <div class="why-desc">Votre logo exposé auprès de 10 000+ participants, étudiants et professionnels du numérique.</div>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon"><i class="fas fa-user-graduate"></i></div>
+                            <div>
+                                <div class="why-title">Accès aux talents</div>
+                                <div class="why-desc">Identifiez et recrutez les meilleurs profils du département Informatique de l'UY1.</div>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon"><i class="fas fa-network-wired"></i></div>
+                            <div>
+                                <div class="why-title">Networking ciblé</div>
+                                <div class="why-desc">Échangez avec d'autres leaders de l'industrie numérique camerounaise et sous-régionale.</div>
+                            </div>
+                        </div>
+                        <div class="why-item">
+                            <div class="why-icon"><i class="fas fa-globe-africa"></i></div>
+                            <div>
+                                <div class="why-title">Impact réel</div>
+                                <div class="why-desc">Soutenez l'innovation technologique au Cameroun lors de la 20ème édition historique.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tiers disponibles -->
+                    <div class="tiers-card">
+                        <div class="small fw-bold text-uppercase mb-3"
+                             style="color:var(--rose);letter-spacing:1.5px;">
+                            <i class="fas fa-layer-group me-1"></i>Niveaux de partenariat
+                        </div>
+                        <div class="tier-row">
+                            <div class="tier-dot" style="background:#FFD700;box-shadow:0 0 8px rgba(255,215,0,.5);"></div>
+                            <div>
+                                <div class="tier-name">Or — Sponsor Principal</div>
+                                <div class="tier-desc">Logo premium, stand VIP, prise de parole</div>
+                            </div>
+                        </div>
+                        <div class="tier-row">
+                            <div class="tier-dot" style="background:#C0C0C0;box-shadow:0 0 8px rgba(192,192,192,.5);"></div>
+                            <div>
+                                <div class="tier-name">Argent — Sponsor Associé</div>
+                                <div class="tier-desc">Logo visible, stand standard, goodies</div>
+                            </div>
+                        </div>
+                        <div class="tier-row">
+                            <div class="tier-dot" style="background:#CD7F32;box-shadow:0 0 8px rgba(205,127,50,.5);"></div>
+                            <div>
+                                <div class="tier-name">Bronze — Partenaire</div>
+                                <div class="tier-desc">Logo sur supports, mention digitale</div>
+                            </div>
+                        </div>
+                        <div class="tier-row">
+                            <div class="tier-dot" style="background:var(--rose);box-shadow:0 0 8px rgba(233,30,99,.4);"></div>
+                            <div>
+                                <div class="tier-name">Institution / Mécène</div>
+                                <div class="tier-desc">Soutien institutionnel, co-branding</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aide -->
+                    <div class="help-card">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div style="width:42px;height:42px;border-radius:12px;background:rgba(233,30,99,.15);
+                                        display:flex;align-items:center;justify-content:center;color:var(--rose-light);">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <h6 class="fw-bold mb-0" style="color:var(--blanc);">Besoin d'aide ?</h6>
+                        </div>
+                        <p style="color:rgba(255,255,255,.4);font-size:.84rem;line-height:1.6;">
+                            Vous souhaitez une offre sur mesure ou des précisions sur le dossier de sponsoring ?
+                            Nos chargés de relations extérieures sont à votre écoute.
+                        </p>
+                        <a href="{% url 'contact' %}" class="btn btn-outline-juin rounded-pill btn-sm px-4">
+                            <i class="fas fa-envelope me-1"></i>Nous contacter
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}

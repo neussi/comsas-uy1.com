@@ -14,11 +14,16 @@ from .models import (
     News, Gallery, GalleryAlbum, Contact, SiteSettings,
     SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote, Archive, ArchiveComment,
+    JUINEdition, JUINCommission, JUINCommissionApplication, 
+    JUINActivity, JUINDonation, JUINSponsor
 )
 from .forms import (
     MemberRegistrationForm, EventRegistrationForm, 
-    ContactForm
+    ContactForm, JUINCommissionApplicationForm, 
+    JUINDonationForm, JUINSponsorRequestForm
 )
+from .freemopay_service import FreemopayService
+
 from .utils import generate_ticket
 
 
@@ -52,6 +57,9 @@ def home(request):
     total_members = Member.objects.filter(is_active=True).count()
     completed_projects = Project.objects.filter(status='completed').count()
     
+    # JUIN 2026 context
+    juin_edition = JUINEdition.objects.filter(is_active=True).first()
+    
     context = {
         'site_settings': site_settings,
         'featured_events': featured_events,
@@ -61,7 +69,9 @@ def home(request):
         'bureau_members': bureau_members,
         'total_members': total_members,
         'completed_projects': completed_projects,
+        'juin_edition': juin_edition,
     }
+
     
     return render(request, 'main/home.html', context)
 
@@ -457,11 +467,13 @@ def donations(request):
         status__in=['planning', 'ongoing']
     ).order_by('-is_featured', '-created_at')
     
+    from .forms import JUINDonationForm
     context = {
         'funded_projects': funded_projects,
         'whatsapp_president': settings.WHATSAPP_PRESIDENT,
         'whatsapp_treasurer_mtn': settings.WHATSAPP_TREASURER_MTN,
         'whatsapp_treasurer_orange': settings.WHATSAPP_TREASURER_ORANGE,
+        'donate_form': JUINDonationForm(),
     }
     
     return render(request, 'main/donations.html', context)
@@ -1040,3 +1052,412 @@ def president_detail(request, president_id):
         'president': president,
     }
     return render(request, 'main/president_detail.html', context)
+
+
+# =============================================================================
+# J.U.IN 2026 — VIEWS
+# =============================================================================
+from .models import JUINEdition, JUINCommission, JUINCommissionApplication, JUINActivity, JUINDonation
+from .forms import JUINCommissionApplicationForm, JUINDonationForm
+
+
+def juin_page(request):
+    """Méga-page publique du J.U.IN 2026"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    
+    commissions = []
+    activities = []
+    donations = []
+    total_raised = 0
+    stats = {}
+
+    if edition:
+        commissions = edition.commissions.all().prefetch_related(
+            'applications'
+        ).order_by('order')
+        activities = edition.activities.all().order_by('date_activity')
+        donations = edition.donations.filter(is_confirmed=True).order_by('-date_don')
+        total_raised = sum(d.montant for d in donations)
+        stats = {
+            'total_applications': JUINCommissionApplication.objects.filter(
+                commission__edition=edition
+            ).count(),
+            'approved_members': JUINCommissionApplication.objects.filter(
+                commission__edition=edition, statut='approved'
+            ).count(),
+            'total_activities': activities.count(),
+            'total_donors': donations.count(),
+        }
+
+    # Historical editions for timeline (static data from document)
+    historical_editions = [
+        {'num': '1ère', 'year': 2004, 'note': 'Édition inaugurale'},
+        {'num': '4ème', 'year': 2007, 'budget': '8M', 'note': 'Édition marquante'},
+        {'num': '5ème', 'year': 2008, 'budget': '26M', 'note': ''},
+        {'num': '7ème', 'year': 2010, 'budget': '6M', 'note': 'Orange Cameroun partenaire'},
+        {'num': '12ème', 'year': 2015, 'budget': '3M', 'note': 'KIRO\'O GAMES'},
+        {'num': '16ème', 'year': 2019, 'budget': '4M', 'note': 'Orange, EU, Innovoft'},
+        {'num': '17ème', 'year': 2022, 'budget': '-', 'note': 'Reprise post-COVID'},
+        {'num': '18ème', 'year': 2023, 'budget': '4M', 'note': 'Togettech, Women Techmakers, FNE'},
+        {'num': '19ème', 'year': 2024, 'budget': '10M+', 'note': 'Togettech, AmphiMil, CAYSTI, IAC'},
+        {'num': '20ème', 'year': 2026, 'budget': '?', 'note': 'Édition actuelle'},
+    ]
+
+    # Dynamic data for partners
+    institutions = []
+    competitions = []
+    if edition:
+        institutions = edition.sponsors.filter(tier='institution', statut='approved').order_by('order')
+        competitions = edition.competitions.all().order_by('name')
+
+    context = {
+        'edition': edition,
+        'commissions': commissions, # Changed to show all as implied by user
+        'activities': activities[:3],
+        'institutions': institutions,
+        'competitions': competitions,
+        'total_raised': total_raised,
+        'stats': stats,
+        'historical_editions': historical_editions,
+        'apply_form': JUINCommissionApplicationForm(edition=edition) if edition else None,
+        'donate_form': JUINDonationForm(),
+    }
+    return render(request, 'main/juin.html', context)
+
+
+def juin_commissions_list(request):
+    """Page listant toutes les commissions du J.U.IN 2026"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    commissions = []
+    if edition:
+        commissions = edition.commissions.all().prefetch_related('applications').order_by('order')
+    
+    return render(request, 'main/juin_commissions.html', {
+        'edition': edition,
+        'commissions': commissions,
+        'apply_form': JUINCommissionApplicationForm(edition=edition) if edition else None,
+    })
+
+
+def juin_apply_commission(request):
+    """POST: soumettre une candidature à une commission"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if not edition:
+        messages.error(request, "Aucune édition active du J.U.IN pour le moment.")
+        return redirect('juin')
+
+    if not edition.applications_open:
+        messages.error(request, "Les inscriptions aux commissions sont fermées pour cette édition.")
+        return redirect('juin')
+
+    if request.method == 'POST':
+        form = JUINCommissionApplicationForm(request.POST, request.FILES, edition=edition)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.save()
+
+            # Send confirmation email to applicant
+            try:
+                from django.template.loader import render_to_string
+                from django.core.mail import EmailMultiAlternatives
+                from django.utils.html import strip_tags
+
+                html = render_to_string('emails/juin_application_received.html', {
+                    'nom_prenom': application.nom_prenom,
+                    'commission_name': application.commission.name,
+                    'commission_code': application.commission.code,
+                    'etablissement': application.get_etablissement_display(),
+                    'niveau': application.niveau,
+                })
+                email_msg = EmailMultiAlternatives(
+                    subject=f'[J.U.IN 2026] Candidature reçue — {application.commission.code}',
+                    body=strip_tags(html),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[application.email],
+                )
+                email_msg.attach_alternative(html, 'text/html')
+                email_msg.send(fail_silently=True)
+
+                # Notify admin
+                admin_msg = EmailMultiAlternatives(
+                    subject=f'[J.U.IN] Nouvelle candidature — {application.nom_prenom} → {application.commission.code}',
+                    body=f"Candidat: {application.nom_prenom}\nEmail: {application.email}\nCommission: {application.commission.name}\nÉtablissement: {application.get_etablissement_display()}\nNiveau: {application.niveau}\n\nMotivation: {application.motivation}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[settings.ASSOCIATION_EMAIL],
+                )
+                admin_msg.send(fail_silently=True)
+            except Exception as e:
+                print(f"[J.U.IN Apply] Email error: {e}")
+
+            messages.success(request, "Votre candidature a été envoyée avec succès ! Vous recevrez un email de confirmation.")
+            return redirect('juin_apply_success')
+        else:
+            messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
+    else:
+        form = JUINCommissionApplicationForm(edition=edition)
+
+    # Re-render page with form errors
+    commissions = edition.commissions.all().prefetch_related('applications').order_by('order')
+    activities = edition.activities.all().order_by('date_activity')
+    donations = edition.donations.filter(is_confirmed=True).order_by('-date_don')
+    total_raised = sum(d.montant for d in donations)
+    context = {
+        'edition': edition,
+        'commissions': commissions,
+        'activities': activities,
+        'donations': donations,
+        'total_raised': total_raised,
+        'apply_form': form,
+        'donate_form': JUINDonationForm(),
+        'scroll_to_form': True,
+    }
+    return render(request, 'main/juin.html', context)
+
+
+def juin_apply_success(request):
+    """Page de confirmation de candidature J.U.IN"""
+    return render(request, 'main/juin_apply_success.html')
+
+
+def juin_donate(request):
+    """POST: soumettre un don et initier le paiement FreemoPay"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if not edition or not edition.donations_open:
+        messages.error(request, "Les dons ne sont pas disponibles pour le moment.")
+        return redirect('juin')
+
+    if request.method == 'POST':
+        form = JUINDonationForm(request.POST)
+        if form.is_valid():
+            donation = form.save(commit=False)
+            donation.edition = edition
+            
+            # Si paiement Mobile Money, on initie FreemoPay
+            if donation.type_paiement in ('mtn', 'orange'):
+                import uuid
+                external_id = str(uuid.uuid4())
+                donation.external_id = external_id
+                donation.save()
+                
+                service = FreemopayService()
+                res = service.initiate_payment(
+                    amount=donation.montant,
+                    phone_number=donation.telephone,
+                    description=f"Don JUIN 2026 - {donation.nom_prenom}",
+                    external_id=external_id
+                )
+                
+                if res.get('success'):
+                    donation.freemopay_reference = res.get('reference')
+                    donation.payment_status = 'initiated'
+                    donation.save()
+                    
+                    messages.success(request, f"Paiement initié ! {res.get('instructions')}")
+                    return render(request, 'main/juin_payment_waiting.html', {
+                        'donation': donation,
+                        'instructions': res.get('instructions')
+                    })
+                else:
+                    messages.error(request, f"Erreur FreemoPay: {res.get('error')}")
+                    donation.payment_status = 'failed'
+                    donation.save()
+                    return redirect('juin_donate')
+            else:
+                # Autres modes (espèces...) -> confirmation manuelle par admin
+                donation.save()
+                messages.success(request, "Merci pour votre promesse de don ! Nous vous contacterons pour finaliser.")
+                return redirect('juin')
+        else:
+            messages.error(request, "Veuillez corriger les erreurs dans le formulaire de don.")
+            return redirect('juin_donate')
+    
+    # GET: Render the dedicated donation page
+    donations = edition.donations.filter(is_confirmed=True).order_by('-date_don') if edition else []
+    total_raised = sum(d.montant for d in donations)
+    
+    return render(request, 'main/juin_donate.html', {
+        'edition': edition,
+        'donate_form': JUINDonationForm(),
+        'donations': donations,
+        'total_raised': total_raised,
+    })
+
+
+@csrf_exempt
+def juin_payment_webhook(request):
+    """Webhook pour recevoir les notifications de paiement FreemoPay"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            reference = data.get('reference')
+            status = data.get('status')
+            external_id = data.get('externalId')
+            
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"[FREEMOPAY WEBHOOK] Ref: {reference}, Status: {status}, ExternalId: {external_id}")
+            
+            from .models import JUINDonation
+            donation = JUINDonation.objects.filter(external_id=external_id).first()
+            if donation:
+                if status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
+                    donation.is_confirmed = True
+                    donation.payment_status = 'completed'
+                    donation.save()
+                    logger.info(f"[FREEMOPAY WEBHOOK] Don confirmé pour {donation.nom_prenom}")
+                elif status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED'):
+                    donation.payment_status = 'failed'
+                    donation.save()
+                elif status in ('CANCELLED', 'CANCELED'):
+                    donation.payment_status = 'cancelled'
+                    donation.save()
+                    
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'method not allowed'}, status=405)
+
+
+def juin_payment_status_check(request, external_id):
+    """Vérifier le statut du paiement (AJAX polling)"""
+    donation = get_object_or_404(JUINDonation, external_id=external_id)
+    return JsonResponse({
+        'status': donation.payment_status,
+        'is_confirmed': donation.is_confirmed
+    })
+
+
+def juin_sponsor_request(request):
+    """Formulaire de demande de partenariat"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if request.method == 'POST':
+        form = JUINSponsorRequestForm(request.POST, request.FILES)
+        if form.is_valid():
+            sponsor = form.save(commit=False)
+            sponsor.edition = edition
+            sponsor.save()
+            
+            # Notify admin
+            try:
+                from django.core.mail import EmailMessage
+                EmailMessage(
+                    subject=f'[J.U.IN] Nouvelle demande de sponsor: {sponsor.company_name}',
+                    body=f"Entreprise: {sponsor.company_name}\nContact: {sponsor.contact_name}\nEmail: {sponsor.contact_email}\nNiveau: {sponsor.get_tier_display()}\n\nContribution: {sponsor.contribution}",
+                    to=[settings.ASSOCIATION_EMAIL],
+                ).send(fail_silently=True)
+            except:
+                pass
+                
+            messages.success(request, "Votre demande de partenariat a été envoyée avec succès ! Notre équipe vous contactera prochainement.")
+            return redirect('juin')
+    else:
+        form = JUINSponsorRequestForm()
+    
+    return render(request, 'main/juin_become_partner.html', {'form': form, 'edition': edition})
+
+
+def juin_sponsors_list(request):
+    """Page publique des sponsors validés"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    from .models import JUINSponsor
+    sponsors = JUINSponsor.objects.none()
+    
+    if edition:
+        sponsors = edition.sponsors.filter(statut='approved').order_by('order', 'tier')
+    
+    # Grouper par tier
+    tiers = {
+        'gold': sponsors.filter(tier='gold'),
+        'silver': sponsors.filter(tier='silver'),
+        'bronze': sponsors.filter(tier='bronze'),
+        'partner': sponsors.filter(tier='partner'),
+        'institution': sponsors.filter(tier='institution'),
+        'media': sponsors.filter(tier='media'),
+    }
+    
+    return render(request, 'main/juin_sponsors.html', {
+        'edition': edition,
+        'tiers': tiers,
+        'has_sponsors': sponsors.exists()
+    })
+
+
+def juin_activities_all(request):
+    """Page d'agenda complet avec filtrage par type"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    activity_type = request.GET.get('type')
+    activities = JUINActivity.objects.filter(edition=edition).order_by('date_activity') if edition else []
+    
+    if activity_type:
+        activities = activities.filter(activity_type=activity_type)
+        
+    context = {
+        'edition': edition,
+        'activities': activities,
+        'current_type': activity_type,
+        'types': JUINActivity.TYPE_CHOICES
+    }
+    return render(request, 'main/juin_activities.html', context)
+
+
+def juin_competition_register(request, competition_slug):
+    """Inscription d'une équipe à une compétition"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    competition = get_object_or_404(JUINCompetition, slug=competition_slug, edition=edition)
+    
+    if not competition.is_open:
+        messages.warning(request, "Les inscriptions pour cette compétition sont fermées.")
+        return redirect('juin')
+        
+    from .forms import JUINTeamRegistrationForm
+    if request.method == 'POST':
+        form = JUINTeamRegistrationForm(request.POST, request.FILES, competition=competition)
+        if form.is_valid():
+            team = form.save(commit=False)
+            team.competition = competition
+            team.save()
+            messages.success(request, f"L'équipe {team.name} a été inscrite avec succès ! En attente de validation.")
+            return redirect('juin')
+    else:
+        form = JUINTeamRegistrationForm(competition=competition)
+        
+    return render(request, 'main/juin_competition_register.html', {
+        'form': form,
+        'competition': competition,
+        'edition': edition
+    })
+
+
+def juin_competitions_status(request):
+    """Page affichant l'état des compétitions et les équipes engagées"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    competitions = JUINCompetition.objects.filter(edition=edition).prefetch_related('teams') if edition else []
+    
+    context = {
+        'edition': edition,
+        'competitions': competitions,
+    }
+    return render(request, 'main/juin_competitions.html', context)
+
+
+def juin_commission_detail(request, slug):
+    """Page de détail d'une commission avec ses membres validés"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    commission = get_object_or_404(JUINCommission, slug=slug, edition=edition)
+    
+    # Membres validés groupés par rôle
+    members = commission.approved_members
+    
+    context = {
+        'edition': edition,
+        'commission': commission,
+        'members': members,
+    }
+    return render(request, 'main/juin_commission_detail.html', context)
+
+
+def juin_guide(request):
+    """Page Guide & FAQ pour le J.U.IN 2026"""
+    return render(request, 'main/juin_guide.html')
+
+

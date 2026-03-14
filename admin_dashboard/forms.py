@@ -426,3 +426,280 @@ class ArchiveForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             if field_name != 'file':
                 field.widget.attrs.update({'class': 'form-control'})
+
+from main.models import (
+    JUINEdition, JUINCommission, JUINCommissionApplication, 
+    JUINActivity, JUINCompetition, JUINTeam, JUINDonation, JUINSponsor
+)
+
+class JUINEditionForm(forms.ModelForm):
+    """Formulaire pour les éditions J.U.IN"""
+    class Meta:
+        model = JUINEdition
+        fields = [
+            'edition_number', 'title', 'theme', 'slogan', 'description',
+            'start_date', 'end_date', 'location', 'cover_image',
+            'is_active', 'applications_open', 'donations_open',
+            'president_name', 'president_contact'
+        ]
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+            'description': forms.Textarea(attrs={'rows': 5}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Informations générales'),
+                Row(
+                    Column('edition_number', css_class='form-group col-md-4 mb-3'),
+                    Column('title', css_class='form-group col-md-8 mb-3'),
+                ),
+                'theme',
+                'slogan',
+                'description',
+                'cover_image',
+            ),
+            Fieldset(
+                _('Dates et Lieu'),
+                Row(
+                    Column('start_date', css_class='form-group col-md-6 mb-3'),
+                    Column('end_date', css_class='form-group col-md-6 mb-3'),
+                ),
+                'location',
+            ),
+            Fieldset(
+                _('Paramètres et Contact'),
+                Row(
+                    Column('is_active', css_class='form-group col-md-4 mb-3'),
+                    Column('applications_open', css_class='form-group col-md-4 mb-3'),
+                    Column('donations_open', css_class='form-group col-md-4 mb-3'),
+                ),
+                Row(
+                    Column('president_name', css_class='form-group col-md-6 mb-3'),
+                    Column('president_contact', css_class='form-group col-md-6 mb-3'),
+                ),
+            ),
+            Submit('submit', _('Enregistrer l\'édition'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class JUINCommissionForm(forms.ModelForm):
+    """Formulaire pour les commissions J.U.IN"""
+    class Meta:
+        model = JUINCommission
+        fields = ['edition', 'name', 'code', 'description', 'icon', 'color', 'chef_nom', 'chef_contact', 'order']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Détails de la commission'),
+                'edition',
+                Row(
+                    Column('name', css_class='form-group col-md-8 mb-3'),
+                    Column('code', css_class='form-group col-md-4 mb-3'),
+                ),
+                'description',
+                Row(
+                    Column('icon', css_class='form-group col-md-6 mb-3'),
+                    Column('color', css_class='form-group col-md-6 mb-3'),
+                ),
+            ),
+            Fieldset(
+                _('Responsable et Ordre'),
+                Row(
+                    Column('chef_nom', css_class='form-group col-md-6 mb-3'),
+                    Column('chef_contact', css_class='form-group col-md-6 mb-3'),
+                ),
+                'order',
+            ),
+            Submit('submit', _('Enregistrer la commission'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class JUINActivityForm(forms.ModelForm):
+    """Formulaire pour les activités J.U.IN"""
+    class Meta:
+        model = JUINActivity
+        fields = [
+            'edition', 'title', 'description', 'activity_type', 
+            'date_activity', 'location', 'speaker', 'cover_image', 
+            'is_featured', 'order'
+        ]
+        widgets = {
+            'date_activity': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Détails de l\'activité'),
+                'edition',
+                'title',
+                'description',
+                Row(
+                    Column('activity_type', css_class='form-group col-md-6 mb-3'),
+                    Column('date_activity', css_class='form-group col-md-6 mb-3'),
+                ),
+            ),
+            Fieldset(
+                _('Logistique et Image'),
+                Row(
+                    Column('location', css_class='form-group col-md-6 mb-3'),
+                    Column('speaker', css_class='form-group col-md-6 mb-3'),
+                ),
+                'cover_image',
+                Row(
+                    Column('is_featured', css_class='form-group col-md-6 mb-3'),
+                    Column('order', css_class='form-group col-md-6 mb-3'),
+                ),
+            ),
+            Submit('submit', _('Enregistrer l\'activité'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class JUINSponsorForm(forms.ModelForm):
+    """Formulaire pour les sponsors J.U.IN"""
+    class Meta:
+        model = JUINSponsor
+        fields = [
+            'edition', 'company_name', 'logo', 'website', 'tier', 
+            'contact_name', 'contact_email', 'contact_phone', 
+            'description', 'contribution', 'statut', 'is_featured', 'order', 'admin_notes'
+        ]
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+            'admin_notes': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Informations Entreprise'),
+                'edition',
+                'company_name',
+                Row(
+                    Column('logo', css_class='form-group col-md-6 mb-3'),
+                    Column('website', css_class='form-group col-md-6 mb-3'),
+                ),
+                Row(
+                    Column('tier', css_class='form-class col-md-6 mb-3'),
+                    Column('is_featured', css_class='form-group col-md-6 mb-3'),
+                ),
+                'description',
+            ),
+            Fieldset(
+                _('Contact et Contribution'),
+                Row(
+                    Column('contact_name', css_class='form-group col-md-4 mb-3'),
+                    Column('contact_email', css_class='form-group col-md-4 mb-3'),
+                    Column('contact_phone', css_class='form-group col-md-4 mb-3'),
+                ),
+                'contribution',
+            ),
+            Fieldset(
+                _('Administration'),
+                Row(
+                    Column('statut', css_class='form-group col-md-6 mb-3'),
+                    Column('order', css_class='form-group col-md-6 mb-3'),
+                ),
+                'admin_notes',
+            ),
+            Submit('submit', _('Enregistrer le sponsor'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class JUINCompetitionForm(forms.ModelForm):
+    """Formulaire pour les compétitions J.U.IN"""
+    class Meta:
+        model = JUINCompetition
+        fields = [
+            'edition', 'name', 'slug', 'comp_type', 'description', 
+            'rules', 'image', 'max_teams', 'is_open', 'start_date'
+        ]
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'description': forms.Textarea(attrs={'rows': 4}),
+            'rules': forms.Textarea(attrs={'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Détails du Concours'),
+                'edition',
+                'name',
+                'slug',
+                Row(
+                    Column('comp_type', css_class='form-group col-md-6 mb-3'),
+                    Column('max_teams', css_class='form-group col-md-6 mb-3'),
+                ),
+                'description',
+                'rules',
+                'image',
+            ),
+            Fieldset(
+                _('Statut et Inscription'),
+                Row(
+                    Column('is_open', css_class='form-group col-md-6 mb-3'),
+                    Column('start_date', css_class='form-group col-md-6 mb-3'),
+                ),
+            ),
+            Submit('submit', _('Enregistrer la compétition'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class JUINTeamForm(forms.ModelForm):
+    """Formulaire pour les équipes J.U.IN"""
+    class Meta:
+        model = JUINTeam
+        fields = [
+            'competition', 'name', 'captain_name', 'captain_phone', 'captain_email',
+            'members_count', 'members_list', 'project_title', 'project_description',
+            'logo', 'statut'
+        ]
+        widgets = {
+            'members_list': forms.Textarea(attrs={'rows': 3}),
+            'project_description': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Équipe et Compétition'),
+                'competition',
+                'name',
+                Row(
+                    Column('captain_name', css_class='form-group col-md-4 mb-3'),
+                    Column('captain_phone', css_class='form-group col-md-4 mb-3'),
+                    Column('captain_email', css_class='form-group col-md-4 mb-3'),
+                ),
+            ),
+            Fieldset(
+                _('Membres et Projet'),
+                Row(
+                    Column('members_count', css_class='form-group col-md-6 mb-3'),
+                    Column('project_title', css_class='form-group col-md-6 mb-3'),
+                ),
+                'members_list',
+                'project_description',
+                'logo',
+            ),
+            Fieldset(
+                _('Validation'),
+                'statut',
+            ),
+            Submit('submit', _('Enregistrer l\'équipe'), css_class='btn btn-primary btn-lg w-100')
+        )

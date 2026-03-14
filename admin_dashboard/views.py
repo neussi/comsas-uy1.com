@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Count, Q, Sum
@@ -8,9 +8,19 @@ from django.utils import timezone
 from django.db import models
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.http import JsonResponse, HttpResponse
 import csv
+
+
+# Custom custom_staff_member_required to avoid 'admin' namespace error
+def custom_staff_member_required(view_func):
+    actual_decorator = user_passes_test(
+        lambda u: u.is_active and u.is_staff,
+        login_url='admin_login' # This should match your custom login name
+    )
+    return actual_decorator(view_func)
+
 from main.models import (
     Member, Project, Event, EventRegistration, 
     News, Gallery, Contact, SiteSettings,
@@ -25,7 +35,7 @@ from .forms import (
 )
 from main.utils import send_member_card_email
 
-@staff_member_required
+@custom_staff_member_required
 def dashboard_home(request):
     """Page d'accueil du dashboard"""
     # Statistiques générales
@@ -105,7 +115,7 @@ def dashboard_home(request):
 
 # ============= GESTION DES MEMBRES =============
 
-@staff_member_required
+@custom_staff_member_required
 def members_list(request):
     """Liste des membres"""
     members = Member.objects.all().order_by('-date_adhesion')
@@ -138,14 +148,14 @@ def members_list(request):
     
     return render(request, 'admin_dashboard/members/list.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def member_detail(request, pk):
     """Détail d'un membre"""
     member = get_object_or_404(Member, pk=pk)
     context = {'member': member}
     return render(request, 'admin_dashboard/members/detail.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def member_approve(request, pk):
     """Approuver un membre"""
     member = get_object_or_404(Member, pk=pk)
@@ -160,7 +170,7 @@ def member_approve(request, pk):
         
     return redirect('admin_members_list')
 
-@staff_member_required
+@custom_staff_member_required
 def member_reject(request, pk):
     """Rejeter un membre"""
     member = get_object_or_404(Member, pk=pk)
@@ -168,7 +178,7 @@ def member_reject(request, pk):
     messages.success(request, 'La demande d\'adhésion a été rejetée.')
     return redirect('admin_members_list')
 
-@staff_member_required
+@custom_staff_member_required
 def member_download_card(request, pk):
     """Télécharger la carte de membre PDF"""
     from django.http import FileResponse
@@ -186,7 +196,7 @@ def member_download_card(request, pk):
         return redirect('admin_member_detail', pk=pk)
 
 # NOUVELLES VUES POUR MEMBRES
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class MemberCreateView(CreateView):
     model = Member
     form_class = MemberForm
@@ -197,7 +207,7 @@ class MemberCreateView(CreateView):
         messages.success(self.request, 'Le membre a été créé avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class MemberUpdateView(UpdateView):
     model = Member
     form_class = MemberForm
@@ -208,7 +218,7 @@ class MemberUpdateView(UpdateView):
         messages.success(self.request, 'Le membre a été modifié avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class MemberDeleteView(DeleteView):
     model = Member
     template_name = 'admin_dashboard/members/confirm_delete.html'
@@ -220,7 +230,7 @@ class MemberDeleteView(DeleteView):
 
 # ============= GESTION DES PROJETS =============
 
-@staff_member_required
+@custom_staff_member_required
 def projects_list(request):
     """Liste des projets"""
     projects = Project.objects.all().order_by('-created_at')
@@ -242,14 +252,14 @@ def projects_list(request):
     
     return render(request, 'admin_dashboard/projects/list.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def project_detail(request, pk):
     """Détail d'un projet"""
     project = get_object_or_404(Project, pk=pk)
     context = {'project': project}
     return render(request, 'admin_dashboard/projects/detail.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ProjectCreateView(CreateView):
     model = Project
     form_class = ProjectForm
@@ -260,7 +270,7 @@ class ProjectCreateView(CreateView):
         messages.success(self.request, 'Le projet a été créé avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ProjectUpdateView(UpdateView):
     model = Project
     form_class = ProjectForm
@@ -271,7 +281,7 @@ class ProjectUpdateView(UpdateView):
         messages.success(self.request, 'Le projet a été modifié avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ProjectDeleteView(DeleteView):
     model = Project
     template_name = 'admin_dashboard/projects/confirm_delete.html'
@@ -283,7 +293,7 @@ class ProjectDeleteView(DeleteView):
 
 # ============= GESTION DES ÉVÉNEMENTS =============
 
-@staff_member_required
+@custom_staff_member_required
 def events_list(request):
     """Liste des événements"""
     events = Event.objects.all().order_by('-date_event')
@@ -298,7 +308,7 @@ def events_list(request):
     context = {'events_page': events_page}
     return render(request, 'admin_dashboard/events/list.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class EventCreateView(CreateView):
     model = Event
     form_class = EventForm
@@ -309,7 +319,7 @@ class EventCreateView(CreateView):
         messages.success(self.request, 'L\'événement a été créé avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class EventUpdateView(UpdateView):
     model = Event
     form_class = EventForm
@@ -321,7 +331,7 @@ class EventUpdateView(UpdateView):
         return super().form_valid(form)
 
 # NOUVELLE VUE POUR SUPPRIMER ÉVÉNEMENT
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class EventDeleteView(DeleteView):
     model = Event
     template_name = 'admin_dashboard/events/confirm_delete.html'
@@ -331,7 +341,7 @@ class EventDeleteView(DeleteView):
         messages.success(self.request, 'L\'événement a été supprimé avec succès.')
         return super().form_valid(form)
 
-@staff_member_required
+@custom_staff_member_required
 def event_registrations(request, pk):
     """Liste des inscriptions pour un événement"""
     event = get_object_or_404(Event, pk=pk)
@@ -351,7 +361,7 @@ def event_registrations(request, pk):
     
     return render(request, 'admin_dashboard/events/registrations.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def delete_registration(request, pk):
     """Supprimer une inscription"""
     registration = get_object_or_404(EventRegistration, pk=pk)
@@ -360,7 +370,7 @@ def delete_registration(request, pk):
     messages.success(request, "Inscription supprimée avec succès.")
     return redirect('admin_event_registrations', pk=event_pk)
 
-@staff_member_required
+@custom_staff_member_required
 def confirm_registration(request, pk):
     """Confirmer une inscription"""
     registration = get_object_or_404(EventRegistration, pk=pk)
@@ -370,7 +380,7 @@ def confirm_registration(request, pk):
     messages.success(request, f'Inscription de {registration.nom_prenom} confirmée.')
     return redirect('admin_event_registrations', pk=registration.event.pk)
 
-@staff_member_required
+@custom_staff_member_required
 def event_registrations_export_excel(request, pk):
     """Exporter les inscriptions à un événement en CSV"""
     event = get_object_or_404(Event, pk=pk)
@@ -393,7 +403,7 @@ def event_registrations_export_excel(request, pk):
 
 # ============= GESTION DES ACTUALITÉS =============
 
-@staff_member_required
+@custom_staff_member_required
 def news_list(request):
     """Liste des actualités"""
     news = News.objects.all().order_by('-created_at')
@@ -405,7 +415,7 @@ def news_list(request):
     context = {'news_page': news_page}
     return render(request, 'admin_dashboard/news/list.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class NewsCreateView(CreateView):
     model = News
     form_class = NewsForm
@@ -416,7 +426,7 @@ class NewsCreateView(CreateView):
         messages.success(self.request, 'L\'actualité a été créée avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class NewsUpdateView(UpdateView):
     model = News
     form_class = NewsForm
@@ -428,7 +438,7 @@ class NewsUpdateView(UpdateView):
         return super().form_valid(form)
 
 # NOUVELLE VUE POUR SUPPRIMER ACTUALITÉ
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class NewsDeleteView(DeleteView):
     model = News
     template_name = 'admin_dashboard/news/confirm_delete.html'
@@ -440,7 +450,7 @@ class NewsDeleteView(DeleteView):
 
 # ============= GESTION DE LA GALERIE =============
 
-@staff_member_required
+@custom_staff_member_required
 def gallery_list(request):
     """Liste des éléments de galerie"""
     gallery_items = Gallery.objects.all().order_by('-created_at')
@@ -462,7 +472,7 @@ def gallery_list(request):
     
     return render(request, 'admin_dashboard/gallery/list.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class GalleryCreateView(CreateView):
     model = Gallery
     form_class = GalleryForm
@@ -473,7 +483,7 @@ class GalleryCreateView(CreateView):
         messages.success(self.request, 'L\'élément a été ajouté à la galerie avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class GalleryUpdateView(UpdateView):
     model = Gallery
     form_class = GalleryForm
@@ -484,7 +494,7 @@ class GalleryUpdateView(UpdateView):
         messages.success(self.request, 'L\'élément de la galerie a été modifié avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class GalleryDeleteView(DeleteView):
     model = Gallery
     template_name = 'admin_dashboard/gallery/confirm_delete.html'
@@ -496,7 +506,7 @@ class GalleryDeleteView(DeleteView):
 
 # ============= GESTION DES MESSAGES =============
 
-@staff_member_required
+@custom_staff_member_required
 def messages_list(request):
     """Liste des messages de contact"""
     messages_list = Contact.objects.all().order_by('-created_at')
@@ -519,7 +529,7 @@ def messages_list(request):
     
     return render(request, 'admin_dashboard/messages/list.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def message_detail(request, pk):
     """Détail d'un message"""
     message = get_object_or_404(Contact, pk=pk)
@@ -532,7 +542,7 @@ def message_detail(request, pk):
     context = {'message': message}
     return render(request, 'admin_dashboard/messages/detail.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def mark_message_replied(request, pk):
     """Marquer un message comme répondu"""
     message = get_object_or_404(Contact, pk=pk)
@@ -543,7 +553,7 @@ def mark_message_replied(request, pk):
     return redirect('admin_message_detail', pk=pk)
 
 # NOUVELLE VUE POUR SUPPRIMER MESSAGE
-@staff_member_required
+@custom_staff_member_required
 def message_delete(request, pk):
     """Supprimer un message"""
     message = get_object_or_404(Contact, pk=pk)
@@ -557,7 +567,7 @@ def message_delete(request, pk):
 
 # ============= PARAMÈTRES DU SITE =============
 
-@staff_member_required
+@custom_staff_member_required
 def site_settings(request):
     """Paramètres du site"""
     settings_obj, created = SiteSettings.objects.get_or_create(pk=1)
@@ -576,7 +586,7 @@ def site_settings(request):
 
 # ============= GESTION DU PARRAINAGE =============
 
-@staff_member_required
+@custom_staff_member_required
 def sponsorship_home(request):
     """Page d'accueil de la gestion du parrainage"""
     current_session = SponsorshipSession.objects.filter(is_active=True).first()
@@ -597,7 +607,7 @@ def sponsorship_home(request):
     }
     return render(request, 'admin_dashboard/sponsorship/home.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def sponsorship_mentors(request):
     """Liste des parrains"""
     mentors = Mentor.objects.all().order_by('last_name')
@@ -618,7 +628,7 @@ def sponsorship_mentors(request):
     }
     return render(request, 'admin_dashboard/sponsorship/mentors.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def sponsorship_mentees(request):
     """Liste des filleuls"""
     mentees = Mentee.objects.all().order_by('last_name')
@@ -645,7 +655,7 @@ def sponsorship_mentees(request):
     }
     return render(request, 'admin_dashboard/sponsorship/mentees.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def sponsorship_matches(request):
     """Liste des paires (Matches)"""
     matches = Match.objects.all().order_by('-created_at')
@@ -658,7 +668,7 @@ def sponsorship_matches(request):
     context = {'matches_page': matches_page}
     return render(request, 'admin_dashboard/sponsorship/matches.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def sponsorship_matches_export_csv(request):
     """Exporter les binômes en CSV"""
     response = HttpResponse(content_type='text/csv')
@@ -681,13 +691,13 @@ def sponsorship_matches_export_csv(request):
         ])
     return response
 
-@staff_member_required
+@custom_staff_member_required
 def sponsorship_matches_export_excel(request):
     """Exporter les binômes en Excel (Compatible via CSV pour simplicité)"""
     # Pour l'instant on utilise CSV mais avec un header Excel pour simplifier sans dépendance openpyxl
     return sponsorship_matches_export_csv(request)
 
-@staff_member_required
+@custom_staff_member_required
 def sponsorship_auto_match(request):
     """Lancer le matching automatique"""
     if request.method == 'POST':
@@ -755,7 +765,7 @@ def sponsorship_auto_match(request):
     
     return redirect('admin_sponsorship_home')
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class SponsorshipSessionCreateView(CreateView):
     model = SponsorshipSession
     form_class = SponsorshipSessionForm
@@ -766,7 +776,7 @@ class SponsorshipSessionCreateView(CreateView):
         messages.success(self.request, 'La session de parrainage a été créée avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class SponsorshipSessionUpdateView(UpdateView):
     model = SponsorshipSession
     form_class = SponsorshipSessionForm
@@ -777,7 +787,7 @@ class SponsorshipSessionUpdateView(UpdateView):
         messages.success(self.request, 'La session de parrainage a été mise à jour avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class SponsorshipSessionDeleteView(DeleteView):
     model = SponsorshipSession
     template_name = 'admin_dashboard/sponsorship/session_confirm_delete.html'
@@ -793,7 +803,7 @@ class SponsorshipSessionDeleteView(DeleteView):
 
 # ============= GESTION DES CONCOURS =============
 
-@staff_member_required
+@custom_staff_member_required
 def contests_home(request):
     """Page d'accueil de la gestion des concours"""
     contests = Contest.objects.all().order_by('-start_date')
@@ -805,7 +815,7 @@ def contests_home(request):
     }
     return render(request, 'admin_dashboard/contests/home.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def contest_detail(request, pk):
     """Détail d'un concours et ses candidats"""
     contest = get_object_or_404(Contest, pk=pk)
@@ -817,7 +827,7 @@ def contest_detail(request, pk):
     }
     return render(request, 'admin_dashboard/contests/detail.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ContestCreateView(CreateView):
     model = Contest
     form_class = ContestForm
@@ -828,7 +838,7 @@ class ContestCreateView(CreateView):
         messages.success(self.request, 'Le concours a été créé avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ContestUpdateView(UpdateView):
     model = Contest
     form_class = ContestForm
@@ -839,7 +849,7 @@ class ContestUpdateView(UpdateView):
         messages.success(self.request, 'Le concours a été mis à jour avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ContestDeleteView(DeleteView):
     model = Contest
     template_name = 'admin_dashboard/contests/confirm_delete.html'
@@ -849,7 +859,7 @@ class ContestDeleteView(DeleteView):
         messages.success(self.request, 'Le concours a été supprimé.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class CandidateCreateView(CreateView):
     model = Candidate
     form_class = CandidateForm
@@ -875,7 +885,7 @@ class CandidateCreateView(CreateView):
         messages.success(self.request, 'Le candidat a été ajouté avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class CandidateUpdateView(UpdateView):
     model = Candidate
     form_class = CandidateForm
@@ -888,7 +898,7 @@ class CandidateUpdateView(UpdateView):
         messages.success(self.request, 'Le candidat a été mis à jour avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class CandidateDeleteView(DeleteView):
     model = Candidate
     template_name = 'admin_dashboard/contests/candidate_confirm_delete.html'
@@ -901,7 +911,7 @@ class CandidateDeleteView(DeleteView):
         return super().form_valid(form)
 # ============= GESTION DES REQUÊTES =============
 
-@staff_member_required
+@custom_staff_member_required
 def requests_list(request):
     """Liste des modèles de requêtes"""
     documents = RequestDocument.objects.all().order_by('-created_at')
@@ -922,7 +932,7 @@ def requests_list(request):
     }
     return render(request, 'admin_dashboard/requests/list.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class RequestDocumentCreateView(CreateView):
     model = RequestDocument
     form_class = RequestDocumentForm
@@ -933,7 +943,7 @@ class RequestDocumentCreateView(CreateView):
         messages.success(self.request, 'Le document a été ajouté avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class RequestDocumentUpdateView(UpdateView):
     model = RequestDocument
     form_class = RequestDocumentForm
@@ -944,7 +954,7 @@ class RequestDocumentUpdateView(UpdateView):
         messages.success(self.request, 'Le document a été mis à jour avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class RequestDocumentDeleteView(DeleteView):
     model = RequestDocument
     template_name = 'admin_dashboard/requests/confirm_delete.html'
@@ -957,7 +967,7 @@ class RequestDocumentDeleteView(DeleteView):
 # ============= GESTION DU DÉPARTEMENT =============
 
 # --- ENSEIGNANTS ---
-@staff_member_required
+@custom_staff_member_required
 def professors_list(request):
     """Liste des enseignants"""
     professors = Professor.objects.all().order_by('name')
@@ -978,7 +988,7 @@ def professors_list(request):
     }
     return render(request, 'admin_dashboard/department/professors_list.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ProfessorCreateView(CreateView):
     model = Professor
     form_class = ProfessorForm
@@ -989,7 +999,7 @@ class ProfessorCreateView(CreateView):
         messages.success(self.request, 'L\'enseignant a été ajouté avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ProfessorUpdateView(UpdateView):
     model = Professor
     form_class = ProfessorForm
@@ -1000,7 +1010,7 @@ class ProfessorUpdateView(UpdateView):
         messages.success(self.request, 'L\'enseignant a été mis à jour avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ProfessorDeleteView(DeleteView):
     model = Professor
     template_name = 'admin_dashboard/department/professor_confirm_delete.html'
@@ -1011,7 +1021,7 @@ class ProfessorDeleteView(DeleteView):
         return super().form_valid(form)
 
 # --- SALLES ---
-@staff_member_required
+@custom_staff_member_required
 def classrooms_list(request):
     """Liste des salles"""
     classrooms = Classroom.objects.all().order_by('name')
@@ -1023,7 +1033,7 @@ def classrooms_list(request):
     context = {'classrooms_page': classrooms_page}
     return render(request, 'admin_dashboard/department/classrooms_list.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ClassroomCreateView(CreateView):
     model = Classroom
     form_class = ClassroomForm
@@ -1034,7 +1044,7 @@ class ClassroomCreateView(CreateView):
         messages.success(self.request, 'La salle a été ajoutée avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ClassroomUpdateView(UpdateView):
     model = Classroom
     form_class = ClassroomForm
@@ -1045,7 +1055,7 @@ class ClassroomUpdateView(UpdateView):
         messages.success(self.request, 'La salle a été mise à jour avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class ClassroomDeleteView(DeleteView):
     model = Classroom
     template_name = 'admin_dashboard/department/classroom_confirm_delete.html'
@@ -1056,7 +1066,7 @@ class ClassroomDeleteView(DeleteView):
         return super().form_valid(form)
 
 # --- DÉLÉGUÉS ---
-@staff_member_required
+@custom_staff_member_required
 def delegates_list(request):
     """Liste des délégués"""
     delegates = Delegate.objects.all().order_by('level')
@@ -1068,7 +1078,7 @@ def delegates_list(request):
     context = {'delegates_page': delegates_page}
     return render(request, 'admin_dashboard/department/delegates_list.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class DelegateCreateView(CreateView):
     model = Delegate
     form_class = DelegateForm
@@ -1079,7 +1089,7 @@ class DelegateCreateView(CreateView):
         messages.success(self.request, 'Le délégué a été ajouté avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class DelegateUpdateView(UpdateView):
     model = Delegate
     form_class = DelegateForm
@@ -1090,7 +1100,7 @@ class DelegateUpdateView(UpdateView):
         messages.success(self.request, 'Le délégué a été mis à jour avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class DelegateDeleteView(DeleteView):
     model = Delegate
     template_name = 'admin_dashboard/department/delegate_confirm_delete.html'
@@ -1102,7 +1112,7 @@ class DelegateDeleteView(DeleteView):
 
 # ============= GESTION DU BLOG =============
 
-@staff_member_required
+@custom_staff_member_required
 def blog_list(request):
     """Liste des articles de blog"""
     articles = BlogArticle.objects.all().order_by('-published_at')
@@ -1123,7 +1133,7 @@ def blog_list(request):
     }
     return render(request, 'admin_dashboard/blog/list.html', context)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class BlogArticleCreateView(CreateView):
     model = BlogArticle
     form_class = BlogArticleForm
@@ -1134,7 +1144,7 @@ class BlogArticleCreateView(CreateView):
         messages.success(self.request, 'L\'article a été créé avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class BlogArticleUpdateView(UpdateView):
     model = BlogArticle
     form_class = BlogArticleForm
@@ -1145,7 +1155,7 @@ class BlogArticleUpdateView(UpdateView):
         messages.success(self.request, 'L\'article a été mis à jour avec succès.')
         return super().form_valid(form)
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(custom_staff_member_required, name='dispatch')
 class BlogArticleDeleteView(DeleteView):
     model = BlogArticle
     template_name = 'admin_dashboard/blog/confirm_delete.html'
@@ -1154,3 +1164,504 @@ class BlogArticleDeleteView(DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'L\'article a été supprimé.')
         return super().form_valid(form)
+
+
+# =============================================================================
+# J.U.IN 2026 — ADMIN VIEWS
+# =============================================================================
+from main.models import (
+    JUINEdition, JUINCommission, JUINCommissionApplication, 
+    JUINActivity, JUINDonation, JUINCompetition, JUINTeam, JUINSponsor
+)
+
+
+@custom_staff_member_required
+def juin_dashboard(request):
+    """Tableau de bord JUIN 2026"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    stats = {}
+    if edition:
+        qs = JUINCommissionApplication.objects.filter(commission__edition=edition)
+        stats = {
+            'total': qs.count(),
+            'pending': qs.filter(statut='pending').count(),
+            'approved': qs.filter(statut='approved').count(),
+            'rejected': qs.filter(statut='rejected').count(),
+            'activities': edition.activities.count(),
+            'competitions': JUINCompetition.objects.filter(edition=edition).count(),
+            'teams': JUINTeam.objects.filter(competition__edition=edition).count(),
+            'total_donations': edition.donations.filter(is_confirmed=True).aggregate(Sum('montant'))['montant__sum'] or 0,
+            'total_donors': edition.donations.filter(is_confirmed=True).count(),
+        }
+    recent_apps = JUINCommissionApplication.objects.filter(
+        commission__edition=edition
+    ).order_by('-date_postulation')[:5] if edition else []
+    context = {'edition': edition, 'stats': stats, 'recent_apps': recent_apps}
+    return render(request, 'admin_dashboard/juin/dashboard.html', context)
+
+
+@custom_staff_member_required
+def juin_applications_list(request):
+    """Liste des candidatures commission J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    apps = JUINCommissionApplication.objects.filter(commission__edition=edition).select_related('commission').order_by('-date_postulation')
+
+    statut = request.GET.get('statut')
+    commission_id = request.GET.get('commission')
+    search = request.GET.get('search')
+
+    if statut:
+        apps = apps.filter(statut=statut)
+    if commission_id:
+        apps = apps.filter(commission_id=commission_id)
+    if search:
+        apps = apps.filter(Q(nom_prenom__icontains=search) | Q(email__icontains=search))
+
+    paginator = Paginator(apps, 20)
+    page_number = request.GET.get('page')
+    apps_page = paginator.get_page(page_number)
+
+    commissions = JUINCommission.objects.filter(edition=edition) if edition else []
+    context = {
+        'apps_page': apps_page,
+        'edition': edition,
+        'commissions': commissions,
+        'current_statut': statut,
+        'current_commission': commission_id,
+        'search_query': search,
+        'statut_choices': JUINCommissionApplication.STATUT_CHOICES,
+    }
+    return render(request, 'admin_dashboard/juin/applications_list.html', context)
+
+
+@custom_staff_member_required
+def juin_application_detail(request, pk):
+    """Détail + approuver/rejeter une candidature J.U.IN"""
+    app = get_object_or_404(JUINCommissionApplication, pk=pk)
+    edition = app.commission.edition
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        notify = request.POST.get('notify') == 'on'
+
+        if action == 'approve':
+            role = request.POST.get('commission_role', 'membre')
+            new_commission_id = request.POST.get('commission_id')
+            if new_commission_id:
+                new_commission = get_object_or_404(JUINCommission, pk=new_commission_id, edition=edition)
+                app.commission = new_commission
+            app.statut = 'approved'
+            app.commission_role = role
+            app.date_traitement = timezone.now()
+            app.save()
+            messages.success(request, f"✅ {app.nom_prenom} approuvé(e) comme {app.get_commission_role_display()} dans {app.commission.code}.")
+
+            if notify and app.email:
+                try:
+                    from django.template.loader import render_to_string
+                    from django.core.mail import EmailMultiAlternatives
+                    from django.utils.html import strip_tags
+                    html = render_to_string('emails/juin_application_approved.html', {
+                        'nom_prenom': app.nom_prenom,
+                        'commission_name': app.commission.name,
+                        'commission_code': app.commission.code,
+                        'role': app.get_commission_role_display(),
+                        'site_url': '',
+                    })
+                    msg = EmailMultiAlternatives(
+                        subject=f'[J.U.IN 2026] Ta candidature a été approuvée ! 🎉',
+                        body=strip_tags(html),
+                        from_email=None,
+                        to=[app.email],
+                    )
+                    msg.attach_alternative(html, 'text/html')
+                    msg.send(fail_silently=True)
+                except Exception as e:
+                    messages.warning(request, f"Email non envoyé: {e}")
+
+        elif action == 'reject':
+            motif = request.POST.get('motif_rejet', '')
+            app.statut = 'rejected'
+            app.motif_rejet = motif
+            app.date_traitement = timezone.now()
+            app.save()
+            messages.success(request, f"❌ {app.nom_prenom} rejeté(e).")
+
+            if notify and app.email:
+                try:
+                    from django.template.loader import render_to_string
+                    from django.core.mail import EmailMultiAlternatives
+                    from django.utils.html import strip_tags
+                    html = render_to_string('emails/juin_application_rejected.html', {
+                        'nom_prenom': app.nom_prenom,
+                        'commission_name': app.commission.name,
+                        'motif': motif,
+                    })
+                    msg = EmailMultiAlternatives(
+                        subject=f'[J.U.IN 2026] Résultat de ta candidature',
+                        body=strip_tags(html),
+                        from_email=None,
+                        to=[app.email],
+                    )
+                    msg.attach_alternative(html, 'text/html')
+                    msg.send(fail_silently=True)
+                except Exception as e:
+                    messages.warning(request, f"Email non envoyé: {e}")
+
+        return redirect('admin_juin_application_detail', pk=pk)
+
+    commissions = JUINCommission.objects.filter(edition=edition)
+    context = {
+        'app': app,
+        'edition': edition,
+        'commissions': commissions,
+        'role_choices': JUINCommissionApplication.ROLE_CHOICES,
+    }
+    return render(request, 'admin_dashboard/juin/application_detail.html', context)
+
+
+@custom_staff_member_required
+def juin_generate_badge(request, pk):
+    """Générer et télécharger le badge PDF d'un membre de commission"""
+    from django.http import FileResponse
+    from main.juin_badge_utils import generate_juin_commission_badge, get_juin_badge_path
+    from django.core.files.storage import default_storage
+
+    app = get_object_or_404(JUINCommissionApplication, pk=pk, statut='approved')
+
+    # Generate if not exists
+    badge_path = get_juin_badge_path(app)
+    if not badge_path:
+        generate_juin_commission_badge(app)
+        badge_path = get_juin_badge_path(app)
+
+    if badge_path:
+        filename = f"Badge_JUIN2026_{app.nom_prenom.replace(' ', '_')}_{app.commission.code}.pdf"
+        return FileResponse(open(badge_path, 'rb'), as_attachment=True, filename=filename)
+    else:
+        messages.error(request, "Erreur lors de la génération du badge.")
+        return redirect('admin_juin_application_detail', pk=pk)
+
+
+@custom_staff_member_required
+def juin_activities_list(request):
+    """Gérer les activités / agenda du J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    activities = JUINActivity.objects.filter(edition=edition).order_by('date_activity') if edition else []
+    context = {'edition': edition, 'activities': activities}
+    return render(request, 'admin_dashboard/juin/activities_list.html', context)
+
+
+@custom_staff_member_required
+def juin_activity_toggle_featured(request, pk):
+    """Basculer le statut 'en vedette' d'une activité"""
+    activity = get_object_or_404(JUINActivity, pk=pk)
+    activity.is_featured = not activity.is_featured
+    activity.save()
+    return redirect('admin_juin_activities')
+
+@custom_staff_member_required
+def juin_donations_list(request):
+    """Liste des dons J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+
+    #  Toujours un QuerySet, jamais une liste
+    donations = JUINDonation.objects.filter(edition=edition).order_by('-date_don') if edition else JUINDonation.objects.none()
+
+    confirmed_only = request.GET.get('confirmed')
+    if confirmed_only:
+        donations = donations.filter(is_confirmed=True)
+
+    total = donations.filter(is_confirmed=True).aggregate(Sum('montant'))['montant__sum'] or 0
+
+    if request.method == 'POST':
+        donation_id = request.POST.get('donation_id')
+        if donation_id:
+            don = get_object_or_404(JUINDonation, pk=donation_id, edition=edition)
+            don.is_confirmed = not don.is_confirmed
+            don.save()
+            messages.success(request, f"Don de {don.nom_prenom} : statut mis à jour.")
+        return redirect('admin_juin_donations')
+
+    paginator = Paginator(donations, 20)
+    page_number = request.GET.get('page')
+    donations_page = paginator.get_page(page_number)
+
+    context = {
+        'edition': edition,
+        'donations_page': donations_page,
+        'total': total,
+        'confirmed_filter': confirmed_only,
+    }
+    return render(request, 'admin_dashboard/juin/donations_list.html', context)
+
+from main.models import JUINSponsor
+
+@custom_staff_member_required
+def juin_sponsors_list(request):
+    """Gérer les sponsors / partenaires du J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    sponsors = JUINSponsor.objects.filter(edition=edition).order_by('statut', 'tier') if edition else []
+    
+    context = {'edition': edition, 'sponsors': sponsors}
+    return render(request, 'admin_dashboard/juin/sponsors_list.html', context)
+
+
+@custom_staff_member_required
+def juin_sponsor_detail(request, pk):
+    """Détail et validation d'un sponsor"""
+    sponsor = get_object_or_404(JUINSponsor, pk=pk)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            sponsor.statut = 'approved'
+            sponsor.save()
+            messages.success(request, f"Sponsor {sponsor.company_name} approuvé.")
+        elif action == 'reject':
+            sponsor.statut = 'rejected'
+            sponsor.save()
+            messages.warning(request, f"Sponsor {sponsor.company_name} rejeté.")
+        elif action == 'delete':
+            sponsor.delete()
+            messages.info(request, "Sponsor supprimé.")
+            return redirect('admin_juin_sponsors')
+            
+        return redirect('admin_juin_sponsor_detail', pk=pk)
+        
+    context = {'sponsor': sponsor, 'edition': sponsor.edition}
+    return render(request, 'admin_dashboard/juin/sponsor_detail.html', context)
+
+
+# --- JUIN Advanced Management ---
+
+from .forms import (
+    JUINEditionForm, JUINCommissionForm, JUINActivityForm, 
+    JUINSponsorForm, JUINCompetitionForm, JUINTeamForm
+)
+
+@custom_staff_member_required
+def juin_edition_manage(request):
+    """Gérer l'édition courante ou en créer une nouvelle"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if request.method == 'POST':
+        form = JUINEditionForm(request.POST, request.FILES, instance=edition)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Édition J.U.IN mise à jour.")
+            return redirect('admin_juin_dashboard')
+    else:
+        form = JUINEditionForm(instance=edition)
+    
+    return render(request, 'admin_dashboard/juin/edition_form.html', {'form': form, 'edition': edition})
+
+@custom_staff_member_required
+def juin_activity_create(request):
+    """Créer une activité J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if request.method == 'POST':
+        form = JUINActivityForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Activité créée.")
+            return redirect('admin_juin_activities')
+    else:
+        form = JUINActivityForm(initial={'edition': edition})
+    
+    return render(request, 'admin_dashboard/juin/activity_form.html', {'form': form, 'title': "Ajouter une activité"})
+
+@custom_staff_member_required
+def juin_activity_edit(request, pk):
+    """Modifier une activité J.U.IN"""
+    activity = get_object_or_404(JUINActivity, pk=pk)
+    if request.method == 'POST':
+        form = JUINActivityForm(request.POST, request.FILES, instance=activity)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Activité mise à jour.")
+            return redirect('admin_juin_activities')
+    else:
+        form = JUINActivityForm(instance=activity)
+    
+    return render(request, 'admin_dashboard/juin/activity_form.html', {'form': form, 'title': "Modifier l'activité"})
+
+@custom_staff_member_required
+def juin_activity_delete(request, pk):
+    """Supprimer une activité J.U.IN"""
+    activity = get_object_or_404(JUINActivity, pk=pk)
+    if request.method == 'POST':
+        activity.delete()
+        messages.success(request, "Activité supprimée.")
+        return redirect('admin_juin_activities')
+    return render(request, 'admin_dashboard/juin/confirm_delete.html', {'object': activity, 'cancel_url': 'admin_juin_activities'})
+
+@custom_staff_member_required
+def juin_sponsor_create(request):
+    """Ajouter un sponsor J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if request.method == 'POST':
+        form = JUINSponsorForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Sponsor ajouté.")
+            return redirect('admin_juin_sponsors')
+    else:
+        form = JUINSponsorForm(initial={'edition': edition})
+    
+    return render(request, 'admin_dashboard/juin/sponsor_form.html', {'form': form, 'title': "Ajouter un sponsor"})
+
+@custom_staff_member_required
+def juin_sponsor_edit(request, pk):
+    """Modifier un sponsor J.U.IN"""
+    sponsor = get_object_or_404(JUINSponsor, pk=pk)
+    if request.method == 'POST':
+        form = JUINSponsorForm(request.POST, request.FILES, instance=sponsor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Sponsor mis à jour.")
+            return redirect('admin_juin_sponsors')
+    else:
+        form = JUINSponsorForm(instance=sponsor)
+    
+    return render(request, 'admin_dashboard/juin/sponsor_form.html', {'form': form, 'title': "Modifier le sponsor"})
+
+@custom_staff_member_required
+def juin_commissions_manage(request):
+    """Gérer les commissions J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    commissions = JUINCommission.objects.filter(edition=edition).order_by('order', 'name') if edition else []
+    return render(request, 'admin_dashboard/juin/commissions_list.html', {'commissions': commissions, 'edition': edition})
+
+@custom_staff_member_required
+def juin_commission_create(request):
+    """Créer une commission J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if request.method == 'POST':
+        form = JUINCommissionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Commission créée.")
+            return redirect('admin_juin_commissions')
+    else:
+        form = JUINCommissionForm(initial={'edition': edition})
+    
+    return render(request, 'admin_dashboard/juin/commission_form.html', {'form': form, 'title': "Créer une commission"})
+
+@custom_staff_member_required
+def juin_commission_edit(request, pk):
+    """Modifier une commission J.U.IN"""
+    commission = get_object_or_404(JUINCommission, pk=pk)
+    if request.method == 'POST':
+        form = JUINCommissionForm(request.POST, instance=commission)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Commission mise à jour.")
+            return redirect('admin_juin_commissions')
+    else:
+        form = JUINCommissionForm(instance=commission)
+    
+    return render(request, 'admin_dashboard/juin/commission_form.html', {'form': form, 'title': "Modifier la commission"})
+
+@custom_staff_member_required
+def juin_commission_delete(request, pk):
+    """Supprimer une commission J.U.IN"""
+    commission = get_object_or_404(JUINCommission, pk=pk)
+    if request.method == 'POST':
+        commission.delete()
+        messages.success(request, "Commission supprimée.")
+        return redirect('admin_juin_commissions')
+    return render(request, 'admin_dashboard/juin/confirm_delete.html', {'object': commission, 'cancel_url': 'admin_juin_commissions'})
+
+@custom_staff_member_required
+def juin_competitions_list(request):
+    """Liste des compétitions J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    competitions = JUINCompetition.objects.filter(edition=edition).order_by('comp_type', 'name') if edition else []
+    return render(request, 'admin_dashboard/juin/competitions_list.html', {'competitions': competitions, 'edition': edition})
+
+@custom_staff_member_required
+def juin_competition_create(request):
+    """Créer une compétition J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if request.method == 'POST':
+        form = JUINCompetitionForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Compétition créée.")
+            return redirect('admin_juin_competitions')
+    else:
+        form = JUINCompetitionForm(initial={'edition': edition})
+    return render(request, 'admin_dashboard/juin/competition_form.html', {'form': form, 'title': "Créer une compétition"})
+
+@custom_staff_member_required
+def juin_competition_edit(request, pk):
+    """Modifier une compétition J.U.IN"""
+    comp = get_object_or_404(JUINCompetition, pk=pk)
+    if request.method == 'POST':
+        form = JUINCompetitionForm(request.POST, request.FILES, instance=comp)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Compétition mise à jour.")
+            return redirect('admin_juin_competitions')
+    else:
+        form = JUINCompetitionForm(instance=comp)
+    return render(request, 'admin_dashboard/juin/competition_form.html', {'form': form, 'title': "Modifier la compétition"})
+
+@custom_staff_member_required
+def juin_competition_delete(request, pk):
+    """Supprimer une compétition J.U.IN"""
+    comp = get_object_or_404(JUINCompetition, pk=pk)
+    if request.method == 'POST':
+        comp.delete()
+        messages.success(request, "Compétition supprimée.")
+        return redirect('admin_juin_competitions')
+    return render(request, 'admin_dashboard/juin/confirm_delete.html', {'object': comp, 'cancel_url': 'admin_juin_competitions'})
+
+@custom_staff_member_required
+def juin_teams_list(request):
+    """Liste des équipes/candidats J.U.IN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    teams = JUINTeam.objects.filter(competition__edition=edition).select_related('competition').order_by('-date_registration') if edition else []
+    
+    comp_id = request.GET.get('competition')
+    if comp_id:
+        teams = teams.filter(competition_id=comp_id)
+        
+    paginator = Paginator(teams, 20)
+    page_number = request.GET.get('page')
+    teams_page = paginator.get_page(page_number)
+    
+    competitions = JUINCompetition.objects.filter(edition=edition) if edition else []
+    context = {
+        'teams_page': teams_page,
+        'edition': edition,
+        'competitions': competitions,
+        'current_competition': comp_id,
+    }
+    return render(request, 'admin_dashboard/juin/teams_list.html', context)
+
+@custom_staff_member_required
+def juin_team_edit(request, pk):
+    """Modifier une équipe J.U.IN"""
+    team = get_object_or_404(JUINTeam, pk=pk)
+    if request.method == 'POST':
+        form = JUINTeamForm(request.POST, request.FILES, instance=team)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Équipe mise à jour.")
+            return redirect('admin_juin_teams')
+    else:
+        form = JUINTeamForm(instance=team)
+    return render(request, 'admin_dashboard/juin/team_form.html', {'form': form, 'title': "Modifier l'équipe"})
+
+@custom_staff_member_required
+def juin_team_delete(request, pk):
+    """Supprimer une équipe J.U.IN"""
+    team = get_object_or_404(JUINTeam, pk=pk)
+    if request.method == 'POST':
+        team.delete()
+        messages.success(request, "Équipe supprimée.")
+        return redirect('admin_juin_teams')
+    return render(request, 'admin_dashboard/juin/confirm_delete.html', {'object': team, 'cancel_url': 'admin_juin_teams'})
+
+

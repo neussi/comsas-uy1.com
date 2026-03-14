@@ -1,99 +1,244 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}À propos - COMS.A.S{% endblock %}
+{% block title %}À propos - COMS.A.S | Excellence & Innovation{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --juin-gradient: linear-gradient(135deg, #E91E63 0%, #FF9800 100%);
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .glass-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        border-color: var(--primary-color);
+    }
+
+    .hero-gradient {
+        background: radial-gradient(circle at top right, rgba(233, 30, 99, 0.05) 0%, transparent 40%),
+            radial-gradient(circle at bottom left, rgba(255, 152, 0, 0.05) 0%, transparent 40%);
+    }
+
+    .text-gradient {
+        background: var(--juin-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .stat-badge {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.02);
+    }
+
+    .timeline-modern {
+        position: relative;
+        padding-left: 3rem;
+    }
+
+    .timeline-modern::before {
+        content: '';
+        position: absolute;
+        left: 0.75rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+        opacity: 0.2;
+    }
+
+    .timeline-dot-modern {
+        position: absolute;
+        left: 0;
+        width: 1.5rem;
+        height: 1.5rem;
+        background: white;
+        border: 3px solid var(--primary-color);
+        border-radius: 50%;
+        z-index: 2;
+    }
+
+    .floating-code {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0px) rotate(0deg);
+        }
+
+        50% {
+            transform: translateY(-20px) rotate(5deg);
+        }
+
+        100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<section class="py-5 bg-white position-relative overflow-hidden"
-    style="min-height: 60vh; display: flex; align-items: center;">
-    <div class="container position-relative z-1">
+<section class="py-5 hero-gradient overflow-hidden" style="min-height: 85vh; display: flex; align-items: center;">
+    <div class="container position-relative">
+        <!-- Floating Elements -->
+        <div class="position-absolute top-0 start-0 opacity-10 floating-code d-none d-lg-block" style="z-index: -1;">
+            <i class="fas fa-code fa-9x text-primary"></i>
+        </div>
+        <div class="position-absolute bottom-0 end-0 opacity-10 floating-code d-none d-lg-block"
+            style="z-index: -1; animation-delay: -3s;">
+            <i class="fas fa-laptop-code fa-9x text-secondary"></i>
+        </div>
+
         <div class="row align-items-center">
-            <div class="col-lg-7" data-aos="fade-right">
-                <nav aria-label="breadcrumb" class="mb-4">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
-                                class="text-decoration-none text-muted">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">À propos</li>
-                    </ol>
-                </nav>
-                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
-                    <i class="fas fa-history me-2"></i>Notre Histoire
+            <div class="col-lg-7" data-aos="fade-up">
+                <div
+                    class="d-inline-flex align-items-center py-2 px-3 badge bg-primary bg-opacity-10 text-primary rounded-pill mb-4">
+                    <span class="pulse-dot me-2"></span>
+                    <span class="fw-bold small text-uppercase" style="letter-spacing: 1px;">Au cœur de
+                        l'innovation</span>
                 </div>
-                <h1 class="display-3 fw-bold mb-4 text-dark">
-                    À propos du <span class="text-primary">COM.S.AS</span>
+                <h1 class="display-2 fw-extrabold mb-4 lh-tight">
+                    Forger les <span class="text-gradient">Leaders</span> <br>du Numérique
                 </h1>
-                <p class="lead text-muted mb-4">
-                    Le Computer Science Association est le club informatique de l'Université de Yaoundé 1.
-                    Une pépinière de talents et d'innovation pour les leaders technologiques de demain.
+                <p class="lead text-muted mb-5 fs-4" style="max-width: 600px;">
+                    Le Computer Sciences Association est une pépinière de talents dédiée à l'excellence technologique à
+                    l'Université de Yaoundé 1.
                 </p>
-                <div class="d-flex gap-3">
-                    <a href="#mission" class="btn btn-primary btn-lg rounded-pill px-4">
-                        Notre Mission <i class="fas fa-arrow-down ms-2"></i>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#mission" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg">
+                        Découvrir <i class="fas fa-chevron-right ms-2 small"></i>
                     </a>
-                    <a href="#bureau" class="btn btn-outline-dark btn-lg rounded-pill px-4">
-                        Le Bureau <i class="fas fa-users ms-2"></i>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5">
+                        Nous rejoindre
                     </a>
                 </div>
             </div>
-            <div class="col-lg-5" data-aos="fade-left">
-                <div class="position-relative text-center">
-                    <div class="bg-primary bg-opacity-10 rounded-circle position-absolute top-50 start-50 translates-middle"
-                        style="width: 400px; height: 400px; z-index: -1;"></div>
-                    <img src="{% static 'images/comsas.png' %}" alt="Logo COM.S.AS" class="img-fluid"
-                        style="max-height: 350px;">
+            <div class="col-lg-5 mt-5 mt-lg-0" data-aos="zoom-in" data-aos-delay="200">
+                <div class="position-relative">
+                    <div class="bg-primary opacity-5 rounded-circle position-absolute top-50 start-50 translate-middle"
+                        style="width: 500px; height: 500px;"></div>
+                    <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS"
+                        class="img-fluid position-relative z-1 drop-shadow" style="max-height: 450px;">
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Mission Section -->
-<section id="mission" class="py-5 bg-light">
+<!-- Stats Section -->
+<section class="py-5 position-relative z-2" style="margin-top: -80px;">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-badge h-100">
+                    <h2 class="fw-bold mb-1 text-primary">{{ total_members|default:"500" }}+</h2>
+                    <p class="text-muted small mb-0 fw-semibold text-uppercase">Membres Actifs</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-badge h-100">
+                    <h2 class="fw-bold mb-1 text-secondary">20+</h2>
+                    <p class="text-muted small mb-0 fw-semibold text-uppercase">Éditions J.U.IN</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-badge h-100">
+                    <h2 class="fw-bold mb-1 text-success">50+</h2>
+                    <p class="text-muted small mb-0 fw-semibold text-uppercase">Projets Réalisés</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-badge h-100">
+                    <h2 class="fw-bold mb-1 text-info">15+</h2>
+                    <p class="text-muted small mb-0 fw-semibold text-uppercase">Entreprises Partenaires</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Vision -->
+<section id="mission" class="py-5 bg-white">
     <div class="container py-5">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-                <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill">
-                    <i class="fas fa-bullseye me-2"></i>Mission
-                </span>
-                <h2 class="display-5 fw-bold mb-4">Innovation & <span class="text-primary">Excellence</span></h2>
-                <p class="text-muted lead mb-4">
-                    Le COM.S.AS a pour mission de rassembler les étudiants en informatique de l'Université de Yaoundé 1
-                    autour d'objectifs communs : l'excellence académique, l'innovation technologique et l'insertion
-                    professionnelle.
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" data-aos="fade-right">
+                <h6 class="text-primary fw-bold text-uppercase mb-3" style="letter-spacing: 2px;">Notre Vision</h6>
+                <h2 class="display-4 fw-bold mb-4">Plus qu'un Club, <br><span class="text-gradient">Une Famille</span>
+                </h2>
+                <p class="text-muted mb-5 fs-5">
+                    Fondé sur les piliers de la fraternité et du partage intellectuel, le COM.S.AS s'efforce de combler
+                    le fossé entre la théorie académique et les exigences du marché technologique mondial.
                 </p>
-                <div class="row g-4 mt-2">
+
+                <div class="row g-4">
                     <div class="col-md-6">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-white p-3 rounded-circle shadow-sm me-3 text-primary">
-                                <i class="fas fa-laptop-code fa-lg"></i>
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-4 text-primary">
+                                <i class="fas fa-graduation-cap fa-2x"></i>
                             </div>
                             <div>
-                                <h5 class="fw-bold">Formation</h5>
-                                <p class="text-muted small">Ateliers pratiques et séminaires techniques pour monter en
-                                    compétences.</p>
+                                <h5 class="fw-bold mb-1">Pédagogie</h5>
+                                <p class="text-muted small mb-0">Ateliers, formations et groupes d'études spécialisés.
+                                </p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="d-flex align-items-start">
-                            <div class="bg-white p-3 rounded-circle shadow-sm me-3 text-warning">
-                                <i class="fas fa-network-wired fa-lg"></i>
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-secondary bg-opacity-10 p-3 rounded-4 text-secondary">
+                                <i class="fas fa-rocket fa-2x"></i>
                             </div>
                             <div>
-                                <h5 class="fw-bold">Réseautage</h5>
-                                <p class="text-muted small">Connexion avec le monde professionnel et les anciens.</p>
+                                <h5 class="fw-bold mb-1">Innovation</h5>
+                                <p class="text-muted small mb-0">Hackathons et incubation de projets étudiants.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6" data-aos="fade-left">
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden transform-hover">
-                    <div class="card-body p-5 text-center bg-white">
-                        <i class="fas fa-code fa-5x text-primary opacity-25 mb-4"></i>
-                        <h3 class="fw-bold mb-3">{{ total_members|default:"500" }}+ Membres</h3>
-                        <p class="text-muted">Rejoignez une communauté dynamique et passionnée.</p>
+                <div class="row g-4">
+                    <div class="col-6 pt-5">
+                        <div class="glass-card p-4 mb-4">
+                            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                            <h5 class="fw-bold">Intégrité</h5>
+                            <p class="text-muted small mb-0">Le respect de l'éthique professionnelle.</p>
+                        </div>
+                        <div class="glass-card p-4">
+                            <i class="fas fa-hand-holding-heart fa-3x text-success mb-3"></i>
+                            <h5 class="fw-bold">Partage</h5>
+                            <p class="text-muted small mb-0">Le "Peer-to-Peer learning" comme ADN.</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="glass-card p-4 mb-4">
+                            <i class="fas fa-users fa-3x text-secondary mb-3"></i>
+                            <h5 class="fw-bold">Cohésion</h5>
+                            <p class="text-muted small mb-0">Une communauté soudée et inspirante.</p>
+                        </div>
+                        <div class="glass-card p-4">
+                            <i class="fas fa-gem fa-3x text-info mb-3"></i>
+                            <h5 class="fw-bold">Excellence</h5>
+                            <p class="text-muted small mb-0">Viser les plus hauts standards mondiaux.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -101,91 +246,37 @@
     </div>
 </section>
 
-<!-- President Message -->
-<section id="president-word" class="py-5 bg-white">
-    <div class="container py-5">
-        <div class="row align-items-center">
-            <div class="col-lg-5 mb-4 mb-lg-0 text-center" data-aos="zoom-in">
-                <div class="position-relative d-inline-block">
-                    <img src="{% static 'images/comsas.png' %}" alt="Président"
-                        class="rounded-circle shadow-lg border border-5 border-light"
-                        style="width: 300px; height: 300px; object-fit: cover;">
-                    <div class="position-absolute top-0 start-0 bg-primary text-white rounded-circle p-3 shadow">
-                        <i class="fas fa-quote-left fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-7" data-aos="fade-up">
-                <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
-                    <i class="fas fa-user-tie me-2"></i>Mot du Président
-                </span>
-                <h2 class="display-5 fw-bold mb-4">Une Vision pour <span class="text-primary">l'Avenir</span></h2>
-                <blockquote class="blockquote mb-4 p-4 border-start border-5 border-primary bg-light rounded-end">
-                    <p class="mb-3 fst-italic text-muted">"Chers camarades, le COM.S.AS est bien plus qu'une
-                        association, c'est une famille.
-                        Mon mandat est placé sous le signe de l'action et de l'impact concret. Ensemble, faisons
-                        rayonner l'informatique à l'UY1."</p>
-                    <footer class="blockquote-footer mt-2">
-                        <strong class="text-dark">NEUSSI NJIETCHEU Patrice Eugene</strong>
-                        <cite title="Source Title" class="d-block text-primary">Président COM.S.AS 2025-2026</cite>
-                    </footer>
-                </blockquote>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Values Section -->
+<!-- History Timeline Section -->
 <section class="py-5 bg-light">
     <div class="container py-5">
         <div class="text-center mb-5" data-aos="fade-up">
-            <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill">
-                <i class="fas fa-heart me-2"></i>Valeurs
-            </span>
-            <h2 class="fw-bold">Nos Principes</h2>
+            <h2 class="display-5 fw-bold mb-3">Notre <span class="text-primary">Héritage</span></h2>
+            <p class="text-muted" style="max-width: 600px; margin: 0 auto;">
+                Depuis sa création, le COM.S.AS a traversé les décennies en s'adaptant continuellement aux révolutions
+                technologiques.
+            </p>
         </div>
-        <div class="row g-4">
-            <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
-                <div class="card h-100 border-0 shadow-sm hover-lift text-center p-4">
-                    <div class="card-body">
-                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mb-3">
-                            <i class="fas fa-lightbulb fa-2x"></i>
-                        </div>
-                        <h5 class="fw-bold">Innovation</h5>
-                        <p class="text-muted small">Toujours à la pointe de la technologie.</p>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="timeline-modern">
+                    <div class="mb-5 position-relative" data-aos="fade-left">
+                        <div class="timeline-dot-modern"></div>
+                        <h4 class="fw-bold text-primary mb-2">Les Origines</h4>
+                        <p class="text-muted">Création du club pour dynamiser la vie estudiantine au sein de la Faculté
+                            des Sciences de l'Université de Yaoundé 1.</p>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
-                <div class="card h-100 border-0 shadow-sm hover-lift text-center p-4">
-                    <div class="card-body">
-                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3 d-inline-block mb-3">
-                            <i class="fas fa-users fa-2x"></i>
-                        </div>
-                        <h5 class="fw-bold">Communauté</h5>
-                        <p class="text-muted small">Grandir ensemble par le partage.</p>
+                    <div class="mb-5 position-relative" data-aos="fade-left" data-aos-delay="100">
+                        <div class="timeline-dot-modern"></div>
+                        <h4 class="fw-bold text-primary mb-2">L'Institution J.U.IN</h4>
+                        <p class="text-muted">Lancement des Journées Universitaires de l'Informatique, devenues
+                            aujourd'hui le plus grand événement IT universitaire du pays.</p>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
-                <div class="card h-100 border-0 shadow-sm hover-lift text-center p-4">
-                    <div class="card-body">
-                        <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 d-inline-block mb-3">
-                            <i class="fas fa-graduation-cap fa-2x"></i>
-                        </div>
-                        <h5 class="fw-bold">Excellence</h5>
-                        <p class="text-muted small">Viser le plus haut niveau académique.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
-                <div class="card h-100 border-0 shadow-sm hover-lift text-center p-4">
-                    <div class="card-body">
-                        <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 d-inline-block mb-3">
-                            <i class="fas fa-rocket fa-2x"></i>
-                        </div>
-                        <h5 class="fw-bold">Leadership</h5>
-                        <p class="text-muted small">Former les leaders de demain.</p>
+                    <div class="mb-0 position-relative" data-aos="fade-left" data-aos-delay="200">
+                        <div class="timeline-dot-modern"></div>
+                        <h4 class="fw-bold text-primary mb-2">L'Ère Numérique 2.0</h4>
+                        <p class="text-muted">Modernisation des outils, incubation de startups et rayonnement
+                            international des membres de l'association.</p>
                     </div>
                 </div>
             </div>
@@ -193,18 +284,49 @@
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="py-5 bg-dark text-white text-center">
-    <div class="container">
-        <h2 class="fw-bold mb-3">Rejoignez Notre Famille</h2>
-        <p class="lead mb-4 text-white-50">Devenez membre et contribuez à l'excellence de notre communauté.</p>
+<!-- President Word -->
+<section class="py-5 bg-white">
+    <div class="container py-5">
+        <div class="glass-card p-5 overflow-hidden position-relative border-0 shadow-lg">
+            <div class="position-absolute top-0 end-0 p-5 opacity-10">
+                <i class="fas fa-quote-right fa-9x"></i>
+            </div>
+            <div class="row align-items-center g-5 position-relative z-1">
+                <div class="col-lg-4 text-center">
+                    <img src="{% static 'images/comsas.png' %}" alt="Président"
+                        class="img-fluid rounded-circle border border-5 border-white shadow-lg mb-4"
+                        style="width: 250px; height: 250px; object-fit: cover;">
+                </div>
+                <div class="col-lg-8" data-aos="fade-up">
+                    <span class="badge bg-primary px-3 py-2 rounded-pill mb-4">Mot du Président</span>
+                    <h2 class="display-6 fw-bold mb-4 italic">"Nous construisons le pont entre vos rêves et les serveurs
+                        du monde entier."</h2>
+                    <p class="text-muted lead mb-4">
+                        Favoriser l'épanouissement technologique et professionnel de nos membres est notre mission
+                        première. Ensemble, nous transformons des étudiants passionnés en ingénieurs d'exception.
+                    </p>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary p-1 rounded-circle" style="width: 50px; height: 5px;"></div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Patrice Eugene NEUSSI NJIETCHEU</h5>
+                            <small class="text-primary text-uppercase fw-bold">Président Exécutif 2025-2026</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final CTA -->
+<section class="py-5 text-center">
+    <div class="container py-5" data-aos="zoom-in">
+        <h2 class="display-5 fw-bold mb-4">Prêt à écrire l'histoire avec nous ?</h2>
+        <p class="text-muted mb-5 fs-5">Rejoignez une communauté d'élite et propulsez votre carrière.</p>
         <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'member_registration' %}" class="btn btn-warning btn-lg rounded-pill px-5 fw-bold">
-                Devenir Membre
-            </a>
-            <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg rounded-pill px-5">
-                Nous Contacter
-            </a>
+            <a href="{% url 'member_registration' %}" class="btn btn-primary btn-lg rounded-pill px-5">Devenir
+                Membre</a>
+            <a href="{% url 'contact' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5">Contactez-nous</a>
         </div>
     </div>
 </section>

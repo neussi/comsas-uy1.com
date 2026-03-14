@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscription — {{ competition.name }} | J.U.IN 2026{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-white overflow-hidden" style="min-height: 100vh; position: relative;">
+    <!-- Background Decor -->
+    <div class="position-absolute top-0 end-0 p-5 opacity-5 d-none d-lg-block">
+        <i
+            class="fas {% if competition.comp_type == 'sport' %}fa-futbol{% elif competition.comp_type == 'gaming' %}fa-gamepad{% else %}fa-laptop-code{% endif %} fa-10x"></i>
+    </div>
+
+    <div class="container py-5 position-relative z-1">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-lg rounded-5 overflow-hidden">
+                    <div class="row g-0">
+                        <!-- Left Side: Competition Info -->
+                        <div class="col-lg-4 bg-dark text-white p-4 p-lg-5 d-flex flex-column justify-content-between">
+                            <div>
+                                <a href="{% url 'juin' %}#competitions"
+                                    class="text-white-50 text-decoration-none small mb-4 d-inline-block">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour aux compétitions
+                                </a>
+                                <div class="badge bg-primary rounded-pill mb-3 px-3">{{
+                                    competition.get_comp_type_display }}</div>
+                                <h1 class="h2 fw-bold mb-4">{{ competition.name }}</h1>
+                                <p class="text-white-50 small mb-4">{{ competition.description }}</p>
+
+                                <div class="space-y-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-white bg-opacity-10 p-2 rounded-3 text-primary">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div>
+                                            <div class="small fw-bold">Max Équipes</div>
+                                            <div class="text-white-50">{{ competition.max_teams }}</div>
+                                        </div>
+                                    </div>
+                                    {% if competition.start_date %}
+                                    <div class="d-flex align-items-center gap-3 mt-4">
+                                        <div class="bg-white bg-opacity-10 p-2 rounded-3 text-warning">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                        <div>
+                                            <div class="small fw-bold">Début estimé</div>
+                                            <div class="text-white-50">{{ competition.start_date|date:"d F Y — H:i" }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="mt-5 p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-10">
+                                <h6 class="fw-bold mb-2 small"><i class="fas fa-info-circle me-2 text-primary"></i>Note
+                                    importante</h6>
+                                <p class="mb-0 text-white-50" style="font-size: 0.75rem;">
+                                    Toutes les inscriptions sont soumises à validation par le comité d'organisation.
+                                    Assurez-vous que les informations de contact du capitaine sont correctes.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Registration Form -->
+                        <div class="col-lg-8 p-4 p-lg-5">
+                            <h2 class="fw-bold mb-2">Formulaire d'Inscription</h2>
+                            <p class="text-muted mb-4 small">Complétez avec soin les détails de votre équipe ou
+                                candidature individuelle.</p>
+
+                            <form method="post" enctype="multipart/form-data" class="needs-validation">
+                                {% csrf_token %}
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <h5 class="fw-bold border-bottom pb-2 mb-3 small text-uppercase"
+                                            style="letter-spacing: 1px;">L'Équipe</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Nom de l'équipe / Candidat</label>
+                                            {{ form.name }}
+                                            {% if form.name.errors %}<div class="text-danger small">{{
+                                                form.name.errors.0 }}</div>{% endif %}
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Nombre de membres</label>
+                                            {{ form.members_count }}
+                                            {% if form.members_count.errors %}<div class="text-danger small">{{
+                                                form.members_count.errors.0 }}</div>{% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <h5 class="fw-bold border-bottom pb-2 mb-3 small text-uppercase"
+                                            style="letter-spacing: 1px;">Le Capitaine</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Nom complet</label>
+                                            {{ form.captain_name }}
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Email</label>
+                                            {{ form.captain_email }}
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">WhatsApp</label>
+                                            {{ form.captain_phone }}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <h5 class="fw-bold border-bottom pb-2 mb-3 small text-uppercase"
+                                            style="letter-spacing: 1px;">Détails Additionnels</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Liste des membres (Noms &
+                                                Prénoms)</label>
+                                            {{ form.members_list }}
+                                            <div class="form-text">Notez un membre par ligne pour une meilleure
+                                                lisibilité.</div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div
+                                                class="col-md-{% if competition.comp_type == 'sport' %}12{% else %}6{% endif %}">
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold">{{ form.project_title.label
+                                                        }}</label>
+                                                    {{ form.project_title }}
+                                                </div>
+                                            </div>
+                                            {% if competition.comp_type != 'sport' %}
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label small fw-bold">Logo de l'équipe /
+                                                        Projet</label>
+                                                    {{ form.logo }}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">{{ form.project_description.label
+                                                }}</label>
+                                            {{ form.project_description }}
+                                        </div>
+                                    </div>
+
+                                    {% if form.non_field_errors %}
+                                    <div class="col-12">
+                                        <div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="col-12 text-end pt-3">
+                                        <button type="submit"
+                                            class="btn btn-primary rounded-pill px-5 btn-lg fw-bold shadow">
+                                            <i class="fas fa-check-circle me-2"></i>Valider l'inscription
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(233, 30, 99, 0.1);
+    }
+</style>
+{% endblock %}

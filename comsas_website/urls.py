@@ -11,14 +11,17 @@ urlpatterns = [
     # Dashboard administrateur personnalisé
     path('dashboard/', include('admin_dashboard.urls')),
     
-    # Interface d'administration Django par défaut (nécessaire pour certains namespaces)
-    path('admin/', admin.site.urls),
+    # Interface d'administration Django par défaut désactivée
+    # path('admin/', admin.site.urls),
     
     # CKEditor pour l'upload de fichiers
     path('ckeditor/', include('ckeditor_uploader.urls')),
     
     # URLs d'internationalisation (IMPORTANT : inclut set_language)
     path('i18n/', include('django.conf.urls.i18n')),
+
+    # Raccourci de connexion admin demandé par l'utilisateur
+    path('login_admin/', include('admin_dashboard.auth_urls')),
 ]
 
 # ========================= HANDLERS D'ERREURS =========================
@@ -42,7 +45,7 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
-# Configuration de l'admin Django
-admin.site.site_header = "COMS.A.S Administration Technique"
-admin.site.site_title = "COMS.A.S Admin"
-admin.site.index_title = "Administration Technique Django"
+# Configuration de l'admin Django désactivée
+# admin.site.site_header = "COMS.A.S Administration Technique"
+# admin.site.site_title = "COMS.A.S Admin"
+# admin.site.index_title = "Administration Technique Django"

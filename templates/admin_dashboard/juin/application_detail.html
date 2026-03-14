@@ -1,0 +1,178 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Candidature — {{ app.nom_prenom }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <!-- ── En-tête ── -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{% url 'admin_juin_applications' %}" class="btn btn-outline-secondary btn-sm mb-2">
+                <i class="fas fa-arrow-left me-1"></i>Retour liste
+            </a>
+            <h1 class="h3 fw-bold mb-0">{{ app.nom_prenom }}</h1>
+            <span class="text-muted small">Candidature du {{ app.date_postulation|date:"d/m/Y à H:i" }}</span>
+        </div>
+        <div>
+            {% if app.statut == 'approved' %}
+                <span class="badge bg-success fs-6">✅ Approuvé — {{ app.get_commission_role_display }}</span>
+            {% elif app.statut == 'rejected' %}
+                <span class="badge bg-danger fs-6">❌ Rejeté</span>
+            {% else %}
+                <span class="badge bg-warning text-dark fs-6">⏳ En attente</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- ── Colonne gauche : Profil ── -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+
+                    {% if app.photo %}
+                        <img src="{{ app.photo.url }}"
+                             alt="{{ app.nom_prenom }}"
+                             class="rounded-circle mb-3"
+                             style="width:120px;height:120px;object-fit:cover;border:4px solid #e2e8f0;">
+                    {% else %}
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mb-3 mx-auto"
+                             style="width:120px;height:120px;font-size:2.5rem;font-weight:900;color:#3b82f6;">
+                            {{ app.nom_prenom|slice:":1" }}
+                        </div>
+                    {% endif %}
+
+                    <h4 class="fw-bold mb-1">{{ app.nom_prenom }}</h4>
+                    <div class="text-muted small mb-1">{{ app.email }}</div>
+                    <div class="text-muted small mb-3">{{ app.telephone }}</div>
+
+                    <table class="table table-sm table-borderless text-start">
+                        <tr>
+                            <td class="text-muted small">Établissement</td>
+                            <td class="small fw-semibold">{{ app.get_etablissement_display }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Niveau</td>
+                            <td class="small fw-semibold">{{ app.niveau }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Commission demandée</td>
+                            <td><span class="badge bg-primary">{{ app.commission.code }}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted small">Rôle actuel</td>
+                            <td class="small">{{ app.get_commission_role_display }}</td>
+                        </tr>
+                    </table>
+
+                    {% if app.statut == 'approved' %}
+                        <a href="{% url 'admin_juin_generate_badge' app.pk %}" class="btn btn-success w-100 mt-2">
+                            <i class="fas fa-id-badge me-2"></i>Télécharger le Badge PDF
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            {% if app.motivation %}
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-header fw-semibold bg-white small">Message de motivation</div>
+                <div class="card-body">
+                    <p class="small text-muted mb-0 fst-italic">"{{ app.motivation }}"</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ── Colonne droite : Actions ── -->
+        <div class="col-lg-8">
+
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ message }}
+            </div>
+            {% endfor %}
+
+            <!-- APPROUVER -->
+            <div class="card border-0 shadow-sm mb-4" style="border-left: 4px solid #22c55e !important;">
+                <div class="card-header bg-white fw-bold text-success">
+                    <i class="fas fa-check-circle me-2"></i>Approuver la candidature
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="approve">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Commission assignée</label>
+                                <select name="commission_id" class="form-select form-select-sm">
+                                    {% for c in commissions %}
+                                        <option value="{{ c.pk }}" {% if c.pk == app.commission.pk %}selected{% endif %}>
+                                            {{ c.code }} — {{ c.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Rôle dans la commission</label>
+                                <select name="commission_role" class="form-select form-select-sm">
+                                    {% for val, lbl in role_choices %}
+                                        <option value="{{ val }}" {% if val == app.commission_role %}selected{% endif %}>
+                                            {{ lbl }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" name="notify" id="notifyApprove" checked>
+                            <label class="form-check-label small" for="notifyApprove">
+                                Notifier le candidat par email
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            ✅ Approuver et notifier
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- REJETER -->
+            <div class="card border-0 shadow-sm" style="border-left: 4px solid #ef4444 !important;">
+                <div class="card-header bg-white fw-bold text-danger">
+                    <i class="fas fa-times-circle me-2"></i>Rejeter la candidature
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reject">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">
+                                Motif du rejet <span class="text-muted fw-normal">(optionnel, envoyé par email)</span>
+                            </label>
+                            <textarea name="motif_rejet"
+                                      class="form-control form-control-sm"
+                                      rows="3"
+                                      placeholder="Ex : La commission est déjà complète...">{{ app.motif_rejet }}</textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" name="notify" id="notifyReject" checked>
+                            <label class="form-check-label small" for="notifyReject">
+                                Notifier le candidat par email
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-danger">
+                            ❌ Rejeter
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

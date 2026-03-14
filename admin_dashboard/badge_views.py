@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.admin.views.decorators import staff_member_required
+from .views import custom_staff_member_required
 from django.contrib import messages
 from io import BytesIO
 from main.models import Event, EventRegistration
@@ -10,7 +10,7 @@ from django.http import HttpResponse
 
 # Badge Management Views
 
-@staff_member_required
+@custom_staff_member_required
 def event_badges_manage(request, pk):
     """Manage badges for an event"""
     event = get_object_or_404(Event, pk=pk)
@@ -37,7 +37,7 @@ def event_badges_manage(request, pk):
     
     return render(request, 'admin_dashboard/events/badges.html', context)
 
-@staff_member_required
+@custom_staff_member_required
 def generate_all_badges(request, pk):
     """Generate all badges for an event"""
     event = get_object_or_404(Event, pk=pk)
@@ -63,7 +63,7 @@ def generate_all_badges(request, pk):
         
     return redirect('admin_event_badges', pk=pk)
 
-@staff_member_required
+@custom_staff_member_required
 def download_badges_zip(request, pk):
     """Download all generated badges as a ZIP file"""
     event = get_object_or_404(Event, pk=pk)
@@ -91,7 +91,7 @@ def download_badges_zip(request, pk):
     
     return response
 
-@staff_member_required
+@custom_staff_member_required
 def regenerate_badge(request, registration_id):
     """Regenerate a single badge"""
     registration = get_object_or_404(EventRegistration, pk=registration_id)

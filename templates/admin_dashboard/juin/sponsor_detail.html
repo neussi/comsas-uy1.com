@@ -1,0 +1,147 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Sponsor : {{ sponsor.company_name }} — J.U.IN {{ edition.number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <a href="{% url 'admin_juin_sponsors' %}" class="btn btn-link text-decoration-none p-0 text-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Retour à la liste des sponsors
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div class="d-flex align-items-center gap-4">
+                        {% if sponsor.logo %}
+                        <img src="{{ sponsor.logo.url }}" alt="Logo" class="rounded shadow-sm"
+                            style="width: 100px; height: 100px; object-fit: contain; background: #fff;">
+                        {% else %}
+                        <div class="rounded shadow-sm bg-light d-flex align-items-center justify-content-center"
+                            style="width: 100px; height: 100px;">
+                            <i class="fas fa-building fa-3x text-muted opacity-25"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h1 class="h2 fw-bold mb-1">{{ sponsor.company_name }}</h1>
+                            <span class="badge 
+                                {% if sponsor.tier == 'gold' %}bg-warning text-dark
+                                {% elif sponsor.tier == 'silver' %}bg-secondary
+                                {% elif sponsor.tier == 'bronze' %}bg-primary
+                                {% else %}bg-info{% endif %} fs-6 px-3 py-2">
+                                {{ sponsor.get_tier_display }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <div class="small text-muted mb-2">Statut actuel</div>
+                        {% if sponsor.statut == 'approved' %}
+                        <span class="badge bg-success fs-6"><i class="fas fa-check-circle me-1"></i>Approuvé</span>
+                        {% elif sponsor.statut == 'rejected' %}
+                        <span class="badge bg-danger fs-6"><i class="fas fa-times-circle me-1"></i>Refusé</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark fs-6"><i class="fas fa-clock me-1"></i>En attente</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="fw-bold text-primary mb-3">Description</h5>
+                    <p class="text-muted">{{ sponsor.description|linebreaks }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="fw-bold text-primary mb-3">Contribution proposée</h5>
+                    <div class="p-3 bg-light rounded-3 border">
+                        {{ sponsor.contribution|linebreaks }}
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex gap-2">
+                    {% if sponsor.statut != 'approved' %}
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="approve">
+                        <button type="submit" class="btn btn-success px-4">Approuver & Publier</button>
+                    </form>
+                    {% endif %}
+
+                    {% if sponsor.statut != 'rejected' %}
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit" class="btn btn-outline-danger px-4">Refuser la demande</button>
+                    </form>
+                    {% endif %}
+
+                    <form method="post" class="d-inline ms-auto"
+                        onsubmit="return confirm('Supprimer définitivement ce partenaire ?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="btn btn-link text-danger text-decoration-none">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-4">Contact Responsable</h5>
+
+                <div class="mb-3">
+                    <label class="small text-muted d-block text-uppercase ls-1">Nom complet</label>
+                    <div class="fw-bold">{{ sponsor.contact_name }}</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted d-block text-uppercase ls-1">Email</label>
+                    <div class="fw-bold"><a href="mailto:{{ sponsor.contact_email }}">{{ sponsor.contact_email }}</a>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted d-block text-uppercase ls-1">Téléphone</label>
+                    <div class="fw-bold">{{ sponsor.contact_phone }}</div>
+                </div>
+
+                <div class="mb-0">
+                    <label class="small text-muted d-block text-uppercase ls-1">Site web</label>
+                    <div class="fw-bold">
+                        {% if sponsor.website %}
+                        <a href="{{ sponsor.website }}" target="_blank">{{ sponsor.website }} <i
+                                class="fas fa-external-link-alt ms-1 x-small"></i></a>
+                        {% else %}
+                        <span class="text-muted fst-italic">Non renseigné</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm p-4 bg-primary text-white">
+                <h5 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>Action de validation</h5>
+                <p class="small mb-0">
+                    L'approbation rendra le logo et le nom de l'entreprise visibles sur la page publique des sponsors du
+                    J.U.IN.
+                    Assurez-vous que le logo est korrektement cadré avant de valider.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+
+    .x-small {
+        font-size: 0.7rem;
+    }
+</style>
+{% endblock %}

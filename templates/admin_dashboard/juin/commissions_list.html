@@ -1,0 +1,88 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Commissions J.U.IN 2026{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0">👥 Commissions J.U.IN 2026</h1>
+            <p class="text-muted mb-0">Organisation et pôles de l'édition</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_juin_dashboard' %}" class="btn btn-outline-secondary btn-sm">← Retour</a>
+            <a href="{% url 'admin_juin_commission_create' %}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Nouvelle Commission
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ordre</th>
+                        <th>Commission</th>
+                        <th>Code</th>
+                        <th>Chef·fe</th>
+                        <th>Membres Approuvés</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in commissions %}
+                    <tr>
+                        <td><span class="badge bg-secondary">{{ c.order }}</span></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-{{ c.color }} bg-opacity-10 text-{{ c.color }} p-2 me-3"
+                                    style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas {{ c.icon }}"></i>
+                                </div>
+                                <div class="fw-bold">{{ c.name }}</div>
+                            </div>
+                        </td>
+                        <td><code>{{ c.code }}</code></td>
+                        <td>
+                            {% if c.chef_nom %}
+                            <div class="small fw-semibold">{{ c.chef_nom }}</div>
+                            <div class="text-muted small">{{ c.chef_contact }}</div>
+                            {% else %}
+                            <span class="text-muted small fst-italic">Non assigné</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-info bg-opacity-10 text-info">
+                                {{ c.applications.filter|length }} postulants
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <a href="{% url 'admin_juin_commission_edit' c.pk %}"
+                                    class="btn btn-sm btn-outline-primary" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin_juin_commission_delete' c.pk %}"
+                                    class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted mb-3">Aucune commission configurée pour cette édition.</div>
+                            <a href="{% url 'admin_juin_commission_create' %}" class="btn btn-primary btn-sm">Créer la
+                                première commission</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

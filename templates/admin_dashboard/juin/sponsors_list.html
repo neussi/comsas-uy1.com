@@ -1,0 +1,106 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Sponsors — J.U.IN {{ edition.number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0">🤝 Sponsors & Partenaires</h1>
+            <p class="text-muted mb-0">Gestion des demandes et de la visibilité pour l'édition {{ edition.number }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_juin_dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Retour
+            </a>
+            <a href="{% url 'admin_juin_sponsor_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Ajouter un Sponsor
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-bold">Liste des partenaires</div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Entreprise</th>
+                        <th>Niveau</th>
+                        <th>Contact</th>
+                        <th>Statut</th>
+                        <th>Date demande</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sponsor in sponsors %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                {% if sponsor.logo %}
+                                <img src="{{ sponsor.logo.url }}" alt="Logo" class="rounded"
+                                    style="width: 40px; height: 40px; object-fit: contain;">
+                                {% else %}
+                                <div class="rounded bg-light d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-building text-muted"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-bold">{{ sponsor.company_name }}</div>
+                                    {% if sponsor.website %}
+                                    <a href="{{ sponsor.website }}" target="_blank" class="small text-muted">{{ sponsor.website|truncatechars:30 }}</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if sponsor.tier == 'gold' %}bg-warning text-dark
+                                {% elif sponsor.tier == 'silver' %}bg-secondary
+                                {% elif sponsor.tier == 'bronze' %}bg-primary
+                                {% else %}bg-info{% endif %}">
+                                {{ sponsor.get_tier_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="small fw-bold">{{ sponsor.contact_name }}</div>
+                            <div class="small text-muted">{{ sponsor.contact_email }}</div>
+                        </td>
+                        <td>
+                            {% if sponsor.statut == 'approved' %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Approuvé</span>
+                            {% elif sponsor.statut == 'rejected' %}
+                            <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Refusé</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>En attente</span>
+                            {% endif %}
+                        </td>
+                        <td class="small text-muted">{{ sponsor.id }} (New)</td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <a href="{% url 'admin_juin_sponsor_detail' sponsor.pk %}"
+                                    class="btn btn-sm btn-outline-secondary" title="Détails">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'admin_juin_sponsor_edit' sponsor.pk %}"
+                                    class="btn btn-sm btn-outline-primary" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">Aucun sponsor enregistré pour cette édition.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

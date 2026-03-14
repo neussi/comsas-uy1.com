@@ -475,6 +475,71 @@
                 </a>
             </div>
 
+            <div class="menu-header">J.U.IN 2026</div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_dashboard' %}"
+                    class="menu-link {% if 'juin_dashboard' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-rocket"></i>
+                    <div>Vue d'ensemble</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_edition_manage' %}"
+                    class="menu-link {% if 'juin_edition' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-cog"></i>
+                    <div>Éditions</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_commissions' %}"
+                    class="menu-link {% if 'juin_commission' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-list"></i>
+                    <div>Commissions</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_applications' %}"
+                    class="menu-link {% if 'juin_application' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-file-signature"></i>
+                    <div>Candidatures</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_donations' %}"
+                    class="menu-link {% if 'juin_donation' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-heart"></i>
+                    <div>Dons</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_activities' %}"
+                    class="menu-link {% if 'juin_activities' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-hiking"></i>
+                    <div>Activités</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_sponsors' %}"
+                    class="menu-link {% if 'juin_sponsor' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-handshake"></i>
+                    <div>Sponsors</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_competitions' %}"
+                    class="menu-link {% if 'juin_competition' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-trophy"></i>
+                    <div>Compétitions</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_teams' %}"
+                    class="menu-link {% if 'juin_team' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-users-cog"></i>
+                    <div>Équipes</div>
+                </a>
+            </div>
+
             <div class="menu-header">Communication</div>
             <div class="menu-item">
                 <a href="{% url 'admin_messages_list' %}"
@@ -502,7 +567,7 @@
                 </a>
             </div>
             <div class="menu-item mt-3">
-                <a href="{% url 'admin:logout' %}" class="menu-link text-danger"
+                <a href="{% url 'admin_logout' %}" class="menu-link text-danger"
                     onclick="return confirm('Se déconnecter ?')">
                     <i class="fas fa-power-off"></i>
                     <div>Déconnexion</div>
@@ -595,7 +660,7 @@
                         </li>
                         <li><a class="dropdown-item" href="{% url 'admin_site_settings' %}"><i
                                     class="fas fa-user-cog me-2"></i> Profil</a></li>
-                        <li><a class="dropdown-item text-danger" href="{% url 'admin:logout' %}"><i
+                        <li><a class="dropdown-item text-danger" href="{% url 'admin_logout' %}"><i
                                     class="fas fa-power-off me-2"></i> Déconnexion</a></li>
                     </ul>
                 </div>

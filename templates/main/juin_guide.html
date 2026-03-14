@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Guide du Participant J.U.IN 2026 | COMS.A.S{% endblock %}
+
+{% block extra_css %}
+<style>
+    .guide-hero {
+        background: linear-gradient(135deg, var(--juin-navy) 0%, #1e293b 100%);
+        padding: 100px 0 60px;
+        color: white;
+    }
+
+    .faq-card {
+        border: none;
+        border-radius: 15px;
+        margin-bottom: 1rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .faq-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .faq-question {
+        padding: 1.5rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+        color: var(--juin-navy);
+    }
+
+    .faq-answer {
+        padding: 0 1.5rem 1.5rem;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    .guide-nav {
+        position: sticky;
+        top: 100px;
+    }
+
+    .nav-link-guide {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        color: #64748b;
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        margin-bottom: 5px;
+    }
+
+    .nav-link-guide:hover,
+    .nav-link-guide.active {
+        background: var(--juin-cyan);
+        color: white;
+    }
+
+    .category-title {
+        color: var(--juin-gold);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="guide-hero">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3" data-aos="fade-up">Guide & <span style="color:var(--juin-gold);">FAQ</span>
+        </h1>
+        <p class="lead text-white-50 mx-auto" style="max-width: 700px;" data-aos="fade-up" data-aos-delay="100">
+            Tout ce que vous devez savoir pour profiter pleinement de la 20ème édition des Journées Universitaires de
+            l'Informatique.
+        </p>
+    </div>
+</section>
+
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="row g-5">
+            <!-- Sidebar Nav -->
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="guide-nav">
+                    <span class="category-title">Navigation</span>
+                    <a href="#general" class="nav-link-guide active"><i class="fas fa-info-circle"></i> Généralités</a>
+                    <a href="#competitions" class="nav-link-guide"><i class="fas fa-trophy"></i> Compétitions</a>
+                    <a href="#commissions" class="nav-link-guide"><i class="fas fa-users"></i> Commissions</a>
+                    <a href="#logistique" class="nav-link-guide"><i class="fas fa-bus"></i> Logistique</a>
+                    <a href="#partenaires" class="nav-link-guide"><i class="fas fa-handshake"></i> Partenaires</a>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="col-lg-9">
+                <!-- Généralités -->
+                <div id="general" class="mb-5" data-aos="fade-up">
+                    <h3 class="fw-bold mb-4" style="color:var(--juin-navy);">Généralités</h3>
+
+                    <div class="faq-card bg-white">
+                        <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#q1">
+                            C'est quoi le J.U.IN ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="q1" class="collapse show">
+                            <div class="faq-answer">
+                                J.U.IN signifie "Journées Universitaires de l'Informatique". C'est l'événement phare du
+                                COMS.A.S (Club of Mathematics and Computer Science and Associated Sciences) de
+                                l'Université de Yaoundé I. Il réunit étudiants, professionnels et passionnés autour de
+                                thématiques technologiques.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-card bg-white">
+                        <div class="faq-question collapsed" data-bs-toggle="collapse" data-bs-target="#q2">
+                            Quand et où aura lieu l'édition 2026 ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="q2" class="collapse">
+                            <div class="faq-answer">
+                                L'édition 2026 se tiendra du 15 au 20 Juin 2026 sur le campus de l'Université de Yaoundé
+                                I (Amphi 500, Amphi 1001 et salle informatique du département).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compétitions -->
+                <div id="competitions" class="mb-5" data-aos="fade-up">
+                    <h3 class="fw-bold mb-4" style="color:var(--juin-navy);">Compétitions</h3>
+
+                    <div class="faq-card bg-white">
+                        <div class="faq-question collapsed" data-bs-toggle="collapse" data-bs-target="#q3">
+                            Comment s'inscrire à un hackathon ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="q3" class="collapse">
+                            <div class="faq-answer">
+                                Les inscriptions se font en ligne sur la page <a
+                                    href="{% url 'juin' %}#competitions">Compétitions</a>. Vous devez constituer une
+                                équipe de 3 à 5 personnes et remplir le formulaire d'inscription avant la date limite.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-card bg-white">
+                        <div class="faq-question collapsed" data-bs-toggle="collapse" data-bs-target="#q4">
+                            Y a-t-il des lots à gagner ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="q4" class="collapse">
+                            <div class="faq-answer">
+                                Oui ! Des prix en numéraire, des bourses d'études et des gadgets technologiques sont
+                                prévus pour les vainqueurs des différentes catégories (Coding, E-Sport, Football).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Commissions -->
+                <div id="commissions" class="mb-5" data-aos="fade-up">
+                    <h3 class="fw-bold mb-4" style="color:var(--juin-navy);">Commissions & Bénévolat</h3>
+
+                    <div class="faq-card bg-white">
+                        <div class="faq-question collapsed" data-bs-toggle="collapse" data-bs-target="#q5">
+                            Quel est le rôle d'un membre de commission ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="q5" class="collapse">
+                            <div class="faq-answer">
+                                Les membres des commissions travaillent en amont et durant l'événement pour la
+                                logistique, la communication, le protocole, etc. C'est une excellente occasion de
+                                développer des compétences en gestion de projet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logistique -->
+                <div id="logistique" class="mb-5" data-aos="fade-up">
+                    <h3 class="fw-bold mb-4" style="color:var(--juin-navy);">Logistique</h3>
+
+                    <div class="faq-card bg-white">
+                        <div class="faq-question collapsed" data-bs-toggle="collapse" data-bs-target="#q6">
+                            L'accès est-il payant pour les visiteurs ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="q6" class="collapse">
+                            <div class="faq-answer">
+                                L'accès aux expositions et aux conférences est <strong>gratuit</strong> pour tous les
+                                étudiants. Seules certaines soirées spéciales ou formations peuvent nécessiter un
+                                ticket.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Support -->
+<section class="py-5" style="background:#f8fafc;">
+    <div class="container text-center">
+        <h4 class="fw-bold mb-3">D'autres questions ?</h4>
+        <p class="text-muted mb-4">Notre équipe est là pour vous répondre.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'contact' %}" class="btn btn-primary rounded-pill px-4">Écrire au support</a>
+            <a href="https://wa.me/{{ settings.WHATSAPP_PRESIDENT }}" class="btn btn-outline-success rounded-pill px-4">
+                <i class="fab fa-whatsapp me-2"></i> WhatsApp
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

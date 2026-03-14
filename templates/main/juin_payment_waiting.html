@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Paiement en cours - J.U.IN {{ donation.edition.number }}{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light" style="padding-top: 120px; min-height: 80vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-lg rounded-4 text-center p-5">
+                    <div class="mb-4">
+                        <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Attente...</span>
+                        </div>
+                    </div>
+
+                    <h2 class="fw-bold mb-3">Validation de votre don</h2>
+                    <p class="lead text-muted mb-4">
+                        Merci <strong>{{ donation.nom_prenom }}</strong> ! Votre don de <strong>{{ donation.montant }}
+                            FCFA</strong> est en cours de validation.
+                    </p>
+
+                    <div class="bg-primary bg-opacity-10 p-4 rounded-4 mb-4 border border-primary border-opacity-25">
+                        <h5 class="fw-bold text-primary mb-3">Instructions de paiement</h5>
+                        <p class="mb-0">{{ instructions }}</p>
+                        <small class="text-muted d-block mt-2">Référence: {{
+                            donation.freemopay_reference|default:donation.external_id }}</small>
+                    </div>
+
+                    <div id="status-message" class="alert alert-info border-0 rounded-pill mb-4">
+                        <i class="fas fa-sync fa-spin me-2"></i> Attente de la confirmation Mobile Money...
+                    </div>
+
+                    <p class="small text-muted mb-0">
+                        N'utilisez pas le bouton "Retour". Cette page se mettra à jour automatiquement dès la réception
+                        de la confirmation.
+                    </p>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'juin' %}" class="btn btn-link text-decoration-none">Retour au J.U.IN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const externalId = "{{ donation.external_id }}";
+        const statusMsg = document.getElementById('status-message');
+
+        function checkStatus() {
+            fetch(`/api/payments/status/${externalId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.is_confirmed || data.status === 'completed') {
+                        statusMsg.className = "alert alert-success border-0 rounded-pill mb-4";
+                        statusMsg.innerHTML = '<i class="fas fa-check-circle me-2"></i> Paiement confirmé ! Merci beaucoup.';
+                        setTimeout(() => {
+                            window.location.href = "{% url 'juin' %}";
+                        }, 3000);
+                    } else if (data.status === 'failed' || data.status === 'cancelled') {
+                        statusMsg.className = "alert alert-danger border-0 rounded-pill mb-4";
+                        statusMsg.innerHTML = '<i class="fas fa-times-circle me-2"></i> Le paiement a échoué ou a été annulé.';
+                        setTimeout(() => {
+                            window.location.href = "{% url 'juin' %}";
+                        }, 5000);
+                    } else {
+                        // Recheck in 3 seconds
+                        setTimeout(checkStatus, 3000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking status:', error);
+                    setTimeout(checkStatus, 5000);
+                });
+        }
+
+        // Start polling
+        checkStatus();
+    });
+</script>
+{% endblock %}

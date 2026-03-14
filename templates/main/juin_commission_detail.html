@@ -1,0 +1,595 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ commission.name }} — Commission J.U.IN 2026 | COMS.A.S{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   VARIABLES — blanc + rose uniquement
+═══════════════════════════════════════ */
+:root {
+    --rose:        #E91E63;
+    --rose-light:  #f06292;
+    --rose-dark:   #c2185b;
+    --rose-pale:   rgba(233, 30, 99, .08);
+    --rose-border: rgba(233, 30, 99, .2);
+    --rose-shadow: rgba(233, 30, 99, .12);
+    --blanc:       #ffffff;
+    --blanc-off:   #fdf5f8;
+    --text-dark:   #1a0a10;
+    --text-muted:  #8a6070;
+    --gradient:    linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    --gradient-dark: linear-gradient(135deg, #c2185b 0%, #E91E63 100%);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-dark);
+    background: var(--blanc);
+}
+
+/* ── Gradient text ── */
+.text-gradient {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* ── Pulse dot ── */
+.pulse-dot {
+    width: 8px; height: 8px; background: var(--rose);
+    border-radius: 50%; display: inline-block; position: relative;
+}
+.pulse-dot::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%;
+    background: rgba(233,30,99,.3); animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%,100% { transform: scale(1); opacity: .8; }
+    50%      { transform: scale(1.8); opacity: 0; }
+}
+
+/* ── Hero ── */
+.comm-hero {
+    min-height: 52vh;
+    display: flex;
+    align-items: center;
+    background:
+        radial-gradient(ellipse 60% 70% at 95% 50%, rgba(233,30,99,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 5% 20%, rgba(233,30,99,.07) 0%, transparent 60%),
+        linear-gradient(160deg, #1a0a10 0%, #2d0617 50%, #1a0a10 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(233,30,99,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(233,30,99,.06) 1px, transparent 1px);
+    background-size: 52px 52px;
+    pointer-events: none;
+}
+
+.hero-icon-bg {
+    position: absolute;
+    right: -3%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18rem;
+    color: rgba(233,30,99,.06);
+    pointer-events: none;
+    line-height: 1;
+}
+
+/* ── Section badge ── */
+.section-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--rose-pale); border: 1px solid var(--rose-border);
+    color: var(--rose); padding: 6px 18px; border-radius: 50px;
+    font-size: .74rem; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; margin-bottom: 18px;
+}
+
+/* ── Code badge hero ── */
+.code-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(233,30,99,.15);
+    border: 1px solid rgba(233,30,99,.3);
+    color: var(--rose-light);
+    padding: 6px 18px; border-radius: 50px;
+    font-size: .74rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 20px;
+}
+
+/* ── Stat pill ── */
+.stat-pill {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50px;
+    padding: 10px 22px;
+    color: rgba(255,255,255,.8);
+    font-size: .85rem; font-weight: 600;
+}
+.stat-pill i { color: var(--rose-light); }
+
+/* ── Mission card ── */
+.mission-card {
+    background: var(--blanc);
+    border-radius: 28px;
+    padding: 40px 36px;
+    box-shadow: 0 8px 40px var(--rose-shadow);
+    border: 1px solid var(--rose-border);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.mission-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: var(--gradient);
+}
+
+.mission-icon {
+    width: 64px; height: 64px;
+    border-radius: 20px;
+    background: var(--rose-pale);
+    color: var(--rose);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 24px;
+    flex-shrink: 0;
+}
+
+/* ── Chef card ── */
+.chef-card {
+    background: var(--blanc-off);
+    border-radius: 20px;
+    padding: 22px 24px;
+    border-left: 4px solid var(--rose);
+    display: flex; align-items: center; gap: 18px;
+    margin-top: 28px;
+}
+.chef-avatar {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: var(--rose-pale);
+    color: var(--rose);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* ── Apply sidebar card ── */
+.apply-card {
+    background: linear-gradient(145deg, #2d0617 0%, #1a0a10 100%);
+    border-radius: 28px;
+    padding: 36px 28px;
+    border: 1px solid rgba(233,30,99,.25);
+    box-shadow: 0 20px 56px rgba(233,30,99,.2);
+    position: relative;
+    overflow: hidden;
+}
+.apply-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: var(--gradient);
+}
+.apply-card .stat-row {
+    display: flex; justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    font-size: .85rem;
+}
+.apply-card .stat-row:last-of-type { border-bottom: none; }
+.apply-card .stat-row .label { color: rgba(255,255,255,.4); }
+.apply-card .stat-row .value { color: rgba(255,255,255,.85); font-weight: 600; }
+
+/* ── Member card ── */
+.member-card {
+    background: var(--blanc);
+    border-radius: 24px;
+    padding: 28px 20px;
+    text-align: center;
+    border: 1.5px solid var(--rose-border);
+    box-shadow: 0 6px 28px var(--rose-shadow);
+    transition: transform .35s cubic-bezier(.165,.84,.44,1), box-shadow .35s, border-color .35s;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.member-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--gradient);
+    opacity: 0; transition: opacity .35s;
+}
+.member-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 56px rgba(233,30,99,.18);
+    border-color: var(--rose);
+}
+.member-card:hover::after { opacity: 1; }
+
+.member-img {
+    width: 88px; height: 88px;
+    border-radius: 22px;
+    object-fit: cover;
+    border: 3px solid var(--blanc);
+    box-shadow: 0 6px 20px var(--rose-shadow);
+    margin: 0 auto 16px;
+    display: block;
+}
+.member-img-placeholder {
+    width: 88px; height: 88px;
+    border-radius: 22px;
+    background: var(--rose-pale);
+    color: var(--rose);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    margin: 0 auto 16px;
+    border: 3px solid var(--blanc);
+    box-shadow: 0 6px 20px var(--rose-shadow);
+}
+
+.role-badge {
+    display: inline-block;
+    background: var(--rose-pale);
+    border: 1px solid var(--rose-border);
+    color: var(--rose);
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 14px;
+    border-radius: 50px;
+    margin-bottom: 10px;
+}
+
+.level-badge {
+    display: inline-block;
+    background: var(--blanc-off);
+    border: 1px solid rgba(138,96,112,.2);
+    color: var(--text-muted);
+    font-size: .7rem;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 50px;
+    margin-top: 6px;
+}
+
+/* ── Empty state ── */
+.empty-state {
+    text-align: center; padding: 60px 20px;
+}
+.empty-icon-wrap {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: var(--rose-pale);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    color: var(--rose); font-size: 2rem;
+}
+
+/* ── Séparateur rosé ── */
+.rose-divider {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(233,30,99,.2), transparent);
+    margin: 56px 0;
+}
+
+/* ── Boutons ── */
+.btn-juin {
+    background: var(--gradient); color: var(--blanc);
+    font-weight: 700; border: none;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+}
+.btn-juin:hover {
+    color: var(--blanc); opacity: .9; transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(233,30,99,.4);
+}
+.btn-outline-juin {
+    border: 2px solid var(--rose); color: var(--rose);
+    background: transparent; font-weight: 700; transition: all .2s;
+}
+.btn-outline-juin:hover {
+    background: var(--gradient); border-color: transparent; color: var(--blanc);
+}
+.btn-ghost-white {
+    border: 2px solid rgba(255,255,255,.3); color: rgba(255,255,255,.8);
+    background: transparent; font-weight: 700; transition: all .2s;
+}
+.btn-ghost-white:hover {
+    background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.5);
+    color: var(--blanc);
+}
+
+/* ── CTA bottom ── */
+.cta-section {
+    background: linear-gradient(135deg, #1a0a10 0%, #2d0617 50%, #1a0a10 100%);
+    position: relative; overflow: hidden;
+}
+.cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 100%, rgba(233,30,99,.12) 0%, transparent 60%);
+    pointer-events: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="comm-hero py-5">
+    <div class="hero-grid"></div>
+    <div class="hero-icon-bg">
+        <i class="fas {{ commission.icon|default:'fa-users' }}"></i>
+    </div>
+
+    <div class="container position-relative py-5" style="z-index:2;">
+
+        <nav aria-label="breadcrumb" class="mb-4" data-aos="fade-up">
+            <ol class="breadcrumb mb-0" style="font-size:.82rem;">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}" class="text-decoration-none" style="color:rgba(255,255,255,.4);">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'juin' %}" class="text-decoration-none" style="color:rgba(255,255,255,.4);">J.U.IN 2026</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'juin_commissions' %}" class="text-decoration-none" style="color:rgba(255,255,255,.4);">Commissions</a>
+                </li>
+                <li class="breadcrumb-item active" style="color:rgba(255,255,255,.7);">{{ commission.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-8" data-aos="fade-right">
+
+                <div class="code-badge">
+                    <span class="pulse-dot"></span>
+                    {% if commission.code %}{{ commission.code }}{% else %}Commission{% endif %}
+                </div>
+
+                <h1 class="display-3 fw-bold text-white mb-3 lh-tight" style="font-weight:900;">
+                    {{ commission.name }}
+                </h1>
+
+                <p class="mb-4" style="color:rgba(255,255,255,.55);font-size:1.05rem;max-width:580px;line-height:1.7;">
+                    {{ commission.description|truncatewords:30 }}
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 mt-2">
+                    {% if members %}
+                    <div class="stat-pill">
+                        <i class="fas fa-users"></i>
+                        {{ members|length }} membre{% if members|length > 1 %}s{% endif %}
+                    </div>
+                    {% endif %}
+                    {% if commission.chef_nom %}
+                    <div class="stat-pill">
+                        <i class="fas fa-user-tie"></i>
+                        Chef : {{ commission.chef_nom }}
+                    </div>
+                    {% endif %}
+                    <div class="stat-pill">
+                        <i class="fas fa-calendar-alt"></i>
+                        J.U.IN 2026 — 20ème Édition
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 text-lg-end" data-aos="fade-left" data-aos-delay="100">
+                <a href="#postuler" class="btn btn-juin btn-lg rounded-pill px-5 shadow-lg me-2">
+                    <i class="fas fa-user-plus me-2"></i>Rejoindre
+                </a>
+                <a href="{% url 'juin_commissions' %}" class="btn btn-ghost-white btn-lg rounded-pill px-4 mt-2 mt-lg-0">
+                    <i class="fas fa-arrow-left me-2"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     MISSION & POSTULER
+══════════════════════════════════════════ -->
+<section class="py-5 bg-white" id="mission">
+    <div class="container py-5">
+        <div class="row g-5 align-items-start">
+
+            <!-- Gauche : Mission -->
+            <div class="col-lg-7" data-aos="fade-right">
+                <div class="mission-card">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="mission-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div>
+                            <div class="section-badge mb-0">Mission</div>
+                        </div>
+                    </div>
+                    <h2 class="fw-bold mb-4">Notre Mission</h2>
+                    <div style="color:var(--text-muted);line-height:1.9;font-size:1rem;">
+                        {{ commission.description|linebreaks }}
+                    </div>
+
+                    {% if commission.chef_nom %}
+                    <div class="chef-card mt-4">
+                        <div class="chef-avatar">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--rose);">
+                                Responsable de commission
+                            </div>
+                            <div class="fw-bold mt-1" style="color:var(--text-dark);font-size:1.05rem;">
+                                {{ commission.chef_nom }}
+                            </div>
+                            {% if commission.chef_contact %}
+                            <a href="tel:{{ commission.chef_contact }}"
+                               class="btn btn-sm btn-outline-juin rounded-pill mt-2 px-3" style="font-size:.78rem;">
+                                <i class="fas fa-phone me-1"></i>{{ commission.chef_contact }}
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Droite : Postuler -->
+            <div class="col-lg-5" id="postuler" data-aos="fade-left" data-aos-delay="100">
+                <div class="apply-card">
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                             style="width:64px;height:64px;background:rgba(233,30,99,.15);border:1px solid rgba(233,30,99,.3);">
+                            <i class="fas fa-paper-plane fa-xl" style="color:var(--rose-light);"></i>
+                        </div>
+                        <h4 class="fw-bold mb-1" style="color:var(--blanc);">Rejoindre la commission</h4>
+                        <p style="color:rgba(255,255,255,.4);font-size:.85rem;">
+                            Ouverte aux étudiants motivés de tous les établissements partenaires.
+                        </p>
+                    </div>
+
+                    <!-- Infos commission -->
+                    <div class="mb-4">
+                        {% if commission.code %}
+                        <div class="stat-row">
+                            <span class="label"><i class="fas fa-tag me-2"></i>Code</span>
+                            <span class="value">{{ commission.code }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="stat-row">
+                            <span class="label"><i class="fas fa-users me-2"></i>Membres validés</span>
+                            <span class="value">{{ members|length|default:"0" }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label"><i class="fas fa-calendar me-2"></i>Édition</span>
+                            <span class="value">J.U.IN 2026 — 20ème</span>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'juin_apply' %}?commission={{ commission.id }}"
+                       class="btn btn-juin btn-lg rounded-pill w-100 py-3 shadow-lg">
+                        <i class="fas fa-user-plus me-2"></i>Postuler maintenant
+                    </a>
+                    <a href="{% url 'juin' %}#postuler"
+                       class="btn btn-ghost-white rounded-pill w-100 py-2 mt-2" style="font-size:.85rem;">
+                        Voir toutes les commissions
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<hr class="rose-divider" style="margin:0;">
+
+<!-- ══════════════════════════════════════════
+     MEMBRES
+══════════════════════════════════════════ -->
+<section class="py-5" style="background:var(--blanc-off);" id="membres">
+    <div class="container py-5">
+
+        <div class="text-center mb-5" data-aos="fade-up">
+            <div class="section-badge"><i class="fas fa-users"></i>L'Équipe</div>
+            <h2 class="display-5 fw-bold mb-3">
+                Membres de la <span class="text-gradient">Commission</span>
+            </h2>
+            <p style="color:var(--text-muted);max-width:520px;margin:0 auto;">
+                Découvrez les étudiants qui s'activent au quotidien pour le succès du J.U.IN 2026.
+            </p>
+        </div>
+
+        {% if members %}
+        <div class="row g-4">
+            {% for member in members %}
+            <div class="col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}0">
+                <div class="member-card">
+
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}" class="member-img">
+                    {% else %}
+                    <div class="member-img-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    {% endif %}
+
+                    <div class="role-badge">{{ member.get_commission_role_display }}</div>
+                    <h5 class="fw-bold mb-1" style="font-size:.95rem;color:var(--text-dark);">{{ member.nom_prenom }}</h5>
+                    <div class="small" style="color:var(--text-muted);">{{ member.get_etablissement_display }}</div>
+                    <div class="level-badge">{{ member.niveau }}</div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" data-aos="fade-up">
+            <div class="empty-icon-wrap">
+                <i class="fas fa-user-clock"></i>
+            </div>
+            <h4 class="fw-bold mb-2" style="color:var(--text-dark);">Aucun membre validé pour l'instant</h4>
+            <p style="color:var(--text-muted);max-width:420px;margin:0 auto 28px;">
+                Les candidatures sont en cours de traitement par le comité d'organisation.
+            </p>
+            <a href="{% url 'juin_apply' %}?commission={{ commission.id }}" class="btn btn-juin rounded-pill px-5 shadow">
+                <i class="fas fa-user-plus me-2"></i>Être le premier à rejoindre
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA — SOUTENIR
+══════════════════════════════════════════ -->
+<section class="cta-section py-5 text-center">
+    <div class="container py-5 position-relative" style="z-index:2;">
+
+        <div class="d-inline-flex align-items-center py-2 px-3 rounded-pill mb-4"
+             style="background:rgba(233,30,99,.15);border:1px solid rgba(233,30,99,.3);">
+            <span class="pulse-dot me-2"></span>
+            <span class="fw-bold small text-uppercase" style="letter-spacing:1px;color:var(--rose-light);">
+                J.U.IN 2026 — {{ commission.name }}
+            </span>
+        </div>
+
+        <h2 class="display-5 fw-bold mb-3 text-white" style="font-weight:900;">
+            Soutenez notre <span class="text-gradient">travail</span>
+        </h2>
+        <p class="mx-auto mb-5" style="max-width:560px;color:rgba(255,255,255,.45);font-size:1rem;line-height:1.7;">
+            Le succès de nos missions dépend aussi de votre générosité. Aidez-nous à financer
+            les activités de cette commission et de tout le J.U.IN 2026.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{% url 'juin_donate' %}" class="btn btn-juin btn-lg rounded-pill px-5 shadow-lg">
+                <i class="fas fa-heart me-2"></i>Faire un don Mobile Money
+            </a>
+            <a href="{% url 'juin' %}" class="btn btn-ghost-white btn-lg rounded-pill px-5">
+                <i class="fas fa-arrow-left me-2"></i>Retour au J.U.IN
+            </a>
+        </div>
+
+        <div class="mt-5 pt-2"
+             style="color:rgba(255,255,255,.2);font-size:.78rem;letter-spacing:4px;font-weight:700;text-transform:uppercase;">
+            CODER &nbsp;&bull;&nbsp; INNOVER &nbsp;&bull;&nbsp; ENTREPRENDRE
+        </div>
+    </div>
+</section>
+
+{% endblock %}

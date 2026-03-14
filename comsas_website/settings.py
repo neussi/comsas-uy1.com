@@ -18,7 +18,7 @@ SITE_URL = 'https://comsas-uy1.com'
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -403,3 +403,11 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.comsas-uy1.com",
     'http://185.218.126.7',
 ]
+
+# =============================================================================
+# FREEMOPAY — Paiements Mobile Money
+# =============================================================================
+FREEMOPAY_APP_KEY = os.environ.get('FREEMOPAY_APP_KEY', '19281cf1-e5fc-4260-88ad-e7029da4ad49')
+FREEMOPAY_SECRET_KEY = os.environ.get('FREEMOPAY_SECRET_KEY', 'BzU3GCR21KaL49NLMTz4')
+FREEMOPAY_BASE_URL = os.environ.get('FREEMOPAY_BASE_URL', 'https://api-v2.freemopay.com')
+

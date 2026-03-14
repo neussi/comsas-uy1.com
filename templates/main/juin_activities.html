@@ -1,0 +1,487 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Agenda Complet — J.U.IN 2026 | COMS.A.S{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   VARIABLES — blanc + rose uniquement
+═══════════════════════════════════════ */
+:root {
+    --rose:        #E91E63;
+    --rose-light:  #f06292;
+    --rose-dark:   #c2185b;
+    --rose-pale:   rgba(233, 30, 99, .08);
+    --rose-border: rgba(233, 30, 99, .2);
+    --rose-shadow: rgba(233, 30, 99, .12);
+    --blanc:       #ffffff;
+    --blanc-off:   #fdf5f8;
+    --text-dark:   #1a0a10;
+    --text-muted:  #8a6070;
+    --gradient:    linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-dark);
+    background: var(--blanc);
+}
+
+/* ── Gradient text ── */
+.text-gradient {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* ── Pulse dot ── */
+.pulse-dot {
+    width: 8px; height: 8px; background: var(--rose);
+    border-radius: 50%; display: inline-block; position: relative;
+}
+.pulse-dot::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%;
+    background: rgba(233,30,99,.3); animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%,100% { transform: scale(1); opacity: .8; }
+    50%      { transform: scale(1.8); opacity: 0; }
+}
+
+/* ── Hero ── */
+.hero-agenda {
+    min-height: 44vh;
+    display: flex;
+    align-items: center;
+    background:
+        radial-gradient(ellipse 70% 60% at 90% 10%, rgba(233,30,99,.09) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 5% 95%, rgba(233,30,99,.06) 0%, transparent 55%),
+        var(--blanc);
+    position: relative;
+    overflow: hidden;
+}
+.hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(233,30,99,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(233,30,99,.04) 1px, transparent 1px);
+    background-size: 52px 52px;
+    pointer-events: none;
+}
+
+/* ── Section badge ── */
+.section-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--rose-pale); border: 1px solid var(--rose-border);
+    color: var(--rose); padding: 6px 18px; border-radius: 50px;
+    font-size: .74rem; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; margin-bottom: 18px;
+}
+
+/* ── Filtres ── */
+.filter-bar {
+    background: var(--blanc);
+    border-radius: 20px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 20px var(--rose-shadow);
+    border: 1px solid var(--rose-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 52px;
+}
+.filter-btn {
+    border: 1.5px solid var(--rose-border);
+    color: var(--text-muted);
+    background: transparent;
+    border-radius: 50px;
+    padding: 7px 20px;
+    font-size: .8rem; font-weight: 700;
+    text-decoration: none;
+    transition: all .25s;
+    white-space: nowrap;
+    letter-spacing: .4px;
+}
+.filter-btn:hover {
+    border-color: var(--rose);
+    color: var(--rose);
+    background: var(--rose-pale);
+}
+.filter-btn.active {
+    background: var(--gradient) !important;
+    color: var(--blanc) !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 16px rgba(233,30,99,.3);
+}
+
+/* ── Day header ── */
+.day-header {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #2d0617 0%, #1a0a10 100%);
+    color: var(--blanc);
+    border-radius: 14px;
+    padding: 10px 22px;
+    font-weight: 800;
+    font-size: .82rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    position: relative; z-index: 3;
+    box-shadow: 0 6px 20px rgba(233,30,99,.2);
+    border: 1px solid rgba(233,30,99,.2);
+}
+.day-header i { color: var(--rose-light); }
+
+/* ── Timeline ── */
+.timeline-wrap {
+    position: relative;
+    padding-left: 56px;
+}
+.timeline-wrap::before {
+    content: '';
+    position: absolute;
+    left: 18px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(233,30,99,.3), rgba(233,30,99,.05));
+}
+
+/* ── Activity row ── */
+.activity-row {
+    position: relative;
+    margin-bottom: 28px;
+}
+
+/* Dot sur la timeline */
+.activity-row::before {
+    content: '';
+    position: absolute;
+    left: -46px; top: 22px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--blanc);
+    border: 3px solid var(--rose);
+    z-index: 2;
+    box-shadow: 0 0 0 4px var(--rose-pale);
+    transition: transform .3s, background .3s;
+}
+.activity-row:hover::before {
+    background: var(--rose);
+    transform: scale(1.2);
+}
+
+/* Heure flottante */
+.activity-time {
+    position: absolute;
+    left: -100px; top: 18px;
+    width: 46px;
+    font-weight: 800; font-size: .75rem;
+    color: var(--rose);
+    text-align: right;
+    line-height: 1.2;
+}
+
+/* ── Activity card ── */
+.activity-card {
+    background: var(--blanc);
+    border-radius: 22px;
+    border: 1.5px solid var(--rose-border);
+    box-shadow: 0 4px 20px var(--rose-shadow);
+    overflow: hidden;
+    transition: transform .35s cubic-bezier(.165,.84,.44,1), box-shadow .35s, border-color .35s;
+    display: flex;
+}
+.activity-card:hover {
+    transform: translateX(6px);
+    box-shadow: 0 16px 40px rgba(233,30,99,.16);
+    border-color: var(--rose);
+}
+
+.activity-card .card-img {
+    width: 160px; min-height: 140px;
+    object-fit: cover; flex-shrink: 0;
+}
+.activity-card .card-img-placeholder {
+    width: 140px; min-height: 140px;
+    background: var(--rose-pale);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--rose); font-size: 1.8rem; flex-shrink: 0;
+}
+.activity-card .card-body {
+    padding: 22px 24px; flex-grow: 1;
+}
+
+/* Type pill */
+.type-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--rose-pale); border: 1px solid var(--rose-border);
+    color: var(--rose); border-radius: 50px;
+    padding: 3px 12px; font-size: .7rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: .7px;
+    margin-bottom: 10px;
+}
+
+/* Meta info */
+.activity-meta {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    font-size: .8rem; color: var(--text-muted); margin-top: 10px;
+}
+.activity-meta span i { color: var(--rose); }
+
+/* ── Time badge mobile ── */
+.time-badge-mobile {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--rose-pale); border: 1px solid var(--rose-border);
+    color: var(--rose); border-radius: 50px;
+    padding: 3px 12px; font-size: .72rem; font-weight: 700;
+    margin-bottom: 8px;
+}
+
+/* ── Empty state ── */
+.empty-state {
+    text-align: center; padding: 60px 24px;
+}
+.empty-icon-wrap {
+    width: 96px; height: 96px; border-radius: 50%;
+    background: var(--rose-pale);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px; color: var(--rose); font-size: 2.2rem;
+}
+
+/* ── Boutons ── */
+.btn-juin {
+    background: var(--gradient); color: var(--blanc);
+    font-weight: 700; border: none;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+}
+.btn-juin:hover {
+    color: var(--blanc); opacity: .9; transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(233,30,99,.4);
+}
+.btn-outline-juin {
+    border: 2px solid var(--rose); color: var(--rose);
+    background: transparent; font-weight: 700; transition: all .2s;
+}
+.btn-outline-juin:hover {
+    background: var(--gradient); border-color: transparent; color: var(--blanc);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .timeline-wrap { padding-left: 28px; }
+    .timeline-wrap::before { left: 6px; }
+    .activity-row::before { left: -28px; top: 16px; width: 13px; height: 13px; }
+    .activity-time { display: none; }
+    .activity-card { flex-direction: column; }
+    .activity-card .card-img,
+    .activity-card .card-img-placeholder { width: 100%; min-height: 160px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero-agenda py-5">
+    <div class="hero-grid"></div>
+    <div class="container position-relative text-center py-5" style="z-index:2;">
+
+        <nav aria-label="breadcrumb" class="mb-4 d-flex justify-content-center" data-aos="fade-up">
+            <ol class="breadcrumb mb-0" style="font-size:.82rem;">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'home' %}" class="text-decoration-none" style="color:var(--text-muted);">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'juin' %}" class="text-decoration-none" style="color:var(--text-muted);">J.U.IN 2026</a>
+                </li>
+                <li class="breadcrumb-item active" style="color:var(--text-muted);">Agenda</li>
+            </ol>
+        </nav>
+
+        <div class="d-inline-flex align-items-center py-2 px-3 rounded-pill mb-4"
+             style="background:var(--rose-pale);border:1px solid var(--rose-border);"
+             data-aos="fade-up">
+            <span class="pulse-dot me-2"></span>
+            <span class="fw-bold small text-uppercase" style="letter-spacing:1px;color:var(--rose);">
+                J.U.IN 2026 — 20ème Édition
+            </span>
+        </div>
+
+        <h1 class="display-3 fw-bold mb-3 lh-tight" style="font-weight:900;"
+            data-aos="fade-up" data-aos-delay="50">
+            Agenda <span class="text-gradient">Complet</span>
+        </h1>
+        <p class="lead mx-auto mb-0" style="max-width:600px;color:var(--text-muted);"
+           data-aos="fade-up" data-aos-delay="100">
+            Retrouvez toutes les activités, conférences, ateliers et compétitions
+            prévues pour la 20ème édition des J.U.IN.
+        </p>
+
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FILTRES + TIMELINE
+══════════════════════════════════════════ -->
+<section class="py-5" style="background:var(--blanc-off);">
+    <div class="container py-4">
+
+        <!-- Filtres -->
+        <div class="filter-bar" data-aos="fade-up">
+            <a href="{% url 'juin_activities' %}"
+               class="filter-btn {% if not current_type %}active{% endif %}">
+                <i class="fas fa-list me-1"></i>Tout
+            </a>
+            {% for type_code, type_name in types %}
+            <a href="?type={{ type_code }}"
+               class="filter-btn {% if current_type == type_code %}active{% endif %}">
+                {% if type_code == 'conference' %}<i class="fas fa-microphone-alt me-1"></i>
+                {% elif type_code == 'hackathon' %}<i class="fas fa-laptop-code me-1"></i>
+                {% elif type_code == 'atelier' %}<i class="fas fa-tools me-1"></i>
+                {% elif type_code == 'pitch' %}<i class="fas fa-bullhorn me-1"></i>
+                {% elif type_code == 'gala' %}<i class="fas fa-glass-cheers me-1"></i>
+                {% else %}<i class="fas fa-calendar-day me-1"></i>
+                {% endif %}
+                {{ type_name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if activities %}
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+
+                {% regroup activities by date_activity|date:"l d F Y" as activities_by_day %}
+
+                {% for day in activities_by_day %}
+                <div class="mb-5" data-aos="fade-up">
+
+                    <!-- En-tête du jour -->
+                    <div class="day-header">
+                        <i class="fas fa-calendar-day"></i>
+                        {{ day.grouper|upper }}
+                    </div>
+
+                    <!-- Timeline du jour -->
+                    <div class="timeline-wrap">
+                        {% for activity in day.list %}
+                        <div class="activity-row">
+
+                            <!-- Heure desktop -->
+                            <div class="activity-time d-none d-md-block">
+                                {{ activity.date_activity|date:"H:i" }}
+                            </div>
+
+                            <!-- Card activité -->
+                            <div class="activity-card">
+
+                                {% if activity.cover_image %}
+                                <img src="{{ activity.cover_image.url }}"
+                                     alt="{{ activity.title }}"
+                                     class="card-img">
+                                {% else %}
+                                <div class="card-img-placeholder">
+                                    {% if activity.activity_type == 'conference' %}<i class="fas fa-microphone-alt"></i>
+                                    {% elif activity.activity_type == 'hackathon' %}<i class="fas fa-laptop-code"></i>
+                                    {% elif activity.activity_type == 'atelier' %}<i class="fas fa-tools"></i>
+                                    {% elif activity.activity_type == 'pitch' %}<i class="fas fa-bullhorn"></i>
+                                    {% elif activity.activity_type == 'gala' %}<i class="fas fa-glass-cheers"></i>
+                                    {% else %}<i class="fas fa-calendar-day"></i>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+
+                                <div class="card-body">
+
+                                    <!-- Heure mobile -->
+                                    <div class="time-badge-mobile d-md-none">
+                                        <i class="fas fa-clock"></i>
+                                        {{ activity.date_activity|date:"H:i" }}
+                                    </div>
+
+                                    <div class="type-pill">
+                                        {% if activity.activity_type == 'conference' %} Conférence
+                                        {% elif activity.activity_type == 'hackathon' %} Hackathon
+                                        {% elif activity.activity_type == 'atelier' %} Atelier
+                                        {% elif activity.activity_type == 'pitch' %} Pitch
+                                        {% elif activity.activity_type == 'gala' %} Gala
+                                        {% else %} {{ activity.get_activity_type_display }}
+                                        {% endif %}
+                                    </div>
+
+                                    <h4 class="fw-bold mb-1" style="color:var(--text-dark);font-size:1.05rem;">
+                                        {{ activity.title }}
+                                    </h4>
+                                    <p class="mb-0" style="color:var(--text-muted);font-size:.88rem;line-height:1.6;">
+                                        {{ activity.description|truncatechars:160 }}
+                                    </p>
+
+                                    <div class="activity-meta">
+                                        {% if activity.location %}
+                                        <span><i class="fas fa-map-marker-alt me-1"></i>{{ activity.location }}</span>
+                                        {% endif %}
+                                        {% if activity.speaker %}
+                                        <span><i class="fas fa-user-tie me-1"></i>{{ activity.speaker }}</span>
+                                        {% endif %}
+                                        {% if activity.gallery_album %}
+                                        <a href="{% url 'gallery_detail' activity.gallery_album.pk %}"
+                                           class="text-decoration-none fw-bold"
+                                           style="color:var(--rose);">
+                                            <i class="fas fa-images me-1"></i>Galerie
+                                        </a>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        {% else %}
+
+        <!-- Empty state -->
+        <div class="empty-state" data-aos="fade-up">
+            <div class="empty-icon-wrap">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+            <h3 class="fw-bold mb-2" style="color:var(--text-dark);">Aucune activité trouvée</h3>
+            <p style="color:var(--text-muted);max-width:400px;margin:0 auto 28px;line-height:1.7;">
+                {% if current_type %}
+                Aucune activité de ce type n'est encore programmée. Essayez un autre filtre.
+                {% else %}
+                Le programme détaillé sera publié prochainement. Suivez-nous sur les réseaux !
+                {% endif %}
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                {% if current_type %}
+                <a href="{% url 'juin_activities' %}" class="btn btn-outline-juin rounded-pill px-5">
+                    <i class="fas fa-list me-2"></i>Voir toutes les activités
+                </a>
+                {% endif %}
+                <a href="{% url 'juin' %}" class="btn btn-juin rounded-pill px-5 shadow">
+                    <i class="fas fa-arrow-left me-2"></i>Retour au J.U.IN
+                </a>
+            </div>
+        </div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

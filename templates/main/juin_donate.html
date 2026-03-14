@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Soutenir le J.U.IN 2026 | COMS.A.S{% endblock %}
+
+{% block extra_head %}
+<style>
+    .text-gradient {
+        background: linear-gradient(135deg, #E91E63 0%, #FF9800 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .section-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 16px;
+        background: rgba(233, 30, 99, 0.08);
+        color: #E91E63;
+        border-radius: 100px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+    }
+
+    .donate-card {
+        background: #0f172a;
+        border-radius: 32px;
+        padding: 48px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .pay-step {
+        text-align: center;
+        opacity: 0.4;
+        transition: all 0.3s;
+        padding: 10px;
+        border-radius: 12px;
+    }
+
+    .pay-step.active {
+        opacity: 1;
+        background: rgba(233, 30, 99, 0.1);
+        border: 1px solid rgba(233, 30, 99, 0.2);
+    }
+
+    .pay-step .s-num {
+        font-weight: 900;
+        font-size: 0.75rem;
+        color: #E91E63;
+        display: block;
+    }
+
+    .pay-step .s-lbl {
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .donor-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px;
+        background: white;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s;
+    }
+
+    .donor-card:hover {
+        transform: translateX(5px);
+        border-color: #E91E63;
+    }
+
+    .donor-avatar {
+        width: 48px;
+        height: 48px;
+        background: rgba(233, 30, 99, 0.1);
+        color: #E91E63;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.2rem;
+    }
+
+    .info-box {
+        background: rgba(233, 30, 99, 0.05);
+        border: 1px solid rgba(233, 30, 99, 0.1);
+        border-radius: 16px;
+        padding: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="row g-5 align-items-center mb-5">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="section-badge"><i class="fas fa-heart"></i>Solidarité</div>
+                <h1 class="display-4 fw-bold mb-4">Soutenir le <span class="text-gradient">J.U.IN 2026</span></h1>
+                <p class="lead text-muted mb-4">
+                    Vos dons nous permettent de financer les infrastructures, les prix des compétitions et d'assurer la
+                    gratuité pour tous les étudiants.
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-4 bg-white rounded-4 border">
+                            <h3 class="fw-bold mb-0 text-gradient">{{ total_raised|format_number }} F</h3>
+                            <p class="text-muted small mb-0">Déjà collectés</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-4 bg-white rounded-4 border">
+                            <h3 class="fw-bold mb-0">{{ donations.count }}</h3>
+                            <p class="text-muted small mb-0">Donateurs passionnés</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="donate-card shadow-2xl">
+                    <h3 class="fw-bold mb-4">Faire un don en ligne</h3>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-4">
+                            <div class="pay-step active">
+                                <div class="s-num">1. Form</div>
+                                <div class="s-lbl">Remplir</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="pay-step">
+                                <div class="s-num">2. PIN</div>
+                                <div class="s-lbl">Sur mobile</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="pay-step">
+                                <div class="s-num">3. OK</div>
+                                <div class="s-lbl">Confirmation</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" action="{% url 'juin_donate' %}" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Nom complet *</label>
+                                {{ donate_form.nom_prenom|add_class:"form-control bg-dark border-secondary text-white
+                                rounded-pill px-4" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Montant (FCFA) *</label>
+                                {{ donate_form.montant|add_class:"form-control bg-dark border-secondary text-white
+                                rounded-pill px-4" }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Téléphone MoMo *</label>
+                                {{ donate_form.telephone|add_class:"form-control bg-dark border-secondary text-white
+                                rounded-pill px-4" }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Opérateur *</label>
+                                {{ donate_form.type_paiement|add_class:"form-select bg-dark border-secondary text-white
+                                rounded-pill px-4" }}
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-juin btn-lg w-100 rounded-pill py-3">
+                                    <i class="fas fa-heart me-2"></i>Soutenir maintenant
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="mt-4 text-center">
+                        <p class="text-muted small"><i class="fas fa-shield-alt me-1"></i> Transaction sécurisée par
+                            FreemoPay</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 pt-5 border-top">
+            <h2 class="fw-bold mb-5 text-center">Mur des <span class="text-gradient">Donateurs</span></h2>
+            {% if donations %}
+            <div class="row g-4 justify-content-center">
+                {% for donation in donations %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="donor-card" data-aos="fade-up">
+                        <div class="donor-avatar">{{ donation.display_name|slice:":1" }}</div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold text-dark">{{ donation.display_name }}</div>
+                            <div class="small text-muted">{{ donation.date_don|date:"d M Y" }}</div>
+                        </div>
+                        <div class="fw-bold text-gradient">{{ donation.montant|format_number }} F</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <p class="text-muted italic">Acun don confirmé pour le moment. Soyez le premier !</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

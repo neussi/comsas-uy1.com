@@ -320,3 +320,181 @@ class MenteeRegistrationForm(forms.ModelForm):
             self.instance.professional_domains = ", ".join(domains)
         
         return cleaned_data
+
+
+# =============================================================================
+# J.U.IN 2026 FORMS
+# =============================================================================
+from .models import JUINCommissionApplication, JUINDonation, JUINCommission
+
+class JUINCommissionApplicationForm(forms.ModelForm):
+    """Formulaire de candidature à une commission J.U.IN"""
+
+    class Meta:
+        model = JUINCommissionApplication
+        fields = ['nom_prenom', 'email', 'telephone', 'etablissement', 'niveau', 'photo', 'motivation', 'commission']
+        widgets = {
+            'motivation': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Expliquez pourquoi vous souhaitez rejoindre cette commission...'}),
+            'photo': forms.FileInput(attrs={'accept': 'image/*'}),
+        }
+
+    def __init__(self, *args, edition=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if edition:
+            self.fields['commission'].queryset = JUINCommission.objects.filter(edition=edition).order_by('order', 'name')
+        self.fields['commission'].empty_label = "-- Sélectionnez une commission --"
+
+        for field_name, field in self.fields.items():
+            if field_name not in ('photo', 'commission'):
+                field.widget.attrs.update({'class': 'form-control'})
+            elif field_name == 'commission':
+                field.widget.attrs.update({'class': 'form-select'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
+
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        if photo:
+            if photo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("La taille de la photo ne doit pas dépasser 5 MB.")
+            if not photo.content_type.startswith('image/'):
+                raise forms.ValidationError("Le fichier doit être une image.")
+        return photo
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get('email')
+        commission = cleaned_data.get('commission')
+        if email and commission:
+            # Check one application per person per edition
+            edition = commission.edition
+            exists = JUINCommissionApplication.objects.filter(
+                commission__edition=edition,
+                email=email
+            ).exists()
+            if exists:
+                raise forms.ValidationError(
+                    "Cette adresse e-mail a déjà soumis une candidature pour cette édition du J.U.IN."
+                )
+        return cleaned_data
+
+
+class JUINDonationForm(forms.ModelForm):
+    """Formulaire de don / soutien au J.U.IN avec paiement Mobile Money"""
+
+    class Meta:
+        model = JUINDonation
+        fields = ['nom_prenom', 'email', 'telephone', 'montant', 'type_paiement', 'message', 'is_anonymous']
+        widgets = {
+            'message': forms.TextInput(attrs={'placeholder': 'Un mot d\'encouragement pour les organisateurs…'}),
+            'montant': forms.NumberInput(attrs={'min': 500, 'step': 500, 'placeholder': 'Ex: 5000'}),
+            'telephone': forms.TextInput(attrs={'placeholder': 'Ex: 6XXXXXXXX (sans le +237)'}),
+        }
+        labels = {
+            'telephone': 'Numéro Mobile Money (MTN/Orange)',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name not in ('is_anonymous', 'type_paiement'):
+                field.widget.attrs.update({'class': 'form-control'})
+            elif field_name == 'type_paiement':
+                field.widget.attrs.update({'class': 'form-select'})
+
+    def clean_montant(self):
+        montant = self.cleaned_data.get('montant')
+        if montant and montant < 500:
+            raise forms.ValidationError("Le montant minimum est de 500 FCFA.")
+        return montant
+
+    def clean_telephone(self):
+        type_p = self.data.get('type_paiement', '')
+        telephone = self.cleaned_data.get('telephone', '').strip()
+        if type_p in ('mtn', 'orange') and not telephone:
+            raise forms.ValidationError("Le numéro Mobile Money est requis pour ce mode de paiement.")
+        return telephone
+
+
+# =============================================================================
+# J.U.IN 2026 — SPONSOR / PARTENAIRE FORM
+# =============================================================================
+from .models import JUINSponsor
+
+
+class JUINSponsorRequestForm(forms.ModelForm):
+    """Formulaire de demande de partenariat / sponsoring J.U.IN"""
+
+    class Meta:
+        model = JUINSponsor
+        fields = [
+            'company_name', 'logo', 'website', 'tier',
+            'contact_name', 'contact_email', 'contact_phone',
+            'description', 'contribution',
+        ]
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Décrivez votre entreprise / institution…'}),
+            'contribution': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Ex: Financement de 500 000 FCFA, mise à disposition de matériel, formation, lot…'}),
+            'logo': forms.FileInput(attrs={'accept': 'image/*'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name not in ('logo', 'tier'):
+                field.widget.attrs.update({'class': 'form-control'})
+            elif field_name == 'tier':
+                field.widget.attrs.update({'class': 'form-select'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
+
+    def clean_logo(self):
+        logo = self.cleaned_data.get('logo')
+        if logo:
+            if logo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("Le logo ne doit pas dépasser 5 MB.")
+            if not logo.content_type.startswith('image/'):
+                raise forms.ValidationError("Le fichier doit être une image.")
+        return logo
+
+
+from .models import JUINCompetition, JUINTeam
+
+class JUINTeamRegistrationForm(forms.ModelForm):
+    """Formulaire d'inscription d'une équipe à une compétition J.U.IN"""
+
+    class Meta:
+        model = JUINTeam
+        fields = [
+            'name', 'captain_name', 'captain_phone', 'captain_email',
+            'members_count', 'members_list', 'project_title', 'project_description', 'logo'
+        ]
+        widgets = {
+            'members_list': forms.Textarea(attrs={'rows': 4, 'placeholder': '1. Nom Prénom\n2. Nom Prénom...'}),
+            'project_description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Détails du projet ou composition détaillée...'}),
+            'logo': forms.FileInput(attrs={'accept': 'image/*'}),
+        }
+
+    def __init__(self, *args, competition=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name != 'logo':
+                field.widget.attrs.update({'class': 'form-control'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
+        
+        if competition:
+            if competition.comp_type == 'sport':
+                self.fields['project_title'].label = "Nom du Club / Quartier (Optionnel)"
+                self.fields['project_description'].label = "Commentaire additionnel"
+                self.fields['project_description'].widget.attrs['placeholder'] = "Infos sur les couleurs de l'équipe, etc."
+            elif competition.comp_type == 'computer':
+                self.fields['project_title'].required = True
+                self.fields['project_description'].required = True
+
+    def clean_logo(self):
+        logo = self.cleaned_data.get('logo')
+        if logo:
+            if logo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("L'image ne doit pas dépasser 5 MB.")
+        return logo

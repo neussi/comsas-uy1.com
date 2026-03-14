@@ -1,0 +1,82 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Compétitions J.U.IN 2026{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0">🏆 Compétitions J.U.IN 2026</h1>
+            <p class="text-muted mb-0">Hackathons, sports et challenges</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_juin_dashboard' %}" class="btn btn-outline-secondary btn-sm">← Retour</a>
+            <a href="{% url 'admin_juin_competition_create' %}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Nouvelle Compétition
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for comp in competitions %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                {% if comp.image %}
+                <img src="{{ comp.image.url }}" class="card-img-top" alt="{{ comp.name }}"
+                    style="height: 160px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 160px;">
+                    <i class="fas fa-trophy fa-3x text-muted opacity-25"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary bg-opacity-10 text-primary small">{{ comp.get_comp_type_display }}</span>
+                        {% if comp.is_open %}
+                        <span class="badge bg-success small">Ouvert</span>
+                        {% else %}
+                        <span class="badge bg-secondary small">Clos</span>
+                        {% endif %}
+                    </div>
+                    <h5 class="fw-bold mb-2">{{ comp.name }}</h5>
+                    <p class="text-muted small mb-3">{{ comp.description|truncatechars:100 }}</p>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="small text-muted">
+                            <i class="fas fa-users me-1"></i> {{ comp.teams.count }}/{{ comp.max_teams }} équipes
+                        </div>
+                        <div class="small text-muted">
+                            <i class="fas fa-calendar-alt me-1"></i> {{ comp.start_date|date:"d/m/Y" }}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <div class="btn-group w-100">
+                            <a href="{% url 'admin_juin_teams' %}?competition={{ comp.pk }}"
+                                class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-users me-1"></i>Équipes
+                            </a>
+                            <a href="{% url 'admin_juin_competition_edit' comp.pk %}"
+                                class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-edit me-1"></i>Modifier
+                            </a>
+                            <a href="{% url 'admin_juin_competition_delete' comp.pk %}"
+                                class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash me-1"></i>Supprimer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="text-muted mb-3">Aucune compétition configurée.</div>
+            <a href="{% url 'admin_juin_competition_create' %}" class="btn btn-primary btn-sm">Créer la première
+                compétition</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
