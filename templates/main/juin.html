@@ -1189,13 +1189,15 @@ Innovation, compétitions et networking au cœur de l'UY1.{% endblock %}
                         <h5 class="fw-bold mb-2" style="color:var(--text-dark);">{{ comp.name }}</h5>
                         <p class="small flex-grow-1" style="color:var(--text-muted);">{{ comp.description|truncatechars:100 }}</p>
                         <div class="d-grid gap-2 mt-2">
-                            {% if comp.is_open %}
+                            {% if comp.is_open and comp.slug %}
                             <a href="{% url 'juin_compete' comp.slug %}" class="btn btn-juin rounded-pill">
                                 S'inscrire <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                             {% endif %}
-                            <a href="{% url 'juin_competitions' %}" class="btn btn-outline-juin rounded-pill">Détails
-                                &amp; Équipes</a>
+
+                            <a href="{% url 'juin_competitions' %}" class="btn btn-outline-juin rounded-pill">
+                                Détails &amp; Équipes
+                            </a>
                         </div>
                     </div>
                 </div>
