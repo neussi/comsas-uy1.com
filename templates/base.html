@@ -9,8 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}COM.S.AS - Club Informatique | UY1{% endblock %}</title>
 
-    <meta name="description" content="{% block meta_description %}COM.S.AS (Computer Sciences Association) - Le Club Informatique de l'Université de Yaoundé 1. Excellence, Innovation, Professionnalisme au service de la tech camerounaise.{% endblock %}">
-    <meta name="keywords" content="{% block meta_keywords %}comsas, comsas-uy1, uy1, association, universite de yaounde 1, informatique association, club informatique, Cameroun, dev, tech{% endblock %}">
+    <meta name="description"
+        content="{% block meta_description %}COM.S.AS (Computer Sciences Association) - Le Club Informatique de l'Université de Yaoundé 1. Excellence, Innovation, Professionnalisme au service de la tech camerounaise.{% endblock %}">
+    <meta name="keywords"
+        content="{% block meta_keywords %}comsas, comsas-uy1, uy1, association, universite de yaounde 1, informatique association, club informatique, Cameroun, dev, tech{% endblock %}">
     <meta name="author" content="COM.S.AS">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
@@ -18,13 +20,21 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:title" content="{% block og_title %}COM.S.AS — Club Informatique UY1{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{% static 'images/comsas.png' %}{% endblock %}">
+    <meta property="og:description"
+        content="{% block og_description %}COM.S.AS (Computer Sciences Association) - Le Club Informatique de l'Université de Yaoundé 1.{% endblock %}">
+    <meta property="og:image"
+        content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/comsas.png' %}{% endblock %}">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:site_name" content="COM.S.AS">
+    <meta property="og:locale" content="fr_FR">
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
     <meta property="twitter:title" content="{% block twitter_title %}COM.S.AS — Club Informatique UY1{% endblock %}">
-    <meta property="twitter:description" content="{% block twitter_description %}{% endblock %}">
-    <meta property="twitter:image" content="{% block twitter_image %}{% static 'images/comsas.png' %}{% endblock %}">
+    <meta property="twitter:description"
+        content="{% block twitter_description %}COM.S.AS - Le Club Informatique de l'Université de Yaoundé 1.{% endblock %}">
+    <meta property="twitter:image"
+        content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/comsas.png' %}{% endblock %}">
 
     <link rel="icon" type="image/png" href="{% static 'images/comsas.png' %}">
     <link rel="apple-touch-icon" href="{% static 'images/comsas.png' %}">
@@ -34,7 +44,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap"
+        rel="stylesheet">
     <!-- AOS -->
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
     <!-- GLightbox -->
@@ -49,9 +61,9 @@
             --rose: #E91E63;
             --rose-light: #f06292;
             --rose-dark: #c2185b;
-            --rose-pale: rgba(233,30,99,.08);
-            --rose-border: rgba(233,30,99,.2);
-            --rose-shadow: rgba(233,30,99,.18);
+            --rose-pale: rgba(233, 30, 99, .08);
+            --rose-border: rgba(233, 30, 99, .2);
+            --rose-shadow: rgba(233, 30, 99, .18);
             --blanc: #ffffff;
             --blanc-off: #fdf5f8;
             --text-dark: #1a0a10;
@@ -62,12 +74,16 @@
             --secondary-color: #FF9800;
             --gradient-primary: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
             --bs-primary: #E91E63;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,.05);
-            --shadow-md: 0 4px 16px rgba(233,30,99,.12);
-            --shadow-lg: 0 10px 30px rgba(233,30,99,.18);
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, .05);
+            --shadow-md: 0 4px 16px rgba(233, 30, 99, .12);
+            --shadow-lg: 0 10px 30px rgba(233, 30, 99, .18);
         }
 
-        *, *::before, *::after { box-sizing: border-box; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -76,15 +92,28 @@
             overflow-x: hidden;
         }
 
-        h1,h2,h3,h4,h5,h6 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 800;
             color: var(--text-dark);
         }
 
-        .text-primary { color: var(--rose) !important; }
-        .text-secondary { color: var(--secondary-color) !important; }
-        .bg-light { background-color: var(--blanc-off) !important; }
+        .text-primary {
+            color: var(--rose) !important;
+        }
+
+        .text-secondary {
+            color: var(--secondary-color) !important;
+        }
+
+        .bg-light {
+            background-color: var(--blanc-off) !important;
+        }
 
         .btn-primary {
             background: var(--gradient);
@@ -118,18 +147,18 @@
            NAVBAR
         ════════════════════════════════════════ */
         #mainNavbar {
-            background: rgba(255,255,255,0.92) !important;
+            background: rgba(255, 255, 255, 0.92) !important;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(233,30,99,.08);
+            border-bottom: 1px solid rgba(233, 30, 99, .08);
             padding: 0 0;
             transition: all .35s ease;
-            box-shadow: 0 2px 24px rgba(233,30,99,.06);
+            box-shadow: 0 2px 24px rgba(233, 30, 99, .06);
         }
 
         #mainNavbar.scrolled {
-            background: rgba(255,255,255,0.98) !important;
-            box-shadow: 0 4px 32px rgba(233,30,99,.12);
+            background: rgba(255, 255, 255, 0.98) !important;
+            box-shadow: 0 4px 32px rgba(233, 30, 99, .12);
             padding: 0;
         }
 
@@ -161,7 +190,7 @@
             border-radius: 12px;
             position: relative;
             z-index: 1;
-            transition: transform .35s cubic-bezier(.175,.885,.32,1.275);
+            transition: transform .35s cubic-bezier(.175, .885, .32, 1.275);
         }
 
         .brand-logo-wrap::before {
@@ -175,8 +204,13 @@
             z-index: 0;
         }
 
-        .navbar-brand:hover .brand-logo-wrap::before { opacity: 1; }
-        .navbar-brand:hover .brand-logo-wrap img { transform: scale(1.08) rotate(-3deg); }
+        .navbar-brand:hover .brand-logo-wrap::before {
+            opacity: 1;
+        }
+
+        .navbar-brand:hover .brand-logo-wrap img {
+            transform: scale(1.08) rotate(-3deg);
+        }
 
         .brand-text {
             display: flex;
@@ -225,28 +259,45 @@
             height: 2px;
             background: var(--gradient);
             border-radius: 2px;
-            transition: transform .3s cubic-bezier(.175,.885,.32,1.275);
+            transition: transform .3s cubic-bezier(.175, .885, .32, 1.275);
         }
 
-        .navbar-nav .nav-link:hover { color: var(--rose) !important; background: var(--rose-pale); }
+        .navbar-nav .nav-link:hover {
+            color: var(--rose) !important;
+            background: var(--rose-pale);
+        }
+
         .navbar-nav .nav-link:hover::after,
-        .navbar-nav .nav-link.active::after { transform: translateX(-50%) scaleX(1); }
-        .navbar-nav .nav-link.active { color: var(--rose) !important; font-weight: 700; }
+        .navbar-nav .nav-link.active::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        .navbar-nav .nav-link.active {
+            color: var(--rose) !important;
+            font-weight: 700;
+        }
 
         /* Dropdown */
         .dropdown-menu {
             border: 1px solid var(--rose-border) !important;
             border-radius: 18px !important;
-            box-shadow: 0 20px 60px rgba(233,30,99,.15) !important;
+            box-shadow: 0 20px 60px rgba(233, 30, 99, .15) !important;
             padding: 10px 8px !important;
-            animation: dropIn .25s cubic-bezier(.175,.885,.32,1.275);
-            background: rgba(255,255,255,.98);
+            animation: dropIn .25s cubic-bezier(.175, .885, .32, 1.275);
+            background: rgba(255, 255, 255, .98);
             backdrop-filter: blur(20px);
         }
 
         @keyframes dropIn {
-            from { opacity: 0; transform: translateY(-12px) scale(.95); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
+            from {
+                opacity: 0;
+                transform: translateY(-12px) scale(.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .dropdown-item {
@@ -271,7 +322,10 @@
             padding: 6px 14px 4px;
         }
 
-        .dropdown-divider { border-color: var(--rose-border); margin: 6px 8px; }
+        .dropdown-divider {
+            border-color: var(--rose-border);
+            margin: 6px 8px;
+        }
 
         /* Badge nav */
         .nav-badge {
@@ -288,8 +342,15 @@
         }
 
         @keyframes navBadgePulse {
-            0%,100% { box-shadow: 0 2px 8px var(--rose-shadow); }
-            50% { box-shadow: 0 2px 16px rgba(233,30,99,.5); }
+
+            0%,
+            100% {
+                box-shadow: 0 2px 8px var(--rose-shadow);
+            }
+
+            50% {
+                box-shadow: 0 2px 16px rgba(233, 30, 99, .5);
+            }
         }
 
         /* CTA button navbar */
@@ -311,7 +372,7 @@
 
         .btn-nav-cta:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(233,30,99,.45);
+            box-shadow: 0 8px 24px rgba(233, 30, 99, .45);
             color: white !important;
         }
 
@@ -321,7 +382,10 @@
             padding: 6px 10px;
         }
 
-        .navbar-toggler:focus { box-shadow: 0 0 0 3px rgba(233,30,99,.15); }
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, .15);
+        }
+
         .navbar-toggler-icon {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='%23E91E63' stroke-width='2.5' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
         }
@@ -340,7 +404,9 @@
         .partners-section::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 3px;
             background: var(--gradient);
         }
@@ -380,19 +446,23 @@
             position: relative;
             overflow: hidden;
             background: var(--gradient-dark);
-            color: rgba(255,255,255,.75);
+            color: rgba(255, 255, 255, .75);
         }
 
         /* Courbes SVG top */
         .footer-wave-top {
             position: absolute;
-            top: -2px; left: 0;
+            top: -2px;
+            left: 0;
             width: 100%;
             line-height: 0;
             z-index: 1;
         }
 
-        .footer-wave-top svg { display: block; width: 100%; }
+        .footer-wave-top svg {
+            display: block;
+            width: 100%;
+        }
 
         /* Decor circles */
         .footer-decor {
@@ -403,21 +473,27 @@
         }
 
         .footer-decor-1 {
-            width: 500px; height: 500px;
-            background: radial-gradient(circle, rgba(233,30,99,.12) 0%, transparent 70%);
-            top: -100px; right: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(233, 30, 99, .12) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
         }
 
         .footer-decor-2 {
-            width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(233,30,99,.08) 0%, transparent 70%);
-            bottom: 0; left: -60px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(233, 30, 99, .08) 0%, transparent 70%);
+            bottom: 0;
+            left: -60px;
         }
 
         .footer-decor-3 {
-            width: 200px; height: 200px;
-            background: radial-gradient(circle, rgba(240,98,146,.07) 0%, transparent 70%);
-            top: 50%; left: 40%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(240, 98, 146, .07) 0%, transparent 70%);
+            top: 50%;
+            left: 40%;
             transform: translateY(-50%);
         }
 
@@ -425,7 +501,7 @@
         .footer-dots {
             position: absolute;
             inset: 0;
-            background-image: radial-gradient(rgba(233,30,99,.08) 1px, transparent 1px);
+            background-image: radial-gradient(rgba(233, 30, 99, .08) 1px, transparent 1px);
             background-size: 32px 32px;
             z-index: 0;
             pointer-events: none;
@@ -447,12 +523,13 @@
         }
 
         .footer-brand img {
-            width: 52px; height: 52px;
+            width: 52px;
+            height: 52px;
             object-fit: contain;
             border-radius: 14px;
-            border: 2px solid rgba(233,30,99,.3);
+            border: 2px solid rgba(233, 30, 99, .3);
             padding: 4px;
-            background: rgba(255,255,255,.06);
+            background: rgba(255, 255, 255, .06);
         }
 
         .footer-brand-name {
@@ -467,13 +544,13 @@
 
         .footer-brand-sub {
             font-size: .65rem;
-            color: rgba(255,255,255,.3);
+            color: rgba(255, 255, 255, .3);
             text-transform: uppercase;
             letter-spacing: 1.5px;
         }
 
         .footer-desc {
-            color: rgba(255,255,255,.4);
+            color: rgba(255, 255, 255, .4);
             font-size: .88rem;
             line-height: 1.8;
             margin-bottom: 24px;
@@ -486,17 +563,18 @@
         }
 
         .social-icon {
-            width: 40px; height: 40px;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .1);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255,255,255,.5);
+            color: rgba(255, 255, 255, .5);
             font-size: .9rem;
             text-decoration: none;
-            transition: all .3s cubic-bezier(.175,.885,.32,1.275);
+            transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
         }
 
         .social-icon:hover {
@@ -504,7 +582,7 @@
             border-color: var(--rose);
             color: white;
             transform: translateY(-4px) scale(1.1);
-            box-shadow: 0 8px 20px rgba(233,30,99,.4);
+            box-shadow: 0 8px 20px rgba(233, 30, 99, .4);
         }
 
         /* Footer headings */
@@ -513,7 +591,7 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2.5px;
-            color: rgba(255,255,255,.25);
+            color: rgba(255, 255, 255, .25);
             margin-bottom: 20px;
             position: relative;
             padding-left: 12px;
@@ -522,9 +600,11 @@
         .footer-heading::before {
             content: '';
             position: absolute;
-            left: 0; top: 50%;
+            left: 0;
+            top: 50%;
             transform: translateY(-50%);
-            width: 3px; height: 14px;
+            width: 3px;
+            height: 14px;
             background: var(--gradient);
             border-radius: 2px;
         }
@@ -536,10 +616,12 @@
             margin: 0;
         }
 
-        .footer-links li { margin-bottom: 10px; }
+        .footer-links li {
+            margin-bottom: 10px;
+        }
 
         .footer-links a {
-            color: rgba(255,255,255,.45);
+            color: rgba(255, 255, 255, .45);
             text-decoration: none;
             font-size: .88rem;
             font-weight: 500;
@@ -557,7 +639,8 @@
             background: var(--rose);
             transition: width .25s;
             position: absolute;
-            bottom: -1px; left: 0;
+            bottom: -1px;
+            left: 0;
         }
 
         .footer-links a:hover {
@@ -565,7 +648,9 @@
             padding-left: 6px;
         }
 
-        .footer-links a:hover::before { width: 100%; }
+        .footer-links a:hover::before {
+            width: 100%;
+        }
 
         .footer-links a i {
             color: var(--rose-light);
@@ -582,10 +667,11 @@
         }
 
         .contact-icon-wrap {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
-            background: rgba(233,30,99,.15);
-            border: 1px solid rgba(233,30,99,.25);
+            background: rgba(233, 30, 99, .15);
+            border: 1px solid rgba(233, 30, 99, .25);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -596,22 +682,24 @@
 
         .footer-contact-item .info {
             font-size: .84rem;
-            color: rgba(255,255,255,.45);
+            color: rgba(255, 255, 255, .45);
             line-height: 1.6;
         }
 
         .footer-contact-item .info a {
-            color: rgba(255,255,255,.45);
+            color: rgba(255, 255, 255, .45);
             text-decoration: none;
             transition: color .2s;
         }
 
-        .footer-contact-item .info a:hover { color: white; }
+        .footer-contact-item .info a:hover {
+            color: white;
+        }
 
         /* J.U.IN banner in footer */
         .footer-juin-banner {
-            background: rgba(233,30,99,.1);
-            border: 1px solid rgba(233,30,99,.25);
+            background: rgba(233, 30, 99, .1);
+            border: 1px solid rgba(233, 30, 99, .25);
             border-radius: 20px;
             padding: 20px 24px;
             display: flex;
@@ -624,7 +712,7 @@
 
         .footer-juin-banner .banner-text {
             font-size: .82rem;
-            color: rgba(255,255,255,.6);
+            color: rgba(255, 255, 255, .6);
         }
 
         .footer-juin-banner .banner-title {
@@ -645,21 +733,21 @@
             font-size: .8rem;
             font-weight: 700;
             text-decoration: none;
-            box-shadow: 0 4px 16px rgba(233,30,99,.35);
+            box-shadow: 0 4px 16px rgba(233, 30, 99, .35);
             transition: transform .2s, box-shadow .2s;
             white-space: nowrap;
         }
 
         .footer-juin-pill:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(233,30,99,.5);
+            box-shadow: 0 8px 24px rgba(233, 30, 99, .5);
             color: white;
         }
 
         /* Divider */
         .footer-divider {
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(233,30,99,.2), rgba(255,255,255,.08), rgba(233,30,99,.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(233, 30, 99, .2), rgba(255, 255, 255, .08), rgba(233, 30, 99, .2), transparent);
             margin: 40px 0 28px;
         }
 
@@ -675,7 +763,7 @@
         .footer-bottom p {
             margin: 0;
             font-size: .78rem;
-            color: rgba(255,255,255,.25);
+            color: rgba(255, 255, 255, .25);
         }
 
         .footer-bottom .heart {
@@ -685,10 +773,23 @@
         }
 
         @keyframes heartbeat {
-            0%,100% { transform: scale(1); }
-            14% { transform: scale(1.3); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.2); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            14% {
+                transform: scale(1.3);
+            }
+
+            28% {
+                transform: scale(1);
+            }
+
+            42% {
+                transform: scale(1.2);
+            }
         }
 
         /* Floating particles in footer */
@@ -703,8 +804,15 @@
         }
 
         @keyframes particleFloat {
-            0% { transform: translateY(0) rotate(0deg); opacity: .06; }
-            100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: .06;
+            }
+
+            100% {
+                transform: translateY(-120px) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         /* WhatsApp float */
@@ -722,31 +830,40 @@
             color: white;
             font-size: 1.6rem;
             text-decoration: none;
-            box-shadow: 0 8px 24px rgba(37,211,102,.4);
+            box-shadow: 0 8px 24px rgba(37, 211, 102, .4);
             z-index: 1000;
-            transition: transform .3s cubic-bezier(.175,.885,.32,1.275), box-shadow .3s;
+            transition: transform .3s cubic-bezier(.175, .885, .32, 1.275), box-shadow .3s;
             animation: whaFloat 3s ease-in-out infinite;
         }
 
         @keyframes whaFloat {
-            0%,100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
         }
 
         .whatsapp-float:hover {
             transform: scale(1.15) translateY(-4px) !important;
-            box-shadow: 0 16px 40px rgba(37,211,102,.5);
+            box-shadow: 0 16px 40px rgba(37, 211, 102, .5);
             color: white;
             animation: none;
         }
 
         /* Toast */
-        .toast { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .toast {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
         /* Misc */
         .card {
             background: white;
-            border: 1px solid rgba(0,0,0,.05);
+            border: 1px solid rgba(0, 0, 0, .05);
             border-radius: 16px;
         }
 
@@ -761,365 +878,427 @@
 
 <body>
 
-<!-- ════════════════════════════════════════
+    <!-- ════════════════════════════════════════
      NAVBAR
 ════════════════════════════════════════ -->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
-    <div class="container">
-
-        <!-- Brand -->
-        <a class="navbar-brand" href="{% url 'home' %}">
-            <div class="brand-logo-wrap">
-                {% if site_settings.logo %}
-                <img src="{{ site_settings.logo.url }}" alt="COM.S.AS Logo">
-                {% else %}
-                <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS" onerror="this.style.display='none'">
-                {% endif %}
-            </div>
-            <div class="brand-text">
-                <span class="brand-name">COM.S.AS</span>
-                <span class="brand-sub">Informatique · UY1</span>
-            </div>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto gap-1">
-
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
-                        Accueil
-                    </a>
-                </li>
-
-                <!-- Département -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if 'department' in request.path or 'about' in request.path or 'members' in request.path or 'presidents' in request.path %}active{% endif %}"
-                        href="#" id="deptDropdown" role="button" data-bs-toggle="dropdown">
-                        Département
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="deptDropdown">
-                        <li><h6 class="dropdown-header">Présentation</h6></li>
-                        <li><a class="dropdown-item" href="{% url 'about' %}"><i class="fas fa-info-circle me-2 text-primary"></i>À propos du Club</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><h6 class="dropdown-header">Acteurs & Organisation</h6></li>
-                        <li><a class="dropdown-item" href="{% url 'department_professors' %}"><i class="fas fa-chalkboard-teacher me-2 text-primary"></i>Enseignants</a></li>
-                        <li><a class="dropdown-item" href="{% url 'members' %}"><i class="fas fa-users me-2 text-primary"></i>Bureau Exécutif</a></li>
-                        <li><a class="dropdown-item" href="{% url 'president_list' %}"><i class="fas fa-crown me-2 text-primary"></i>Anciens Présidents <span class="nav-badge ms-1">Nouveau</span></a></li>
-                        <li><a class="dropdown-item" href="{% url 'department_delegates' %}"><i class="fas fa-user-tie me-2 text-primary"></i>Délégués</a></li>
-                    </ul>
-                </li>
-
-                <!-- Activités -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if 'project' in request.path or 'event' in request.path or 'concours' in request.path or 'sponsorship' in request.path %}active{% endif %}"
-                        href="#" id="navbarDropdownAct" role="button" data-bs-toggle="dropdown">
-                        Activités
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownAct">
-                        <li><a class="dropdown-item" href="{% url 'projects' %}"><i class="fas fa-code me-2 text-primary"></i>Projets</a></li>
-                        <li><a class="dropdown-item" href="{% url 'events' %}"><i class="fas fa-calendar-alt me-2 text-primary"></i>Événements</a></li>
-                        <li><a class="dropdown-item" href="{% url 'contest_list' %}"><i class="fas fa-trophy me-2 text-primary"></i>Concours</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'sponsorship_home' %}"><i class="fas fa-handshake me-2 text-primary"></i>Parrainage</a></li>
-                    </ul>
-                </li>
-
-                <!-- Ressources -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if 'documents' in request.path or 'blog' in request.path or 'gallery' in request.path %}active{% endif %}"
-                        href="#" id="navbarDropdownRes" role="button" data-bs-toggle="dropdown">
-                        Ressources
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownRes">
-                        <li><a class="dropdown-item" href="{% url 'request_documents' %}"><i class="fas fa-file-alt me-2 text-primary"></i>Modèles de Demandes</a></li>
-                        <li><a class="dropdown-item" href="{% url 'blog_list' %}"><i class="fas fa-newspaper me-2 text-primary"></i>Blog de l'Étudiant</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'gallery' %}"><i class="fas fa-images me-2 text-primary"></i>Galerie Multimédia</a></li>
-                    </ul>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link {% if 'archives' in request.path %}active{% endif %}" href="{% url 'archives' %}">Archives</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a>
-                </li>
-
-                <!-- J.U.IN 2026 -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if 'juin' in request.path %}active{% endif %}"
-                        href="#" id="juinDropdown" role="button" data-bs-toggle="dropdown">
-                        J.U.IN 2026 <span class="nav-badge ms-1">Live</span>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="juinDropdown">
-                        <li><a class="dropdown-item fw-bold" href="{% url 'juin' %}"><i class="fas fa-star me-2 text-primary"></i>Édition 2026</a></li>
-                        <li><a class="dropdown-item" href="{% url 'juin_become_partner' %}"><i class="fas fa-handshake me-2 text-primary"></i>Devenir Partenaire</a></li>
-                        <li><a class="dropdown-item" href="{% url 'juin_sponsors' %}"><i class="fas fa-award me-2 text-primary"></i>Nos Sponsors</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" style="color:var(--rose);font-weight:700;" href="{% url 'juin' %}#soutenir"><i class="fas fa-heart me-2"></i>Soutenir l'Événement</a></li>
-                    </ul>
-                </li>
-
-            </ul>
-
-            <div class="d-flex align-items-center gap-2">
-                <a href="{% url 'member_registration' %}" class="btn-nav-cta">
-                    <i class="fas fa-user-plus"></i>Rejoindre
-                </a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<!-- Main Content -->
-<main>
-    {% block content %}{% endblock %}
-</main>
-
-<!-- ════════════════════════════════════════
-     PARTNERS
-════════════════════════════════════════ -->
-<section class="partners-section">
-    <div class="container">
-        <div class="text-center mb-4">
-            <div class="partners-title-badge"><i class="fas fa-handshake"></i>Ils nous accompagnent</div>
-            <h3 class="fw-bold" style="color:var(--text-dark);">Nos Partenaires</h3>
-        </div>
-        <div class="row align-items-center justify-content-center g-4">
-            <div class="col-6 col-md-4 col-lg-2 text-center">
-                <img src="{% static 'images/sponsors/uy1.png' %}" alt="Université de Yaoundé 1" class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
-            </div>
-            <div class="col-6 col-md-4 col-lg-2 text-center">
-                <img src="{% static 'images/sponsors/comsas.png' %}" alt="COMSAS" class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
-            </div>
-            <div class="col-6 col-md-4 col-lg-2 text-center">
-                <img src="{% static 'images/sponsors/npe.png' %}" alt="NPE" class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
-            </div>
-            <div class="col-6 col-md-4 col-lg-2 text-center">
-                <img src="{% static 'images/sponsors/aefas.png' %}" alt="AEFAS" class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
-            </div>
-            <div class="col-6 col-md-4 col-lg-2 text-center">
-                <img src="{% static 'images/sponsors/da.png' %}" alt="DA" class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
-            </div>
-            <div class="col-6 col-md-4 col-lg-2 text-center">
-                <img src="{% static 'images/sponsors/ddt.png' %}" alt="DDT" class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
-            </div>
-            <div class="col-6 col-md-4 col-lg-2 text-center">
-                <img src="{% static 'images/sponsors/pts.png' %}" alt="PTS" class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
-            </div>
-            <div class="col-6 col-md-4 col-lg-2 text-center">
-                <img src="{% static 'images/sponsors/qts.png' %}" alt="QTS" class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
-            </div>
-            <div class="col-6 col-md-4 col-lg-2 text-center">
-                <img src="{% static 'images/sponsors/a2elbm2.png' %}" alt="A2ELBM2" class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ════════════════════════════════════════
-     FOOTER
-════════════════════════════════════════ -->
-<footer class="site-footer">
-
-    <!-- Vague SVG en haut -->
-    <div class="footer-wave-top">
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,0 L0,0 Z" fill="white"/>
-        </svg>
-    </div>
-
-    <!-- Décorations -->
-    <div class="footer-decor footer-decor-1"></div>
-    <div class="footer-decor footer-decor-2"></div>
-    <div class="footer-decor footer-decor-3"></div>
-    <div class="footer-dots"></div>
-
-    <!-- Particules flottantes -->
-    <div class="footer-particle" style="width:8px;height:8px;left:10%;bottom:20%;animation-duration:8s;animation-delay:0s;"></div>
-    <div class="footer-particle" style="width:5px;height:5px;left:25%;bottom:10%;animation-duration:10s;animation-delay:2s;"></div>
-    <div class="footer-particle" style="width:10px;height:10px;left:60%;bottom:15%;animation-duration:7s;animation-delay:1s;"></div>
-    <div class="footer-particle" style="width:6px;height:6px;left:80%;bottom:25%;animation-duration:9s;animation-delay:3s;"></div>
-
-    <div class="footer-inner">
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
         <div class="container">
 
-            <!-- Banner J.U.IN -->
-            <div class="footer-juin-banner" data-aos="fade-up">
-                <div>
-                    <div class="banner-title">🏆 J.U.IN 2026 — Jubilé d'Émeraude</div>
-                    <div class="banner-text">Du 1 au 5 Juin 2026 · Campus UY1 · Faculté des Sciences · 10 000 participants attendus</div>
+            <!-- Brand -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <div class="brand-logo-wrap">
+                    {% if site_settings.logo %}
+                    <img src="{{ site_settings.logo.url }}" alt="COM.S.AS Logo">
+                    {% else %}
+                    <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS" onerror="this.style.display='none'">
+                    {% endif %}
                 </div>
-                <a href="{% url 'juin' %}" class="footer-juin-pill">
-                    <i class="fas fa-arrow-right"></i>Découvrir
-                </a>
-            </div>
+                <div class="brand-text">
+                    <span class="brand-name">COM.S.AS</span>
+                    <span class="brand-sub">Informatique · UY1</span>
+                </div>
+            </a>
 
-            <div class="row g-5">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <!-- Col 1 : Brand -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
-                    <a href="{% url 'home' %}" class="footer-brand">
-                        <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS">
-                        <div>
-                            <div class="footer-brand-name">COM.S.AS</div>
-                            <div class="footer-brand-sub">Informatique · UY1</div>
-                        </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto gap-1">
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                            href="{% url 'home' %}">
+                            Accueil
+                        </a>
+                    </li>
+
+                    <!-- Département -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'department' in request.path or 'about' in request.path or 'members' in request.path or 'presidents' in request.path %}active{% endif %}"
+                            href="#" id="deptDropdown" role="button" data-bs-toggle="dropdown">
+                            Département
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="deptDropdown">
+                            <li>
+                                <h6 class="dropdown-header">Présentation</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'about' %}"><i
+                                        class="fas fa-info-circle me-2 text-primary"></i>À propos du Club</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <h6 class="dropdown-header">Acteurs & Organisation</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'department_professors' %}"><i
+                                        class="fas fa-chalkboard-teacher me-2 text-primary"></i>Enseignants</a></li>
+                            <li><a class="dropdown-item" href="{% url 'members' %}"><i
+                                        class="fas fa-users me-2 text-primary"></i>Bureau Exécutif</a></li>
+                            <li><a class="dropdown-item" href="{% url 'president_list' %}"><i
+                                        class="fas fa-crown me-2 text-primary"></i>Anciens Présidents <span
+                                        class="nav-badge ms-1">Nouveau</span></a></li>
+                            <li><a class="dropdown-item" href="{% url 'department_delegates' %}"><i
+                                        class="fas fa-user-tie me-2 text-primary"></i>Délégués</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Activités -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'project' in request.path or 'event' in request.path or 'concours' in request.path or 'sponsorship' in request.path %}active{% endif %}"
+                            href="#" id="navbarDropdownAct" role="button" data-bs-toggle="dropdown">
+                            Activités
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownAct">
+                            <li><a class="dropdown-item" href="{% url 'projects' %}"><i
+                                        class="fas fa-code me-2 text-primary"></i>Projets</a></li>
+                            <li><a class="dropdown-item" href="{% url 'events' %}"><i
+                                        class="fas fa-calendar-alt me-2 text-primary"></i>Événements</a></li>
+                            <li><a class="dropdown-item" href="{% url 'contest_list' %}"><i
+                                        class="fas fa-trophy me-2 text-primary"></i>Concours</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'sponsorship_home' %}"><i
+                                        class="fas fa-handshake me-2 text-primary"></i>Parrainage</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Ressources -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'documents' in request.path or 'blog' in request.path or 'gallery' in request.path %}active{% endif %}"
+                            href="#" id="navbarDropdownRes" role="button" data-bs-toggle="dropdown">
+                            Ressources
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownRes">
+                            <li><a class="dropdown-item" href="{% url 'request_documents' %}"><i
+                                        class="fas fa-file-alt me-2 text-primary"></i>Modèles de Demandes</a></li>
+                            <li><a class="dropdown-item" href="{% url 'blog_list' %}"><i
+                                        class="fas fa-newspaper me-2 text-primary"></i>Blog de l'Étudiant</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'gallery' %}"><i
+                                        class="fas fa-images me-2 text-primary"></i>Galerie Multimédia</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'archives' in request.path %}active{% endif %}"
+                            href="{% url 'archives' %}">Archives</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"
+                            href="{% url 'contact' %}">Contact</a>
+                    </li>
+
+                    <!-- J.U.IN 2026 -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'juin' in request.path %}active{% endif %}" href="#"
+                            id="juinDropdown" role="button" data-bs-toggle="dropdown">
+                            J.U.IN 2026 <span class="nav-badge ms-1">Live</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="juinDropdown">
+                            <li><a class="dropdown-item fw-bold" href="{% url 'juin' %}"><i
+                                        class="fas fa-star me-2 text-primary"></i>Édition 2026</a></li>
+                            <li><a class="dropdown-item" href="{% url 'juin_become_partner' %}"><i
+                                        class="fas fa-handshake me-2 text-primary"></i>Devenir Partenaire</a></li>
+                            <li><a class="dropdown-item" href="{% url 'juin_sponsors' %}"><i
+                                        class="fas fa-award me-2 text-primary"></i>Nos Sponsors</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" style="color:var(--rose);font-weight:700;"
+                                    href="{% url 'juin' %}#soutenir"><i class="fas fa-heart me-2"></i>Soutenir
+                                    l'Événement</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'member_registration' %}" class="btn-nav-cta">
+                        <i class="fas fa-user-plus"></i>Rejoindre
                     </a>
-                    <p class="footer-desc">
-                        Association des étudiants en informatique de l'Université de Yaoundé 1. Promouvoir l'excellence, l'innovation et la solidarité numérique au Cameroun.
-                    </p>
-                    <div class="footer-socials">
-                        {% if site_settings.facebook_url %}<a href="{{ site_settings.facebook_url }}" class="social-icon" target="_blank"><i class="fab fa-facebook-f"></i></a>{% endif %}
-                        <a href="{{ site_settings.twitter_url|default:'#' }}" class="social-icon" target="_blank"><i class="fab fa-twitter"></i></a>
-                        <a href="{{ site_settings.linkedin_url|default:'#' }}" class="social-icon" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="{{ site_settings.github_url|default:'#' }}" class="social-icon" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="https://wa.me/237650970526" class="social-icon" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ════════════════════════════════════════
+     PARTNERS
+════════════════════════════════════════ -->
+    <section class="partners-section">
+        <div class="container">
+            <div class="text-center mb-4">
+                <div class="partners-title-badge"><i class="fas fa-handshake"></i>Ils nous accompagnent</div>
+                <h3 class="fw-bold" style="color:var(--text-dark);">Nos Partenaires</h3>
+            </div>
+            <div class="row align-items-center justify-content-center g-4">
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/uy1.png' %}" alt="Université de Yaoundé 1"
+                        class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/comsas.png' %}" alt="COMSAS" class="sponsor-logo img-fluid"
+                        style="mix-blend-mode:multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/npe.png' %}" alt="NPE" class="sponsor-logo img-fluid"
+                        style="mix-blend-mode:multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/aefas.png' %}" alt="AEFAS" class="sponsor-logo img-fluid"
+                        style="mix-blend-mode:multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/da.png' %}" alt="DA" class="sponsor-logo img-fluid"
+                        style="mix-blend-mode:multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/ddt.png' %}" alt="DDT" class="sponsor-logo img-fluid"
+                        style="mix-blend-mode:multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/pts.png' %}" alt="PTS" class="sponsor-logo img-fluid"
+                        style="mix-blend-mode:multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/qts.png' %}" alt="QTS" class="sponsor-logo img-fluid"
+                        style="mix-blend-mode:multiply;">
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <img src="{% static 'images/sponsors/a2elbm2.png' %}" alt="A2ELBM2" class="sponsor-logo img-fluid"
+                        style="mix-blend-mode:multiply;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+    <footer class="site-footer">
+
+        <!-- Vague SVG en haut -->
+        <div class="footer-wave-top">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,0 L0,0 Z" fill="white" />
+            </svg>
+        </div>
+
+        <!-- Décorations -->
+        <div class="footer-decor footer-decor-1"></div>
+        <div class="footer-decor footer-decor-2"></div>
+        <div class="footer-decor footer-decor-3"></div>
+        <div class="footer-dots"></div>
+
+        <!-- Particules flottantes -->
+        <div class="footer-particle"
+            style="width:8px;height:8px;left:10%;bottom:20%;animation-duration:8s;animation-delay:0s;"></div>
+        <div class="footer-particle"
+            style="width:5px;height:5px;left:25%;bottom:10%;animation-duration:10s;animation-delay:2s;"></div>
+        <div class="footer-particle"
+            style="width:10px;height:10px;left:60%;bottom:15%;animation-duration:7s;animation-delay:1s;"></div>
+        <div class="footer-particle"
+            style="width:6px;height:6px;left:80%;bottom:25%;animation-duration:9s;animation-delay:3s;"></div>
+
+        <div class="footer-inner">
+            <div class="container">
+
+                <!-- Banner J.U.IN -->
+                <div class="footer-juin-banner" data-aos="fade-up">
+                    <div>
+                        <div class="banner-title">🏆 J.U.IN 2026 — Jubilé d'Émeraude</div>
+                        <div class="banner-text">Du 1 au 5 Juin 2026 · Campus UY1 · Faculté des Sciences · 10 000
+                            participants attendus</div>
                     </div>
+                    <a href="{% url 'juin' %}" class="footer-juin-pill">
+                        <i class="fas fa-arrow-right"></i>Découvrir
+                    </a>
                 </div>
 
-                <!-- Col 2 : Liens rapides -->
-                <div class="col-lg-2 col-md-6 col-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="footer-heading">Navigation</div>
-                    <ul class="footer-links">
-                        <li><a href="{% url 'home' %}"><i class="fas fa-chevron-right"></i>Accueil</a></li>
-                        <li><a href="{% url 'about' %}"><i class="fas fa-chevron-right"></i>À propos</a></li>
-                        <li><a href="{% url 'projects' %}"><i class="fas fa-chevron-right"></i>Projets</a></li>
-                        <li><a href="{% url 'events' %}"><i class="fas fa-chevron-right"></i>Événements</a></li>
-                        <li><a href="{% url 'archives' %}"><i class="fas fa-chevron-right"></i>Archives</a></li>
-                        <li><a href="{% url 'contact' %}"><i class="fas fa-chevron-right"></i>Contact</a></li>
-                    </ul>
-                </div>
+                <div class="row g-5">
 
-                <!-- Col 3 : Ressources -->
-                <div class="col-lg-2 col-md-6 col-6" data-aos="fade-up" data-aos-delay="150">
-                    <div class="footer-heading">Ressources</div>
-                    <ul class="footer-links">
-                        <li><a href="{% url 'member_registration' %}"><i class="fas fa-chevron-right"></i>Devenir Membre</a></li>
-                        <li><a href="{% url 'donations' %}"><i class="fas fa-chevron-right"></i>Faire un Don</a></li>
-                        <li><a href="{% url 'gallery' %}"><i class="fas fa-chevron-right"></i>Galerie</a></li>
-                        <li><a href="{% url 'blog_list' %}"><i class="fas fa-chevron-right"></i>Blog</a></li>
-                        <li><a href="{% url 'juin' %}"><i class="fas fa-chevron-right"></i>J.U.IN 2026</a></li>
-                        <li><a href="{% url 'juin_become_partner' %}"><i class="fas fa-chevron-right"></i>Partenariat</a></li>
-                    </ul>
-                </div>
-
-                <!-- Col 4 : Contact -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="footer-heading">Nous contacter</div>
-
-                    <div class="footer-contact-item">
-                        <div class="contact-icon-wrap"><i class="fas fa-map-marker-alt"></i></div>
-                        <div class="info">Département Informatique<br>Faculté des Sciences, UY1 (Amphithéâtre 502)<br>Yaoundé, Cameroun</div>
-                    </div>
-
-                    <div class="footer-contact-item">
-                        <div class="contact-icon-wrap"><i class="fas fa-envelope"></i></div>
-                        <div class="info">
-                            <a href="mailto:comsas@univ-yaounde1.cm">comsas@univ-yaounde1.cm</a>
+                    <!-- Col 1 : Brand -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
+                        <a href="{% url 'home' %}" class="footer-brand">
+                            <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS">
+                            <div>
+                                <div class="footer-brand-name">COM.S.AS</div>
+                                <div class="footer-brand-sub">Informatique · UY1</div>
+                            </div>
+                        </a>
+                        <p class="footer-desc">
+                            Association des étudiants en informatique de l'Université de Yaoundé 1. Promouvoir
+                            l'excellence, l'innovation et la solidarité numérique au Cameroun.
+                        </p>
+                        <div class="footer-socials">
+                            {% if site_settings.facebook_url %}<a href="{{ site_settings.facebook_url }}"
+                                class="social-icon" target="_blank"><i class="fab fa-facebook-f"></i></a>{% endif %}
+                            <a href="{{ site_settings.twitter_url|default:'#' }}" class="social-icon" target="_blank"><i
+                                    class="fab fa-twitter"></i></a>
+                            <a href="{{ site_settings.linkedin_url|default:'#' }}" class="social-icon"
+                                target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="{{ site_settings.github_url|default:'#' }}" class="social-icon" target="_blank"><i
+                                    class="fab fa-github"></i></a>
+                            <a href="https://wa.me/237650970526" class="social-icon" target="_blank"><i
+                                    class="fab fa-whatsapp"></i></a>
                         </div>
                     </div>
 
-                    <div class="footer-contact-item">
-                        <div class="contact-icon-wrap"><i class="fas fa-phone"></i></div>
-                        <div class="info">
-                            <a href="tel:+237650970526">+237 650 970 526</a><br>
-                            <a href="tel:+237657097369">+237 657 097 369</a>
+                    <!-- Col 2 : Liens rapides -->
+                    <div class="col-lg-2 col-md-6 col-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="footer-heading">Navigation</div>
+                        <ul class="footer-links">
+                            <li><a href="{% url 'home' %}"><i class="fas fa-chevron-right"></i>Accueil</a></li>
+                            <li><a href="{% url 'about' %}"><i class="fas fa-chevron-right"></i>À propos</a></li>
+                            <li><a href="{% url 'projects' %}"><i class="fas fa-chevron-right"></i>Projets</a></li>
+                            <li><a href="{% url 'events' %}"><i class="fas fa-chevron-right"></i>Événements</a></li>
+                            <li><a href="{% url 'archives' %}"><i class="fas fa-chevron-right"></i>Archives</a></li>
+                            <li><a href="{% url 'contact' %}"><i class="fas fa-chevron-right"></i>Contact</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Col 3 : Ressources -->
+                    <div class="col-lg-2 col-md-6 col-6" data-aos="fade-up" data-aos-delay="150">
+                        <div class="footer-heading">Ressources</div>
+                        <ul class="footer-links">
+                            <li><a href="{% url 'member_registration' %}"><i class="fas fa-chevron-right"></i>Devenir
+                                    Membre</a></li>
+                            <li><a href="{% url 'donations' %}"><i class="fas fa-chevron-right"></i>Faire un Don</a>
+                            </li>
+                            <li><a href="{% url 'gallery' %}"><i class="fas fa-chevron-right"></i>Galerie</a></li>
+                            <li><a href="{% url 'blog_list' %}"><i class="fas fa-chevron-right"></i>Blog</a></li>
+                            <li><a href="{% url 'juin' %}"><i class="fas fa-chevron-right"></i>J.U.IN 2026</a></li>
+                            <li><a href="{% url 'juin_become_partner' %}"><i
+                                        class="fas fa-chevron-right"></i>Partenariat</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Col 4 : Contact -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="footer-heading">Nous contacter</div>
+
+                        <div class="footer-contact-item">
+                            <div class="contact-icon-wrap"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="info">Département Informatique<br>Faculté des Sciences, UY1 (Amphithéâtre
+                                502)<br>Yaoundé, Cameroun</div>
+                        </div>
+
+                        <div class="footer-contact-item">
+                            <div class="contact-icon-wrap"><i class="fas fa-envelope"></i></div>
+                            <div class="info">
+                                <a href="mailto:comsas@univ-yaounde1.cm">comsas@univ-yaounde1.cm</a>
+                            </div>
+                        </div>
+
+                        <div class="footer-contact-item">
+                            <div class="contact-icon-wrap"><i class="fas fa-phone"></i></div>
+                            <div class="info">
+                                <a href="tel:+237650970526">+237 650 970 526</a><br>
+                                <a href="tel:+237657097369">+237 657 097 369</a>
+                            </div>
+                        </div>
+
+                        <div class="footer-contact-item">
+                            <div class="contact-icon-wrap"><i class="fab fa-whatsapp"></i></div>
+                            <div class="info">
+                                <a href="https://wa.me/237650970526" target="_blank">WhatsApp : 650 970 526</a>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="footer-contact-item">
-                        <div class="contact-icon-wrap"><i class="fab fa-whatsapp"></i></div>
-                        <div class="info">
-                            <a href="https://wa.me/237650970526" target="_blank">WhatsApp : 650 970 526</a>
-                        </div>
-                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="footer-divider"></div>
+
+                <!-- Bottom bar -->
+                <div class="footer-bottom">
+                    <p>&copy; {% now "Y" %} COM.S.AS — Tous droits réservés</p>
+                    <p>Fait avec <span class="heart">♥</span> par la <strong style="color:rgba(255,255,255,.5);">Team
+                            Tech COM.S.AS</strong></p>
                 </div>
 
             </div>
+        </div>
 
-            <!-- Divider -->
-            <div class="footer-divider"></div>
+        <!-- Vague SVG en bas (décorative inversée) -->
+        <div style="position:absolute;bottom:0;left:0;width:100%;line-height:0;z-index:1;opacity:.04;">
+            <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,20 1440,30 L1440,60 L0,60 Z" fill="white" />
+            </svg>
+        </div>
 
-            <!-- Bottom bar -->
-            <div class="footer-bottom">
-                <p>&copy; {% now "Y" %} COM.S.AS — Tous droits réservés</p>
-                <p>Fait avec <span class="heart">♥</span> par la <strong style="color:rgba(255,255,255,.5);">Team Tech COM.S.AS</strong></p>
+    </footer>
+
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/237650970526" class="whatsapp-float" target="_blank" title="Contactez-nous sur WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Messages Django -->
+    {% if messages %}
+    <div class="position-fixed top-0 end-0 p-3" style="z-index:1060;">
+        {% for message in messages %}
+        <div class="toast show border-0 shadow-lg" role="alert" data-bs-autohide="true" data-bs-delay="5000"
+            style="background:var(--gradient-dark);border-radius:16px;overflow:hidden;min-width:300px;">
+            <div class="toast-header border-0" style="background:rgba(233,30,99,.15);">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle"
+                    style="color:#10b981{% elif message.tags == 'error' %}times-circle"
+                    style="color:#ef4444{% elif message.tags == 'warning' %}exclamation-triangle"
+                    style="color:#f59e0b{% else %}info-circle" style="color:var(--rose-light){% endif %} me-2"></i>
+                <strong class="me-auto text-white" style="font-size:.85rem;">Notification</strong>
+                <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="toast"></button>
             </div>
-
+            <div class="toast-body text-white" style="font-size:.88rem;padding:14px 16px;">{{ message }}</div>
         </div>
+        {% endfor %}
     </div>
+    {% endif %}
 
-    <!-- Vague SVG en bas (décorative inversée) -->
-    <div style="position:absolute;bottom:0;left:0;width:100%;line-height:0;z-index:1;opacity:.04;">
-        <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,20 1440,30 L1440,60 L0,60 Z" fill="white"/>
-        </svg>
-    </div>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
 
-</footer>
+    <script>
+        AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true });
 
-<!-- WhatsApp Float -->
-<a href="https://wa.me/237650970526" class="whatsapp-float" target="_blank" title="Contactez-nous sur WhatsApp">
-    <i class="fab fa-whatsapp"></i>
-</a>
+        const lightbox = GLightbox({ touchNavigation: true, loop: true, autoplayVideos: true });
 
-<!-- Messages Django -->
-{% if messages %}
-<div class="position-fixed top-0 end-0 p-3" style="z-index:1060;">
-    {% for message in messages %}
-    <div class="toast show border-0 shadow-lg" role="alert" data-bs-autohide="true" data-bs-delay="5000"
-        style="background:var(--gradient-dark);border-radius:16px;overflow:hidden;min-width:300px;">
-        <div class="toast-header border-0" style="background:rgba(233,30,99,.15);">
-            <i class="fas fa-{% if message.tags == 'success' %}check-circle" style="color:#10b981{% elif message.tags == 'error' %}times-circle" style="color:#ef4444{% elif message.tags == 'warning' %}exclamation-triangle" style="color:#f59e0b{% else %}info-circle" style="color:var(--rose-light){% endif %} me-2"></i>
-            <strong class="me-auto text-white" style="font-size:.85rem;">Notification</strong>
-            <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="toast"></button>
-        </div>
-        <div class="toast-body text-white" style="font-size:.88rem;padding:14px 16px;">{{ message }}</div>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+        // Navbar scroll
+        const navbar = document.getElementById('mainNavbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 30);
+        });
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+        // Auto-hide alerts
+        setTimeout(() => {
+            document.querySelectorAll('.alert.alert-dismissible').forEach(a => {
+                a.style.transition = 'opacity .5s';
+                a.style.opacity = '0';
+                setTimeout(() => a.remove(), 500);
+            });
+        }, 5000);
 
-<script>
-AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true });
+        // Navbar link active underline on hover — micro-interaction
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+            link.addEventListener('mouseenter', function () {
+                this.style.transition = 'all .2s';
+            });
+        });
+    </script>
 
-const lightbox = GLightbox({ touchNavigation: true, loop: true, autoplayVideos: true });
-
-// Navbar scroll
-const navbar = document.getElementById('mainNavbar');
-window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 30);
-});
-
-// Auto-hide alerts
-setTimeout(() => {
-    document.querySelectorAll('.alert.alert-dismissible').forEach(a => {
-        a.style.transition = 'opacity .5s';
-        a.style.opacity = '0';
-        setTimeout(() => a.remove(), 500);
-    });
-}, 5000);
-
-// Navbar link active underline on hover — micro-interaction
-document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
-    link.addEventListener('mouseenter', function() {
-        this.style.transition = 'all .2s';
-    });
-});
-</script>
-
-{% block extra_js %}{% endblock %}
+    {% block extra_js %}{% endblock %}
 
 </body>
+
 </html>
