@@ -57,6 +57,9 @@
     {% block extra_css %}{% endblock %}
 
     <style>
+        /* ════════════════════════════════════════
+           CSS VARIABLES
+        ════════════════════════════════════════ */
         :root {
             --rose: #E91E63;
             --rose-light: #f06292;
@@ -77,12 +80,21 @@
             --shadow-sm: 0 2px 4px rgba(0, 0, 0, .05);
             --shadow-md: 0 4px 16px rgba(233, 30, 99, .12);
             --shadow-lg: 0 10px 30px rgba(233, 30, 99, .18);
+            /* Responsive spacing */
+            --navbar-height-mobile: 64px;
+            --navbar-height-desktop: 72px;
         }
 
-        *,
-        *::before,
-        *::after {
+        /* ════════════════════════════════════════
+           RESET & BASE — MOBILE FIRST
+        ════════════════════════════════════════ */
+        *, *::before, *::after {
             box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
         }
 
         body {
@@ -90,31 +102,32 @@
             background: var(--blanc);
             color: var(--text-dark);
             overflow-x: hidden;
+            /* Compense la navbar fixe — mobile d'abord */
+            padding-top: var(--navbar-height-mobile);
         }
 
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
+        @media (min-width: 992px) {
+            body {
+                padding-top: var(--navbar-height-desktop);
+            }
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 800;
             color: var(--text-dark);
         }
 
-        .text-primary {
-            color: var(--rose) !important;
-        }
+        .text-primary  { color: var(--rose) !important; }
+        .text-secondary{ color: var(--secondary-color) !important; }
+        .bg-light      { background-color: var(--blanc-off) !important; }
 
-        .text-secondary {
-            color: var(--secondary-color) !important;
-        }
-
-        .bg-light {
-            background-color: var(--blanc-off) !important;
-        }
-
+        /* ── Buttons ── */
         .btn-primary {
             background: var(--gradient);
             border: none;
@@ -123,20 +136,17 @@
             font-weight: 700;
             transition: transform .2s, box-shadow .2s;
         }
-
         .btn-primary:hover {
             background: var(--gradient);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
             color: white;
         }
-
         .btn-outline-primary {
             color: var(--rose);
             border-color: var(--rose);
             font-weight: 700;
         }
-
         .btn-outline-primary:hover {
             background: var(--gradient);
             border-color: transparent;
@@ -144,48 +154,58 @@
         }
 
         /* ════════════════════════════════════════
-           NAVBAR
+           NAVBAR — MOBILE FIRST
         ════════════════════════════════════════ */
         #mainNavbar {
-            background: rgba(255, 255, 255, 0.92) !important;
+            background: rgba(255, 255, 255, 0.96) !important;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(233, 30, 99, .08);
-            padding: 0 0;
+            padding: 0;
             transition: all .35s ease;
             box-shadow: 0 2px 24px rgba(233, 30, 99, .06);
-        }
-
-        #mainNavbar.scrolled {
-            background: rgba(255, 255, 255, 0.98) !important;
-            box-shadow: 0 4px 32px rgba(233, 30, 99, .12);
-            padding: 0;
+            min-height: var(--navbar-height-mobile);
         }
 
         #mainNavbar .container {
             padding-top: 10px;
             padding-bottom: 10px;
+            /* Petits écrans : padding horizontal plus serré */
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
 
-        /* Brand */
+        #mainNavbar.scrolled {
+            background: rgba(255, 255, 255, 0.98) !important;
+            box-shadow: 0 4px 32px rgba(233, 30, 99, .12);
+        }
+
+        /* ── Brand ── */
         .navbar-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             text-decoration: none;
             position: relative;
+            /* Ne pas laisser le brand se rétrécir en flex */
+            flex-shrink: 0;
         }
 
         .brand-logo-wrap {
             position: relative;
-            width: 44px;
-            height: 44px;
+            /* Mobile : logo un peu plus petit */
+            width: 38px;
+            height: 38px;
             flex-shrink: 0;
         }
 
+        @media (min-width: 576px) {
+            .brand-logo-wrap { width: 44px; height: 44px; }
+        }
+
         .brand-logo-wrap img {
-            width: 44px;
-            height: 44px;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
             border-radius: 12px;
             position: relative;
@@ -204,13 +224,8 @@
             z-index: 0;
         }
 
-        .navbar-brand:hover .brand-logo-wrap::before {
-            opacity: 1;
-        }
-
-        .navbar-brand:hover .brand-logo-wrap img {
-            transform: scale(1.08) rotate(-3deg);
-        }
+        .navbar-brand:hover .brand-logo-wrap::before { opacity: 1; }
+        .navbar-brand:hover .brand-logo-wrap img { transform: scale(1.08) rotate(-3deg); }
 
         .brand-text {
             display: flex;
@@ -220,7 +235,7 @@
 
         .brand-name {
             font-family: 'Syne', sans-serif;
-            font-size: 1.15rem;
+            font-size: 1rem;
             font-weight: 800;
             background: var(--gradient);
             -webkit-background-clip: text;
@@ -229,74 +244,178 @@
             letter-spacing: .5px;
         }
 
+        @media (min-width: 576px) {
+            .brand-name { font-size: 1.15rem; }
+        }
+
         .brand-sub {
-            font-size: .6rem;
+            font-size: .58rem;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-top: 1px;
+            margin-top: 2px;
         }
 
-        /* Nav links */
-        .navbar-nav .nav-link {
-            color: var(--text-dark) !important;
-            font-weight: 600;
-            font-size: .88rem;
-            padding: 8px 14px !important;
+        /* ── Toggler ── */
+        .navbar-toggler {
+            border: 1.5px solid var(--rose-border);
             border-radius: 10px;
-            transition: all .25s;
-            position: relative;
+            padding: 6px 10px;
+            /* Assure une zone tactile correcte (44px min) */
+            min-width: 42px;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 4px;
-            left: 50%;
-            transform: translateX(-50%) scaleX(0);
-            width: 20px;
-            height: 2px;
-            background: var(--gradient);
-            border-radius: 2px;
-            transition: transform .3s cubic-bezier(.175, .885, .32, 1.275);
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, .15);
+            outline: none;
         }
 
-        .navbar-nav .nav-link:hover {
-            color: var(--rose) !important;
-            background: var(--rose-pale);
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='%23E91E63' stroke-width='2.5' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+            width: 22px;
+            height: 22px;
         }
 
-        .navbar-nav .nav-link:hover::after,
-        .navbar-nav .nav-link.active::after {
-            transform: translateX(-50%) scaleX(1);
+        /* ── Menu mobile (collapse) ── */
+        #navbarNav {
+            /* Sur mobile, le menu déroulant occupe tout l'écran horizontalement */
         }
 
-        .navbar-nav .nav-link.active {
-            color: var(--rose) !important;
-            font-weight: 700;
+        @media (max-width: 991.98px) {
+            #navbarNav {
+                background: rgba(255, 255, 255, 0.99);
+                border-top: 1px solid var(--rose-border);
+                border-radius: 0 0 20px 20px;
+                padding: 12px 8px 16px;
+                box-shadow: 0 12px 32px rgba(233, 30, 99, .1);
+                max-height: calc(100vh - var(--navbar-height-mobile));
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .navbar-nav {
+                width: 100%;
+                gap: 2px !important;
+            }
+
+            .navbar-nav .nav-item {
+                width: 100%;
+            }
+
+            .navbar-nav .nav-link {
+                padding: 11px 16px !important;
+                border-radius: 12px;
+                font-size: .9rem;
+                /* Zone tactile confortable */
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+
+            /* CTA en bas du menu mobile */
+            .navbar-nav ~ .d-flex {
+                padding: 12px 8px 4px;
+                border-top: 1px solid var(--rose-border);
+                margin-top: 8px;
+            }
+
+            .btn-nav-cta {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 22px;
+                font-size: .9rem;
+            }
         }
 
-        /* Dropdown */
+        /* ── Nav links desktop ── */
+        @media (min-width: 992px) {
+            #mainNavbar .container {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            .navbar-nav .nav-link {
+                color: var(--text-dark) !important;
+                font-weight: 600;
+                font-size: .88rem;
+                padding: 8px 14px !important;
+                border-radius: 10px;
+                transition: all .25s;
+                position: relative;
+            }
+
+            .navbar-nav .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 4px;
+                left: 50%;
+                transform: translateX(-50%) scaleX(0);
+                width: 20px;
+                height: 2px;
+                background: var(--gradient);
+                border-radius: 2px;
+                transition: transform .3s cubic-bezier(.175, .885, .32, 1.275);
+            }
+
+            .navbar-nav .nav-link:hover { color: var(--rose) !important; background: var(--rose-pale); }
+            .navbar-nav .nav-link:hover::after,
+            .navbar-nav .nav-link.active::after { transform: translateX(-50%) scaleX(1); }
+            .navbar-nav .nav-link.active { color: var(--rose) !important; font-weight: 700; }
+        }
+
+        /* Mobile nav link active */
+        @media (max-width: 991.98px) {
+            .navbar-nav .nav-link {
+                color: var(--text-dark) !important;
+                font-weight: 600;
+            }
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link.active {
+                color: var(--rose) !important;
+                background: var(--rose-pale);
+            }
+        }
+
+        /* ── Dropdown ── */
         .dropdown-menu {
             border: 1px solid var(--rose-border) !important;
             border-radius: 18px !important;
             box-shadow: 0 20px 60px rgba(233, 30, 99, .15) !important;
             padding: 10px 8px !important;
-            animation: dropIn .25s cubic-bezier(.175, .885, .32, 1.275);
             background: rgba(255, 255, 255, .98);
             backdrop-filter: blur(20px);
         }
 
-        @keyframes dropIn {
-            from {
-                opacity: 0;
-                transform: translateY(-12px) scale(.95);
+        @media (min-width: 992px) {
+            .dropdown-menu {
+                animation: dropIn .25s cubic-bezier(.175, .885, .32, 1.275);
             }
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
+        @keyframes dropIn {
+            from { opacity: 0; transform: translateY(-12px) scale(.95); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Sur mobile, le dropdown Bootstrap est inline — on le stylise différemment */
+        @media (max-width: 991.98px) {
+            .dropdown-menu {
+                border-radius: 14px !important;
+                border: 1px solid var(--rose-border) !important;
+                box-shadow: none !important;
+                background: var(--rose-pale) !important;
+                backdrop-filter: none;
+                margin: 4px 8px !important;
+                padding: 6px !important;
+                /* S'assure que le dropdown s'affiche dans le flow */
+                position: static !important;
+                width: calc(100% - 16px) !important;
+                float: none !important;
             }
         }
 
@@ -307,12 +426,19 @@
             font-weight: 600;
             color: var(--text-dark);
             transition: all .2s;
+            /* Zone tactile mobile */
+            min-height: 40px;
+            display: flex;
+            align-items: center;
         }
 
         .dropdown-item:hover {
             background: var(--rose-pale);
             color: var(--rose);
-            padding-left: 18px;
+        }
+
+        @media (min-width: 992px) {
+            .dropdown-item:hover { padding-left: 18px; }
         }
 
         .dropdown-header {
@@ -327,7 +453,7 @@
             margin: 6px 8px;
         }
 
-        /* Badge nav */
+        /* ── Badge nav ── */
         .nav-badge {
             background: var(--gradient);
             color: white;
@@ -339,21 +465,15 @@
             vertical-align: middle;
             box-shadow: 0 2px 8px var(--rose-shadow);
             animation: navBadgePulse 2s ease-in-out infinite;
+            white-space: nowrap;
         }
 
         @keyframes navBadgePulse {
-
-            0%,
-            100% {
-                box-shadow: 0 2px 8px var(--rose-shadow);
-            }
-
-            50% {
-                box-shadow: 0 2px 16px rgba(233, 30, 99, .5);
-            }
+            0%, 100% { box-shadow: 0 2px 8px var(--rose-shadow); }
+            50%       { box-shadow: 0 2px 16px rgba(233, 30, 99, .5); }
         }
 
-        /* CTA button navbar */
+        /* ── CTA Button navbar ── */
         .btn-nav-cta {
             background: var(--gradient);
             color: white !important;
@@ -367,7 +487,10 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 7px;
+            /* Zone tactile mobile */
+            min-height: 44px;
         }
 
         .btn-nav-cta:hover {
@@ -376,37 +499,25 @@
             color: white !important;
         }
 
-        .navbar-toggler {
-            border: 1.5px solid var(--rose-border);
-            border-radius: 10px;
-            padding: 6px 10px;
-        }
-
-        .navbar-toggler:focus {
-            box-shadow: 0 0 0 3px rgba(233, 30, 99, .15);
-        }
-
-        .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='%23E91E63' stroke-width='2.5' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-        }
-
         /* ════════════════════════════════════════
-           PARTNERS BAR
+           PARTNERS SECTION — MOBILE FIRST
         ════════════════════════════════════════ */
         .partners-section {
             background: var(--blanc);
             border-top: 1px solid var(--rose-border);
-            padding: 48px 0;
+            padding: 36px 0;
             position: relative;
             overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .partners-section { padding: 48px 0; }
         }
 
         .partners-section::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 3px;
             background: var(--gradient);
         }
@@ -431,7 +542,13 @@
             filter: grayscale(100%) opacity(.5);
             transition: all .35s ease;
             cursor: pointer;
-            max-height: 60px;
+            max-height: 48px;
+            width: auto;
+            max-width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .sponsor-logo { max-height: 60px; }
         }
 
         .sponsor-logo:hover {
@@ -440,7 +557,7 @@
         }
 
         /* ════════════════════════════════════════
-           FOOTER
+           FOOTER — MOBILE FIRST
         ════════════════════════════════════════ */
         .site-footer {
             position: relative;
@@ -449,22 +566,17 @@
             color: rgba(255, 255, 255, .75);
         }
 
-        /* Courbes SVG top */
         .footer-wave-top {
             position: absolute;
-            top: -2px;
-            left: 0;
+            top: -2px; left: 0;
             width: 100%;
             line-height: 0;
             z-index: 1;
         }
 
-        .footer-wave-top svg {
-            display: block;
-            width: 100%;
-        }
+        .footer-wave-top svg { display: block; width: 100%; }
 
-        /* Decor circles */
+        /* Décors */
         .footer-decor {
             position: absolute;
             border-radius: 50%;
@@ -472,32 +584,38 @@
             z-index: 0;
         }
 
+        /* Sur mobile on allège les décors pour perf */
         .footer-decor-1 {
-            width: 500px;
-            height: 500px;
+            width: 300px; height: 300px;
             background: radial-gradient(circle, rgba(233, 30, 99, .12) 0%, transparent 70%);
-            top: -100px;
-            right: -100px;
+            top: -60px; right: -80px;
+        }
+
+        @media (min-width: 768px) {
+            .footer-decor-1 { width: 500px; height: 500px; top: -100px; right: -100px; }
         }
 
         .footer-decor-2 {
-            width: 300px;
-            height: 300px;
+            width: 200px; height: 200px;
             background: radial-gradient(circle, rgba(233, 30, 99, .08) 0%, transparent 70%);
-            bottom: 0;
-            left: -60px;
+            bottom: 0; left: -40px;
+        }
+
+        @media (min-width: 768px) {
+            .footer-decor-2 { width: 300px; height: 300px; left: -60px; }
         }
 
         .footer-decor-3 {
-            width: 200px;
-            height: 200px;
+            width: 150px; height: 150px;
             background: radial-gradient(circle, rgba(240, 98, 146, .07) 0%, transparent 70%);
-            top: 50%;
-            left: 40%;
+            top: 50%; left: 40%;
             transform: translateY(-50%);
         }
 
-        /* Grid dots pattern */
+        @media (min-width: 768px) {
+            .footer-decor-3 { width: 200px; height: 200px; }
+        }
+
         .footer-dots {
             position: absolute;
             inset: 0;
@@ -510,10 +628,15 @@
         .footer-inner {
             position: relative;
             z-index: 2;
-            padding: 100px 0 48px;
+            /* Mobile: moins de padding haut */
+            padding: 72px 0 40px;
         }
 
-        /* Brand footer */
+        @media (min-width: 768px) {
+            .footer-inner { padding: 100px 0 48px; }
+        }
+
+        /* ── Brand footer ── */
         .footer-brand {
             display: flex;
             align-items: center;
@@ -523,18 +646,22 @@
         }
 
         .footer-brand img {
-            width: 52px;
-            height: 52px;
+            width: 48px; height: 48px;
             object-fit: contain;
             border-radius: 14px;
             border: 2px solid rgba(233, 30, 99, .3);
             padding: 4px;
             background: rgba(255, 255, 255, .06);
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 768px) {
+            .footer-brand img { width: 52px; height: 52px; }
         }
 
         .footer-brand-name {
             font-family: 'Syne', sans-serif;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 800;
             background: var(--gradient);
             -webkit-background-clip: text;
@@ -556,15 +683,16 @@
             margin-bottom: 24px;
         }
 
-        /* Social icons */
+        /* ── Social icons ── */
         .footer-socials {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .social-icon {
-            width: 40px;
-            height: 40px;
+            /* Zone tactile minimum 44px sur mobile */
+            width: 44px; height: 44px;
             border-radius: 12px;
             background: rgba(255, 255, 255, .06);
             border: 1px solid rgba(255, 255, 255, .1);
@@ -577,6 +705,10 @@
             transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
         }
 
+        @media (min-width: 768px) {
+            .social-icon { width: 40px; height: 40px; }
+        }
+
         .social-icon:hover {
             background: var(--rose);
             border-color: var(--rose);
@@ -585,14 +717,14 @@
             box-shadow: 0 8px 20px rgba(233, 30, 99, .4);
         }
 
-        /* Footer headings */
+        /* ── Footer headings ── */
         .footer-heading {
             font-size: .68rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2.5px;
             color: rgba(255, 255, 255, .25);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             position: relative;
             padding-left: 12px;
         }
@@ -600,25 +732,21 @@
         .footer-heading::before {
             content: '';
             position: absolute;
-            left: 0;
-            top: 50%;
+            left: 0; top: 50%;
             transform: translateY(-50%);
-            width: 3px;
-            height: 14px;
+            width: 3px; height: 14px;
             background: var(--gradient);
             border-radius: 2px;
         }
 
-        /* Footer links */
+        /* ── Footer links ── */
         .footer-links {
             list-style: none;
             padding: 0;
             margin: 0;
         }
 
-        .footer-links li {
-            margin-bottom: 10px;
-        }
+        .footer-links li { margin-bottom: 8px; }
 
         .footer-links a {
             color: rgba(255, 255, 255, .45);
@@ -630,45 +758,34 @@
             gap: 8px;
             transition: all .25s;
             position: relative;
+            /* Zone tactile confortable */
+            min-height: 36px;
+            padding: 4px 0;
         }
 
         .footer-links a::before {
             content: '';
-            width: 0;
-            height: 1px;
+            width: 0; height: 1px;
             background: var(--rose);
             transition: width .25s;
             position: absolute;
-            bottom: -1px;
-            left: 0;
+            bottom: 0; left: 0;
         }
 
-        .footer-links a:hover {
-            color: white;
-            padding-left: 6px;
-        }
+        .footer-links a:hover { color: white; padding-left: 6px; }
+        .footer-links a:hover::before { width: 100%; }
+        .footer-links a i { color: var(--rose-light); font-size: .7rem; opacity: .6; }
 
-        .footer-links a:hover::before {
-            width: 100%;
-        }
-
-        .footer-links a i {
-            color: var(--rose-light);
-            font-size: .7rem;
-            opacity: .6;
-        }
-
-        /* Contact items */
+        /* ── Contact items ── */
         .footer-contact-item {
             display: flex;
             align-items: flex-start;
-            gap: 14px;
-            margin-bottom: 16px;
+            gap: 12px;
+            margin-bottom: 14px;
         }
 
         .contact-icon-wrap {
-            width: 36px;
-            height: 36px;
+            width: 36px; height: 36px;
             border-radius: 10px;
             background: rgba(233, 30, 99, .15);
             border: 1px solid rgba(233, 30, 99, .25);
@@ -678,6 +795,8 @@
             color: var(--rose-light);
             font-size: .8rem;
             flex-shrink: 0;
+            /* Aligner au milieu du texte sur une ligne */
+            margin-top: 2px;
         }
 
         .footer-contact-item .info {
@@ -690,18 +809,19 @@
             color: rgba(255, 255, 255, .45);
             text-decoration: none;
             transition: color .2s;
+            /* Zone tactile */
+            display: inline-block;
+            padding: 2px 0;
         }
 
-        .footer-contact-item .info a:hover {
-            color: white;
-        }
+        .footer-contact-item .info a:hover { color: white; }
 
-        /* J.U.IN banner in footer */
+        /* ── J.U.IN Banner footer ── */
         .footer-juin-banner {
             background: rgba(233, 30, 99, .1);
             border: 1px solid rgba(233, 30, 99, .25);
             border-radius: 20px;
-            padding: 20px 24px;
+            padding: 18px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -716,10 +836,16 @@
         }
 
         .footer-juin-banner .banner-title {
-            font-size: 1rem;
+            font-size: .95rem;
             font-weight: 800;
             color: white;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+            /* Pas de truncate sur mobile */
+            word-break: break-word;
+        }
+
+        @media (min-width: 768px) {
+            .footer-juin-banner .banner-title { font-size: 1rem; }
         }
 
         .footer-juin-pill {
@@ -728,7 +854,7 @@
             gap: 7px;
             background: var(--gradient);
             color: white;
-            padding: 9px 20px;
+            padding: 10px 20px;
             border-radius: 50px;
             font-size: .8rem;
             font-weight: 700;
@@ -736,6 +862,10 @@
             box-shadow: 0 4px 16px rgba(233, 30, 99, .35);
             transition: transform .2s, box-shadow .2s;
             white-space: nowrap;
+            /* Zone tactile */
+            min-height: 44px;
+            /* Sur mobile, prend toute la largeur si seul sur la ligne */
+            flex-shrink: 0;
         }
 
         .footer-juin-pill:hover {
@@ -748,16 +878,29 @@
         .footer-divider {
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(233, 30, 99, .2), rgba(255, 255, 255, .08), rgba(233, 30, 99, .2), transparent);
-            margin: 40px 0 28px;
+            margin: 32px 0 24px;
+        }
+
+        @media (min-width: 768px) {
+            .footer-divider { margin: 40px 0 28px; }
         }
 
         /* Bottom bar */
         .footer-bottom {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+        }
+
+        @media (min-width: 576px) {
+            .footer-bottom {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+            }
         }
 
         .footer-bottom p {
@@ -773,26 +916,13 @@
         }
 
         @keyframes heartbeat {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            14% {
-                transform: scale(1.3);
-            }
-
-            28% {
-                transform: scale(1);
-            }
-
-            42% {
-                transform: scale(1.2);
-            }
+            0%, 100% { transform: scale(1); }
+            14%       { transform: scale(1.3); }
+            28%       { transform: scale(1); }
+            42%       { transform: scale(1.2); }
         }
 
-        /* Floating particles in footer */
+        /* Particules */
         .footer-particle {
             position: absolute;
             border-radius: 50%;
@@ -804,31 +934,26 @@
         }
 
         @keyframes particleFloat {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: .06;
-            }
-
-            100% {
-                transform: translateY(-120px) rotate(360deg);
-                opacity: 0;
-            }
+            0%   { transform: translateY(0) rotate(0deg); opacity: .06; }
+            100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
         }
 
-        /* WhatsApp float */
+        /* ════════════════════════════════════════
+           WHATSAPP FLOAT — MOBILE FIRST
+        ════════════════════════════════════════ */
         .whatsapp-float {
             position: fixed;
-            bottom: 28px;
-            right: 28px;
-            width: 56px;
-            height: 56px;
+            /* Sur mobile, légèrement plus haut pour ne pas cacher la barre nav du navigateur */
+            bottom: 20px;
+            right: 16px;
+            width: 52px; height: 52px;
             background: #25D366;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             text-decoration: none;
             box-shadow: 0 8px 24px rgba(37, 211, 102, .4);
             z-index: 1000;
@@ -836,16 +961,17 @@
             animation: whaFloat 3s ease-in-out infinite;
         }
 
+        @media (min-width: 768px) {
+            .whatsapp-float {
+                bottom: 28px; right: 28px;
+                width: 56px; height: 56px;
+                font-size: 1.6rem;
+            }
+        }
+
         @keyframes whaFloat {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-6px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-6px); }
         }
 
         .whatsapp-float:hover {
@@ -855,23 +981,78 @@
             animation: none;
         }
 
-        /* Toast */
+        /* ════════════════════════════════════════
+           TOAST NOTIFICATIONS — MOBILE FIRST
+        ════════════════════════════════════════ */
         .toast {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* Misc */
+        /* Container toasts : mobile = pleine largeur */
+        .toast-container-fixed {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 8px;
+            z-index: 1060;
+        }
+
+        @media (min-width: 576px) {
+            .toast-container-fixed {
+                top: 0; left: auto;
+                right: 0;
+                padding: 12px;
+                width: auto;
+                max-width: 380px;
+            }
+        }
+
+        /* ════════════════════════════════════════
+           MISC UTILITAIRES RESPONSIVE
+        ════════════════════════════════════════ */
         .card {
             background: white;
             border: 1px solid rgba(0, 0, 0, .05);
             border-radius: 16px;
         }
 
-        .footer {
-            background: #111;
-            color: #ccc;
-            margin-top: 5rem;
-            padding: 4rem 0 2rem;
+        /* Prevent horizontal overflow sur les petits écrans */
+        .container {
+            padding-left: max(16px, env(safe-area-inset-left));
+            padding-right: max(16px, env(safe-area-inset-right));
+        }
+
+        /* Safe area pour les iPhone avec notch / Dynamic Island */
+        @supports (padding: env(safe-area-inset-bottom)) {
+            .whatsapp-float {
+                bottom: calc(20px + env(safe-area-inset-bottom));
+            }
+
+            @media (min-width: 768px) {
+                .whatsapp-float {
+                    bottom: calc(28px + env(safe-area-inset-bottom));
+                }
+            }
+        }
+
+        /* Partenaires : grille responsive qui s'adapte vraiment bien sur mobile */
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px 16px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        @media (min-width: 480px) {
+            .partners-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (min-width: 768px) {
+            .partners-grid { grid-template-columns: repeat(5, 1fr); gap: 24px; }
+        }
+
+        @media (min-width: 992px) {
+            .partners-grid { grid-template-columns: repeat(9, 1fr); }
         }
     </style>
 </head>
@@ -879,8 +1060,8 @@
 <body>
 
     <!-- ════════════════════════════════════════
-     NAVBAR
-════════════════════════════════════════ -->
+         NAVBAR — MOBILE FIRST
+    ════════════════════════════════════════ -->
     <nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
         <div class="container">
 
@@ -899,7 +1080,9 @@
                 </div>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <!-- Toggler mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Ouvrir le menu">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -916,70 +1099,60 @@
                     <!-- Département -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {% if 'department' in request.path or 'about' in request.path or 'members' in request.path or 'presidents' in request.path %}active{% endif %}"
-                            href="#" id="deptDropdown" role="button" data-bs-toggle="dropdown">
+                            href="#" id="deptDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Département
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="deptDropdown">
-                            <li>
-                                <h6 class="dropdown-header">Présentation</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'about' %}"><i
-                                        class="fas fa-info-circle me-2 text-primary"></i>À propos du Club</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <h6 class="dropdown-header">Acteurs & Organisation</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'department_professors' %}"><i
-                                        class="fas fa-chalkboard-teacher me-2 text-primary"></i>Enseignants</a></li>
-                            <li><a class="dropdown-item" href="{% url 'members' %}"><i
-                                        class="fas fa-users me-2 text-primary"></i>Bureau Exécutif</a></li>
-                            <li><a class="dropdown-item" href="{% url 'president_list' %}"><i
-                                        class="fas fa-crown me-2 text-primary"></i>Anciens Présidents <span
-                                        class="nav-badge ms-1">Nouveau</span></a></li>
-                            <li><a class="dropdown-item" href="{% url 'department_delegates' %}"><i
-                                        class="fas fa-user-tie me-2 text-primary"></i>Délégués</a></li>
+                            <li><h6 class="dropdown-header">Présentation</h6></li>
+                            <li><a class="dropdown-item" href="{% url 'about' %}">
+                                <i class="fas fa-info-circle me-2 text-primary"></i>À propos du Club</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Acteurs & Organisation</h6></li>
+                            <li><a class="dropdown-item" href="{% url 'department_professors' %}">
+                                <i class="fas fa-chalkboard-teacher me-2 text-primary"></i>Enseignants</a></li>
+                            <li><a class="dropdown-item" href="{% url 'members' %}">
+                                <i class="fas fa-users me-2 text-primary"></i>Bureau Exécutif</a></li>
+                            <li><a class="dropdown-item" href="{% url 'president_list' %}">
+                                <i class="fas fa-crown me-2 text-primary"></i>Anciens Présidents
+                                <span class="nav-badge ms-1">Nouveau</span></a></li>
+                            <li><a class="dropdown-item" href="{% url 'department_delegates' %}">
+                                <i class="fas fa-user-tie me-2 text-primary"></i>Délégués</a></li>
                         </ul>
                     </li>
 
                     <!-- Activités -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {% if 'project' in request.path or 'event' in request.path or 'concours' in request.path or 'sponsorship' in request.path %}active{% endif %}"
-                            href="#" id="navbarDropdownAct" role="button" data-bs-toggle="dropdown">
+                            href="#" id="navbarDropdownAct" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Activités
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownAct">
-                            <li><a class="dropdown-item" href="{% url 'projects' %}"><i
-                                        class="fas fa-code me-2 text-primary"></i>Projets</a></li>
-                            <li><a class="dropdown-item" href="{% url 'events' %}"><i
-                                        class="fas fa-calendar-alt me-2 text-primary"></i>Événements</a></li>
-                            <li><a class="dropdown-item" href="{% url 'contest_list' %}"><i
-                                        class="fas fa-trophy me-2 text-primary"></i>Concours</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'sponsorship_home' %}"><i
-                                        class="fas fa-handshake me-2 text-primary"></i>Parrainage</a></li>
+                            <li><a class="dropdown-item" href="{% url 'projects' %}">
+                                <i class="fas fa-code me-2 text-primary"></i>Projets</a></li>
+                            <li><a class="dropdown-item" href="{% url 'events' %}">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>Événements</a></li>
+                            <li><a class="dropdown-item" href="{% url 'contest_list' %}">
+                                <i class="fas fa-trophy me-2 text-primary"></i>Concours</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'sponsorship_home' %}">
+                                <i class="fas fa-handshake me-2 text-primary"></i>Parrainage</a></li>
                         </ul>
                     </li>
 
                     <!-- Ressources -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {% if 'documents' in request.path or 'blog' in request.path or 'gallery' in request.path %}active{% endif %}"
-                            href="#" id="navbarDropdownRes" role="button" data-bs-toggle="dropdown">
+                            href="#" id="navbarDropdownRes" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Ressources
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownRes">
-                            <li><a class="dropdown-item" href="{% url 'request_documents' %}"><i
-                                        class="fas fa-file-alt me-2 text-primary"></i>Modèles de Demandes</a></li>
-                            <li><a class="dropdown-item" href="{% url 'blog_list' %}"><i
-                                        class="fas fa-newspaper me-2 text-primary"></i>Blog de l'Étudiant</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'gallery' %}"><i
-                                        class="fas fa-images me-2 text-primary"></i>Galerie Multimédia</a></li>
+                            <li><a class="dropdown-item" href="{% url 'request_documents' %}">
+                                <i class="fas fa-file-alt me-2 text-primary"></i>Modèles de Demandes</a></li>
+                            <li><a class="dropdown-item" href="{% url 'blog_list' %}">
+                                <i class="fas fa-newspaper me-2 text-primary"></i>Blog de l'Étudiant</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'gallery' %}">
+                                <i class="fas fa-images me-2 text-primary"></i>Galerie Multimédia</a></li>
                         </ul>
                     </li>
 
@@ -995,29 +1168,28 @@
 
                     <!-- J.U.IN 2026 -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {% if 'juin' in request.path %}active{% endif %}" href="#"
-                            id="juinDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'juin' in request.path %}active{% endif %}"
+                            href="#" id="juinDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             J.U.IN 2026 <span class="nav-badge ms-1">Live</span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="juinDropdown">
-                            <li><a class="dropdown-item fw-bold" href="{% url 'juin' %}"><i
-                                        class="fas fa-star me-2 text-primary"></i>Édition 2026</a></li>
-                            <li><a class="dropdown-item" href="{% url 'juin_become_partner' %}"><i
-                                        class="fas fa-handshake me-2 text-primary"></i>Devenir Partenaire</a></li>
-                            <li><a class="dropdown-item" href="{% url 'juin_sponsors' %}"><i
-                                        class="fas fa-award me-2 text-primary"></i>Nos Sponsors</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            <li><a class="dropdown-item fw-bold" href="{% url 'juin' %}">
+                                <i class="fas fa-star me-2 text-primary"></i>Édition 2026</a></li>
+                            <li><a class="dropdown-item" href="{% url 'juin_become_partner' %}">
+                                <i class="fas fa-handshake me-2 text-primary"></i>Devenir Partenaire</a></li>
+                            <li><a class="dropdown-item" href="{% url 'juin_sponsors' %}">
+                                <i class="fas fa-award me-2 text-primary"></i>Nos Sponsors</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" style="color:var(--rose);font-weight:700;"
-                                    href="{% url 'juin' %}#soutenir"><i class="fas fa-heart me-2"></i>Soutenir
-                                    l'Événement</a></li>
+                                    href="{% url 'juin' %}#soutenir">
+                                <i class="fas fa-heart me-2"></i>Soutenir l'Événement</a></li>
                         </ul>
                     </li>
 
                 </ul>
 
-                <div class="d-flex align-items-center gap-2">
+                <!-- CTA -->
+                <div class="d-flex align-items-center gap-2 mt-2 mt-lg-0">
                     <a href="{% url 'member_registration' %}" class="btn-nav-cta">
                         <i class="fas fa-user-plus"></i>Rejoindre
                     </a>
@@ -1032,74 +1204,73 @@
     </main>
 
     <!-- ════════════════════════════════════════
-     PARTNERS
-════════════════════════════════════════ -->
+         PARTNERS
+    ════════════════════════════════════════ -->
     <section class="partners-section">
         <div class="container">
             <div class="text-center mb-4">
                 <div class="partners-title-badge"><i class="fas fa-handshake"></i>Ils nous accompagnent</div>
                 <h3 class="fw-bold" style="color:var(--text-dark);">Nos Partenaires</h3>
             </div>
-            <div class="row align-items-center justify-content-center g-4">
-                <div class="col-6 col-md-4 col-lg-2 text-center">
+
+            <!-- Grille CSS native plus souple que Bootstrap grid pour les logos -->
+            <div class="partners-grid">
+                <div class="text-center">
                     <img src="{% static 'images/sponsors/uy1.png' %}" alt="Université de Yaoundé 1"
-                        class="sponsor-logo img-fluid" style="mix-blend-mode:multiply;">
+                        class="sponsor-logo" style="mix-blend-mode:multiply;">
                 </div>
-                <div class="col-6 col-md-4 col-lg-2 text-center">
-                    <img src="{% static 'images/sponsors/comsas.png' %}" alt="COMSAS" class="sponsor-logo img-fluid"
-                        style="mix-blend-mode:multiply;">
+                <div class="text-center">
+                    <img src="{% static 'images/sponsors/comsas.png' %}" alt="COMSAS"
+                        class="sponsor-logo" style="mix-blend-mode:multiply;">
                 </div>
-                <div class="col-6 col-md-4 col-lg-2 text-center">
-                    <img src="{% static 'images/sponsors/npe.png' %}" alt="NPE" class="sponsor-logo img-fluid"
-                        style="mix-blend-mode:multiply;">
+                <div class="text-center">
+                    <img src="{% static 'images/sponsors/npe.png' %}" alt="NPE"
+                        class="sponsor-logo" style="mix-blend-mode:multiply;">
                 </div>
-                <div class="col-6 col-md-4 col-lg-2 text-center">
-                    <img src="{% static 'images/sponsors/aefas.png' %}" alt="AEFAS" class="sponsor-logo img-fluid"
-                        style="mix-blend-mode:multiply;">
+                <div class="text-center">
+                    <img src="{% static 'images/sponsors/aefas.png' %}" alt="AEFAS"
+                        class="sponsor-logo" style="mix-blend-mode:multiply;">
                 </div>
-                <div class="col-6 col-md-4 col-lg-2 text-center">
-                    <img src="{% static 'images/sponsors/da.png' %}" alt="DA" class="sponsor-logo img-fluid"
-                        style="mix-blend-mode:multiply;">
+                <div class="text-center">
+                    <img src="{% static 'images/sponsors/da.png' %}" alt="DA"
+                        class="sponsor-logo" style="mix-blend-mode:multiply;">
                 </div>
-                <div class="col-6 col-md-4 col-lg-2 text-center">
-                    <img src="{% static 'images/sponsors/ddt.png' %}" alt="DDT" class="sponsor-logo img-fluid"
-                        style="mix-blend-mode:multiply;">
+                <div class="text-center">
+                    <img src="{% static 'images/sponsors/ddt.png' %}" alt="DDT"
+                        class="sponsor-logo" style="mix-blend-mode:multiply;">
                 </div>
-                <div class="col-6 col-md-4 col-lg-2 text-center">
-                    <img src="{% static 'images/sponsors/pts.png' %}" alt="PTS" class="sponsor-logo img-fluid"
-                        style="mix-blend-mode:multiply;">
+                <div class="text-center">
+                    <img src="{% static 'images/sponsors/pts.png' %}" alt="PTS"
+                        class="sponsor-logo" style="mix-blend-mode:multiply;">
                 </div>
-                <div class="col-6 col-md-4 col-lg-2 text-center">
-                    <img src="{% static 'images/sponsors/qts.png' %}" alt="QTS" class="sponsor-logo img-fluid"
-                        style="mix-blend-mode:multiply;">
+                <div class="text-center">
+                    <img src="{% static 'images/sponsors/qts.png' %}" alt="QTS"
+                        class="sponsor-logo" style="mix-blend-mode:multiply;">
                 </div>
-                <div class="col-6 col-md-4 col-lg-2 text-center">
-                    <img src="{% static 'images/sponsors/a2elbm2.png' %}" alt="A2ELBM2" class="sponsor-logo img-fluid"
-                        style="mix-blend-mode:multiply;">
+                <div class="text-center">
+                    <img src="{% static 'images/sponsors/a2elbm2.png' %}" alt="A2ELBM2"
+                        class="sponsor-logo" style="mix-blend-mode:multiply;">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ════════════════════════════════════════
-     FOOTER
-════════════════════════════════════════ -->
+         FOOTER
+    ════════════════════════════════════════ -->
     <footer class="site-footer">
 
-        <!-- Vague SVG en haut -->
         <div class="footer-wave-top">
             <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,0 L0,0 Z" fill="white" />
             </svg>
         </div>
 
-        <!-- Décorations -->
         <div class="footer-decor footer-decor-1"></div>
         <div class="footer-decor footer-decor-2"></div>
         <div class="footer-decor footer-decor-3"></div>
         <div class="footer-dots"></div>
 
-        <!-- Particules flottantes -->
         <div class="footer-particle"
             style="width:8px;height:8px;left:10%;bottom:20%;animation-duration:8s;animation-delay:0s;"></div>
         <div class="footer-particle"
@@ -1114,20 +1285,19 @@
 
                 <!-- Banner J.U.IN -->
                 <div class="footer-juin-banner" data-aos="fade-up">
-                    <div>
+                    <div style="flex:1;min-width:0;">
                         <div class="banner-title">🏆 J.U.IN 2026 — Jubilé d'Émeraude</div>
-                        <div class="banner-text">Du 1 au 5 Juin 2026 · Campus UY1 · Faculté des Sciences · 10 000
-                            participants attendus</div>
+                        <div class="banner-text">Du 1 au 5 Juin 2026 · Campus UY1 · Faculté des Sciences</div>
                     </div>
                     <a href="{% url 'juin' %}" class="footer-juin-pill">
                         <i class="fas fa-arrow-right"></i>Découvrir
                     </a>
                 </div>
 
-                <div class="row g-5">
+                <div class="row g-4 g-lg-5">
 
                     <!-- Col 1 : Brand -->
-                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
+                    <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0">
                         <a href="{% url 'home' %}" class="footer-brand">
                             <img src="{% static 'images/comsas.png' %}" alt="COM.S.AS">
                             <div>
@@ -1141,20 +1311,25 @@
                         </p>
                         <div class="footer-socials">
                             {% if site_settings.facebook_url %}<a href="{{ site_settings.facebook_url }}"
-                                class="social-icon" target="_blank"><i class="fab fa-facebook-f"></i></a>{% endif %}
-                            <a href="{{ site_settings.twitter_url|default:'#' }}" class="social-icon" target="_blank"><i
-                                    class="fab fa-twitter"></i></a>
+                                class="social-icon" target="_blank" rel="noopener" aria-label="Facebook">
+                                <i class="fab fa-facebook-f"></i></a>{% endif %}
+                            <a href="{{ site_settings.twitter_url|default:'#' }}" class="social-icon"
+                                target="_blank" rel="noopener" aria-label="Twitter">
+                                <i class="fab fa-twitter"></i></a>
                             <a href="{{ site_settings.linkedin_url|default:'#' }}" class="social-icon"
-                                target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="{{ site_settings.github_url|default:'#' }}" class="social-icon" target="_blank"><i
-                                    class="fab fa-github"></i></a>
-                            <a href="https://wa.me/237650970526" class="social-icon" target="_blank"><i
-                                    class="fab fa-whatsapp"></i></a>
+                                target="_blank" rel="noopener" aria-label="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i></a>
+                            <a href="{{ site_settings.github_url|default:'#' }}" class="social-icon"
+                                target="_blank" rel="noopener" aria-label="GitHub">
+                                <i class="fab fa-github"></i></a>
+                            <a href="https://wa.me/237650970526" class="social-icon"
+                                target="_blank" rel="noopener" aria-label="WhatsApp">
+                                <i class="fab fa-whatsapp"></i></a>
                         </div>
                     </div>
 
-                    <!-- Col 2 : Liens rapides -->
-                    <div class="col-lg-2 col-md-6 col-6" data-aos="fade-up" data-aos-delay="100">
+                    <!-- Col 2 : Navigation -->
+                    <div class="col-6 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="100">
                         <div class="footer-heading">Navigation</div>
                         <ul class="footer-links">
                             <li><a href="{% url 'home' %}"><i class="fas fa-chevron-right"></i>Accueil</a></li>
@@ -1167,29 +1342,25 @@
                     </div>
 
                     <!-- Col 3 : Ressources -->
-                    <div class="col-lg-2 col-md-6 col-6" data-aos="fade-up" data-aos-delay="150">
+                    <div class="col-6 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="150">
                         <div class="footer-heading">Ressources</div>
                         <ul class="footer-links">
-                            <li><a href="{% url 'member_registration' %}"><i class="fas fa-chevron-right"></i>Devenir
-                                    Membre</a></li>
-                            <li><a href="{% url 'donations' %}"><i class="fas fa-chevron-right"></i>Faire un Don</a>
-                            </li>
+                            <li><a href="{% url 'member_registration' %}"><i class="fas fa-chevron-right"></i>Devenir Membre</a></li>
+                            <li><a href="{% url 'donations' %}"><i class="fas fa-chevron-right"></i>Faire un Don</a></li>
                             <li><a href="{% url 'gallery' %}"><i class="fas fa-chevron-right"></i>Galerie</a></li>
                             <li><a href="{% url 'blog_list' %}"><i class="fas fa-chevron-right"></i>Blog</a></li>
                             <li><a href="{% url 'juin' %}"><i class="fas fa-chevron-right"></i>J.U.IN 2026</a></li>
-                            <li><a href="{% url 'juin_become_partner' %}"><i
-                                        class="fas fa-chevron-right"></i>Partenariat</a></li>
+                            <li><a href="{% url 'juin_become_partner' %}"><i class="fas fa-chevron-right"></i>Partenariat</a></li>
                         </ul>
                     </div>
 
                     <!-- Col 4 : Contact -->
-                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
                         <div class="footer-heading">Nous contacter</div>
 
                         <div class="footer-contact-item">
                             <div class="contact-icon-wrap"><i class="fas fa-map-marker-alt"></i></div>
-                            <div class="info">Département Informatique<br>Faculté des Sciences, UY1 (Amphithéâtre
-                                502)<br>Yaoundé, Cameroun</div>
+                            <div class="info">Département Informatique<br>Faculté des Sciences, UY1 (Amphi 502)<br>Yaoundé, Cameroun</div>
                         </div>
 
                         <div class="footer-contact-item">
@@ -1210,28 +1381,24 @@
                         <div class="footer-contact-item">
                             <div class="contact-icon-wrap"><i class="fab fa-whatsapp"></i></div>
                             <div class="info">
-                                <a href="https://wa.me/237650970526" target="_blank">WhatsApp : 650 970 526</a>
+                                <a href="https://wa.me/237650970526" target="_blank" rel="noopener">WhatsApp : 650 970 526</a>
                             </div>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Divider -->
                 <div class="footer-divider"></div>
 
-                <!-- Bottom bar -->
                 <div class="footer-bottom">
                     <p>&copy; {% now "Y" %} COM.S.AS — Tous droits réservés</p>
-                    <p>Fait avec <span class="heart">♥</span> par la <strong style="color:rgba(255,255,255,.5);">Team
-                            Tech COM.S.AS</strong></p>
+                    <p>Fait avec <span class="heart">♥</span> par la <strong style="color:rgba(255,255,255,.5);">Team Tech COM.S.AS</strong></p>
                 </div>
 
             </div>
         </div>
 
-        <!-- Vague SVG en bas (décorative inversée) -->
-        <div style="position:absolute;bottom:0;left:0;width:100%;line-height:0;z-index:1;opacity:.04;">
+        <div style="position:absolute;bottom:0;left:0;width:100%;line-height:0;z-index:1;opacity:.04;pointer-events:none;">
             <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,20 1440,30 L1440,60 L0,60 Z" fill="white" />
             </svg>
@@ -1240,23 +1407,22 @@
     </footer>
 
     <!-- WhatsApp Float -->
-    <a href="https://wa.me/237650970526" class="whatsapp-float" target="_blank" title="Contactez-nous sur WhatsApp">
+    <a href="https://wa.me/237650970526" class="whatsapp-float" target="_blank" rel="noopener"
+        title="Contactez-nous sur WhatsApp" aria-label="WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
 
     <!-- Messages Django -->
     {% if messages %}
-    <div class="position-fixed top-0 end-0 p-3" style="z-index:1060;">
+    <div class="toast-container-fixed">
         {% for message in messages %}
-        <div class="toast show border-0 shadow-lg" role="alert" data-bs-autohide="true" data-bs-delay="5000"
-            style="background:var(--gradient-dark);border-radius:16px;overflow:hidden;min-width:300px;">
+        <div class="toast show border-0 shadow-lg mb-2 w-100" role="alert" aria-live="assertive"
+            data-bs-autohide="true" data-bs-delay="5000"
+            style="background:var(--gradient-dark);border-radius:16px;overflow:hidden;">
             <div class="toast-header border-0" style="background:rgba(233,30,99,.15);">
-                <i class="fas fa-{% if message.tags == 'success' %}check-circle"
-                    style="color:#10b981{% elif message.tags == 'error' %}times-circle"
-                    style="color:#ef4444{% elif message.tags == 'warning' %}exclamation-triangle"
-                    style="color:#f59e0b{% else %}info-circle" style="color:var(--rose-light){% endif %} me-2"></i>
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle" style="color:#10b981{% elif message.tags == 'error' %}times-circle" style="color:#ef4444{% elif message.tags == 'warning' %}exclamation-triangle" style="color:#f59e0b{% else %}info-circle" style="color:var(--rose-light){% endif %} me-2"></i>
                 <strong class="me-auto text-white" style="font-size:.85rem;">Notification</strong>
-                <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="toast"></button>
+                <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="toast" aria-label="Fermer"></button>
             </div>
             <div class="toast-body text-white" style="font-size:.88rem;padding:14px 16px;">{{ message }}</div>
         </div>
@@ -1270,17 +1436,45 @@
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
 
     <script>
-        AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true });
+        // ── AOS ──
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            // Désactiver sur mobile pour les perfs
+            disable: window.innerWidth < 576 ? true : false
+        });
 
+        // ── GLightbox ──
         const lightbox = GLightbox({ touchNavigation: true, loop: true, autoplayVideos: true });
 
-        // Navbar scroll
+        // ── Navbar scroll ──
         const navbar = document.getElementById('mainNavbar');
         window.addEventListener('scroll', () => {
             navbar.classList.toggle('scrolled', window.scrollY > 30);
+        }, { passive: true });
+
+        // ── Fermer le menu mobile quand on clique sur un lien ──
+        document.querySelectorAll('#navbarNav .nav-link:not(.dropdown-toggle)').forEach(link => {
+            link.addEventListener('click', () => {
+                const collapse = document.getElementById('navbarNav');
+                const bsCollapse = bootstrap.Collapse.getInstance(collapse);
+                if (bsCollapse) bsCollapse.hide();
+            });
         });
 
-        // Auto-hide alerts
+        // ── Fermer le menu mobile si clic en dehors ──
+        document.addEventListener('click', (e) => {
+            const collapse = document.getElementById('navbarNav');
+            const toggler = document.querySelector('.navbar-toggler');
+            if (collapse.classList.contains('show') &&
+                !collapse.contains(e.target) &&
+                !toggler.contains(e.target)) {
+                bootstrap.Collapse.getInstance(collapse)?.hide();
+            }
+        });
+
+        // ── Auto-hide alerts ──
         setTimeout(() => {
             document.querySelectorAll('.alert.alert-dismissible').forEach(a => {
                 a.style.transition = 'opacity .5s';
@@ -1288,17 +1482,9 @@
                 setTimeout(() => a.remove(), 500);
             });
         }, 5000);
-
-        // Navbar link active underline on hover — micro-interaction
-        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
-            link.addEventListener('mouseenter', function () {
-                this.style.transition = 'all .2s';
-            });
-        });
     </script>
 
     {% block extra_js %}{% endblock %}
 
 </body>
-
 </html>
