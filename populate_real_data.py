@@ -15,9 +15,12 @@ django.setup()
 
 from django.contrib.auth.models import User
 from main.models import (
-    Member, JUINEdition, JUINCommission, Delegate, RequestDocument
+    Member, JUINEdition, JUINCommission, Delegate, RequestDocument,
+    Event, BlogArticle, Project, Contest, JUINActivity, JUINCompetition,
+    JUINTeam, SponsorshipSession
 )
-from datetime import date
+from datetime import date, datetime
+from django.utils import timezone
 
 print("=" * 60)
 print("  COM.S.AS — Peuplement de la base de données")
@@ -363,58 +366,6 @@ delegates_data = [
     {'name': 'FONAYEN CHRISTIAN', 'level': 'L3', 'phone': '681144815', 'email': 'asangwa.fonayen23@facsciences-uy1.cm'},
     {'name': 'ETONDE MABONGO ULRICH EDOUARD', 'level': 'L3', 'phone': '', 'email': 'edouard.etonde@facsciences-uy1.cm'},
 
-    # Mathématiques - Licence 1
-    {'name': 'NGUEPI DONGMO PERIEL', 'level': 'L1', 'phone': '', 'email': 'nguepidongmoperiel@gmail.com'},
-    {'name': 'TCHOKOUATOU DJEUMENI HERMANN PHAREL', 'level': 'L1', 'phone': '', 'email': ''},
-    {'name': 'ADJOMO NGOA GASTON LE ROI ARTHUR', 'level': 'L1', 'phone': '', 'email': ''},
-    {'name': 'MADENE ARMELLE MICHELLE', 'level': 'L1', 'phone': '', 'email': 'armellemadene2@gmail.com'},
-    {'name': 'SIMASOTCHI EMILIENNE LYSETTE PRI', 'level': 'L1', 'phone': '', 'email': 'simasotchiemiliennelyse@gmail.com'},
-
-    # Mathématiques - Licence 2
-    {'name': 'KAMMOGNE KAMSU ELYSE AUDREY', 'level': 'L2', 'phone': '', 'email': 'audrey.kammogne@facsciences-uy1.cm'},
-    {'name': 'KAMAHA NGALEU ANAIS LUCRESE', 'level': 'L2', 'phone': '', 'email': 'kamahaanais@gmail.com'},
-
-    # Mathématiques - Licence 3
-    {'name': 'FOKOU GOWE LESLIE CARELLE', 'level': 'L3', 'phone': '', 'email': ''},
-    {'name': 'TAN CHITANIGO DIRAC DOMINIQUE', 'level': 'L3', 'phone': '', 'email': ''},
-    {'name': 'CHINMOUN MOYOUWOU AHMED SALIM', 'level': 'L3', 'phone': '', 'email': ''},
-
-    # Microbiologie - Licence 3
-    {'name': 'FOUEFACK NAGUE GILLES ROSTAND', 'level': 'L3', 'phone': '', 'email': 'fouefackgilles@gmail.com'},
-    {'name': 'YANKAM YONWOUA CABREL', 'level': 'L3', 'phone': '', 'email': 'cabrelyankam89@gmail.com'},
-    {'name': 'YOUMBI KAMGANG ARTHUR LYONEL', 'level': 'L3', 'phone': '', 'email': 'arthurlyonelyoumbikamg@gmail.com'},
-    {'name': 'MAHAMAT FAROUK BADE', 'level': 'L3', 'phone': '', 'email': 'mfbtheevil@icloud.com'},
-    {'name': 'NYA NGONGA NINELLE', 'level': 'L3', 'phone': '', 'email': 'nyarebecca806@gmail.com'},
-    {'name': 'TEBGA JOSEPHINE', 'level': 'L3', 'phone': '', 'email': 'josephinetebga@icloud.com'},
-    {'name': 'MEGNE ANNIE PATRICIA', 'level': 'L3', 'phone': '', 'email': 'anniepatricia07@gmail.com'},
-    {'name': 'SONFACK KENWABA CAREL', 'level': 'L3', 'phone': '', 'email': ''},
-    {'name': 'NGAH YOUM NDOUN MOISE', 'level': 'L3', 'phone': '', 'email': 'ngahyoumm@gmail.com'},
-
-    # Microbiologie - Master 1
-    {'name': 'AKONO LAURENT TRESOR', 'level': 'M1', 'phone': '', 'email': 'laurenzodamnis@gmail.com'},
-    {'name': 'EYENGA MBOA SIMON EMMANUEL', 'level': 'M1', 'phone': '', 'email': 'maximeeyenga137@gmail.com'},
-    {'name': 'MANGA AVOTTO JESSICA MANUELLA', 'level': 'M1', 'phone': '', 'email': ''},
-
-    # Géosciences - Licence 1
-    {'name': 'DIMITRI (GEOS)', 'level': 'L1', 'phone': '696279652', 'email': 'lacksondimitri675@gmail.com'},
-    {'name': 'KUATE GRACE (GEOS)', 'level': 'L1', 'phone': '698584913', 'email': 'greyskuategrace@gmail.com'},
-
-    # Géosciences - Licence 3
-    {'name': 'LAURENT EMMANUEL (GEOS)', 'level': 'L3', 'phone': '698359059', 'email': 'tlaurentemmanuel@gmail.com'},
-    {'name': 'ISAAC SIWELA (GEOS)', 'level': 'L3', 'phone': '695961988', 'email': 'isaac.siwela@facsciences-uy1.cm'},
-
-    # Géosciences - Master 1
-    {'name': 'OKALA PHANUEL (GEOS)', 'level': 'M1', 'phone': '690257644', 'email': 'okalapahnuel96@gmail.com'},
-
-    # Chimie - Licence 3
-    {'name': 'TCHOUKOUTI YANNIC (CHIM)', 'level': 'L3', 'phone': '693478955', 'email': 'yannicerusseltchoukouti@gmail.com'},
-    {'name': 'MAMA MARIE LOUISE (CHIM)', 'level': 'L3', 'phone': '694339713', 'email': 'marielouisemama@icloud.com'},
-
-    # Chimie - Master 1
-    {'name': 'AWAH BEN AURVINE (CHIM)', 'level': 'M1', 'phone': '694339713', 'email': 'awah.benaurvine@facsciences-uy1.cm'},
-
-    # Énergie Renouvelable - Licence 2
-    {'name': 'NGANSOP ARIOL (ENR)', 'level': 'L2', 'phone': '678565616', 'email': 'ariolngansop@gmail.com'},
 ]
 
 count = 0
@@ -579,19 +530,674 @@ print(f"   {req_count} modèles créés ({req_count * 2} fichiers)")
 
 
 # ═══════════════════════════════════════════════════════════
+# 6. ÉVÉNEMENTS / ACTIVITÉS DU COM.S.AS
+# ═══════════════════════════════════════════════════════════
+print("\n[6/11] Création des événements...")
+
+Event.objects.all().delete()
+
+events_data = [
+    {
+        'title_fr': 'Séminaire de Maintenance Informatique',
+        'title_en': 'Computer Maintenance Seminar',
+        'description_fr': (
+            '<p>Le <strong>Séminaire de Maintenance Informatique</strong> organisé par le COM.S.AS a rassemblé '
+            'plus de <strong>90 participants</strong> durant <strong>2 jours intensifs</strong>.</p>'
+            '<p>Au programme :</p>'
+            '<ul>'
+            '<li>Diagnostic matériel et logiciel (pannes courantes PC et laptops)</li>'
+            '<li>Nettoyage interne, remplacement de composants (RAM, SSD, écrans)</li>'
+            '<li>Installation et configuration d\'OS (Windows, Linux)</li>'
+            '<li>Réseaux : câblage, sertissage RJ45, configuration Wi-Fi</li>'
+            '<li>Travaux pratiques sur machines réelles</li>'
+            '</ul>'
+            '<p>Ce séminaire a confirmé l\'engagement du COM.S.AS dans la formation pratique des étudiants.</p>'
+        ),
+        'description_en': (
+            '<p>The <strong>Computer Maintenance Seminar</strong> organized by COM.S.AS brought together '
+            'over <strong>90 participants</strong> over <strong>2 intensive days</strong>.</p>'
+            '<p>Topics covered hardware/software diagnostics, component replacement, OS installation, '
+            'and network cabling with hands-on practice.</p>'
+        ),
+        'date_event': timezone.make_aware(datetime(2025, 11, 15, 8, 0)),
+        'location': 'Salle TP Informatique — Faculté des Sciences, UY1',
+        'max_participants': 100,
+        'registration_deadline': timezone.make_aware(datetime(2025, 11, 14, 23, 59)),
+        'is_featured': True,
+        'is_active': False,  # Déjà passé
+        'certificate_enabled': True,
+        'certificate_title': 'Attestation de participation — Séminaire Maintenance Informatique',
+        'certificate_president_name': 'NEUSSI NJIETCHEU Patrice Eugène',
+        'certificate_president_title': 'Président du COM.S.AS',
+    },
+    {
+        'title_fr': 'Session de Parrainage 2026',
+        'title_en': 'Mentorship Session 2026',
+        'description_fr': (
+            '<p>Le <strong>Programme de Parrainage</strong> du COM.S.AS connecte les étudiants seniors '
+            '(L3, M1, M2) avec les nouveaux étudiants (L1, L2) pour un accompagnement académique et professionnel.</p>'
+            '<p><strong>Avantages pour les filleuls :</strong></p>'
+            '<ul>'
+            '<li>Conseils personnalisés sur les choix de filière et d\'UE</li>'
+            '<li>Aide à la compréhension des cours et méthodes de travail</li>'
+            '<li>Accès à un réseau d\'entraide entre promotions</li>'
+            '<li>Préparation aux examens et partage de ressources</li>'
+            '</ul>'
+            '<p>Les inscriptions sont ouvertes du <strong>17 mars au 25 avril 2026</strong>.</p>'
+        ),
+        'description_en': (
+            '<p>The COM.S.AS <strong>Mentorship Program</strong> connects senior students '
+            'with newcomers for academic and professional guidance.</p>'
+        ),
+        'date_event': timezone.make_aware(datetime(2026, 4, 1, 9, 0)),
+        'location': 'Campus UY1 — Faculté des Sciences',
+        'max_participants': 200,
+        'registration_deadline': timezone.make_aware(datetime(2026, 4, 25, 23, 59)),
+        'is_featured': True,
+        'is_active': True,
+    },
+    {
+        'title_fr': 'Séminaire DevOps & Outils IA',
+        'title_en': 'DevOps & AI Tools Seminar',
+        'description_fr': (
+            '<p>Le COM.S.AS organise un <strong>séminaire intensif</strong> dédié aux '
+            '<strong>pratiques DevOps</strong> et aux <strong>outils d\'Intelligence Artificielle</strong>.</p>'
+            '<p><strong>Programme prévu :</strong></p>'
+            '<ul>'
+            '<li><strong>DevOps :</strong> CI/CD avec GitHub Actions, Docker, déploiement automatisé</li>'
+            '<li><strong>IA pratique :</strong> ChatGPT, GitHub Copilot, Gemini — comment les utiliser efficacement</li>'
+            '<li><strong>Cloud :</strong> Introduction à AWS/GCP, hébergement de projets</li>'
+            '<li><strong>Atelier :</strong> Créer et déployer une application complète en 2h</li>'
+            '</ul>'
+            '<p>Ouvert à tous les étudiants de la Faculté des Sciences.</p>'
+        ),
+        'description_en': (
+            '<p>An intensive seminar on <strong>DevOps practices</strong> and <strong>AI tools</strong>, '
+            'covering CI/CD, Docker, ChatGPT, GitHub Copilot, and cloud deployment.</p>'
+        ),
+        'date_event': timezone.make_aware(datetime(2026, 4, 28, 9, 0)),
+        'location': 'Amphithéâtre 700 — Faculté des Sciences, UY1',
+        'max_participants': 150,
+        'registration_deadline': timezone.make_aware(datetime(2026, 4, 27, 23, 59)),
+        'is_featured': True,
+        'is_active': True,
+        'certificate_enabled': True,
+        'certificate_title': 'Attestation — Séminaire DevOps & IA',
+        'certificate_president_name': 'NEUSSI NJIETCHEU Patrice Eugène',
+        'certificate_president_title': 'Président du COM.S.AS',
+    },
+]
+
+for e in events_data:
+    Event.objects.create(**e)
+    print(f"   {e['title_fr']}")
+
+
+# ═══════════════════════════════════════════════════════════
+# 7. ACTIVITÉS J.U.IN 2026
+# ═══════════════════════════════════════════════════════════
+print("\n[7/11] Création des activités J.U.IN 2026...")
+
+JUINActivity.objects.filter(edition=edition).delete()
+
+juin_activities = [
+    {
+        'title': 'Cérémonie d\'Ouverture — Jubilé d\'Émeraude',
+        'description': (
+            'Cérémonie officielle d\'ouverture de la 20ème édition des J.U.IN, '
+            'marquant le Jubilé d\'Émeraude du COM.S.AS. Discours des autorités académiques, '
+            'présentation du programme et lancement officiel des festivités.'
+        ),
+        'activity_type': 'ceremonie',
+        'date_activity': timezone.make_aware(datetime(2026, 6, 1, 9, 0)),
+        'location': 'Amphithéâtre 700 — UY1',
+        'speaker': 'Doyen de la Faculté des Sciences, Président du COM.S.AS',
+        'is_featured': True,
+        'order': 1,
+    },
+    {
+        'title': 'Conférence : IA et Transformation Numérique en Afrique',
+        'description': (
+            'Conférence inaugurale sur le thème central de cette édition. '
+            'Des experts du domaine présenteront les avancées de l\'intelligence artificielle '
+            'et leur impact sur le continent africain, avec un focus sur les opportunités '
+            'pour les jeunes développeurs camerounais.'
+        ),
+        'activity_type': 'conference',
+        'date_activity': timezone.make_aware(datetime(2026, 6, 1, 11, 0)),
+        'location': 'Amphithéâtre 700 — UY1',
+        'speaker': 'Invités spéciaux (Industrie & Recherche)',
+        'is_featured': True,
+        'order': 2,
+    },
+    {
+        'title': 'Ligue des Informaticiens — Football ⚽',
+        'description': (
+            'Le tournoi de football inter-niveaux du département ! '
+            'Chaque niveau (L1, L2, L3, M1, M2, ICT-L1, ICT-L2, ICT-L3) présente une équipe de 15 joueurs. '
+            'Les niveaux à grand effectif peuvent inscrire 2 équipes. '
+            'Matchs en format mini-championnat puis élimination directe. '
+            'Trophée du Jubilé d\'Émeraude pour l\'équipe championne !'
+        ),
+        'activity_type': 'sport',
+        'date_activity': timezone.make_aware(datetime(2026, 6, 2, 14, 0)),
+        'location': 'Terrain de Sport — Campus UY1',
+        'is_featured': True,
+        'order': 3,
+    },
+    {
+        'title': 'Ligue des Informaticiens — Basketball 🏀',
+        'description': (
+            'Le tournoi de basketball inter-niveaux ! '
+            'Chaque niveau constitue une équipe de 12 joueurs. '
+            'Format de compétition : poules puis phases finales. '
+            'Un moment de sport, de fair-play et de cohésion entre les promotions.'
+        ),
+        'activity_type': 'sport',
+        'date_activity': timezone.make_aware(datetime(2026, 6, 3, 14, 0)),
+        'location': 'Terrain de Basketball — Campus UY1',
+        'is_featured': True,
+        'order': 4,
+    },
+    {
+        'title': 'Exposition de Projets Étudiants',
+        'description': (
+            'Les étudiants présentent leurs projets innovants devant un jury '
+            'composé de professeurs et de professionnels. Applications mobiles, '
+            'systèmes embarqués, solutions web, IA appliquée — '
+            'le meilleur de la créativité informatique du département.'
+        ),
+        'activity_type': 'exposition',
+        'date_activity': timezone.make_aware(datetime(2026, 6, 3, 9, 0)),
+        'location': 'Hall d\'exposition — Faculté des Sciences',
+        'is_featured': True,
+        'order': 5,
+    },
+    {
+        'title': 'Atelier : Développement Mobile avec Flutter',
+        'description': (
+            'Atelier pratique de 3h pour apprendre les bases du développement '
+            'mobile cross-platform avec Flutter et Dart. Les participants repartiront '
+            'avec une application fonctionnelle sur leur téléphone.'
+        ),
+        'activity_type': 'atelier',
+        'date_activity': timezone.make_aware(datetime(2026, 6, 2, 9, 0)),
+        'location': 'Salle TP Informatique — UY1',
+        'speaker': 'Formateurs COM.S.AS',
+        'order': 6,
+    },
+    {
+        'title': 'Concours de Pitch Entrepreneurial',
+        'description': (
+            'Les équipes disposent de 5 minutes pour pitcher leur projet tech '
+            'devant un jury d\'entrepreneurs et d\'investisseurs. '
+            'Prix pour les 3 meilleures présentations.'
+        ),
+        'activity_type': 'pitch',
+        'date_activity': timezone.make_aware(datetime(2026, 6, 4, 10, 0)),
+        'location': 'Amphithéâtre 700 — UY1',
+        'order': 7,
+    },
+    {
+        'title': 'Soirée de Gala — Jubilé d\'Émeraude 🎉',
+        'description': (
+            'La soirée de clôture exceptionnelle de cette 20ème édition. '
+            'Remise des prix, performances artistiques, cocktail dînatoire '
+            'et célébration des 20 ans d\'histoire du COM.S.AS. '
+            'Dress code : Élégance et Émeraude.'
+        ),
+        'activity_type': 'gala',
+        'date_activity': timezone.make_aware(datetime(2026, 6, 5, 19, 0)),
+        'location': 'Salle des Fêtes — Campus UY1',
+        'is_featured': True,
+        'order': 8,
+    },
+    {
+        'title': 'Cérémonie de Clôture et Remise des Prix',
+        'description': (
+            'Cérémonie officielle de clôture avec remise des trophées et attestations. '
+            'Meilleur développeur, meilleur projet, Miss & Master, meilleur délégué — '
+            'tous les lauréats seront honorés.'
+        ),
+        'activity_type': 'ceremonie',
+        'date_activity': timezone.make_aware(datetime(2026, 6, 5, 15, 0)),
+        'location': 'Amphithéâtre 700 — UY1',
+        'order': 9,
+    },
+]
+
+for a in juin_activities:
+    JUINActivity.objects.create(edition=edition, **a)
+    print(f"  📅 {a['title']}")
+
+
+# ═══════════════════════════════════════════════════════════
+# 8. COMPÉTITIONS J.U.IN 2026
+# ═══════════════════════════════════════════════════════════
+print("\n[8/11] Création des compétitions J.U.IN 2026...")
+
+JUINCompetition.objects.filter(edition=edition).delete()
+
+competitions_data = [
+    {
+        'name': 'Ligue des Informaticiens — Football',
+        'comp_type': 'sport',
+        'description': (
+            'Le grand tournoi de football inter-niveaux du Département d\'Informatique ! '
+            'Chaque niveau (L1, L2, L3, M1, M2, ICT-L1, ICT-L2, ICT-L3) compose une équipe de 15 joueurs. '
+            'Les niveaux à grand effectif (L1, L2) peuvent inscrire jusqu\'à 2 équipes. '
+            'Format : Phase de poules → Quarts de finale → Demi-finales → Grande Finale. '
+            'Le trophée du Jubilé d\'Émeraude attend les champions !'
+        ),
+        'rules': (
+            '• Équipes de 15 joueurs (11 titulaires + 4 remplaçants)\n'
+            '• Niveaux : L1, L2, L3, M1, M2, ICT-L1, ICT-L2, ICT-L3\n'
+            '• Les niveaux à +100 étudiants peuvent inscrire 2 équipes (ex: L1-A, L1-B)\n'
+            '• Matchs de 2x20 minutes\n'
+            '• Carte d\'étudiant obligatoire pour chaque joueur\n'
+            '• Fair-play exigé — tout comportement antisportif = exclusion'
+        ),
+        'max_teams': 12,
+        'is_open': True,
+        'start_date': timezone.make_aware(datetime(2026, 6, 2, 14, 0)),
+    },
+    {
+        'name': 'Ligue des Informaticiens — Basketball',
+        'comp_type': 'sport',
+        'description': (
+            'Le tournoi de basketball inter-niveaux ! '
+            'Chaque niveau forme une équipe de 12 joueurs (5 titulaires + 7 remplaçants). '
+            'Un vrai spectacle de sport et de cohésion entre les promotions.'
+        ),
+        'rules': (
+            '• Équipes de 12 joueurs (5 titulaires + 7 remplaçants)\n'
+            '• Niveaux : L1, L2, L3, M1, M2, ICT-L1, ICT-L2, ICT-L3\n'
+            '• Matchs de 4x8 minutes\n'
+            '• Carte d\'étudiant obligatoire pour chaque joueur\n'
+            '• Arbitrage officiel fourni par le COM.S.AS'
+        ),
+        'max_teams': 10,
+        'is_open': True,
+        'start_date': timezone.make_aware(datetime(2026, 6, 3, 14, 0)),
+    },
+    {
+        'name': 'Meilleur Développeur du Département',
+        'comp_type': 'computer',
+        'description': (
+            'Le concours phare pour les passionnés de code ! '
+            'Les candidats affrontent des défis de programmation en temps réel : '
+            'algorithmes, structures de données, développement web et résolution de problèmes. '
+            'Le gagnant reçoit le titre prestigieux de Meilleur Développeur du Département '
+            'et un lot de prix offerts par les partenaires.'
+        ),
+        'rules': (
+            '• Individuel ou en binôme\n'
+            '• 3 épreuves : Algorithmique (1h), Développement Web (1h30), Challenge Final (45min)\n'
+            '• Langages autorisés : Python, JavaScript, Java, C/C++, PHP\n'
+            '• Accès Internet interdit pendant les épreuves\n'
+            '• Étudiants inscrits au département d\'informatique uniquement'
+        ),
+        'max_teams': 30,
+        'is_open': True,
+        'start_date': timezone.make_aware(datetime(2026, 6, 3, 9, 0)),
+    },
+    {
+        'name': 'Meilleur Projet Impactant',
+        'comp_type': 'computer',
+        'description': (
+            'Ce concours récompense le projet étudiant ayant le plus fort impact social, '
+            'technologique ou environnemental. Les équipes présentent leurs projets devant '
+            'un jury de professeurs et de professionnels. '
+            'Critères : Innovation, Faisabilité, Impact, Qualité technique.'
+        ),
+        'rules': (
+            '• Équipes de 2 à 5 membres\n'
+            '• Projet doit avoir un prototype fonctionnel\n'
+            '• Présentation de 10 minutes + 5 minutes de Q&A\n'
+            '• Documentation technique requise\n'
+            '• Le projet doit répondre à un besoin réel identifié'
+        ),
+        'max_teams': 20,
+        'is_open': True,
+        'start_date': timezone.make_aware(datetime(2026, 6, 4, 10, 0)),
+    },
+]
+
+for c in competitions_data:
+    JUINCompetition.objects.create(edition=edition, **c)
+    print(f"  🏆 {c['name']}")
+
+
+# ═══════════════════════════════════════════════════════════
+# 9. CONCOURS (Miss & Master, Meilleur Délégué)
+# ═══════════════════════════════════════════════════════════
+print("\n[9/11] Création des concours...")
+
+Contest.objects.all().delete()
+
+contests_data = [
+    {
+        'title': 'Miss & Master du Département d\'Informatique 2026',
+        'slug': 'miss-master-info-2026',
+        'description': (
+            'Le grand concours d\'élégance, d\'éloquence et de culture générale du département ! '
+            'Les candidat(e)s de chaque niveau s\'affrontent à travers des épreuves de '
+            'présentation, culture générale informatique, talent artistique et tenue de soirée. '
+            'Le public vote en ligne pour ses favoris. Qui succédera au trône ?'
+        ),
+        'start_date': timezone.make_aware(datetime(2026, 6, 1, 0, 0)),
+        'end_date': timezone.make_aware(datetime(2026, 6, 5, 23, 59)),
+        'is_active': True,
+        'allow_public_candidates': True,
+    },
+    {
+        'title': 'Meilleur Délégué du Département 2025-2026',
+        'slug': 'meilleur-delegue-2026',
+        'description': (
+            'Ce prix honore le délégué qui s\'est le plus démarqué au cours de l\'année académique '
+            '2025-2026 par son engagement, son leadership, sa disponibilité et son impact positif '
+            'sur sa promotion. Les étudiants votent pour élire le meilleur représentant de classe.'
+        ),
+        'start_date': timezone.make_aware(datetime(2026, 6, 1, 0, 0)),
+        'end_date': timezone.make_aware(datetime(2026, 6, 4, 23, 59)),
+        'is_active': True,
+        'allow_public_candidates': False,
+    },
+]
+
+for c in contests_data:
+    Contest.objects.create(**c)
+    print(f"  👑 {c['title']}")
+
+
+# ═══════════════════════════════════════════════════════════
+# 10. SESSION DE PARRAINAGE 2026
+# ═══════════════════════════════════════════════════════════
+print("\n[10/11] Création de la session de parrainage 2026...")
+
+SponsorshipSession.objects.filter(name__icontains='2026').delete()
+
+session = SponsorshipSession.objects.create(
+    name='Session de Parrainage 2026 — Semestre 2',
+    start_date=date(2026, 3, 17),
+    end_date=date(2026, 4, 25),
+    is_active=True,
+)
+print(f"   {session.name} (du {session.start_date} au {session.end_date})")
+
+
+# ═══════════════════════════════════════════════════════════
+# 11. BLOG + PROJETS
+# ═══════════════════════════════════════════════════════════
+print("\n[11/11] Création des articles de blog et projets...")
+
+# --- Blog Articles ---
+BlogArticle.objects.all().delete()
+
+# Récupérer un auteur
+author = Member.objects.filter(matricule='21T2898').first()  # Président
+
+blog_articles = [
+    {
+        'title': 'Comment réussir sa première année en Informatique à l\'UY1 : Guide Complet',
+        'slug': 'reussir-premiere-annee-informatique-uy1',
+        'category': 'conseil',
+        'is_published': True,
+        'views_count': 342,
+        'likes_count': 87,
+        'content': (
+            '<h2>🎓 Bienvenue dans le monde de l\'informatique !</h2>'
+            '<p>Tu viens d\'être admis en <strong>Licence 1 Informatique</strong> à la Faculté des Sciences '
+            'de l\'Université de Yaoundé I ? Félicitations ! Mais attention, la L1 est une année charnière '
+            'qui détermine souvent tout le reste de ton parcours. Voici nos conseils pour la réussir brillamment.</p>'
+
+            '<h3> 1. Comprendre le système LMD</h3>'
+            '<p>Le système Licence-Master-Doctorat (LMD) fonctionne avec des <strong>Unités d\'Enseignement (UE)</strong> '
+            'et des <strong>crédits</strong>. Tu dois valider un minimum de 30 crédits par semestre pour avancer normalement.</p>'
+            '<ul>'
+            '<li><strong>CC (Contrôle Continu) :</strong> 30% de ta note finale — ne le néglige JAMAIS</li>'
+            '<li><strong>SN (Session Normale) :</strong> 70% — c\'est l\'examen de fin de semestre</li>'
+            '<li><strong>Rattrapage :</strong> ta seconde chance si tu échoues en SN</li>'
+            '</ul>'
+
+            '<h3> 2. Les UE incontournables de L1</h3>'
+            '<p>Certaines UE sont là pour te construire :</p>'
+            '<ul>'
+            '<li><strong>Algorithmique :</strong> La base de tout. Maîtrise les boucles, les conditions, les tableaux.</li>'
+            '<li><strong>Programmation C :</strong> Ton premier vrai langage. Code chaque jour, même 30 minutes.</li>'
+            '<li><strong>Mathématiques discrètes :</strong> Logique, ensembles, relations — essentiel pour l\'informatique théorique.</li>'
+            '<li><strong>Architecture des ordinateurs :</strong> Comprendre comment fonctionne ta machine.</li>'
+            '</ul>'
+
+            '<h3> 3. Les outils indispensables</h3>'
+            '<p>Installe ces outils dès maintenant sur ton PC :</p>'
+            '<ul>'
+            '<li><strong>VS Code</strong> — l\'éditeur de code le plus populaire</li>'
+            '<li><strong>Git & GitHub</strong> — pour versionner tes projets</li>'
+            '<li><strong>Python</strong> — le langage le plus demandé en 2026</li>'
+            '<li><strong>Linux (Ubuntu)</strong> — apprends à utiliser le terminal</li>'
+            '</ul>'
+
+            '<h3> 4. Rejoins le COM.S.AS !</h3>'
+            '<p>Le <strong>Comité Scientifique des Apprenants en Sciences</strong> organise des séminaires, '
+            'hackathons et programmes de parrainage qui t\'aideront énormément. '
+            'Ne reste pas isolé — la force du groupe est ta meilleure alliée.</p>'
+
+            '<h3> 5. Méthode de travail gagnante</h3>'
+            '<ul>'
+            '<li> Révise tes cours <strong>le jour même</strong> — pas la veille de l\'examen</li>'
+            '<li> Crée un <strong>groupe d\'étude</strong> de 3-4 personnes</li>'
+            '<li> <strong>Code tous les jours</strong> — la programmation s\'apprend par la pratique</li>'
+            '<li> Fais les <strong>anciennes épreuves</strong> — demande aux aînés</li>'
+            '<li> Ne sèche pas les cours — la présence fait 50% du travail</li>'
+            '</ul>'
+
+            '<p><em>Courage et bienvenue dans la grande famille des informaticiens de l\'UY1 ! 🚀</em></p>'
+        ),
+    },
+    {
+        'title': '5 Projets GitHub qui impressionneront n\'importe quel recruteur',
+        'slug': '5-projets-github-impressionner-recruteurs',
+        'category': 'stage',
+        'is_published': True,
+        'views_count': 518,
+        'likes_count': 145,
+        'content': (
+            '<h2> Ton profil GitHub est ton meilleur CV</h2>'
+            '<p>En 2026, les recruteurs tech regardent ton <strong>GitHub avant ton CV</strong>. '
+            'Un bon portefeuille de projets vaut mieux que 100 diplômes. '
+            'Voici 5 types de projets qui feront la différence.</p>'
+
+            '<h3>1.  Une application web full-stack</h3>'
+            '<p>Construis une app complète avec <strong>Django/React</strong> ou <strong>Node.js/Next.js</strong>. '
+            'Par exemple : un système de gestion d\'événements, une plateforme e-learning, '
+            'ou un tableau de bord analytique.</p>'
+            '<p><strong>Ce que ça démontre :</strong> Maîtrise du front-end, back-end, bases de données, et déploiement.</p>'
+
+            '<h3>2.  Une application mobile</h3>'
+            '<p>Développe une app avec <strong>Flutter</strong> ou <strong>React Native</strong>. '
+            'Idées : tracker de dépenses personnelles, app de révision avec flashcards, '
+            'ou une app de covoiturage campus.</p>'
+            '<p><strong>Ce que ça démontre :</strong> Capacité à créer des produits utilisables au quotidien.</p>'
+
+            '<h3>3.  Un projet d\'IA/Machine Learning</h3>'
+            '<p>Utilise <strong>Python + scikit-learn/TensorFlow</strong> pour résoudre un problème réel : '
+            'prédiction de résultats académiques, détection de spam, '
+            'ou analyse de sentiments sur les réseaux sociaux camerounais.</p>'
+            '<p><strong>Ce que ça démontre :</strong> Maîtrise de la data science et de la résolution de problèmes.</p>'
+
+            '<h3>4.  Un outil CLI ou une librairie open-source</h3>'
+            '<p>Crée un outil en ligne de commande utile : gestionnaire de tâches, '
+            'générateur de mots de passe sécurisés, ou un outil d\'automatisation '
+            'pour les étudiants (calcul de MGP, vérification de crédits).</p>'
+            '<p><strong>Ce que ça démontre :</strong> Pensée systémique et capacité à résoudre des problèmes pratiques.</p>'
+
+            '<h3>5.  Un jeu vidéo ou une simulation</h3>'
+            '<p>Développe un petit jeu avec <strong>Pygame</strong>, <strong>Unity</strong> ou en <strong>JavaScript</strong>. '
+            'Les projets ludiques montrent ta créativité et ta capacité à gérer la complexité.</p>'
+
+            '<h3> Conseils bonus</h3>'
+            '<ul>'
+            '<li> Chaque projet doit avoir un <strong>README.md détaillé</strong> (description, screenshots, installation)</li>'
+            '<li> Fais des <strong>commits réguliers</strong> avec des messages clairs</li>'
+            '<li> Utilise des <strong>branches</strong> pour montrer que tu connais Git Flow</li>'
+            '<li> <strong>Déploie au moins un projet</strong> en ligne (Vercel, Railway, Heroku)</li>'
+            '<li> <strong>Contribue à l\'open source</strong> — même corriger une typo compte !</li>'
+            '</ul>'
+
+            '<p><em>Commence dès aujourd\'hui. Dans 6 mois, ton GitHub sera ton passeport pour l\'emploi. 💼</em></p>'
+        ),
+    },
+    {
+        'title': 'Les J.U.IN fêtent leurs 20 ans : Retour sur deux décennies d\'innovation',
+        'slug': 'juin-20-ans-jubile-emeraude-histoire',
+        'category': 'vie',
+        'is_published': True,
+        'views_count': 267,
+        'likes_count': 93,
+        'content': (
+            '<h2> Le Jubilé d\'Émeraude — 20 éditions de passion</h2>'
+            '<p>En 2026, les <strong>Journées Universitaires de l\'Informatique (J.U.IN)</strong> '
+            'célèbrent leur <strong>20ème édition</strong>. Un moment historique pour le COM.S.AS '
+            'et pour tout le département d\'informatique de l\'Université de Yaoundé I.</p>'
+
+            '<h3> Les origines</h3>'
+            '<p>Tout a commencé au début des années 2000, quand une poignée d\'étudiants passionnés '
+            'a décidé de créer un événement pour montrer au monde que l\'informatique camerounaise '
+            'avait du talent. Le premier J.U.IN fut modeste : quelques présentations de projets '
+            'dans une petite salle de la Faculté des Sciences.</p>'
+
+            '<h3> L\'évolution au fil des éditions</h3>'
+            '<p>Au fil des années, les J.U.IN se sont transformés en un véritable festival tech :</p>'
+            '<ul>'
+            '<li><strong>2006-2010 :</strong> Les premières compétitions de programmation et expositions</li>'
+            '<li><strong>2011-2015 :</strong> L\'ajout des conférences avec des professionnels de l\'industrie</li>'
+            '<li><strong>2016-2020 :</strong> L\'explosion — hackathons, ligues sportives, soirées de gala</li>'
+            '<li><strong>2021-2025 :</strong> La digitalisation — inscriptions en ligne, streaming, votations numériques</li>'
+            '<li><strong>2026 :</strong> Le Jubilé d\'Émeraude — l\'édition la plus ambitieuse jamais organisée</li>'
+            '</ul>'
+
+            '<h3> Ce qui rend les J.U.IN uniques</h3>'
+            '<p>Contrairement à un simple événement académique, les J.U.IN rassemblent :</p>'
+            '<ul>'
+            '<li> <strong>Ligues sportives</strong> inter-niveaux (Football & Basketball)</li>'
+            '<li> <strong>Concours techniques</strong> (Meilleur Développeur, Meilleur Projet)</li>'
+            '<li> <strong>Concours culturels</strong> (Miss & Master, Meilleur Délégué)</li>'
+            '<li> <strong>Conférences et ateliers</strong> avec des experts nationaux et internationaux</li>'
+            '<li> <strong>Soirée de Gala</strong> légendaire pour clôturer en beauté</li>'
+            '</ul>'
+
+            '<h3> Le COM.S.AS : le moteur derrière les J.U.IN</h3>'
+            '<p>Chaque édition est portée par des dizaines de bénévoles organisés en '
+            '<strong>10 commissions</strong> : Communication, Logistique, Conférences, '
+            'Design, Projets, Protocole, Gastronomie, Animation, Gala, et Mobilisation des Ressources.</p>'
+
+            '<p>Pour cette 20ème édition, sous le leadership du président '
+            '<strong>NEUSSI NJIETCHEU Patrice Eugène</strong>, l\'ambition est claire : '
+            'faire du Jubilé d\'Émeraude l\'édition dont tout le monde se souviendra.</p>'
+
+            '<h3> Thème 2026 : "Intelligence Artificielle et Transformation Numérique en Afrique"</h3>'
+            '<p>L\'IA redéfinit notre monde. Cette édition explorera comment les jeunes '
+            'informaticiens africains peuvent tirer parti de cette révolution technologique '
+            'pour créer des solutions adaptées aux réalités du continent.</p>'
+
+            '<p><em>Rendez-vous du 1er au 5 juin 2026 sur le Campus UY1 ! '
+            'Inscrivez-vous dès maintenant sur <strong>comsas-uy1.com/juin</strong>. </em></p>'
+        ),
+    },
+]
+
+for a in blog_articles:
+    BlogArticle.objects.create(author=author, published_at=timezone.now(), **a)
+    print(f"   {a['title']}")
+
+# --- Projets ---
+Project.objects.all().delete()
+
+projects_data = [
+    {
+        'title_fr': 'Site Internet Officiel du COM.S.AS',
+        'title_en': 'COM.S.AS Official Website',
+        'description_fr': (
+            '<p>Conception et développement du <strong>site internet officiel</strong> du Comité '
+            'Scientifique des Apprenants en Sciences (COM.S.AS). Une plateforme complète comprenant :</p>'
+            '<ul>'
+            '<li>Présentation de l\'association et du bureau exécutif</li>'
+            '<li>Gestion des événements, inscriptions et attestations</li>'
+            '<li>Système de parrainage en ligne (parrains / filleuls)</li>'
+            '<li>Portail J.U.IN avec compétitions, commissions et votes</li>'
+            '<li>Blog avec articles et tutoriels pour les étudiants</li>'
+            '<li>Espace requêtes avec modèles de documents téléchargeables</li>'
+            '<li>Interface d\'administration complète et personnalisée</li>'
+            '</ul>'
+            '<p><strong>Technologies :</strong> Django, PostgreSQL, Docker, Apache, GitHub Actions CI/CD</p>'
+        ),
+        'description_en': (
+            '<p>Design and development of the official COM.S.AS website — a comprehensive platform '
+            'for the Computer Science Students\' Association at UY1.</p>'
+        ),
+        'status': 'completed',
+        'budget_required': 500000,
+        'budget_collected': 500000,
+        'start_date': date(2025, 10, 1),
+        'end_date': date(2026, 3, 15),
+        'is_featured': True,
+    },
+    {
+        'title_fr': 'Application Mobile de Suivi Académique — "MyUY1"',
+        'title_en': 'Academic Tracking Mobile App — "MyUY1"',
+        'description_fr': (
+            '<p>Projet ambitieux de développement d\'une <strong>application mobile</strong> permettant '
+            'à chaque étudiant de la Faculté des Sciences de suivre l\'intégralité de sa vie académique :</p>'
+            '<ul>'
+            '<li> <strong>Suivi des notes :</strong> Visualisation en temps réel des notes de CC, SN et rattrapage</li>'
+            '<li> <strong>Calcul automatique du MGP :</strong> Moyenne Générale Pondérée calculée par semestre et cumulative</li>'
+            '<li> <strong>Emploi du temps :</strong> Planning des cours, TD et TP synchronisé</li>'
+            '<li> <strong>Gestion des UE :</strong> Liste des UE inscrites, crédits restants, progression</li>'
+            '<li> <strong>Notifications :</strong> Alertes examens, publications de notes, événements COM.S.AS</li>'
+            '<li> <strong>Vie associative :</strong> Accès aux événements, parrainage, et ressources du COM.S.AS</li>'
+            '</ul>'
+            '<p><strong>Technologies envisagées :</strong> Flutter (cross-platform), Firebase, API Django REST</p>'
+            '<p><strong>Objectif :</strong> Lancer la version bêta lors du J.U.IN 2026 (Jubilé d\'Émeraude)</p>'
+        ),
+        'description_en': (
+            '<p>An ambitious mobile app project to help every student track their academic life: '
+            'grades, GPA calculation, schedules, and association activities.</p>'
+        ),
+        'status': 'planning',
+        'budget_required': 750000,
+        'budget_collected': 150000,
+        'start_date': date(2026, 3, 1),
+        'end_date': date(2026, 9, 30),
+        'is_featured': True,
+    },
+]
+
+for p in projects_data:
+    Project.objects.create(**p)
+    print(f"  🔨 {p['title_fr']}")
+
+
+# ═══════════════════════════════════════════════════════════
 print("\n" + "=" * 60)
-print("  Peuplement terminé avec succès !")
+print("   Peuplement terminé avec succès !")
 print("=" * 60)
 print(f"""
  Résumé :
-  • Superutilisateurs : {User.objects.filter(is_superuser=True).count()}
-  • Membres du Bureau : {Member.objects.filter(member_type='bureau').count()}
-  • Commissions JUIN  : {JUINCommission.objects.filter(edition=edition).count()}
-  • Délégués          : {Delegate.objects.filter(year='2025-2026').count()}
-  • Modèles Requêtes  : {RequestDocument.objects.count()}
+  • Superutilisateurs  : {User.objects.filter(is_superuser=True).count()}
+  • Membres du Bureau  : {Member.objects.filter(member_type='bureau').count()}
+  • Commissions JUIN   : {JUINCommission.objects.filter(edition=edition).count()}
+  • Délégués           : {Delegate.objects.filter(year='2025-2026').count()}
+  • Modèles Requêtes   : {RequestDocument.objects.count()}
+  • Événements         : {Event.objects.count()}
+  • Activités JUIN     : {JUINActivity.objects.filter(edition=edition).count()}
+  • Compétitions JUIN  : {JUINCompetition.objects.filter(edition=edition).count()}
+  • Concours           : {Contest.objects.count()}
+  • Articles de Blog   : {BlogArticle.objects.count()}
+  • Projets            : {Project.objects.count()}
+  • Session Parrainage : {SponsorshipSession.objects.filter(is_active=True).count()}
 
  Accès Admin :
   • comsas / admin@comsas
   • patrice / npeprod237
 """)
-

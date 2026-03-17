@@ -37,7 +37,7 @@ docker-compose exec -T web mkdir -p /app/media
 docker-compose exec -T web chmod 755 /app/media
 
 # Peuplement automatique de la base de données (admins, commissions, bureau, délégués, requêtes)
-echo "📊 Peuplement de la base de données..."
+echo "Peuplement de la base de données..."
 docker-compose exec -T web python populate_real_data.py
 
 # Test de santé

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 import uuid
 
 class Member(models.Model):
