@@ -36,6 +36,10 @@ echo " Configuration des médias..."
 docker-compose exec -T web mkdir -p /app/media
 docker-compose exec -T web chmod 755 /app/media
 
+# Peuplement automatique de la base de données (admins, commissions, bureau, délégués)
+echo "📊 Peuplement de la base de données..."
+docker-compose exec -T web python populate_real_data.py
+
 # Test de santé
 echo " Test de l'application..."
 sleep 5
@@ -72,18 +76,19 @@ sudo bash -c "cat > $APACHE_CONF" <<EOF
     ServerName comsas-uy1.com
     ServerAlias www.comsas-uy1.com
 
-    # Préservation du host original
     ProxyPreserveHost On
 
-    # Redirection du trafic vers ton backend local sur le port 35467
+    # pgAdmin via /admin-database
+    ProxyPass /admin-database http://localhost:5050/
+    ProxyPassReverse /admin-database http://localhost:5050/
+
+    # Application Django
     ProxyPass / http://localhost:35467/
     ProxyPassReverse / http://localhost:35467/
 
-    # En-têtes utiles pour Django
     RequestHeader set X-Forwarded-For expr=%{REMOTE_ADDR}
     RequestHeader set X-Forwarded-Proto expr=%{REQUEST_SCHEME}
 
-    # Gestion des fichiers statiques et médias
     Alias /static /root/system-sh/comsas-uy1.com/staticfiles
     Alias /media  /root/system-sh/comsas-uy1.com/media
 
@@ -95,15 +100,8 @@ sudo bash -c "cat > $APACHE_CONF" <<EOF
         Require all granted
     </Directory>
 
-    # Logs du site
     ErrorLog \${APACHE_LOG_DIR}/comsas-uy1_error.log
     CustomLog \${APACHE_LOG_DIR}/comsas-uy1_access.log combined
-
-    # Redirection vers HTTPS (si certbot est configuré, sinon commenter cette section)
-    # RewriteEngine On
-    # RewriteCond %{SERVER_NAME} =comsas-uy1.com [OR]
-    # RewriteCond %{SERVER_NAME} =www.comsas-uy1.com
-    # RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
 </VirtualHost>
 EOF
 
@@ -150,6 +148,12 @@ if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
     ServerAlias www.comsas-uy1.com
 
     ProxyPreserveHost On
+
+    # pgAdmin via /admin-database
+    ProxyPass /admin-database http://localhost:5050/
+    ProxyPassReverse /admin-database http://localhost:5050/
+
+    # Application Django
     ProxyPass / http://localhost:35467/
     ProxyPassReverse / http://localhost:35467/
 
