@@ -1137,6 +1137,7 @@ projects_data = [
             'for the Computer Science Students\' Association at UY1.</p>'
         ),
         'status': 'completed',
+        'image': 'projects/comsas_website.png',
         'budget_required': 500000,
         'budget_collected': 500000,
         'start_date': date(2025, 10, 1),
@@ -1165,6 +1166,7 @@ projects_data = [
             'grades, GPA calculation, schedules, and association activities.</p>'
         ),
         'status': 'planning',
+        'image': 'projects/myuy1_app.png',
         'budget_required': 750000,
         'budget_collected': 150000,
         'start_date': date(2026, 3, 1),
