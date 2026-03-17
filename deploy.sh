@@ -89,14 +89,14 @@ sudo bash -c "cat > $APACHE_CONF" <<EOF
     RequestHeader set X-Forwarded-For expr=%{REMOTE_ADDR}
     RequestHeader set X-Forwarded-Proto expr=%{REQUEST_SCHEME}
 
-    Alias /static /root/system-sh/comsas-uy1.com/staticfiles
-    Alias /media  /root/system-sh/comsas-uy1.com/media
+    Alias /static $PWD/staticfiles
+    Alias /media  $PWD/media
 
-    <Directory "/root/system-sh/comsas-uy1.com/staticfiles">
+    <Directory "$PWD/staticfiles">
         Require all granted
     </Directory>
 
-    <Directory "/root/system-sh/comsas-uy1.com/media">
+    <Directory "$PWD/media">
         Require all granted
     </Directory>
 
@@ -148,13 +148,13 @@ if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
     RequestHeader set X-Forwarded-For expr=%{REMOTE_ADDR}
     RequestHeader set X-Forwarded-Proto "https"
 
-    Alias /static /root/system-sh/comsas-uy1.com/staticfiles
-    Alias /media  /root/system-sh/comsas-uy1.com/media
+    Alias /static $PWD/staticfiles
+    Alias /media  $PWD/media
 
-    <Directory "/root/system-sh/comsas-uy1.com/staticfiles">
+    <Directory "$PWD/staticfiles">
         Require all granted
     </Directory>
-    <Directory "/root/system-sh/comsas-uy1.com/media">
+    <Directory "$PWD/media">
         Require all granted
     </Directory>
 
