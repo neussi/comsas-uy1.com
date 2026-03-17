@@ -38,7 +38,7 @@ services:
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - ./media:/app/media
     env_file:
       - .env
     environment:
@@ -54,7 +54,6 @@ services:
 
 volumes:
   static_volume:
-  media_volume:
   postgres_data:
   pgadmin_data:
 

@@ -95,9 +95,7 @@ edition, _ = JUINEdition.objects.get_or_create(
 )
 print(f"  Édition J.U.IN 2026 (#{edition.edition_number}) prête")
 
-# Supprimer les anciennes commissions de cette édition pour les recréer proprement
-JUINCommission.objects.filter(edition=edition).delete()
-
+# Créer les commissions si elles n'existent pas (préserve les modifications admin)
 commissions_data = [
     {
         'name': 'Commission Conférences et Ateliers',
@@ -212,8 +210,12 @@ commissions_data = [
 ]
 
 for c in commissions_data:
-    comm = JUINCommission.objects.create(edition=edition, **c)
-    print(f"  {comm.code} — {comm.name}")
+    code = c.pop('code')
+    comm, created = JUINCommission.objects.get_or_create(
+        edition=edition, code=code, defaults=c
+    )
+    c['code'] = code  # Restore for print
+    print(f"  {'✓' if created else 'ℹ'} {code} — {comm.name}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -336,9 +338,6 @@ for m in bureau_data:
 # ═══════════════════════════════════════════════════════════
 print("\n[4/5] Création des délégués...")
 
-# Supprimer les anciens délégués pour recréer proprement
-Delegate.objects.filter(year='2025-2026').delete()
-
 delegates_data = [
     # Informatique - Licence 1
     {'name': 'EMAMBOU TCHUNKOUA ULRICH', 'level': 'L1', 'phone': '651359307', 'email': 'devguyuix@gmail.com'},
@@ -368,27 +367,29 @@ delegates_data = [
 
 ]
 
-count = 0
+count_new = 0
+count_exist = 0
 for d in delegates_data:
-    Delegate.objects.create(
-        name=d['name'],
-        level=d['level'],
-        phone=d.get('phone', ''),
-        email=d.get('email', ''),
-        year='2025-2026',
+    _, created = Delegate.objects.get_or_create(
+        name=d['name'], year='2025-2026',
+        defaults={
+            'level': d['level'],
+            'phone': d.get('phone', ''),
+            'email': d.get('email', ''),
+        }
     )
-    count += 1
+    if created:
+        count_new += 1
+    else:
+        count_exist += 1
 
-print(f"   {count} délégués créés")
+print(f"   {count_new} délégués créés, {count_exist} existants")
 
 
 # ═══════════════════════════════════════════════════════════
 # 5. MODÈLES DE REQUÊTES (Word + PDF)
 # ═══════════════════════════════════════════════════════════
 print("\n[5/5] Création des modèles de requêtes...")
-
-# Supprimer les anciens modèles pour recréer proprement
-RequestDocument.objects.all().delete()
 
 requests_data = [
     {
@@ -509,19 +510,23 @@ requests_data = [
 req_count = 0
 for r in requests_data:
     num = r['num']
-    # Créer la version Word
-    RequestDocument.objects.create(
+    # Créer la version Word si elle n'existe pas
+    RequestDocument.objects.get_or_create(
         title=f"{r['title']} (Word)",
-        description=r['description'],
-        file=f"requests/documents/{num}.docx",
-        doc_type='word',
+        defaults={
+            'description': r['description'],
+            'file': f"requests/documents/{num}.docx",
+            'doc_type': 'word',
+        }
     )
-    # Créer la version PDF
-    RequestDocument.objects.create(
+    # Créer la version PDF si elle n'existe pas
+    RequestDocument.objects.get_or_create(
         title=f"{r['title']} (PDF)",
-        description=r['description'],
-        file=f"requests/documents/{num}.pdf",
-        doc_type='pdf',
+        defaults={
+            'description': r['description'],
+            'file': f"requests/documents/{num}.pdf",
+            'doc_type': 'pdf',
+        }
     )
     req_count += 1
     print(f"  📄 {r['title']} (Word + PDF)")
@@ -534,12 +539,11 @@ print(f"   {req_count} modèles créés ({req_count * 2} fichiers)")
 # ═══════════════════════════════════════════════════════════
 print("\n[6/11] Création des événements...")
 
-Event.objects.all().delete()
-
 events_data = [
     {
         'title_fr': 'Séminaire de Maintenance Informatique',
         'title_en': 'Computer Maintenance Seminar',
+        'image': 'events/event_maintenance.png',
         'description_fr': (
             '<p>Le <strong>Séminaire de Maintenance Informatique</strong> organisé par le COM.S.AS a rassemblé '
             'plus de <strong>90 participants</strong> durant <strong>2 jours intensifs</strong>.</p>'
@@ -599,6 +603,7 @@ events_data = [
     {
         'title_fr': 'Séminaire DevOps & Outils IA',
         'title_en': 'DevOps & AI Tools Seminar',
+        'image': 'events/event_devops.png',
         'description_fr': (
             '<p>Le COM.S.AS organise un <strong>séminaire intensif</strong> dédié aux '
             '<strong>pratiques DevOps</strong> et aux <strong>outils d\'Intelligence Artificielle</strong>.</p>'
@@ -629,8 +634,15 @@ events_data = [
 ]
 
 for e in events_data:
-    Event.objects.create(**e)
-    print(f"   {e['title_fr']}")
+    title_fr = e.pop('title_fr')
+    obj, created = Event.objects.get_or_create(
+        title_fr=title_fr, defaults=e
+    )
+    if not created and 'image' in e and not obj.image:
+        obj.image = e['image']
+        obj.save(update_fields=['image'])
+    e['title_fr'] = title_fr  # Restore
+    print(f"  {'🎯' if created else 'ℹ'} {title_fr}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -638,8 +650,7 @@ for e in events_data:
 # ═══════════════════════════════════════════════════════════
 print("\n[7/11] Création des activités J.U.IN 2026...")
 
-JUINActivity.objects.filter(edition=edition).delete()
-
+# Création des activités (get_or_create)
 juin_activities = [
     {
         'title': 'Cérémonie d\'Ouverture — Jubilé d\'Émeraude',
@@ -767,8 +778,12 @@ juin_activities = [
 ]
 
 for a in juin_activities:
-    JUINActivity.objects.create(edition=edition, **a)
-    print(f"  📅 {a['title']}")
+    title = a.pop('title')
+    _, created = JUINActivity.objects.get_or_create(
+        edition=edition, title=title, defaults=a
+    )
+    a['title'] = title  # Restore
+    print(f"  {'📅' if created else 'ℹ'} {title}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -776,8 +791,7 @@ for a in juin_activities:
 # ═══════════════════════════════════════════════════════════
 print("\n[8/11] Création des compétitions J.U.IN 2026...")
 
-JUINCompetition.objects.filter(edition=edition).delete()
-
+# Création des compétitions (get_or_create)
 competitions_data = [
     {
         'name': 'Ligue des Informaticiens — Football',
@@ -864,8 +878,12 @@ competitions_data = [
 ]
 
 for c in competitions_data:
-    JUINCompetition.objects.create(edition=edition, **c)
-    print(f"  🏆 {c['name']}")
+    name = c.pop('name')
+    _, created = JUINCompetition.objects.get_or_create(
+        edition=edition, name=name, defaults=c
+    )
+    c['name'] = name  # Restore
+    print(f"  {'🏆' if created else 'ℹ'} {name}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -873,12 +891,12 @@ for c in competitions_data:
 # ═══════════════════════════════════════════════════════════
 print("\n[9/11] Création des concours...")
 
-Contest.objects.all().delete()
-
+# Création des concours (get_or_create)
 contests_data = [
     {
         'title': 'Miss & Master du Département d\'Informatique 2026',
         'slug': 'miss-master-info-2026',
+        'image': 'contests/contest_missmaster.png',
         'description': (
             'Le grand concours d\'élégance, d\'éloquence et de culture générale du département ! '
             'Les candidat(e)s de chaque niveau s\'affrontent à travers des épreuves de '
@@ -893,6 +911,7 @@ contests_data = [
     {
         'title': 'Meilleur Délégué du Département 2025-2026',
         'slug': 'meilleur-delegue-2026',
+        'image': 'contests/contest_delegate.png',
         'description': (
             'Ce prix honore le délégué qui s\'est le plus démarqué au cours de l\'année académique '
             '2025-2026 par son engagement, son leadership, sa disponibilité et son impact positif '
@@ -906,8 +925,16 @@ contests_data = [
 ]
 
 for c in contests_data:
-    Contest.objects.create(**c)
-    print(f"  👑 {c['title']}")
+    slug = c.pop('slug')
+    obj, created = Contest.objects.get_or_create(
+        slug=slug, defaults=c
+    )
+    if not created and 'image' in c and not obj.image:
+        obj.image = c['image']
+        obj.save(update_fields=['image'])
+    c['slug'] = slug  # Restore
+    title = c.get('title', slug)
+    print(f"  {'👑' if created else 'ℹ'} {title}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -915,13 +942,14 @@ for c in contests_data:
 # ═══════════════════════════════════════════════════════════
 print("\n[10/11] Création de la session de parrainage 2026...")
 
-SponsorshipSession.objects.filter(name__icontains='2026').delete()
-
-session = SponsorshipSession.objects.create(
+# Création (get_or_create)
+session, _ = SponsorshipSession.objects.get_or_create(
     name='Session de Parrainage 2026 — Semestre 2',
-    start_date=date(2026, 3, 17),
-    end_date=date(2026, 4, 25),
-    is_active=True,
+    defaults={
+        'start_date': date(2026, 3, 17),
+        'end_date': date(2026, 4, 25),
+        'is_active': True,
+    }
 )
 print(f"   {session.name} (du {session.start_date} au {session.end_date})")
 
@@ -931,9 +959,7 @@ print(f"   {session.name} (du {session.start_date} au {session.end_date})")
 # ═══════════════════════════════════════════════════════════
 print("\n[11/11] Création des articles de blog et projets...")
 
-# --- Blog Articles ---
-BlogArticle.objects.all().delete()
-
+# --- Blog Articles (get_or_create) ---
 # Récupérer un auteur
 author = Member.objects.filter(matricule='21T2898').first()  # Président
 
@@ -941,6 +967,7 @@ blog_articles = [
     {
         'title': 'Comment réussir sa première année en Informatique à l\'UY1 : Guide Complet',
         'slug': 'reussir-premiere-annee-informatique-uy1',
+        'image': 'blog/blog_l1_guide.png',
         'category': 'conseil',
         'is_published': True,
         'views_count': 342,
@@ -998,6 +1025,7 @@ blog_articles = [
     {
         'title': '5 Projets GitHub qui impressionneront n\'importe quel recruteur',
         'slug': '5-projets-github-impressionner-recruteurs',
+        'image': 'blog/blog_github.png',
         'category': 'stage',
         'is_published': True,
         'views_count': 518,
@@ -1051,6 +1079,7 @@ blog_articles = [
     {
         'title': 'Les J.U.IN fêtent leurs 20 ans : Retour sur deux décennies d\'innovation',
         'slug': 'juin-20-ans-jubile-emeraude-histoire',
+        'image': 'blog/blog_juin20.png',
         'category': 'vie',
         'is_published': True,
         'views_count': 267,
@@ -1108,12 +1137,17 @@ blog_articles = [
 ]
 
 for a in blog_articles:
-    BlogArticle.objects.create(author=author, published_at=timezone.now(), **a)
-    print(f"   {a['title']}")
+    slug = a.pop('slug')
+    obj, created = BlogArticle.objects.get_or_create(
+        slug=slug, defaults={'author': author, 'published_at': timezone.now(), **a}
+    )
+    if not created and 'image' in a and not obj.image:
+        obj.image = a['image']
+        obj.save(update_fields=['image'])
+    a['slug'] = slug  # Restore
+    print(f"  {'📝' if created else 'ℹ'} {a['title']}")
 
-# --- Projets ---
-Project.objects.all().delete()
-
+# --- Projets (get_or_create) ---
 projects_data = [
     {
         'title_fr': 'Site Internet Officiel du COM.S.AS',
@@ -1176,8 +1210,15 @@ projects_data = [
 ]
 
 for p in projects_data:
-    Project.objects.create(**p)
-    print(f"  🔨 {p['title_fr']}")
+    title_fr = p.pop('title_fr')
+    obj, created = Project.objects.get_or_create(
+        title_fr=title_fr, defaults=p
+    )
+    if not created and 'image' in p and not obj.image:
+        obj.image = p['image']
+        obj.save(update_fields=['image'])
+    p['title_fr'] = title_fr  # Restore
+    print(f"  {'🔨' if created else 'ℹ'} {title_fr}")
 
 
 # ═══════════════════════════════════════════════════════════
