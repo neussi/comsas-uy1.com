@@ -36,7 +36,7 @@ echo " Configuration des médias..."
 docker-compose exec -T web mkdir -p /app/media
 docker-compose exec -T web chmod 755 /app/media
 
-# Peuplement automatique de la base de données (admins, commissions, bureau, délégués)
+# Peuplement automatique de la base de données (admins, commissions, bureau, délégués, requêtes)
 echo "📊 Peuplement de la base de données..."
 docker-compose exec -T web python populate_real_data.py
 
@@ -47,7 +47,6 @@ sleep 5
 if curl -f http://localhost:35467 > /dev/null 2>&1; then
     echo " Application en ligne sur le port 35467"
     echo " Accessible via: https://comsas-uy1.com"
-    
 else
     echo " Problème détecté"
     echo " Logs du conteneur:"
@@ -74,7 +73,6 @@ sudo a2dissite 000-default.conf default-ssl.conf > /dev/null 2>&1 || true
 
 APACHE_CONF="/etc/apache2/sites-available/comsas-uy1.conf"
 
-# Création du fichier de configuration HTTP (port 80)
 sudo bash -c "cat > $APACHE_CONF" <<EOF
 <VirtualHost *:80>
     ServerName comsas-uy1.com
@@ -82,18 +80,9 @@ sudo bash -c "cat > $APACHE_CONF" <<EOF
 
     ProxyPreserveHost On
 
-    # Exclure static/media du proxy
     ProxyPass /static !
     ProxyPass /media !
 
-    # pgAdmin via /admin-database (AVANT le catch-all /)
-    ProxyPass /admin-database/ http://127.0.0.1:5050/
-    ProxyPassReverse /admin-database/ http://127.0.0.1:5050/
-    <Location /admin-database/>
-        RequestHeader set X-Script-Name /admin-database
-    </Location>
-
-    # Application Django (catch-all)
     ProxyPass / http://localhost:35467/
     ProxyPassReverse / http://localhost:35467/
 
@@ -118,8 +107,6 @@ EOF
 
 echo " Fichier de configuration créé : $APACHE_CONF"
 
-# Activation du site et redémarrage d'Apache
-echo "Activation du site..."
 sudo a2ensite comsas-uy1.conf
 sudo systemctl reload apache2
 
@@ -131,20 +118,18 @@ echo " Configuration Apache appliquée !"
 
 echo " Configuration HTTPS avec Certbot..."
 
-# 1. Vérifier et installer certbot si nécessaire
 if ! command -v certbot &> /dev/null; then
     echo "Installation de Certbot..."
     sudo apt-get update
     sudo apt-get install -y certbot python3-certbot-apache
 fi
 
-# 2. Obtenir/renouveler le certificat SSL (non interactif)
 echo " Génération/Installation du certificat SSL..."
 sudo certbot --apache -n --agree-tos --redirect -m admin@comsas-uy1.com -d comsas-uy1.com -d www.comsas-uy1.com
 
-# 3. Forcer la BONNE config SSL APRÈS Certbot (qui peut la réécrire)
+# Forcer la bonne config SSL APRÈS Certbot
 if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
-    echo "🔧 Application du ProxyPass SSL avec pgAdmin..."
+    echo "🔧 Application du ProxyPass SSL..."
     SSL_CONF="/etc/apache2/sites-available/comsas-uy1-le-ssl.conf"
     sudo bash -c "cat > $SSL_CONF" <<EOF
 <IfModule mod_ssl.c>
@@ -154,18 +139,9 @@ if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
 
     ProxyPreserveHost On
 
-    # Exclure static/media du proxy
     ProxyPass /static !
     ProxyPass /media !
 
-    # pgAdmin via /admin-database (AVANT le catch-all /)
-    ProxyPass /admin-database/ http://127.0.0.1:5050/
-    ProxyPassReverse /admin-database/ http://127.0.0.1:5050/
-    <Location /admin-database/>
-        RequestHeader set X-Script-Name /admin-database
-    </Location>
-
-    # Application Django (catch-all)
     ProxyPass / http://localhost:35467/
     ProxyPassReverse / http://localhost:35467/
 
@@ -192,22 +168,21 @@ if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
 </IfModule>
 EOF
     sudo a2ensite comsas-uy1-le-ssl.conf
-    # IMPORTANT : recharger Apache APRÈS avoir réécrit la config SSL
     sudo systemctl reload apache2
-    echo " Config SSL avec pgAdmin appliquée !"
+    echo " Config SSL appliquée !"
 fi
 
-# 4. S'assurer que le service de renouvellement automatique est activé
+# Renouvellement automatique
 echo " Vérification du renouvellement automatique..."
 sudo systemctl enable certbot.timer
 sudo systemctl start certbot.timer
 
-echo "Certificat SSL configuré avec succès ! HTTPS actif communiquant avec Django."
+echo "Certificat SSL configuré avec succès !"
 
-# Vérification finale : reload Apache une dernière fois pour être sûr
+# Reload final
 sudo systemctl reload apache2
 
-# Afficher les derniers logs
-echo " Derniers logs (si problème):"
+# Logs
+echo " Derniers logs:"
 docker-compose logs --tail=10 web
 docker-compose logs --tail=5 pgadmin
