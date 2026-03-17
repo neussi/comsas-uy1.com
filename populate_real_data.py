@@ -633,16 +633,10 @@ events_data = [
     },
 ]
 
+Event.objects.all().delete()
 for e in events_data:
-    title_fr = e.pop('title_fr')
-    obj, created = Event.objects.get_or_create(
-        title_fr=title_fr, defaults=e
-    )
-    if not created and 'image' in e and not obj.image:
-        obj.image = e['image']
-        obj.save(update_fields=['image'])
-    e['title_fr'] = title_fr  # Restore
-    print(f"  {'🎯' if created else 'ℹ'} {title_fr}")
+    Event.objects.create(**e)
+    print(f"  🎯 {e['title_fr']}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -777,13 +771,10 @@ juin_activities = [
     },
 ]
 
+JUINActivity.objects.filter(edition=edition).delete()
 for a in juin_activities:
-    title = a.pop('title')
-    _, created = JUINActivity.objects.get_or_create(
-        edition=edition, title=title, defaults=a
-    )
-    a['title'] = title  # Restore
-    print(f"  {'📅' if created else 'ℹ'} {title}")
+    JUINActivity.objects.create(edition=edition, **a)
+    print(f"  📅 {a['title']}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -877,13 +868,10 @@ competitions_data = [
     },
 ]
 
+JUINCompetition.objects.filter(edition=edition).delete()
 for c in competitions_data:
-    name = c.pop('name')
-    _, created = JUINCompetition.objects.get_or_create(
-        edition=edition, name=name, defaults=c
-    )
-    c['name'] = name  # Restore
-    print(f"  {'🏆' if created else 'ℹ'} {name}")
+    JUINCompetition.objects.create(edition=edition, **c)
+    print(f"  🏆 {c['name']}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -924,17 +912,11 @@ contests_data = [
     },
 ]
 
+Contest.objects.all().delete()
 for c in contests_data:
-    slug = c.pop('slug')
-    obj, created = Contest.objects.get_or_create(
-        slug=slug, defaults=c
-    )
-    if not created and 'image' in c and not obj.image:
-        obj.image = c['image']
-        obj.save(update_fields=['image'])
-    c['slug'] = slug  # Restore
-    title = c.get('title', slug)
-    print(f"  {'👑' if created else 'ℹ'} {title}")
+    Contest.objects.create(**c)
+    title = c.get('title', c.get('slug'))
+    print(f"  👑 {title}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -1136,16 +1118,10 @@ blog_articles = [
     },
 ]
 
+BlogArticle.objects.all().delete()
 for a in blog_articles:
-    slug = a.pop('slug')
-    obj, created = BlogArticle.objects.get_or_create(
-        slug=slug, defaults={'author': author, 'published_at': timezone.now(), **a}
-    )
-    if not created and 'image' in a and not obj.image:
-        obj.image = a['image']
-        obj.save(update_fields=['image'])
-    a['slug'] = slug  # Restore
-    print(f"  {'📝' if created else 'ℹ'} {a['title']}")
+    BlogArticle.objects.create(author=author, published_at=timezone.now(), **a)
+    print(f"  📝 {a['title']}")
 
 # --- Projets (get_or_create) ---
 projects_data = [
@@ -1209,16 +1185,10 @@ projects_data = [
     },
 ]
 
+Project.objects.all().delete()
 for p in projects_data:
-    title_fr = p.pop('title_fr')
-    obj, created = Project.objects.get_or_create(
-        title_fr=title_fr, defaults=p
-    )
-    if not created and 'image' in p and not obj.image:
-        obj.image = p['image']
-        obj.save(update_fields=['image'])
-    p['title_fr'] = title_fr  # Restore
-    print(f"  {'🔨' if created else 'ℹ'} {title_fr}")
+    Project.objects.create(**p)
+    print(f"  🔨 {p['title_fr']}")
 
 
 # ═══════════════════════════════════════════════════════════
