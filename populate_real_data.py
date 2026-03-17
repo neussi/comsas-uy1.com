@@ -15,7 +15,7 @@ django.setup()
 
 from django.contrib.auth.models import User
 from main.models import (
-    Member, JUINEdition, JUINCommission, Delegate
+    Member, JUINEdition, JUINCommission, Delegate, RequestDocument
 )
 from datetime import date
 
@@ -26,7 +26,7 @@ print("=" * 60)
 # ═══════════════════════════════════════════════════════════
 # 1. SUPERUTILISATEURS
 # ═══════════════════════════════════════════════════════════
-print("\n[1/4] Création des superutilisateurs...")
+print("\n[1/5] Création des superutilisateurs...")
 
 admins = [
     {
@@ -67,7 +67,7 @@ for data in admins:
 # ═══════════════════════════════════════════════════════════
 # 2. ÉDITION JUIN 2026 + COMMISSIONS
 # ═══════════════════════════════════════════════════════════
-print("\n[2/4] Configuration de l'édition J.U.IN 2026 et des commissions...")
+print("\n[2/5] Configuration de l'édition J.U.IN 2026 et des commissions...")
 
 edition, _ = JUINEdition.objects.get_or_create(
     edition_number=20,
@@ -216,7 +216,7 @@ for c in commissions_data:
 # ═══════════════════════════════════════════════════════════
 # 3. BUREAU EXÉCUTIF 2025-2026
 # ═══════════════════════════════════════════════════════════
-print("\n[3/4] Création du Bureau Exécutif 2025-2026...")
+print("\n[3/5] Création du Bureau Exécutif 2025-2026...")
 
 bureau_data = [
     {
@@ -331,7 +331,7 @@ for m in bureau_data:
 # ═══════════════════════════════════════════════════════════
 # 4. DÉLÉGUÉS 2025-2026
 # ═══════════════════════════════════════════════════════════
-print("\n[4/4] Création des délégués...")
+print("\n[4/5] Création des délégués...")
 
 # Supprimer les anciens délégués pour recréer proprement
 Delegate.objects.filter(year='2025-2026').delete()
@@ -363,6 +363,58 @@ delegates_data = [
     {'name': 'FONAYEN CHRISTIAN', 'level': 'L3', 'phone': '681144815', 'email': 'asangwa.fonayen23@facsciences-uy1.cm'},
     {'name': 'ETONDE MABONGO ULRICH EDOUARD', 'level': 'L3', 'phone': '', 'email': 'edouard.etonde@facsciences-uy1.cm'},
 
+    # Mathématiques - Licence 1
+    {'name': 'NGUEPI DONGMO PERIEL', 'level': 'L1', 'phone': '', 'email': 'nguepidongmoperiel@gmail.com'},
+    {'name': 'TCHOKOUATOU DJEUMENI HERMANN PHAREL', 'level': 'L1', 'phone': '', 'email': ''},
+    {'name': 'ADJOMO NGOA GASTON LE ROI ARTHUR', 'level': 'L1', 'phone': '', 'email': ''},
+    {'name': 'MADENE ARMELLE MICHELLE', 'level': 'L1', 'phone': '', 'email': 'armellemadene2@gmail.com'},
+    {'name': 'SIMASOTCHI EMILIENNE LYSETTE PRI', 'level': 'L1', 'phone': '', 'email': 'simasotchiemiliennelyse@gmail.com'},
+
+    # Mathématiques - Licence 2
+    {'name': 'KAMMOGNE KAMSU ELYSE AUDREY', 'level': 'L2', 'phone': '', 'email': 'audrey.kammogne@facsciences-uy1.cm'},
+    {'name': 'KAMAHA NGALEU ANAIS LUCRESE', 'level': 'L2', 'phone': '', 'email': 'kamahaanais@gmail.com'},
+
+    # Mathématiques - Licence 3
+    {'name': 'FOKOU GOWE LESLIE CARELLE', 'level': 'L3', 'phone': '', 'email': ''},
+    {'name': 'TAN CHITANIGO DIRAC DOMINIQUE', 'level': 'L3', 'phone': '', 'email': ''},
+    {'name': 'CHINMOUN MOYOUWOU AHMED SALIM', 'level': 'L3', 'phone': '', 'email': ''},
+
+    # Microbiologie - Licence 3
+    {'name': 'FOUEFACK NAGUE GILLES ROSTAND', 'level': 'L3', 'phone': '', 'email': 'fouefackgilles@gmail.com'},
+    {'name': 'YANKAM YONWOUA CABREL', 'level': 'L3', 'phone': '', 'email': 'cabrelyankam89@gmail.com'},
+    {'name': 'YOUMBI KAMGANG ARTHUR LYONEL', 'level': 'L3', 'phone': '', 'email': 'arthurlyonelyoumbikamg@gmail.com'},
+    {'name': 'MAHAMAT FAROUK BADE', 'level': 'L3', 'phone': '', 'email': 'mfbtheevil@icloud.com'},
+    {'name': 'NYA NGONGA NINELLE', 'level': 'L3', 'phone': '', 'email': 'nyarebecca806@gmail.com'},
+    {'name': 'TEBGA JOSEPHINE', 'level': 'L3', 'phone': '', 'email': 'josephinetebga@icloud.com'},
+    {'name': 'MEGNE ANNIE PATRICIA', 'level': 'L3', 'phone': '', 'email': 'anniepatricia07@gmail.com'},
+    {'name': 'SONFACK KENWABA CAREL', 'level': 'L3', 'phone': '', 'email': ''},
+    {'name': 'NGAH YOUM NDOUN MOISE', 'level': 'L3', 'phone': '', 'email': 'ngahyoumm@gmail.com'},
+
+    # Microbiologie - Master 1
+    {'name': 'AKONO LAURENT TRESOR', 'level': 'M1', 'phone': '', 'email': 'laurenzodamnis@gmail.com'},
+    {'name': 'EYENGA MBOA SIMON EMMANUEL', 'level': 'M1', 'phone': '', 'email': 'maximeeyenga137@gmail.com'},
+    {'name': 'MANGA AVOTTO JESSICA MANUELLA', 'level': 'M1', 'phone': '', 'email': ''},
+
+    # Géosciences - Licence 1
+    {'name': 'DIMITRI (GEOS)', 'level': 'L1', 'phone': '696279652', 'email': 'lacksondimitri675@gmail.com'},
+    {'name': 'KUATE GRACE (GEOS)', 'level': 'L1', 'phone': '698584913', 'email': 'greyskuategrace@gmail.com'},
+
+    # Géosciences - Licence 3
+    {'name': 'LAURENT EMMANUEL (GEOS)', 'level': 'L3', 'phone': '698359059', 'email': 'tlaurentemmanuel@gmail.com'},
+    {'name': 'ISAAC SIWELA (GEOS)', 'level': 'L3', 'phone': '695961988', 'email': 'isaac.siwela@facsciences-uy1.cm'},
+
+    # Géosciences - Master 1
+    {'name': 'OKALA PHANUEL (GEOS)', 'level': 'M1', 'phone': '690257644', 'email': 'okalapahnuel96@gmail.com'},
+
+    # Chimie - Licence 3
+    {'name': 'TCHOUKOUTI YANNIC (CHIM)', 'level': 'L3', 'phone': '693478955', 'email': 'yannicerusseltchoukouti@gmail.com'},
+    {'name': 'MAMA MARIE LOUISE (CHIM)', 'level': 'L3', 'phone': '694339713', 'email': 'marielouisemama@icloud.com'},
+
+    # Chimie - Master 1
+    {'name': 'AWAH BEN AURVINE (CHIM)', 'level': 'M1', 'phone': '694339713', 'email': 'awah.benaurvine@facsciences-uy1.cm'},
+
+    # Énergie Renouvelable - Licence 2
+    {'name': 'NGANSOP ARIOL (ENR)', 'level': 'L2', 'phone': '678565616', 'email': 'ariolngansop@gmail.com'},
 ]
 
 count = 0
@@ -380,6 +432,153 @@ print(f"   {count} délégués créés")
 
 
 # ═══════════════════════════════════════════════════════════
+# 5. MODÈLES DE REQUÊTES (Word + PDF)
+# ═══════════════════════════════════════════════════════════
+print("\n[5/5] Création des modèles de requêtes...")
+
+# Supprimer les anciens modèles pour recréer proprement
+RequestDocument.objects.all().delete()
+
+requests_data = [
+    {
+        'num': 1,
+        'title': 'Demande de publication de note (CC/SN/Session)',
+        'description': (
+            'Modèle de requête adressé au Responsable de l\'UE pour demander '
+            'la publication d\'une note de Contrôle Continu, Session Normale ou Session de rattrapage. '
+            'À utiliser lorsque vos notes ne sont pas encore affichées après le délai normal.'
+        ),
+    },
+    {
+        'num': 2,
+        'title': 'Demande de rectification de matricule',
+        'description': (
+            'Modèle de requête pour signaler et demander la correction d\'un matricule erroné '
+            'dans le système universitaire. Joindre les pièces justificatives (acte de naissance, '
+            'carte d\'étudiant, reçu de paiement).'
+        ),
+    },
+    {
+        'num': 3,
+        'title': 'Demande de blocage temporaire de matricule',
+        'description': (
+            'Modèle de requête adressé au Vice-Doyen chargé de la scolarité pour demander '
+            'le blocage temporaire d\'un matricule. Utile en cas de vol, perte ou utilisation '
+            'frauduleuse de votre matricule.'
+        ),
+    },
+    {
+        'num': 4,
+        'title': 'Demande d\'activation de matricule',
+        'description': (
+            'Modèle de requête adressé au Vice-Doyen chargé de la scolarité pour demander '
+            'l\'activation ou la réactivation d\'un matricule bloqué ou inactif.'
+        ),
+    },
+    {
+        'num': 5,
+        'title': 'Demande de changement de filière',
+        'description': (
+            'Modèle de requête adressé au Doyen de la Faculté pour solliciter un changement '
+            'de filière. Indiquer la filière actuelle et la filière souhaitée avec justification.'
+        ),
+    },
+    {
+        'num': 6,
+        'title': 'Guide de retrait de documents à la scolarité',
+        'description': (
+            'Document détaillant la composition du dossier nécessaire pour le retrait du certificat '
+            'de scolarité et autres documents administratifs. Contient les pièces à fournir pour '
+            'les niveaux Licence (L1-L3), Master (M1) et les cas particuliers.'
+        ),
+    },
+    {
+        'num': 7,
+        'title': 'Demande de consultation de copies d\'examen',
+        'description': (
+            'Modèle de requête adressé au Chef de Département pour demander la consultation '
+            'de copies d\'examen. À utiliser pour vérifier vos notes ou comprendre votre évaluation.'
+        ),
+    },
+    {
+        'num': 8,
+        'title': 'Demande de transfert universitaire',
+        'description': (
+            'Modèle de requête adressé au Doyen de la Faculté pour demander un transfert '
+            'vers une autre université. Préciser l\'université de destination et le motif du transfert.'
+        ),
+    },
+    {
+        'num': 9,
+        'title': 'Problème d\'affectation de classe (plateforme en ligne)',
+        'description': (
+            'Modèle de requête adressé au Vice-Doyen pour signaler un problème d\'affectation de classe '
+            'sur la plateforme d\'inscription en ligne (inscription-uy1.uninet.cm). '
+            'À utiliser lorsque le message "Vous n\'êtes affecté(e) à aucune classe" s\'affiche.'
+        ),
+    },
+    {
+        'num': 10,
+        'title': 'Problème de reconnaissance des droits universitaires',
+        'description': (
+            'Modèle de requête adressé au Vice-Doyen pour signaler un problème de reconnaissance '
+            'des droits universitaires sur la plateforme. À utiliser lorsque le message '
+            '"Droits universitaires introuvables" s\'affiche malgré le paiement effectué.'
+        ),
+    },
+    {
+        'num': 11,
+        'title': 'Demande de rectification de nom/prénom',
+        'description': (
+            'Modèle de requête adressé au Responsable de l\'UE pour corriger une erreur '
+            'sur votre nom ou prénom dans les listes d\'étudiants. Joindre une copie '
+            'de l\'acte de naissance comme justificatif.'
+        ),
+    },
+    {
+        'num': 12,
+        'title': 'Demande de rectification d\'une note erronée',
+        'description': (
+            'Modèle de requête adressé au Responsable de l\'UE pour signaler et demander '
+            'la correction d\'une erreur sur une note d\'examen. Préciser la note affichée, '
+            'la note attendue et l\'explication probable de l\'erreur.'
+        ),
+    },
+    {
+        'num': 13,
+        'title': 'Demande de rattrapage de Contrôle Continu',
+        'description': (
+            'Modèle de requête adressé au Responsable de l\'UE pour demander l\'autorisation '
+            'de rattraper un Contrôle Continu manqué. Joindre obligatoirement un justificatif '
+            'd\'absence (certificat médical, convocation officielle, etc.).'
+        ),
+    },
+]
+
+req_count = 0
+for r in requests_data:
+    num = r['num']
+    # Créer la version Word
+    RequestDocument.objects.create(
+        title=f"{r['title']} (Word)",
+        description=r['description'],
+        file=f"requests/documents/{num}.docx",
+        doc_type='word',
+    )
+    # Créer la version PDF
+    RequestDocument.objects.create(
+        title=f"{r['title']} (PDF)",
+        description=r['description'],
+        file=f"requests/documents/{num}.pdf",
+        doc_type='pdf',
+    )
+    req_count += 1
+    print(f"  📄 {r['title']} (Word + PDF)")
+
+print(f"   {req_count} modèles créés ({req_count * 2} fichiers)")
+
+
+# ═══════════════════════════════════════════════════════════
 print("\n" + "=" * 60)
 print("  Peuplement terminé avec succès !")
 print("=" * 60)
@@ -389,14 +588,10 @@ print(f"""
   • Membres du Bureau : {Member.objects.filter(member_type='bureau').count()}
   • Commissions JUIN  : {JUINCommission.objects.filter(edition=edition).count()}
   • Délégués          : {Delegate.objects.filter(year='2025-2026').count()}
+  • Modèles Requêtes  : {RequestDocument.objects.count()}
 
  Accès Admin :
   • comsas / admin@comsas
   • patrice / npeprod237
-
- Accès pgAdmin :
-  • URL : http://localhost:5050
-  • Email : comsas@facsciences-uy1.cm
-  • Mot de passe : admin@comsas
-  • Serveur DB : db:5432 / comsas_db
 """)
+
