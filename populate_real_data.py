@@ -577,6 +577,7 @@ events_data = [
     {
         'title_fr': 'Session de Parrainage 2026',
         'title_en': 'Mentorship Session 2026',
+        'image': 'events/event_parrainage.png',
         'description_fr': (
             '<p>Le <strong>Programme de Parrainage</strong> du COM.S.AS connecte les étudiants seniors '
             '(L3, M1, M2) avec les nouveaux étudiants (L1, L2) pour un accompagnement académique et professionnel.</p>'

@@ -74,7 +74,7 @@ echo " Déploiement terminé!"
 echo "🔧 Configuration d'Apache..."
 
 # Activer les modules nécessaires
-sudo a2enmod proxy proxy_http headers rewrite ssl > /dev/null
+sudo a2enmod proxy proxy_http headers rewrite ssl alias > /dev/null
 sudo a2dissite 000-default.conf default-ssl.conf > /dev/null 2>&1 || true
 
 APACHE_CONF="/etc/apache2/sites-available/comsas-uy1.conf"
