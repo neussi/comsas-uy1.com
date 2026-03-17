@@ -31,10 +31,13 @@ docker-compose exec -T web python manage.py migrate
 echo " Collecte des fichiers statiques..."
 docker-compose exec -T web python manage.py collectstatic --noinput
 
-# Créer les répertoires média si nécessaire
-echo " Configuration des médias..."
-docker-compose exec -T web mkdir -p /app/media
-docker-compose exec -T web chmod 755 /app/media
+# Créer les répertoires média et statiques si nécessaire
+echo " Configuration des médias et statiques..."
+docker-compose exec -T web mkdir -p /app/media /app/staticfiles
+docker-compose exec -T web chmod 755 /app/media /app/staticfiles
+
+# S'assurer que les dossiers existent sur l'hôte pour le bind mount
+mkdir -p media staticfiles
 
 # Configuration des permissions sur l'hôte pour Apache
 sudo chown -R www-data:www-data media staticfiles 2>/dev/null || true
