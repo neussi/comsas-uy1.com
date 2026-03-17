@@ -59,9 +59,9 @@ for data in admins:
     if created:
         user.set_password(data['password'])
         user.save()
-        print(f"  ✅ Superutilisateur '{data['username']}' créé")
+        print(f"   Superutilisateur '{data['username']}' créé")
     else:
-        print(f"  ℹ️  Superutilisateur '{data['username']}' existe déjà")
+        print(f"  ℹ  Superutilisateur '{data['username']}' existe déjà")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -90,7 +90,7 @@ edition, _ = JUINEdition.objects.get_or_create(
         'president_contact': '+237 650 970 526',
     }
 )
-print(f"  ✅ Édition J.U.IN 2026 (#{edition.edition_number}) prête")
+print(f"  Édition J.U.IN 2026 (#{edition.edition_number}) prête")
 
 # Supprimer les anciennes commissions de cette édition pour les recréer proprement
 JUINCommission.objects.filter(edition=edition).delete()
@@ -210,7 +210,7 @@ commissions_data = [
 
 for c in commissions_data:
     comm = JUINCommission.objects.create(edition=edition, **c)
-    print(f"  ✅ {comm.code} — {comm.name}")
+    print(f"  {comm.code} — {comm.name}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -325,7 +325,7 @@ for m in bureau_data:
         }
     )
     status = "créé" if created else "existe déjà"
-    print(f"  {'✅' if created else 'ℹ️ '} {m['poste_bureau']}: {m['nom_prenom']} ({status})")
+    print(f"  {'' if created else 'ℹ '} {m['poste_bureau']}: {m['nom_prenom']} ({status})")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -376,25 +376,25 @@ for d in delegates_data:
     )
     count += 1
 
-print(f"  ✅ {count} délégués créés")
+print(f"   {count} délégués créés")
 
 
 # ═══════════════════════════════════════════════════════════
 print("\n" + "=" * 60)
-print("  ✅ Peuplement terminé avec succès !")
+print("  Peuplement terminé avec succès !")
 print("=" * 60)
 print(f"""
-📊 Résumé :
+ Résumé :
   • Superutilisateurs : {User.objects.filter(is_superuser=True).count()}
   • Membres du Bureau : {Member.objects.filter(member_type='bureau').count()}
   • Commissions JUIN  : {JUINCommission.objects.filter(edition=edition).count()}
   • Délégués          : {Delegate.objects.filter(year='2025-2026').count()}
 
-🔐 Accès Admin :
+ Accès Admin :
   • comsas / admin@comsas
   • patrice / npeprod237
 
-🗄️ Accès pgAdmin :
+ Accès pgAdmin :
   • URL : http://localhost:5050
   • Email : comsas@facsciences-uy1.cm
   • Mot de passe : admin@comsas

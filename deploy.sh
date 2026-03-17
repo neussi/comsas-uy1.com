@@ -68,9 +68,13 @@ echo " Déploiement terminé!"
 
 echo "🔧 Configuration d'Apache..."
 
+# Activer les modules nécessaires
+sudo a2enmod proxy proxy_http headers rewrite ssl > /dev/null
+sudo a2dissite 000-default.conf default-ssl.conf > /dev/null 2>&1 || true
+
 APACHE_CONF="/etc/apache2/sites-available/comsas-uy1.conf"
 
-# Création du fichier de configuration
+# Création du fichier de configuration HTTP (port 80)
 sudo bash -c "cat > $APACHE_CONF" <<EOF
 <VirtualHost *:80>
     ServerName comsas-uy1.com
@@ -78,11 +82,15 @@ sudo bash -c "cat > $APACHE_CONF" <<EOF
 
     ProxyPreserveHost On
 
-    # pgAdmin via /admin-database
-    ProxyPass /admin-database http://localhost:5050/
-    ProxyPassReverse /admin-database http://localhost:5050/
+    # Exclure static/media du proxy
+    ProxyPass /static !
+    ProxyPass /media !
 
-    # Application Django
+    # pgAdmin via /admin-database (AVANT le catch-all /)
+    ProxyPass /admin-database/ http://127.0.0.1:5050/admin-database/
+    ProxyPassReverse /admin-database/ http://127.0.0.1:5050/admin-database/
+
+    # Application Django (catch-all)
     ProxyPass / http://localhost:35467/
     ProxyPassReverse / http://localhost:35467/
 
@@ -120,10 +128,6 @@ echo " Configuration Apache appliquée !"
 
 echo " Configuration HTTPS avec Certbot..."
 
-# Désactiver les configurations par défaut qui pourraient interférer
-sudo a2enmod proxy proxy_http headers rewrite ssl > /dev/null
-sudo a2dissite 000-default.conf default-ssl.conf > /dev/null 2>&1 || true
-
 # 1. Vérifier et installer certbot si nécessaire
 if ! command -v certbot &> /dev/null; then
     echo "Installation de Certbot..."
@@ -131,15 +135,13 @@ if ! command -v certbot &> /dev/null; then
     sudo apt-get install -y certbot python3-certbot-apache
 fi
 
-# 2. Obtenir et configurer le certificat SSL pour Apache (non interactif)
-# Si le certificat existe déjà, Certbot va l'utiliser et reconfigurer Apache 
-# (en rajoutant les redirections si elles ont été supprimées par la réécriture du fichier .conf)
+# 2. Obtenir/renouveler le certificat SSL (non interactif)
 echo " Génération/Installation du certificat SSL..."
 sudo certbot --apache -n --agree-tos --redirect -m admin@comsas-uy1.com -d comsas-uy1.com -d www.comsas-uy1.com
 
-# 3. Forcer la mise à jour de la configuration SSL (correction du problème de port 80 en HTTPS)
+# 3. Forcer la BONNE config SSL APRÈS Certbot (qui peut la réécrire)
 if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
-    echo "🔧 Application stricte du ProxyPass sur le port 443..."
+    echo "🔧 Application du ProxyPass SSL avec pgAdmin..."
     SSL_CONF="/etc/apache2/sites-available/comsas-uy1-le-ssl.conf"
     sudo bash -c "cat > $SSL_CONF" <<EOF
 <IfModule mod_ssl.c>
@@ -149,16 +151,20 @@ if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
 
     ProxyPreserveHost On
 
-    # pgAdmin via /admin-database
-    ProxyPass /admin-database http://localhost:5050/
-    ProxyPassReverse /admin-database http://localhost:5050/
+    # Exclure static/media du proxy
+    ProxyPass /static !
+    ProxyPass /media !
 
-    # Application Django
+    # pgAdmin via /admin-database (AVANT le catch-all /)
+    ProxyPass /admin-database/ http://127.0.0.1:5050/admin-database/
+    ProxyPassReverse /admin-database/ http://127.0.0.1:5050/admin-database/
+
+    # Application Django (catch-all)
     ProxyPass / http://localhost:35467/
     ProxyPassReverse / http://localhost:35467/
 
     RequestHeader set X-Forwarded-For expr=%{REMOTE_ADDR}
-    RequestHeader set X-Forwarded-Proto expr=%{REQUEST_SCHEME}
+    RequestHeader set X-Forwarded-Proto "https"
 
     Alias /static /root/system-sh/comsas-uy1.com/staticfiles
     Alias /media  /root/system-sh/comsas-uy1.com/media
@@ -180,7 +186,9 @@ if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
 </IfModule>
 EOF
     sudo a2ensite comsas-uy1-le-ssl.conf
+    # IMPORTANT : recharger Apache APRÈS avoir réécrit la config SSL
     sudo systemctl reload apache2
+    echo " Config SSL avec pgAdmin appliquée !"
 fi
 
 # 4. S'assurer que le service de renouvellement automatique est activé
@@ -190,6 +198,10 @@ sudo systemctl start certbot.timer
 
 echo "Certificat SSL configuré avec succès ! HTTPS actif communiquant avec Django."
 
+# Vérification finale : reload Apache une dernière fois pour être sûr
+sudo systemctl reload apache2
+
 # Afficher les derniers logs
 echo " Derniers logs (si problème):"
 docker-compose logs --tail=10 web
+docker-compose logs --tail=5 pgadmin
