@@ -22,7 +22,6 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: comsas@facsciences-uy1.cm
       PGADMIN_DEFAULT_PASSWORD: admin@comsas
-      SCRIPT_NAME: /admin-database
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:

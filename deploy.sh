@@ -87,8 +87,11 @@ sudo bash -c "cat > $APACHE_CONF" <<EOF
     ProxyPass /media !
 
     # pgAdmin via /admin-database (AVANT le catch-all /)
-    ProxyPass /admin-database/ http://127.0.0.1:5050/admin-database/
-    ProxyPassReverse /admin-database/ http://127.0.0.1:5050/admin-database/
+    ProxyPass /admin-database/ http://127.0.0.1:5050/
+    ProxyPassReverse /admin-database/ http://127.0.0.1:5050/
+    <Location /admin-database/>
+        RequestHeader set X-Script-Name /admin-database
+    </Location>
 
     # Application Django (catch-all)
     ProxyPass / http://localhost:35467/
@@ -156,8 +159,11 @@ if [ -f "/etc/letsencrypt/live/comsas-uy1.com/fullchain.pem" ]; then
     ProxyPass /media !
 
     # pgAdmin via /admin-database (AVANT le catch-all /)
-    ProxyPass /admin-database/ http://127.0.0.1:5050/admin-database/
-    ProxyPassReverse /admin-database/ http://127.0.0.1:5050/admin-database/
+    ProxyPass /admin-database/ http://127.0.0.1:5050/
+    ProxyPassReverse /admin-database/ http://127.0.0.1:5050/
+    <Location /admin-database/>
+        RequestHeader set X-Script-Name /admin-database
+    </Location>
 
     # Application Django (catch-all)
     ProxyPass / http://localhost:35467/
