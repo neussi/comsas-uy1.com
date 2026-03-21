@@ -369,12 +369,12 @@ class JUINCommissionApplicationForm(forms.ModelForm):
             # Check one application per person per edition
             edition = commission.edition
             exists = JUINCommissionApplication.objects.filter(
-                commission__edition=edition,
+                commission=commission,
                 email=email
             ).exists()
             if exists:
                 raise forms.ValidationError(
-                    "Cette adresse e-mail a déjà soumis une candidature pour cette édition du J.U.IN."
+                    f"Cette adresse e-mail a déjà soumis une candidature pour la commission '{commission.name}'."
                 )
         return cleaned_data
 

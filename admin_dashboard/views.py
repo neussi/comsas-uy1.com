@@ -1210,9 +1210,9 @@ def juin_applications_list(request):
     commission_id = request.GET.get('commission')
     search = request.GET.get('search')
 
-    if statut:
+    if statut and statut != 'None':
         apps = apps.filter(statut=statut)
-    if commission_id:
+    if commission_id and commission_id != 'None':
         apps = apps.filter(commission_id=commission_id)
     if search:
         apps = apps.filter(Q(nom_prenom__icontains=search) | Q(email__icontains=search))
