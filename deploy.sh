@@ -45,10 +45,6 @@ sudo chmod -R 755 media staticfiles
 # Permettre à Apache de traverser les dossiers parents (si dans /root)
 sudo chmod +x /root /root/system-sh 2>/dev/null || true
 
-# Peuplement automatique de la base de données (admins, commissions, bureau, délégués, requêtes)
-echo "Peuplement de la base de données..."
-docker-compose exec -T web python populate_real_data.py
-
 # Test de santé
 echo " Test de l'application..."
 sleep 5
