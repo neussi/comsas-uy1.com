@@ -820,8 +820,10 @@
                                         <select name="{{ donate_form.type_paiement.html_name }}"
                                             id="{{ donate_form.type_paiement.id_for_label }}">
                                             {% for val, lbl in donate_form.type_paiement.field.choices %}
-                                            <option value="{{ val }}" {% if donate_form.type_paiement.value==val
-                                                %}selected{% endif %}>{{ lbl }}</option>
+                                            <option value="{{ val }}"
+                                                {% if donate_form.type_paiement.value == val %}selected{% endif %}>
+                                                {{ lbl }}
+                                            </option>
                                             {% endfor %}
                                         </select>
                                         <label for="{{ donate_form.type_paiement.id_for_label }}">Opérateur de
@@ -870,34 +872,35 @@
             </div>
 
             {% if donations %}
-            <div class="row g-4">
-                {% for donation in donations %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="juin-donor-card">
-                        <div class="juin-avatar">{{ donation.display_name|slice:":1" }}</div>
-                        <div class="flex-grow-1" style="min-width:0;">
-                            <div class="juin-donor-name text-truncate">{{ donation.display_name }}</div>
-                            <div class="juin-donor-date">{{ donation.date_don|date:"d F Y" }}</div>
-                        </div>
-                        <div class="text-end flex-shrink-0">
-                            <div class="juin-donor-amount">{{ donation.montant|format_number }} F</div>
-                            <div class="juin-confirmed"><i class="fas fa-check-circle me-1"></i>Confirmé</div>
+                <div class="row g-4">
+                    {% for donation in donations %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="juin-donor-card">
+                            <div class="juin-avatar">{{ donation.display_name|slice:":1" }}</div>
+                            <div class="flex-grow-1" style="min-width:0;">
+                                <div class="juin-donor-name text-truncate">{{ donation.display_name }}</div>
+                                <div class="juin-donor-date">{{ donation.date_don|date:"d F Y" }}</div>
+                            </div>
+                            <div class="text-end flex-shrink-0">
+                                <div class="juin-donor-amount">{{ donation.montant|format_number }} F</div>
+                                <div class="juin-confirmed"><i class="fas fa-check-circle me-1"></i>Confirmé</div>
+                            </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
             {% else %}
-            <div class="juin-empty">
-                <div class="juin-empty-icon"><i class="fas fa-star"></i></div>
-                <h5 style="font-family:'Syne',sans-serif;font-weight:700;color:#0b1120;margin-bottom:8px;">
-                    Devenez le premier donateur !
-                </h5>
-                <p style="color:#94a3b8;font-size:0.88rem;margin:0;">
-                    Inaugurez ce mur de prestige en apportant votre contribution.
-                </p>
-            </div>
+                <div class="juin-empty">
+                    <div class="juin-empty-icon"><i class="fas fa-star"></i></div>
+                    <h5 style="font-family:'Syne',sans-serif;font-weight:700;color:#0b1120;margin-bottom:8px;">
+                        Devenez le premier donateur !
+                    </h5>
+                    <p style="color:#94a3b8;font-size:0.88rem;margin:0;">
+                        Inaugurez ce mur de prestige en apportant votre contribution.
+                    </p>
+                </div>
             {% endif %}
+
         </div>
     </section>
 
