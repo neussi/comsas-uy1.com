@@ -4,729 +4,578 @@
 {% block title %}Soutenir le J.U.IN 2026 | COMS.A.S{% endblock %}
 
 {% block extra_head %}
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --rose: #E91E63;
-        --orange: #FF9800;
-        --midnight: #0f172a;
-        --slate: #1e293b;
-        --glass: rgba(255,255,255,0.04);
-        --glass-border: rgba(255,255,255,0.10);
-        --glow-rose: rgba(233,30,99,0.35);
-        --glow-orange: rgba(255,152,0,0.25);
-    }
-
-    *, *::before, *::after { box-sizing: border-box; }
-
-    body {
-        font-family: 'DM Sans', sans-serif;
-        background: var(--midnight);
-        color: white;
-    }
-
-    h1, h2, h3, h4, .fw-bold, .display-3, .display-5 {
-        font-family: 'Syne', sans-serif;
-    }
-
-    /* ── GRADIENT TEXT ── */
-    .text-gradient {
-        background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .bg-gradient-juin {
-        background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
-    }
-
-    /* ── SECTION BADGE ── */
-    .section-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 18px;
-        background: rgba(233, 30, 99, 0.12);
-        color: var(--rose);
-        border-radius: 100px;
-        font-family: 'Syne', sans-serif;
-        font-weight: 700;
-        font-size: 0.72rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 28px;
-        border: 1px solid rgba(233,30,99,0.2);
-        backdrop-filter: blur(8px);
-    }
-
-    /* ══════════════════════════
-       HERO
-    ══════════════════════════ */
-    .hero-donate {
-        position: relative;
-        min-height: 100vh;
-        background: var(--midnight);
-        overflow: hidden;
-        padding: 120px 0 100px;
-        color: white;
-    }
-
-    /* Orbs décoratifs */
-    .hero-donate::before {
-        content: '';
-        position: absolute;
-        top: -100px;
-        right: -100px;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(circle, var(--glow-rose) 0%, transparent 70%);
-        pointer-events: none;
-        z-index: 0;
-        animation: float-orb 8s ease-in-out infinite;
-    }
-
-    .hero-donate::after {
-        content: '';
-        position: absolute;
-        bottom: -80px;
-        left: -80px;
-        width: 500px;
-        height: 500px;
-        background: radial-gradient(circle, var(--glow-orange) 0%, transparent 70%);
-        pointer-events: none;
-        z-index: 0;
-        animation: float-orb 10s ease-in-out infinite reverse;
-    }
-
-    @keyframes float-orb {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(30px, -30px) scale(1.1); }
-    }
-
-    /* Grid overlay subtil */
-    .grid-overlay {
-        position: absolute;
-        inset: 0;
-        background-image:
-            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-        background-size: 60px 60px;
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    .hero-donate .container { position: relative; z-index: 1; }
-
-    /* ── STAT PILLS ── */
-    .stat-pill {
-        background: rgba(255,255,255,0.04);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        padding: 28px;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .stat-pill::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, var(--rose), var(--orange));
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-
-    .stat-pill:hover {
-        transform: translateY(-6px);
-        background: rgba(255,255,255,0.07);
-        border-color: rgba(233,30,99,0.3);
-    }
-
-    .stat-pill:hover::before { opacity: 1; }
-
-    .stat-label {
-        font-size: 0.68rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        color: rgba(255,255,255,0.4);
-        margin-bottom: 10px;
-    }
-
-    .progress-track {
-        height: 6px;
-        background: rgba(255,255,255,0.08);
-        border-radius: 10px;
-        margin-top: 16px;
-        overflow: hidden;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--rose), var(--orange));
-        border-radius: 10px;
-        animation: progress-grow 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        transform-origin: left;
-    }
-
-    @keyframes progress-grow {
-        from { width: 0%; }
-        to { width: 65%; }
-    }
-
-    /* ══════════════════════════
-       CARD FORMULAIRE
-    ══════════════════════════ */
-    .donate-card {
-        background: rgba(15, 23, 42, 0.75);
-        backdrop-filter: blur(32px);
-        -webkit-backdrop-filter: blur(32px);
-        border-radius: 36px;
-        padding: 44px;
-        border: 1px solid var(--glass-border);
-        box-shadow:
-            0 0 0 1px rgba(255,255,255,0.03),
-            0 32px 64px -16px rgba(0,0,0,0.6),
-            0 0 80px -20px var(--glow-rose);
-    }
-
-    /* ── STEPS ── */
-    .steps-row {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr auto 1fr;
-        align-items: center;
-        gap: 0;
-        margin-bottom: 40px;
-    }
-
-    .step-item {
-        text-align: center;
-        padding: 14px 10px;
-        border-radius: 16px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.06);
-        transition: all 0.4s ease;
-    }
-
-    .step-item.active {
-        background: rgba(233,30,99,0.15);
-        border-color: rgba(233,30,99,0.35);
-        transform: scale(1.05);
-        box-shadow: 0 0 24px -4px rgba(233,30,99,0.3);
-    }
-
-    .step-num {
-        font-family: 'Syne', sans-serif;
-        font-size: 0.62rem;
-        font-weight: 800;
-        color: var(--rose);
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        margin-bottom: 3px;
-    }
-
-    .step-lbl {
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: white;
-    }
-
-    .step-arrow {
-        color: rgba(255,255,255,0.2);
-        font-size: 0.8rem;
-        padding: 0 6px;
-    }
-
-    /* ── FORM INPUTS ── */
-    .field-wrap {
-        position: relative;
-        margin-bottom: 4px;
-    }
-
-    .field-wrap label {
-        position: absolute;
-        top: 18px;
-        left: 20px;
-        font-size: 0.78rem;
-        font-weight: 500;
-        color: rgba(255,255,255,0.4);
-        pointer-events: none;
-        transition: all 0.25s ease;
-        z-index: 2;
-    }
-
-    .field-wrap .form-control,
-    .field-wrap .form-select {
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.10) !important;
-        border-radius: 16px !important;
-        color: white !important;
-        padding: 22px 20px 10px !important;
-        font-size: 0.95rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        font-family: 'DM Sans', sans-serif;
-        appearance: none;
-        -webkit-appearance: none;
-    }
-
-    .field-wrap .form-control:focus,
-    .field-wrap .form-select:focus {
-        background: rgba(255,255,255,0.08) !important;
-        border-color: rgba(233,30,99,0.5) !important;
-        box-shadow: 0 0 0 4px rgba(233,30,99,0.12) !important;
-        outline: none !important;
-    }
-
-    .field-wrap .form-control:focus ~ label,
-    .field-wrap .form-control:not(:placeholder-shown) ~ label,
-    .field-wrap .form-select:focus ~ label {
-        top: 9px;
-        font-size: 0.65rem;
-        color: var(--rose);
-        letter-spacing: 0.5px;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-
-    /* Fix select option color */
-    .field-wrap .form-select option {
-        background: var(--slate);
-        color: white;
-    }
-
-    /* ── BOUTON SUBMIT ── */
-    .btn-juin {
-        background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
-        color: white;
-        border: none;
-        font-family: 'Syne', sans-serif;
-        font-weight: 700;
-        font-size: 1rem;
-        letter-spacing: 0.5px;
-        padding: 18px 32px;
-        border-radius: 16px;
-        width: 100%;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        box-shadow: 0 12px 32px -8px rgba(233,30,99,0.5);
-    }
-
-    .btn-juin::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-
-    .btn-juin:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 20px 40px -8px rgba(233,30,99,0.65);
-        color: white;
-    }
-
-    .btn-juin:hover::before { opacity: 1; }
-
-    .btn-juin:active { transform: translateY(0); }
-
-    /* ── LIVE BADGE ── */
-    .live-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 14px;
-        border-radius: 100px;
-        background: rgba(34, 197, 94, 0.12);
-        border: 1px solid rgba(34, 197, 94, 0.25);
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: #4ade80;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
-
-    .live-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: #4ade80;
-        animation: pulse-dot 2s infinite;
-    }
-
-    @keyframes pulse-dot {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
-        50% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
-    }
-
-    /* ══════════════════════════
-       SECTION DONATEURS
-    ══════════════════════════ */
-    .section-donors {
-        background: #f8fafc;
-        padding: 100px 0;
-        position: relative;
-    }
-
-    .section-donors::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--rose), var(--orange));
-    }
-
-    .donors-heading h2 {
-        color: var(--midnight);
-    }
-
-    .donors-heading p {
-        color: #64748b;
-    }
-
-    /* ── DONOR CARD ── */
-    .donor-card {
-        background: white;
-        border-radius: 24px;
-        padding: 22px 24px;
-        border: 1px solid rgba(0,0,0,0.06);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .donor-card::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, var(--rose), var(--orange));
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.3s ease;
-    }
-
-    .donor-card:hover {
-        transform: translateY(-6px) scale(1.02);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-        border-color: rgba(233,30,99,0.2);
-    }
-
-    .donor-card:hover::after { transform: scaleX(1); }
-
-    .donor-avatar {
-        width: 52px;
-        height: 52px;
-        background: linear-gradient(135deg, rgba(233,30,99,0.12), rgba(255,152,0,0.12));
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Syne', sans-serif;
-        font-weight: 800;
-        font-size: 1.3rem;
-        color: var(--rose);
-        border: 1px solid rgba(233,30,99,0.15);
-        flex-shrink: 0;
-    }
-
-    .donor-name {
-        font-family: 'Syne', sans-serif;
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--midnight);
-        margin-bottom: 2px;
-    }
-
-    .donor-date {
-        font-size: 0.75rem;
-        color: #94a3b8;
-    }
-
-    .donor-amount {
-        font-family: 'Syne', sans-serif;
-        font-weight: 800;
-        font-size: 1.05rem;
-    }
-
-    .donor-confirmed {
-        font-size: 0.72rem;
-        color: #22c55e;
-        font-weight: 600;
-    }
-
-    /* ── EMPTY STATE ── */
-    .empty-donors {
-        background: white;
-        border-radius: 32px;
-        padding: 64px 40px;
-        text-align: center;
-        border: 2px dashed rgba(0,0,0,0.08);
-    }
-
-    .empty-icon {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, rgba(233,30,99,0.08), rgba(255,152,0,0.08));
-        border-radius: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        margin: 0 auto 24px;
-        color: var(--rose);
-    }
-
-    /* ══════════════════════════
-       SECTION CTA
-    ══════════════════════════ */
-    .section-cta {
-        background: var(--midnight);
-        padding: 80px 0;
-    }
-
-    .cta-card {
-        background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
-        border-radius: 40px;
-        padding: 64px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 40px 80px -20px rgba(233,30,99,0.4);
-    }
-
-    .cta-card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle at 60% 40%, rgba(255,255,255,0.15) 0%, transparent 50%);
-        pointer-events: none;
-    }
-
-    .cta-card h3 {
-        color: white;
-        font-size: clamp(1.6rem, 3vw, 2.2rem);
-        margin-bottom: 16px;
-    }
-
-    .cta-card p {
-        color: rgba(255,255,255,0.85);
-        font-size: 1rem;
-        margin-bottom: 36px;
-    }
-
-    .btn-cta-white {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        background: white;
-        color: var(--rose);
-        font-family: 'Syne', sans-serif;
-        font-weight: 700;
-        font-size: 0.95rem;
-        padding: 16px 36px;
-        border-radius: 100px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        border: none;
-    }
-
-    .btn-cta-white:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 16px 40px rgba(0,0,0,0.3);
-        color: var(--rose);
-        background: white;
-    }
-
-    /* ── PARTENAIRES LOGOS ── */
-    .partners-row {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 24px;
-        margin-top: 20px;
-        opacity: 0.45;
-    }
-
-    .partners-row img { height: 16px; filter: brightness(10); }
-
-    .secure-label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: rgba(255,255,255,0.5);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        border-left: 1px solid rgba(255,255,255,0.15);
-        padding-left: 16px;
-    }
-
-    /* ── ANIMATIONS ENTRÉE ── */
-    @keyframes fade-up {
-        from { opacity: 0; transform: translateY(32px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .anim-1 { animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
-    .anim-2 { animation: fade-up 0.7s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both; }
-    .anim-3 { animation: fade-up 0.7s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
-    .anim-4 { animation: fade-up 0.7s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-        .donate-card { padding: 28px 20px; }
-        .cta-card { padding: 40px 24px; }
-        .hero-donate { padding: 80px 0 60px; }
-    }
+/* ══════════════════════════════════════════
+   RESET COMPLET — on écrase Bootstrap/base.html
+   uniquement à l'intérieur de .juin-page
+══════════════════════════════════════════ */
+.juin-page {
+    --rose: #E91E63;
+    --orange: #FF9800;
+    --night: #0b1120;
+    --slate: #111827;
+    --card-bg: rgba(17,24,39,0.85);
+    --border: rgba(255,255,255,0.08);
+    --muted: rgba(255,255,255,0.45);
+    --font-title: 'Syne', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+
+    font-family: var(--font-body);
+    background: var(--night) !important;
+    color: white !important;
+    /* effacer les marges de Bootstrap */
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* HERO */
+.juin-hero {
+    position: relative;
+    min-height: 100vh;
+    background: var(--night);
+    overflow: hidden;
+    padding: 110px 0 90px;
+    display: flex;
+    align-items: center;
+}
+
+/* Orbs */
+.juin-hero::before {
+    content:'';
+    position:absolute; top:-120px; right:-120px;
+    width:600px; height:600px;
+    background: radial-gradient(circle, rgba(233,30,99,0.28) 0%, transparent 68%);
+    animation: orb-a 9s ease-in-out infinite;
+    pointer-events:none; z-index:0;
+}
+.juin-hero::after {
+    content:'';
+    position:absolute; bottom:-80px; left:-80px;
+    width:500px; height:500px;
+    background: radial-gradient(circle, rgba(255,152,0,0.20) 0%, transparent 68%);
+    animation: orb-a 11s ease-in-out infinite reverse;
+    pointer-events:none; z-index:0;
+}
+@keyframes orb-a {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50%      { transform: translate(28px,-28px) scale(1.08); }
+}
+
+/* Grille pointillée */
+.juin-grid {
+    position:absolute; inset:0; z-index:0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.022) 1px, transparent 1px);
+    background-size: 56px 56px;
+    pointer-events:none;
+}
+
+.juin-hero .container { position:relative; z-index:1; }
+
+/* BADGE */
+.juin-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:7px 18px;
+    background: rgba(233,30,99,0.12);
+    border: 1px solid rgba(233,30,99,0.25);
+    border-radius: 100px;
+    font-family: var(--font-title);
+    font-size: 0.70rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:2px;
+    color: var(--rose);
+    margin-bottom:26px;
+}
+
+/* TITRE */
+.juin-title {
+    font-family: var(--font-title);
+    font-size: clamp(2.4rem, 5vw, 3.5rem);
+    font-weight:800;
+    line-height: 1.08;
+    letter-spacing: -1px;
+    color: white;
+    margin-bottom: 22px;
+}
+.juin-grad {
+    background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.juin-lead {
+    font-size: 1.02rem; line-height: 1.72;
+    color: var(--muted); max-width: 460px;
+    margin-bottom: 40px;
+}
+
+/* STAT PILLS */
+.juni-stat {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 26px 24px;
+    position:relative; overflow:hidden;
+    transition: all .4s cubic-bezier(.34,1.56,.64,1);
+}
+.juni-stat::after {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, var(--rose), var(--orange));
+    opacity:0; transition: opacity .3s;
+}
+.juni-stat:hover { transform:translateY(-6px); background:rgba(255,255,255,0.07); }
+.juni-stat:hover::after { opacity:1; }
+
+.juni-stat-lbl {
+    font-size:0.65rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:2px; color:var(--muted); margin-bottom:10px;
+}
+.juni-stat-val {
+    font-family: var(--font-title);
+    font-size: 2.1rem; font-weight:800; line-height:1;
+}
+.juni-progress {
+    height:5px; border-radius:10px;
+    background: rgba(255,255,255,0.07);
+    margin-top:16px; overflow:hidden;
+}
+.juni-progress-fill {
+    height:100%; border-radius:10px;
+    background: linear-gradient(90deg, var(--rose), var(--orange));
+    animation: bar-grow 1.6s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes bar-grow { from{width:0} to{width:65%} }
+
+/* ══════ CARD FORMULAIRE ══════ */
+.juin-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border-radius: 32px;
+    padding: 42px;
+    border: 1px solid var(--border);
+    box-shadow:
+        0 32px 64px -16px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.03),
+        0 0 90px -30px rgba(233,30,99,0.4);
+}
+
+/* Steps */
+.juin-steps {
+    display: grid;
+    grid-template-columns: 1fr 18px 1fr 18px 1fr;
+    align-items: center;
+    gap:0;
+    margin-bottom: 36px;
+}
+.juin-step {
+    text-align:center; padding:12px 8px;
+    border-radius:14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all .4s ease;
+}
+.juin-step.active {
+    background: rgba(233,30,99,0.14);
+    border-color: rgba(233,30,99,0.30);
+    transform: scale(1.04);
+    box-shadow: 0 0 22px -4px rgba(233,30,99,0.28);
+}
+.juin-step-n {
+    font-family:var(--font-title); font-size:0.60rem; font-weight:800;
+    color:var(--rose); text-transform:uppercase; letter-spacing:1.5px;
+    margin-bottom:3px;
+}
+.juin-step-l {
+    font-size:0.82rem; font-weight:600; color:white;
+}
+.juin-chevron {
+    text-align:center; color:rgba(255,255,255,0.18);
+    font-size:0.75rem;
+}
+
+/* Inputs */
+.juin-field {
+    position: relative;
+    margin-bottom: 4px;
+}
+.juin-field label {
+    position:absolute; top:18px; left:18px;
+    font-size:0.78rem; font-weight:500;
+    color:rgba(255,255,255,0.38);
+    pointer-events:none;
+    transition: all .22s ease; z-index:2;
+}
+.juin-field input,
+.juin-field select {
+    width:100%;
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    border-radius: 15px !important;
+    color: white !important;
+    padding: 22px 18px 10px !important;
+    font-size: 0.94rem; font-weight:500;
+    font-family: var(--font-body) !important;
+    transition: all .3s ease;
+    appearance: none; -webkit-appearance:none;
+    outline: none;
+    box-shadow: none !important;
+}
+.juin-field input::placeholder { color:rgba(255,255,255,0); }
+.juin-field input:focus,
+.juin-field select:focus {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(233,30,99,0.50) !important;
+    box-shadow: 0 0 0 4px rgba(233,30,99,0.12) !important;
+}
+.juin-field input:focus ~ label,
+.juin-field input:not(:placeholder-shown) ~ label,
+.juin-field select:focus ~ label {
+    top:8px; font-size:0.62rem; color:var(--rose);
+    font-weight:800; letter-spacing:.5px; text-transform:uppercase;
+}
+.juin-field select option { background:#111827; color:white; }
+
+/* Bouton */
+.juin-btn {
+    width:100%;
+    padding: 17px 24px;
+    background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
+    color:white; border:none;
+    border-radius: 15px;
+    font-family: var(--font-title);
+    font-weight:700; font-size:1rem; letter-spacing:.3px;
+    cursor:pointer;
+    position:relative; overflow:hidden;
+    transition: all .3s ease;
+    box-shadow: 0 14px 32px -8px rgba(233,30,99,0.5);
+}
+.juin-btn::before {
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%);
+    opacity:0; transition:opacity .3s;
+}
+.juin-btn:hover { transform:translateY(-2px); box-shadow:0 20px 40px -8px rgba(233,30,99,0.65); color:white; }
+.juin-btn:hover::before { opacity:1; }
+
+/* LIVE badge */
+.juin-live {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:5px 13px; border-radius:100px;
+    background: rgba(34,197,94,0.10);
+    border: 1px solid rgba(34,197,94,0.22);
+    font-size:0.68rem; font-weight:700; letter-spacing:1px;
+    color:#4ade80; text-transform:uppercase;
+}
+.juin-dot {
+    width:7px; height:7px; border-radius:50%;
+    background:#4ade80;
+    animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+    0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.7)}
+    50%{box-shadow:0 0 0 6px rgba(74,222,128,0)}
+}
+
+/* Logos partenaires */
+.juin-partners {
+    display:flex; align-items:center; justify-content:center;
+    gap:22px; opacity:.4; margin-top:18px;
+}
+.juin-partners img { height:15px; filter:brightness(10); }
+.juin-secure {
+    display:flex; align-items:center; gap:5px;
+    font-size:0.72rem; font-weight:600;
+    color:rgba(255,255,255,.5);
+    border-left:1px solid rgba(255,255,255,.15);
+    padding-left:14px;
+}
+
+/* ══════ SECTION DONATEURS ══════ */
+.juin-donors {
+    background: #f8fafc;
+    padding: 100px 0;
+    position:relative;
+}
+.juin-donors::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:4px;
+    background: linear-gradient(90deg, var(--rose), var(--orange));
+}
+.juin-donors h2 {
+    font-family: var(--font-title);
+    color: #0b1120;
+}
+.juin-donors-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:7px 18px;
+    background: rgba(233,30,99,0.08);
+    border: 1px solid rgba(233,30,99,0.18);
+    border-radius:100px;
+    font-family: var(--font-title);
+    font-size:0.68rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:2px;
+    color:var(--rose); margin-bottom:20px;
+}
+
+/* Donor card */
+.juin-donor-card {
+    background:white;
+    border-radius:22px;
+    padding:20px 22px;
+    border:1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    display:flex; align-items:center; gap:14px;
+    position:relative; overflow:hidden;
+    transition: all .4s cubic-bezier(.175,.885,.32,1.275);
+}
+.juin-donor-card::after {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg, var(--rose), var(--orange));
+    transform: scaleX(0); transform-origin:left;
+    transition: transform .3s ease;
+}
+.juin-donor-card:hover { transform:translateY(-5px) scale(1.015); box-shadow:0 20px 40px rgba(0,0,0,0.10); }
+.juin-donor-card:hover::after { transform:scaleX(1); }
+
+.juin-avatar {
+    width:50px; height:50px; flex-shrink:0;
+    background: linear-gradient(135deg, rgba(233,30,99,0.10), rgba(255,152,0,0.10));
+    border:1px solid rgba(233,30,99,0.14);
+    border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-title); font-size:1.25rem;
+    font-weight:800; color:var(--rose);
+}
+.juin-donor-name {
+    font-family:var(--font-title); font-size:0.98rem;
+    font-weight:700; color:#0b1120;
+}
+.juin-donor-date { font-size:0.73rem; color:#94a3b8; }
+.juin-donor-amount {
+    font-family:var(--font-title); font-size:1rem;
+    font-weight:800;
+    background:linear-gradient(135deg,var(--rose),var(--orange));
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+.juin-confirmed { font-size:0.70rem; color:#22c55e; font-weight:600; }
+
+/* Empty */
+.juin-empty {
+    background:white;
+    border-radius:28px;
+    padding:60px 40px;
+    text-align:center;
+    border: 2px dashed rgba(0,0,0,0.07);
+}
+.juin-empty-icon {
+    width:76px; height:76px;
+    background:linear-gradient(135deg,rgba(233,30,99,0.08),rgba(255,152,0,0.08));
+    border-radius:22px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.9rem; color:var(--rose);
+    margin:0 auto 22px;
+}
+
+/* ══════ CTA ══════ */
+.juin-cta {
+    background: var(--night);
+    padding: 80px 0;
+}
+.juin-cta-card {
+    background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
+    border-radius: 36px;
+    padding: 64px;
+    text-align:center;
+    position:relative; overflow:hidden;
+    box-shadow: 0 40px 80px -20px rgba(233,30,99,0.38);
+}
+.juin-cta-card::before {
+    content:'';
+    position:absolute; top:-40%; left:-40%; width:180%; height:180%;
+    background: radial-gradient(circle at 65% 40%, rgba(255,255,255,0.14) 0%, transparent 55%);
+    pointer-events:none;
+}
+.juin-cta-card h3 {
+    font-family:var(--font-title); color:white;
+    font-size:clamp(1.6rem,3vw,2.2rem); margin-bottom:14px;
+}
+.juin-cta-card p { color:rgba(255,255,255,0.82); font-size:1rem; margin-bottom:34px; }
+.juin-cta-btn {
+    display:inline-flex; align-items:center; gap:10px;
+    background:white; color:var(--rose);
+    font-family:var(--font-title); font-weight:700; font-size:0.95rem;
+    padding:15px 36px; border-radius:100px;
+    text-decoration:none;
+    transition:all .3s ease;
+    box-shadow:0 8px 24px rgba(0,0,0,0.18);
+}
+.juin-cta-btn:hover { transform:translateY(-3px); box-shadow:0 16px 40px rgba(0,0,0,0.28); color:var(--rose); }
+
+/* ANIMATIONS D'ENTRÉE */
+@keyframes ju-up {
+    from { opacity:0; transform:translateY(30px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+.ju-a1 { animation: ju-up .7s cubic-bezier(.22,1,.36,1) both; }
+.ju-a2 { animation: ju-up .7s .15s cubic-bezier(.22,1,.36,1) both; }
+.ju-a3 { animation: ju-up .7s .28s cubic-bezier(.22,1,.36,1) both; }
+
+@media (max-width:768px){
+    .juin-card { padding:26px 18px; }
+    .juin-hero { padding:80px 0 60px; min-height:auto; }
+    .juin-cta-card { padding:40px 22px; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="juin-page">
 
-<!-- ══════════════════════════════════════════════
-     HERO — Don & Stats
-══════════════════════════════════════════════ -->
-<section class="hero-donate">
-    <div class="grid-overlay"></div>
-
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="juin-hero">
+    <div class="juin-grid"></div>
     <div class="container">
         <div class="row g-5 align-items-center">
 
-            <!-- Texte gauche -->
+            <!-- GAUCHE : Texte + Stats -->
             <div class="col-lg-6">
-                <div class="anim-1">
-                    <div class="section-badge">
-                        <i class="fas fa-heart"></i>Impact & Solidarité
-                    </div>
-                    <h1 class="display-3 fw-bold mb-4" style="line-height:1.1;">
+                <div class="ju-a1">
+                    <div class="juin-badge"><i class="fas fa-heart"></i>Impact & Solidarité</div>
+                    <h1 class="juin-title">
                         Investissez dans<br>
-                        <span class="text-gradient">le Génie Local</span>
+                        <span class="juin-grad">le Génie Local</span>
                     </h1>
-                    <p class="mb-5" style="font-size:1.05rem;color:rgba(255,255,255,0.6);max-width:480px;line-height:1.7;">
-                        Chaque don est un catalyseur pour l'innovation. Aidez-nous à faire du
-                        <strong style="color:white;">J.U.IN 2026</strong> une expérience transformative
-                        pour toute une génération d'ingénieurs.
+                    <p class="juin-lead">
+                        Chaque don est un catalyseur pour l'innovation.
+                        Aidez-nous à faire du <strong style="color:white;">J.U.IN 2026</strong>
+                        une expérience transformative pour toute une génération d'ingénieurs.
                     </p>
                 </div>
 
-                <div class="row g-3 anim-2">
+                <div class="row g-3 ju-a2">
                     <div class="col-md-6">
-                        <div class="stat-pill">
-                            <div class="stat-label">Montant Collecté</div>
-                            <h2 class="fw-bold mb-0 text-gradient" style="font-size:2rem;">
-                                {{ total_raised|format_number }} F
-                            </h2>
-                            <div class="progress-track">
-                                <div class="progress-fill"></div>
+                        <div class="juni-stat">
+                            <div class="juni-stat-lbl">Montant Collecté</div>
+                            <div class="juni-stat-val juin-grad">{{ total_raised|format_number }} F</div>
+                            <div class="juni-progress">
+                                <div class="juni-progress-fill"></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="stat-pill">
-                            <div class="stat-label">Donateurs</div>
-                            <h2 class="fw-bold mb-0" style="font-size:2rem;">
+                        <div class="juni-stat">
+                            <div class="juni-stat-lbl">Donateurs</div>
+                            <div class="juni-stat-val" style="color:white;">
                                 {{ donations.count }}
-                                <span style="font-size:1rem;opacity:0.4;">profils</span>
-                            </h2>
-                            <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:10px;margin-bottom:0;">
-                                <i class="fas fa-users me-1"></i> Communauté engagée
+                                <span style="font-size:1rem;opacity:.38;font-family:'Plus Jakarta Sans',sans-serif;">profils</span>
+                            </div>
+                            <p style="font-size:0.78rem;color:rgba(255,255,255,0.38);margin-top:10px;margin-bottom:0;">
+                                <i class="fas fa-users me-1"></i>Communauté engagée
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Formulaire droite -->
-            <div class="col-lg-6 anim-3">
-                <div class="donate-card">
+            <!-- DROITE : Formulaire -->
+            <div class="col-lg-6 ju-a3">
+                <div class="juin-card">
 
-                    <!-- Header card -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="fw-bold mb-0" style="font-size:1.3rem;">Soutenir le J.U.IN</h3>
-                        <div class="live-badge">
-                            <span class="live-dot"></span>LIVE
+                        <h3 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;margin:0;color:white;">
+                            Soutenir le J.U.IN
+                        </h3>
+                        <div class="juin-live">
+                            <span class="juin-dot"></span>LIVE
                         </div>
                     </div>
 
                     <!-- Steps -->
-                    <div class="steps-row mb-4">
-                        <div class="step-item active">
-                            <div class="step-num">Étape 1</div>
-                            <div class="step-lbl">Détails</div>
+                    <div class="juin-steps">
+                        <div class="juin-step active">
+                            <div class="juin-step-n">Étape 1</div>
+                            <div class="juin-step-l">Détails</div>
                         </div>
-                        <span class="step-arrow"><i class="fas fa-chevron-right"></i></span>
-                        <div class="step-item">
-                            <div class="step-num">Étape 2</div>
-                            <div class="step-lbl">PIN SMS</div>
+                        <div class="juin-chevron"><i class="fas fa-chevron-right"></i></div>
+                        <div class="juin-step">
+                            <div class="juin-step-n">Étape 2</div>
+                            <div class="juin-step-l">PIN SMS</div>
                         </div>
-                        <span class="step-arrow"><i class="fas fa-chevron-right"></i></span>
-                        <div class="step-item">
-                            <div class="step-num">Étape 3</div>
-                            <div class="step-lbl">Succès</div>
+                        <div class="juin-chevron"><i class="fas fa-chevron-right"></i></div>
+                        <div class="juin-step">
+                            <div class="juin-step-n">Étape 3</div>
+                            <div class="juin-step-l">Succès</div>
                         </div>
                     </div>
 
-                    <!-- Formulaire -->
                     <form method="post" action="{% url 'juin_donate' %}" novalidate>
                         {% csrf_token %}
-
                         <div class="row g-3">
+
                             <div class="col-12">
-                                <div class="field-wrap">
-                                    {{ donate_form.nom_prenom }}
-                                    <label>Nom complet ou Entreprise</label>
+                                <div class="juin-field">
+                                    <input type="text" name="{{ donate_form.nom_prenom.html_name }}"
+                                        id="{{ donate_form.nom_prenom.id_for_label }}"
+                                        placeholder=" "
+                                        value="{{ donate_form.nom_prenom.value|default:'' }}">
+                                    <label for="{{ donate_form.nom_prenom.id_for_label }}">Nom complet ou Entreprise</label>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
-                                <div class="field-wrap">
-                                    {{ donate_form.montant }}
-                                    <label>Montant (FCFA)</label>
+                                <div class="juin-field">
+                                    <input type="number" name="{{ donate_form.montant.html_name }}"
+                                        id="{{ donate_form.montant.id_for_label }}"
+                                        placeholder=" "
+                                        value="{{ donate_form.montant.value|default:'' }}">
+                                    <label for="{{ donate_form.montant.id_for_label }}">Montant (FCFA)</label>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
-                                <div class="field-wrap">
-                                    {{ donate_form.telephone }}
-                                    <label>Numéro MoMo / OM</label>
+                                <div class="juin-field">
+                                    <input type="text" name="{{ donate_form.telephone.html_name }}"
+                                        id="{{ donate_form.telephone.id_for_label }}"
+                                        placeholder=" "
+                                        value="{{ donate_form.telephone.value|default:'' }}">
+                                    <label for="{{ donate_form.telephone.id_for_label }}">Numéro MoMo / OM</label>
                                 </div>
                             </div>
+
                             <div class="col-12">
-                                <div class="field-wrap">
-                                    {{ donate_form.type_paiement }}
-                                    <label>Opérateur de paiement</label>
+                                <div class="juin-field">
+                                    <select name="{{ donate_form.type_paiement.html_name }}"
+                                        id="{{ donate_form.type_paiement.id_for_label }}">
+                                        {% for val, lbl in donate_form.type_paiement.field.choices %}
+                                        <option value="{{ val }}" {% if donate_form.type_paiement.value == val %}selected{% endif %}>{{ lbl }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="{{ donate_form.type_paiement.id_for_label }}">Opérateur de paiement</label>
                                 </div>
                             </div>
+
                             <div class="col-12" style="margin-top:8px;">
-                                <button type="submit" class="btn-juin">
+                                <button type="submit" class="juin-btn">
                                     <i class="fas fa-hand-holding-heart me-2"></i>Confirmer mon don
                                 </button>
                             </div>
                         </div>
                     </form>
 
-                    <!-- Logos partenaires -->
-                    <div class="partners-row">
+                    <div class="juin-partners">
                         <img src="{% static 'images/partners/mtn.png' %}" alt="MTN">
                         <img src="{% static 'images/partners/orange.png' %}" alt="Orange Money">
-                        <div class="secure-label">
+                        <div class="juin-secure">
                             <i class="fas fa-lock"></i> Sécurisé
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -735,20 +584,18 @@
 </section>
 
 
-<!-- ══════════════════════════════════════════════
-     MURAL DES DONATEURS
-══════════════════════════════════════════════ -->
-<section class="section-donors">
+<!-- ══════════════════════════════════════════
+     MUR DES DONATEURS
+══════════════════════════════════════════ -->
+<section class="juin-donors">
     <div class="container">
 
-        <div class="text-center donors-heading mb-5">
-            <div class="section-badge" style="background:rgba(233,30,99,0.08);color:var(--rose);border-color:rgba(233,30,99,0.2);">
-                <i class="fas fa-trophy"></i>Hall of Fame
-            </div>
-            <h2 class="display-5 fw-bold mb-3">
-                Mur des <span class="text-gradient">Donateurs</span>
+        <div class="text-center mb-5">
+            <div class="juin-donors-badge"><i class="fas fa-trophy me-1"></i>Hall of Fame</div>
+            <h2 style="font-size:clamp(2rem,4vw,2.8rem);font-weight:800;margin-bottom:14px;">
+                Mur des <span class="juin-grad">Donateurs</span>
             </h2>
-            <p class="mx-auto" style="max-width:560px;color:#64748b;font-size:1rem;line-height:1.7;">
+            <p style="max-width:540px;margin:0 auto;color:#64748b;font-size:1rem;line-height:1.7;">
                 Votre générosité mérite d'être célébrée.
                 Merci de porter ce projet avec nous.
             </p>
@@ -758,53 +605,47 @@
         <div class="row g-4">
             {% for donation in donations %}
             <div class="col-md-6 col-lg-4">
-                <div class="donor-card">
-                    <div class="donor-avatar">{{ donation.display_name|slice:":1" }}</div>
-                    <div class="flex-grow-1 min-w-0">
-                        <div class="donor-name text-truncate">{{ donation.display_name }}</div>
-                        <div class="donor-date">{{ donation.date_don|date:"d F Y" }}</div>
+                <div class="juin-donor-card">
+                    <div class="juin-avatar">{{ donation.display_name|slice:":1" }}</div>
+                    <div class="flex-grow-1" style="min-width:0;">
+                        <div class="juin-donor-name text-truncate">{{ donation.display_name }}</div>
+                        <div class="juin-donor-date">{{ donation.date_don|date:"d F Y" }}</div>
                     </div>
                     <div class="text-end flex-shrink-0">
-                        <div class="donor-amount text-gradient">{{ donation.montant|format_number }} F</div>
-                        <div class="donor-confirmed">
-                            <i class="fas fa-check-circle me-1"></i>Confirmé
-                        </div>
+                        <div class="juin-donor-amount">{{ donation.montant|format_number }} F</div>
+                        <div class="juin-confirmed"><i class="fas fa-check-circle me-1"></i>Confirmé</div>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-
         {% else %}
-        <div class="empty-donors">
-            <div class="empty-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <h5 class="fw-bold mb-2" style="font-family:'Syne',sans-serif;color:var(--midnight);">
+        <div class="juin-empty">
+            <div class="juin-empty-icon"><i class="fas fa-star"></i></div>
+            <h5 style="font-family:'Syne',sans-serif;font-weight:700;color:#0b1120;margin-bottom:8px;">
                 Devenez le premier donateur !
             </h5>
-            <p style="color:#94a3b8;font-size:0.9rem;">
+            <p style="color:#94a3b8;font-size:0.88rem;margin:0;">
                 Inaugurez ce mur de prestige en apportant votre contribution.
             </p>
         </div>
         {% endif %}
-
     </div>
 </section>
 
 
-<!-- ══════════════════════════════════════════════
-     CALL TO ACTION — Partenariat
-══════════════════════════════════════════════ -->
-<section class="section-cta">
+<!-- ══════════════════════════════════════════
+     CTA — Partenariat
+══════════════════════════════════════════ -->
+<section class="juin-cta">
     <div class="container">
-        <div class="cta-card">
+        <div class="juin-cta-card">
             <h3 class="fw-bold">Besoin d'un partenariat officiel ?</h3>
             <p>
                 Pour les entreprises souhaitant devenir sponsors majeurs<br>
                 ou bénéficier d'un stand dédié au J.U.IN 2026.
             </p>
-            <a href="tel:+237690000000" class="btn-cta-white">
+            <a href="tel:+237650970526" class="juin-cta-btn">
                 <i class="fas fa-phone"></i>
                 Contacter le Responsable Partenariat
             </a>
@@ -812,4 +653,5 @@
     </div>
 </section>
 
+</div><!-- .juin-page -->
 {% endblock %}
