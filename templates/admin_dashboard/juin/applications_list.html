@@ -18,15 +18,15 @@
             <form method="get" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label class="form-label small fw-semibold">Recherche</label>
-                    <input type="text" name="search" class="form-control form-control-sm"
-                        placeholder="Nom ou email…" value="{{ search_query|default:'' }}">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Nom ou email…"
+                        value="{{ search_query|default:'' }}">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small fw-semibold">Commission</label>
                     <select name="commission" class="form-select form-select-sm">
                         <option value="">Toutes</option>
                         {% for c in commissions %}
-                        <option value="{{ c.pk }}" {% if current_commission == c.pk %}selected{% endif %}>
+                        <option value="{{ c.pk }}" {% if current_commission==c.pk %}selected{% endif %}>
                             {{ c.code }}
                         </option>
                         {% endfor %}
@@ -37,7 +37,7 @@
                     <select name="statut" class="form-select form-select-sm">
                         <option value="">Tous</option>
                         {% for val, lbl in statut_choices %}
-                        <option value="{{ val }}" {% if current_statut == val %}selected{% endif %}>
+                        <option value="{{ val }}" {% if current_statut==val %}selected{% endif %}>
                             {{ lbl }}
                         </option>
                         {% endfor %}
@@ -76,7 +76,8 @@
                                 <img src="{{ app.photo.url }}" alt=""
                                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
                                 {% else %}
-                                <div style="width:36px;height:36px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#64748b;">
+                                <div
+                                    style="width:36px;height:36px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#64748b;">
                                     {{ app.nom_prenom|slice:":1" }}
                                 </div>
                                 {% endif %}
@@ -130,7 +131,7 @@
                     {% if apps_page.has_previous %}
                     <li class="page-item">
                         <a class="page-link"
-                            href="?page={{ apps_page.previous_page_number }}&commission={{ current_commission }}&statut={{ current_statut }}&search={{ search_query }}">‹</a>
+                            href="?page={{ apps_page.previous_page_number }}{% if current_commission %}&commission={{ current_commission }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">‹</a>
                     </li>
                     {% endif %}
                     <li class="page-item active">
@@ -141,7 +142,7 @@
                     {% if apps_page.has_next %}
                     <li class="page-item">
                         <a class="page-link"
-                            href="?page={{ apps_page.next_page_number }}&commission={{ current_commission }}&statut={{ current_statut }}&search={{ search_query }}">›</a>
+                            href="?page={{ apps_page.next_page_number }}{% if current_commission %}&commission={{ current_commission }}{% endif %}{% if current_statut %}&statut={{ current_statut }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">›</a>
                     </li>
                     {% endif %}
                 </ul>

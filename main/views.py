@@ -136,10 +136,25 @@ def public_member_profile(request, pk):
 def members(request):
     """Page des membres"""
     # Membres du bureau
+    from django.db.models import Case, When, Value, IntegerField
+    
+    bureau_order = Case(
+        When(poste_bureau__icontains='Président', then=Value(1)),
+        When(poste_bureau__icontains='Vice-Président', then=Value(2)),
+        When(poste_bureau__icontains='Secrétaire Général', then=Value(3)),
+        When(poste_bureau__icontains='Secrétaire', then=Value(4)),
+        When(poste_bureau__icontains='Trésorier', then=Value(5)),
+        When(poste_bureau__icontains='Commissaire', then=Value(6)),
+        When(poste_bureau__icontains='Censeur', then=Value(7)),
+        When(poste_bureau__icontains='Conseiller', then=Value(8)),
+        default=Value(10),
+        output_field=IntegerField(),
+    )
+    
     bureau_members = Member.objects.filter(
         member_type='bureau',
         is_active=True
-    ).order_by('poste_bureau')
+    ).order_by(bureau_order, 'nom_prenom')
     
     # Membres fondateurs
     founder_members = Member.objects.filter(
@@ -1445,8 +1460,18 @@ def juin_commission_detail(request, slug):
     edition = JUINEdition.objects.filter(is_active=True).first()
     commission = get_object_or_404(JUINCommission, slug=slug, edition=edition)
     
-    # Membres validés groupés par rôle
-    members = commission.approved_members
+    # Membres validés groupés par rôle (Order: President, Vice-President, Rapporteur Adjoint, Rapporteur Principal, Membre)
+    from django.db.models import Case, When, Value, IntegerField
+    role_order = Case(
+        When(commission_role='president', then=Value(1)),
+        When(commission_role='vice_president', then=Value(2)),
+        When(commission_role='rapporteur_adj', then=Value(3)),
+        When(commission_role='rapporteur', then=Value(4)),
+        When(commission_role='membre', then=Value(5)),
+        default=Value(10),
+        output_field=IntegerField(),
+    )
+    members = commission.applications.filter(statut='approved').order_by(role_order, 'nom_prenom')
     
     context = {
         'edition': edition,
