@@ -26,7 +26,7 @@
                     <select name="commission" class="form-select form-select-sm">
                         <option value="">Toutes</option>
                         {% for c in commissions %}
-                        <option value="{{ c.pk }}" {% if current_commission==c.pk %}selected{% endif %}>
+                        <option value="{{ c.pk }}" {% if current_commission == c.pk %}selected{% endif %}>
                             {{ c.code }}
                         </option>
                         {% endfor %}
@@ -37,7 +37,7 @@
                     <select name="statut" class="form-select form-select-sm">
                         <option value="">Tous</option>
                         {% for val, lbl in statut_choices %}
-                        <option value="{{ val }}" {% if current_statut==val %}selected{% endif %}>
+                        <option value="{{ val }}" {% if current_statut == val %}selected{% endif %}>
                             {{ lbl }}
                         </option>
                         {% endfor %}
