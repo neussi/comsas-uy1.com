@@ -167,7 +167,10 @@ def member_approve(request, pk):
     member.save()
     
     # Envoyer la carte de membre par email
-    if send_member_card_email(member):
+    from main.utils import generate_member_card
+    pdf_buffer = generate_member_card(member)
+    
+    if send_member_card_email(member, pdf_buffer):
         messages.success(request, f'Le membre {member.nom_prenom} a été approuvé et sa carte envoyée.')
     else:
         messages.warning(request, f'Le membre {member.nom_prenom} a été approuvé, mais erreur d\'envoi de la carte.')

@@ -1509,7 +1509,7 @@ from .forms import ProjectSubmissionForm, ClubCommissionApplicationForm
 def project_submit(request):
     """Soumission d'un projet par un visiteur"""
     if request.method == 'POST':
-        form = ProjectSubmissionForm(request.POST)
+        form = ProjectSubmissionForm(request.POST, request.FILES)
         if form.is_valid():
             submission = form.save()
             messages.success(request, "Votre projet a été soumis avec succès ! Nous vous contacterons bientôt.")

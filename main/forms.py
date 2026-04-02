@@ -552,6 +552,7 @@ class ProjectSubmissionForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Décrivez votre projet...'}),
             'additional_info': forms.Textarea(attrs={'rows': 3}),
             'logo': forms.FileInput(attrs={'accept': 'image/*'}),
+            'presentation_time': forms.TextInput(attrs={'placeholder': 'Ex: Jeudi à 14h, ou 2024-05-10...'}),
         }
 
     def __init__(self, *args, **kwargs):
