@@ -373,9 +373,9 @@ class ProjectSubmission(models.Model):
 class ClubCommission(models.Model):
     """Directions permanentes du Club COMS.A.S"""
     name = models.CharField(max_length=255, verbose_name="Nom de la direction")
-    slug = models.SlugField(unique=True, verbose_name="Slug")
+    slug = models.SlugField(max_length=255, unique=True, verbose_name="Slug")
     description = models.TextField(verbose_name="Description / Missions", blank=True)
-    icon = models.CharField(max_length=50, default='fa-folder', verbose_name="Icône FontAwesome")
+    icon = models.CharField(max_length=255, default='fas fa-folder', verbose_name="Icône FontAwesome")
     
     class Meta:
         verbose_name = "Direction du Club"
