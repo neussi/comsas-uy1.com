@@ -215,7 +215,7 @@
           </div>
 
           <div class="p-4 p-md-5">
-            <form method="post" class="needs-validation">
+            <form method="post" class="needs-validation" enctype="multipart/form-data">
               {% csrf_token %}
 
               <!-- Projet -->
@@ -229,6 +229,9 @@
                   </div>
                   <div class="col-md-6">
                     {{ form.domain|as_crispy_field }}
+                  </div>
+                  <div class="col-12">
+                    {{ form.logo|as_crispy_field }}
                   </div>
                   <div class="col-12">
                     {{ form.description|as_crispy_field }}

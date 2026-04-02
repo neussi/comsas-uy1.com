@@ -184,6 +184,7 @@ urlpatterns = [
 
     # ============= COMMISSIONS DU CLUB =============
     path('commissions/', views.club_commissions_list, name='admin_club_commissions'),
+    path('commissions/add/', views.club_commission_create, name='admin_club_commission_create'),
     path('commissions/<int:pk>/edit/', views.club_commission_edit, name='admin_club_commission_edit'),
     path('commissions/<int:pk>/delete/', views.club_commission_delete, name='admin_club_commission_delete'),
 

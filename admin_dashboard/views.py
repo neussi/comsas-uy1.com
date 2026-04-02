@@ -1767,6 +1767,26 @@ def club_commissions_list(request):
 
 
 @custom_staff_member_required
+def club_commission_create(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description', '')
+        icon = request.POST.get('icon', 'fa-users')
+        if name:
+            from django.utils.text import slugify
+            slug = slugify(name)
+            original_slug = slug
+            counter = 1
+            while ClubCommission.objects.filter(slug=slug).exists():
+                slug = f"{original_slug}-{counter}"
+                counter += 1
+            ClubCommission.objects.create(name=name, slug=slug, description=description, icon=icon)
+            messages.success(request, 'Commission créée avec succès.')
+            return redirect('admin_club_commissions')
+    return render(request, 'admin_dashboard/commissions/form.html', {'action': 'Créer'})
+
+
+@custom_staff_member_required
 def club_commission_edit(request, pk):
     commission = get_object_or_404(ClubCommission, pk=pk)
     if request.method == 'POST':
