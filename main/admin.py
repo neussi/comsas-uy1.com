@@ -164,14 +164,71 @@ def export_sponsorship_pdf(modeladmin, request, queryset):
     return response
 export_sponsorship_pdf.short_description = "Générer Rapport PDF"
 
+def send_email_safe(to, subject, body):
+    """Utilitaire : envoie un email en silence (ne bloque pas si erreur)"""
+    try:
+        from django.core.mail import send_mail
+        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [to], fail_silently=True)
+        return True
+    except Exception:
+        return False
+
+
+def approve_application_action(modeladmin, request, queryset):
+    """Approuve et envoie email de confirmation autoamtiquement."""
+    count = 0
+    for app in queryset.exclude(statut='approved'):
+        app.statut = 'approved'
+        from django.utils import timezone
+        if hasattr(app, 'date_traitement'):
+            app.date_traitement = timezone.now()
+        app.save()
+        send_email_safe(
+            to=app.email,
+            subject="✅ Candidature acceptée — COM.S.AS",
+            body=(
+                f"Bonjour {app.nom_prenom},\n\n"
+                "Félicitations ! Votre candidature a été examinée et acceptée.\n"
+                "Vous recevrez prochainement les prochaines instructions.\n\n"
+                "Cordialement,\nL'équipe COM.S.AS"
+            )
+        )
+        count += 1
+    messages.success(request, f"{count} candidature(s) approuvée(s) et email(s) envoyé(s).")
+approve_application_action.short_description = "✅ Approuver et notifier par email"
+
+
+def reject_application_action(modeladmin, request, queryset):
+    """Rejette et envoie email de regret."""
+    count = 0
+    for app in queryset.exclude(statut='rejected'):
+        app.statut = 'rejected'
+        from django.utils import timezone
+        if hasattr(app, 'date_traitement'):
+            app.date_traitement = timezone.now()
+        app.save()
+        send_email_safe(
+            to=app.email,
+            subject="❌ Candidature non retenue — COM.S.AS",
+            body=(
+                f"Bonjour {app.nom_prenom},\n\n"
+                "Merci pour l'intérêt que vous portez à COM.S.AS.\n"
+                "Après examen, votre candidature n'a malheureusement pas été retenue cette fois.\n"
+                "N'hésitez pas à retenter votre chance lors de la prochaine édition.\n\n"
+                "Cordialement,\nL'équipe COM.S.AS"
+            )
+        )
+        count += 1
+    messages.warning(request, f"{count} candidature(s) rejetée(s) et email(s) envoyé(s).")
+reject_application_action.short_description = "❌ Rejeter et notifier par email"
+
+
 def approve_commission_application(modeladmin, request, queryset):
     """Approuve la candidature et crée un profil membre si inexistant"""
     success_count = 0
     for app in queryset.filter(status='pending'):
         app.status = 'approved'
         app.save()
-        
-        # Check if member already exists by email
         member, created = Member.objects.get_or_create(
             email=app.email,
             defaults={
@@ -183,19 +240,114 @@ def approve_commission_application(modeladmin, request, queryset):
                 'member_type': 'simple'
             }
         )
-        
-        if created:
-            # Send welcome email or something
-            pass
-        else:
+        if not created:
             member.is_active = True
             member.save()
-            
+        send_email_safe(
+            to=app.email,
+            subject="✅ Candidature acceptée — Commission Club",
+            body=(
+                f"Bonjour {app.nom_prenom},\n\n"
+                "Nous avons le plaisir de vous informer que votre candidature \n"
+                f"pour la commission '{app.commission}' a été acceptée.\n\n"
+                "Cordialement,\nL'équipe COM.S.AS"
+            )
+        )
         success_count += 1
-        
-    messages.success(request, f"{success_count} candidatures approuvées et membres synchronisés.")
+    messages.success(request, f"{success_count} candidatures approuvées, membres synchronisés et emails envoyés.")
+approve_commission_application.short_description = "✅ Approuver, créer membre et notifier"
 
-approve_commission_application.short_description = "Approuver et Créer/Activer Membre"
+
+def reject_club_commission(modeladmin, request, queryset):
+    """Rejette candidature commission Club avec email"""
+    count = 0
+    for app in queryset.exclude(status='rejected'):
+        app.status = 'rejected'
+        app.save()
+        send_email_safe(
+            to=app.email,
+            subject="❌ Candidature non retenue — Commission Club",
+            body=(
+                f"Bonjour {app.nom_prenom},\n\n"
+                f"Merci de l'intérêt pour la commission '{app.commission}'.\n"
+                "Votre candidature n'a malheureusement pas été retenue cette fois-ci.\n\n"
+                "Cordialement,\nL'équipe COM.S.AS"
+            )
+        )
+        count += 1
+    messages.warning(request, f"{count} candidature(s) rejetée(s) et email(s) envoyé(s).")
+reject_club_commission.short_description = "❌ Rejeter et notifier par email"
+
+
+def publish_project(modeladmin, request, queryset):
+    """Marque un projet soumis comme validé et le rend visible sur le site."""
+    count = 0
+    for submission in queryset:
+        # Create or link to a real Project visible on the site
+        project, created = Project.objects.get_or_create(
+            title_fr=submission.project_name,
+            defaults={
+                'description_fr': submission.description,
+                'status': 'active',
+                'is_featured': False,
+            }
+        )
+        submission.is_reviewed = True
+        submission.save()
+        send_email_safe(
+            to=submission.submitter_email,
+            subject="✅ Votre projet a été publié — COM.S.AS",
+            body=(
+                f"Bonjour {submission.submitter_name},\n\n"
+                f"Votre projet '{ submission.project_name}' a été examiné et publié sur la plateforme COM.S.AS !\n"
+                "Vous pouvez le consulter sur notre site.\n\n"
+                "Cordialement,\nL'équipe COM.S.AS"
+            )
+        )
+        count += 1
+    messages.success(request, f"{count} projet(s) publié(s) sur le site et porteurs notifiés.")
+publish_project.short_description = "✅ Valider et publier le projet sur le site"
+
+
+def mark_reviewed(modeladmin, request, queryset):
+    """Marque comme traité sans publier."""
+    queryset.update(is_reviewed=True)
+    messages.success(request, "Projets marqués comme traités.")
+mark_reviewed.short_description = "🔄 Marquer comme traité (sans publication)"
+
+
+def approve_commission_application(modeladmin, request, queryset):
+    """Approuve la candidature et crée un profil membre si inexistant (Club)"""
+    success_count = 0
+    for app in queryset.filter(status='pending'):
+        app.status = 'approved'
+        app.save()
+        member, created = Member.objects.get_or_create(
+            email=app.email,
+            defaults={
+                'nom_prenom': app.nom_prenom,
+                'telephone': app.telephone,
+                'niveau': app.niveau,
+                'photo': app.photo,
+                'is_active': True,
+                'member_type': 'simple'
+            }
+        )
+        if not created:
+            member.is_active = True
+            member.save()
+        send_email_safe(
+            to=app.email,
+            subject="✅ Candidature Commission Club — Acceptée",
+            body=(
+                f"Bonjour {app.nom_prenom},\n\n"
+                f"Votre candidature pour la commission '{app.commission}' a été acceptée. Bienvenue !\n\n"
+                "Cordialement,\nL'équipe COM.S.AS"
+            )
+        )
+        success_count += 1
+    messages.success(request, f"{success_count} candidatures approuvées, membres synchronisés et emails envoyés.")
+approve_commission_application.short_description = "✅ Approuver, créer membre et notifier"
 
 
 # --- ADMIN CLASSES ---
@@ -243,45 +395,58 @@ class JobOfferAdmin(admin.ModelAdmin):
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('nom_prenom', 'member_type', 'promotion', 'is_active')
-    list_filter = ('member_type', 'is_active', 'promotion')
-    search_fields = ('nom_prenom', 'email')
+    list_display = ('nom_prenom', 'email', 'telephone', 'niveau', 'member_type', 'is_active', 'date_adhesion')
+    list_filter = ('member_type', 'is_active', 'niveau')
+    search_fields = ('nom_prenom', 'email', 'telephone', 'matricule')
+    list_editable = ('is_active', 'member_type')
     actions = [validate_and_send_card, export_to_csv]
+    fieldsets = (
+        ('Identité & Contact', {
+            'fields': ('nom_prenom', 'matricule', 'email', 'telephone', 'date_naissance', 'lieu_naissance', 'adresse', 'photo')
+        }),
+        ('Statut & Rôle', {
+            'fields': ('member_type', 'poste_bureau', 'niveau', 'promotion', 'profession', 'is_active')
+        }),
+        ('Portfolio & Réseaux', {
+            'fields': ('bio', 'skills', 'technologies', 'other_roles', 'needs', 'github_url', 'linkedin_url', 'twitter_url', 'website_url', 'portfolio_slug', 'portfolio_enabled')
+        }),
+    )
 
     def save_model(self, request, obj, form, change):
         if change:
-            # Check if is_active changed from False to True
             try:
                 old_obj = Member.objects.get(pk=obj.pk)
                 if not old_obj.is_active and obj.is_active:
-                     super().save_model(request, obj, form, change)
-                     # Send email
-                     if send_member_card_email(obj):
-                         messages.success(request, f"Carte de membre envoyée à {obj.nom_prenom}")
-                     else:
-                         messages.warning(request, f"Erreur lors de l'envoi de la carte à {obj.nom_prenom}")
-                     return
+                    super().save_model(request, obj, form, change)
+                    if send_member_card_email(obj):
+                        messages.success(request, f"Carte de membre envoyée à {obj.nom_prenom}")
+                    else:
+                        messages.warning(request, f"Erreur lors de l'envoi de la carte à {obj.nom_prenom}")
+                    return
             except Member.DoesNotExist:
                 pass
-        
         super().save_model(request, obj, form, change)
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('title_fr', 'status', 'budget_required', 'budget_collected', 'created_at')
+    list_display = ('title_fr', 'status', 'budget_required', 'budget_collected', 'is_featured', 'created_at')
     list_filter = ('status', 'is_featured')
-    search_fields = ('title_fr',)
+    list_editable = ('status', 'is_featured')
+    search_fields = ('title_fr', 'description_fr')
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title_fr', 'date_event', 'location', 'is_active')
+    list_display = ('title_fr', 'date_event', 'location', 'is_active', 'is_featured')
     list_filter = ('is_active', 'is_featured')
+    list_editable = ('is_active', 'is_featured')
     search_fields = ('title_fr', 'location')
 
 @admin.register(EventRegistration)
 class EventRegistrationAdmin(admin.ModelAdmin):
-    list_display = ('nom_prenom', 'event', 'email', 'is_confirmed', 'registration_date')
+    list_display = ('nom_prenom', 'event', 'email', 'telephone', 'is_confirmed', 'registration_date')
     list_filter = ('is_confirmed', 'event')
+    search_fields = ('nom_prenom', 'email', 'telephone')
+    list_editable = ('is_confirmed',)
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
@@ -434,10 +599,17 @@ class BlogArticleAdmin(admin.ModelAdmin):
 
 @admin.register(ProjectSubmission)
 class ProjectSubmissionAdmin(admin.ModelAdmin):
-    list_display = ('project_name', 'submitter_name', 'domain', 'status', 'is_reviewed', 'created_at')
+    list_display = ('project_name', 'submitter_name', 'submitter_email', 'domain', 'status', 'is_reviewed', 'created_at')
     list_filter = ('status', 'is_reviewed', 'domain')
     search_fields = ('project_name', 'submitter_name', 'submitter_email')
+    list_editable = ('is_reviewed',)
     ordering = ('-created_at',)
+    actions = [publish_project, mark_reviewed]
+    fieldsets = (
+        ('Projet', {'fields': ('project_name', 'description', 'domain', 'status', 'additional_info', 'logo')}),
+        ('Porteur', {'fields': ('submitter_name', 'submitter_email', 'submitter_tel', 'presentation_time')}),
+        ('Statut Admin', {'fields': ('is_reviewed',)}),
+    )
 
 @admin.register(ClubCommission)
 class ClubCommissionAdmin(admin.ModelAdmin):
@@ -447,7 +619,18 @@ class ClubCommissionAdmin(admin.ModelAdmin):
 
 @admin.register(ClubCommissionApplication)
 class ClubCommissionApplicationAdmin(admin.ModelAdmin):
-    list_display = ('nom_prenom', 'commission', 'role_applied', 'status', 'created_at')
+    list_display = ('nom_prenom', 'email', 'telephone', 'commission', 'role_applied', 'motivation_courte', 'status', 'created_at')
     list_filter = ('status', 'commission', 'role_applied')
     search_fields = ('nom_prenom', 'email', 'telephone')
-    actions = [approve_commission_application]
+    list_editable = ('status',)
+    readonly_fields = ('created_at',)
+    actions = [approve_commission_application, reject_club_commission, export_to_csv]
+    fieldsets = (
+        ('Candidat', {'fields': ('nom_prenom', 'email', 'telephone', 'niveau', 'photo')}),
+        ('Candidature', {'fields': ('commission', 'role_applied', 'motivation')}),
+        ('Décision', {'fields': ('status', 'created_at')}),
+    )
+
+    def motivation_courte(self, obj):
+        return (obj.motivation or '')[:60] + '...' if obj.motivation else ''
+    motivation_courte.short_description = 'Motivation'
