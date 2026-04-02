@@ -26,16 +26,16 @@
                 <div class="col-md-3">
                     <select name="status" class="form-select form-select-sm">
                         <option value="">Tous les statuts</option>
-                        <option value="pending" {% if status_filter=='pending' %}selected{% endif %}>En attente</option>
-                        <option value="approved" {% if status_filter=='approved' %}selected{% endif %}>Approuvé</option>
-                        <option value="rejected" {% if status_filter=='rejected' %}selected{% endif %}>Rejeté</option>
+                        <option value="pending" {% if status_filter == "pending" %}selected{% endif %}>En attente</option>
+                        <option value="approved" {% if status_filter == "approved" %}selected{% endif %}>Approuvé</option>
+                        <option value="rejected" {% if status_filter == "rejected" %}selected{% endif %}>Rejeté</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <select name="reviewed" class="form-select form-select-sm">
                         <option value="">Tous</option>
-                        <option value="0" {% if reviewed_filter=='0' %}selected{% endif %}>Non traités</option>
-                        <option value="1" {% if reviewed_filter=='1' %}selected{% endif %}>Traités</option>
+                        <option value="0" {% if reviewed_filter == "0" %}selected{% endif %}>Non traités</option>
+                        <option value="1" {% if reviewed_filter == "1" %}selected{% endif %}>Traités</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -71,9 +71,9 @@
                             <td><small>{{ sub.submitter_email }}</small></td>
                             <td><span class="badge bg-secondary">{{ sub.domain }}</span></td>
                             <td>
-                                {% if sub.status == 'approved' %}
+                                {% if sub.status == "approved" %}
                                 <span class="badge bg-success">Approuvé</span>
-                                {% elif sub.status == 'rejected' %}
+                                {% elif sub.status == "rejected" %}
                                 <span class="badge bg-danger">Rejeté</span>
                                 {% else %}
                                 <span class="badge bg-warning text-dark">En attente</span>

@@ -28,17 +28,16 @@
                     <select name="commission" class="form-select form-select-sm">
                         <option value="">Toutes les commissions</option>
                         {% for c in commissions %}
-                        <option value="{{ c.pk }}" {% if comm_f==c.pk|stringformat:'s' %}selected{% endif %}>{{ c.name
-                            }}</option>
+                        <option value="{{ c.pk }}" {% if comm_f == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
                     <select name="status" class="form-select form-select-sm">
                         <option value="">Tous les statuts</option>
-                        <option value="pending" {% if status_f=='pending' %}selected{% endif %}>En attente</option>
-                        <option value="approved" {% if status_f=='approved' %}selected{% endif %}>Approuvé</option>
-                        <option value="rejected" {% if status_f=='rejected' %}selected{% endif %}>Rejeté</option>
+                        <option value="pending" {% if status_f == 'pending' %}selected{% endif %}>En attente</option>
+                        <option value="approved" {% if status_f == 'approved' %}selected{% endif %}>Approuvé</option>
+                        <option value="rejected" {% if status_f == 'rejected' %}selected{% endif %}>Rejeté</option>
                     </select>
                 </div>
                 <div class="col-md-2">
