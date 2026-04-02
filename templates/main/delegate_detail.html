@@ -1,0 +1,567 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Délégué {{ delegate.name }} - {{ delegate.level }} - COM.S.AS{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --rose-light: #fce4ec;
+  --rose-mid: #f48fb1;
+  --rose-main: #e91e8c;
+  --rose-deep: #c2185b;
+  --dark: #1a1a2e;
+  --muted: #9e7b89;
+}
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.del-hero {
+  position: relative;
+  background: #fff;
+  overflow: hidden;
+  padding: 88px 0 0;
+}
+.del-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(233,30,140,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(233,30,140,.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 20%, transparent 100%);
+}
+.jh-ring { position: absolute; border-radius: 50%; pointer-events: none; }
+.jh-ring-1 { width: 640px; height: 640px; border: 1.5px solid rgba(233,30,140,.08); top: 50%; left: 50%; transform: translate(-50%,-60%); }
+.jh-ring-2 { width: 960px; height: 960px; border: 1px solid rgba(233,30,140,.04); top: 50%; left: 50%; transform: translate(-50%,-60%); }
+.jh-blob-tr { position: absolute; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, rgba(233,30,140,.10), transparent 70%); top: -120px; right: -100px; }
+.jh-blob-bl { position: absolute; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, rgba(244,143,177,.11), transparent 70%); bottom: 40px; left: -70px; }
+
+.del-hero-inner { position: relative; z-index: 2; }
+
+/* Avatar */
+.del-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+.del-avatar-wrap::after {
+  content: '';
+  position: absolute; inset: -3px;
+  border-radius: 27px;
+  background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+  z-index: 0;
+}
+.del-avatar {
+  position: relative; z-index: 1;
+  width: 150px; height: 150px;
+  border-radius: 24px;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 16px 48px rgba(233,30,140,.22);
+  display: block;
+}
+.del-avatar-init {
+  position: relative; z-index: 1;
+  width: 150px; height: 150px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; font-weight: 900; color: #fff;
+  border: 4px solid #fff;
+  box-shadow: 0 16px 48px rgba(233,30,140,.28);
+  letter-spacing: -2px;
+}
+
+.del-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(233,30,140,.08); border: 1px solid rgba(233,30,140,.18);
+  color: var(--rose-deep); font-size: .72rem; font-weight: 700;
+  letter-spacing: .9px; text-transform: uppercase;
+  padding: 5px 16px; border-radius: 50px; margin-bottom: 14px;
+}
+.del-name {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900; color: var(--dark); line-height: 1.1; margin-bottom: 8px;
+}
+.del-sub {
+  font-size: 1rem; color: var(--muted); font-weight: 600;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 24px;
+}
+.del-sub span { color: var(--rose-main); }
+
+/* Social */
+.social-row { display: flex; gap: 10px; margin-bottom: 32px; flex-wrap: wrap; }
+.social-btn {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #fff; border: 1.5px solid #f0e8ed;
+  color: var(--muted); text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  transition: all .3s cubic-bezier(.34,1.56,.64,1); font-size: .95rem;
+}
+.social-btn:hover { transform: translateY(-4px); border-color: transparent; color: #fff; box-shadow: 0 10px 24px rgba(0,0,0,.15); }
+.social-wa:hover  { background: #25d366; }
+.social-li:hover  { background: #0077b5; }
+.social-gh:hover  { background: #1a1a1a; }
+.social-fb:hover  { background: #1877f2; }
+.social-mail:hover{ background: linear-gradient(135deg, var(--rose-main), var(--rose-deep)); }
+
+/* Stats strip */
+.stats-strip {
+  display: flex;
+  background: #fff; border: 1.5px solid #f0e8ed;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden; margin-top: 40px;
+  box-shadow: 0 -4px 24px rgba(233,30,140,.06);
+  max-width: 520px;
+}
+.stat-cell { flex: 1; text-align: center; padding: 16px 10px; border-right: 1px solid #f0e8ed; transition: background .2s; }
+.stat-cell:last-child { border-right: none; }
+.stat-cell:hover { background: var(--rose-light); }
+.stat-cell strong { display: block; font-size: 1.35rem; font-weight: 800; color: var(--dark); }
+.stat-cell span { font-size: .64rem; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; color: var(--muted); }
+
+/* Wave */
+.wave-sep { width: 100%; overflow: hidden; line-height: 0; }
+.wave-sep svg { display: block; width: 100%; height: 52px; }
+
+/* ══════════════════════════════════════
+   CONTENT
+══════════════════════════════════════ */
+.del-content { padding: 56px 0 90px; background: #fdf8fa; }
+
+/* Cards */
+.del-card {
+  background: #fff;
+  border-radius: 22px;
+  border: 1.5px solid #f0e8ed;
+  box-shadow: 0 4px 24px rgba(0,0,0,.04);
+  overflow: hidden; margin-bottom: 24px;
+  transition: box-shadow .3s;
+}
+.del-card:hover { box-shadow: 0 8px 36px rgba(233,30,140,.09); }
+
+.del-card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 24px 0; margin-bottom: 18px;
+}
+.del-card-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--rose-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--rose-main); font-size: .88rem; flex-shrink: 0;
+}
+.del-card-title {
+  font-size: .82rem; font-weight: 700; letter-spacing: .9px;
+  text-transform: uppercase; color: var(--dark); margin: 0;
+}
+.del-card-body { padding: 0 24px 24px; }
+
+/* Motto */
+.motto-box {
+  border-left: 3px solid var(--rose-main);
+  padding: 14px 18px;
+  background: #fdf8fa; border-radius: 0 14px 14px 0;
+  font-size: 1rem; line-height: 1.75; color: #5a4a52;
+  font-style: italic;
+}
+
+/* Bio */
+.bio-text {
+  font-size: .93rem; line-height: 1.85; color: #5a4a52;
+  border-left: 3px solid var(--rose-light);
+  padding: 14px 18px; background: #fdf8fa;
+  border-radius: 0 14px 14px 0;
+}
+
+/* Contact items */
+.contact-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 0; border-bottom: 1px solid #f5eef2;
+}
+.contact-item:last-child { border-bottom: none; }
+.contact-ico {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--rose-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--rose-main); font-size: .82rem; flex-shrink: 0;
+}
+.contact-label { font-size: .7rem; color: var(--muted); font-weight: 600; display: block; }
+.contact-value { font-size: .9rem; font-weight: 700; color: var(--dark); text-decoration: none; }
+a.contact-value:hover { color: var(--rose-main); }
+
+/* Missions list */
+.mission-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid #f5eef2;
+}
+.mission-item:last-child { border-bottom: none; }
+.mission-dot {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--rose-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--rose-main); font-size: .65rem; flex-shrink: 0;
+  margin-top: 2px;
+}
+.mission-text { font-size: .87rem; line-height: 1.6; color: #5a4a52; font-weight: 500; }
+
+/* News card items */
+.news-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid #f5eef2;
+  text-decoration: none;
+}
+.news-item:last-child { border-bottom: none; }
+.news-thumb {
+  width: 52px; height: 52px; border-radius: 12px;
+  object-fit: cover; flex-shrink: 0;
+  border: 1.5px solid #f0e8ed;
+}
+.news-thumb-placeholder {
+  width: 52px; height: 52px; border-radius: 12px;
+  background: var(--rose-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--rose-mid); font-size: 1.1rem; flex-shrink: 0;
+}
+.news-title { font-size: .82rem; font-weight: 700; color: var(--dark); margin: 0 0 3px; line-height: 1.4; }
+.news-date  { font-size: .7rem; color: var(--muted); }
+.news-item:hover .news-title { color: var(--rose-main); }
+
+/* ══════════════════════════════════════
+   CTA
+══════════════════════════════════════ */
+.del-cta {
+  position: relative; padding: 90px 24px;
+  text-align: center; overflow: hidden;
+  background: linear-gradient(135deg, var(--rose-main) 0%, var(--rose-deep) 100%);
+}
+.del-cta::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+.cta-ring { position: absolute; border-radius: 50%; pointer-events: none; }
+.cta-ring-1 { width: 600px; height: 600px; border: 1px solid rgba(255,255,255,.1); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+.cta-ring-2 { width: 900px; height: 900px; border: 1px solid rgba(255,255,255,.06); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+.del-cta-inner { position: relative; z-index: 1; max-width: 540px; margin: 0 auto; }
+.del-cta h2 { font-size: clamp(1.6rem, 4vw, 2.3rem); font-weight: 900; color: #fff; margin-bottom: 12px; }
+.del-cta p { color: rgba(255,255,255,.78); font-size: 1rem; margin-bottom: 36px; }
+
+.btn-cta-wa {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: #25d366; color: #fff !important;
+  font-weight: 700; font-size: .95rem;
+  padding: 14px 36px; border-radius: 50px; text-decoration: none;
+  box-shadow: 0 10px 32px rgba(0,0,0,.2);
+  transition: transform .25s, box-shadow .25s;
+}
+.btn-cta-wa:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(0,0,0,.28); }
+
+.btn-cta-outline {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: transparent; color: #fff !important;
+  font-weight: 700; font-size: .95rem;
+  padding: 13px 36px; border-radius: 50px; text-decoration: none;
+  border: 2px solid rgba(255,255,255,.5);
+  transition: border-color .25s, background .25s, transform .25s;
+}
+.btn-cta-outline:hover { border-color: #fff; background: rgba(255,255,255,.1); transform: translateY(-3px); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══ HERO ══ -->
+<section class="del-hero">
+  <div class="jh-ring jh-ring-1"></div>
+  <div class="jh-ring jh-ring-2"></div>
+  <div class="jh-blob-tr"></div>
+  <div class="jh-blob-bl"></div>
+
+  <div class="del-hero-inner">
+    <div class="container">
+      <div class="row align-items-end g-5">
+
+        <!-- Avatar -->
+        <div class="col-lg-auto text-center text-lg-start" data-aos="fade-right">
+          <div class="del-avatar-wrap d-inline-block">
+            {% if delegate.photo %}
+            <img src="{{ delegate.photo.url }}" alt="{{ delegate.name }}" class="del-avatar">
+            {% else %}
+            <div class="del-avatar-init">{{ delegate.name|make_list|first|upper }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Infos -->
+        <div class="col-lg" data-aos="fade-left">
+          <div class="del-pill">
+            <i class="fas fa-graduation-cap" style="font-size:.6rem"></i>
+            Représentant de Niveau
+          </div>
+          <h1 class="del-name">{{ delegate.name }}</h1>
+          <p class="del-sub">
+            <i class="fas fa-layer-group" style="color:var(--rose-mid);font-size:.9rem"></i>
+            <span>{{ delegate.get_level_display }}</span>
+            <span style="color:var(--rose-light);">·</span>
+            {{ delegate.year }}
+          </p>
+
+          <div class="social-row">
+            {% if delegate.phone %}
+            <a href="https://wa.me/{{ delegate.phone|cut:' '|cut:'+' }}" target="_blank" class="social-btn social-wa" title="WhatsApp">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+            {% endif %}
+            {% if delegate.linkedin_url %}
+            <a href="{{ delegate.linkedin_url }}" target="_blank" class="social-btn social-li" title="LinkedIn">
+              <i class="fab fa-linkedin"></i>
+            </a>
+            {% endif %}
+            {% if delegate.github_url %}
+            <a href="{{ delegate.github_url }}" target="_blank" class="social-btn social-gh" title="GitHub">
+              <i class="fab fa-github"></i>
+            </a>
+            {% endif %}
+            {% if delegate.facebook_url %}
+            <a href="{{ delegate.facebook_url }}" target="_blank" class="social-btn social-fb" title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            {% endif %}
+            {% if delegate.email %}
+            <a href="mailto:{{ delegate.email }}" class="social-btn social-mail" title="Email">
+              <i class="fas fa-envelope"></i>
+            </a>
+            {% endif %}
+          </div>
+
+          <!-- Stats strip -->
+          <div class="stats-strip">
+            <div class="stat-cell">
+              <strong>{{ delegate.get_level_display|truncatechars:4 }}</strong>
+              <span>Niveau</span>
+            </div>
+            <div class="stat-cell">
+              <strong>{{ delegate.year }}</strong>
+              <span>Année</span>
+            </div>
+            <div class="stat-cell">
+              <strong>🟢</strong>
+              <span>Actif</span>
+            </div>
+            <div class="stat-cell">
+              <strong><i class="fas fa-shield-alt" style="font-size:1rem;color:var(--rose-main)"></i></strong>
+              <span>Élu</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wave-sep" style="background:#fff;">
+  <svg viewBox="0 0 1440 52" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,26 C480,52 960,0 1440,26 L1440,52 L0,52 Z" fill="#fdf8fa"/>
+  </svg>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<section class="del-content">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- ── Colonne gauche ── -->
+      <div class="col-lg-5" data-aos="fade-up">
+
+        <!-- Devise -->
+        <div class="del-card">
+          <div class="del-card-header">
+            <div class="del-card-icon"><i class="fas fa-quote-left"></i></div>
+            <h3 class="del-card-title">Ma Devise</h3>
+          </div>
+          <div class="del-card-body">
+            <div class="motto-box">
+              "{{ delegate.motto|default:"Toujours à l'écoute des étudiants, au service de la réussite collective." }}"
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="del-card">
+          <div class="del-card-header">
+            <div class="del-card-icon"><i class="fas fa-id-card"></i></div>
+            <h3 class="del-card-title">Contact</h3>
+          </div>
+          <div class="del-card-body">
+            {% if delegate.phone %}
+            <div class="contact-item">
+              <div class="contact-ico"><i class="fab fa-whatsapp"></i></div>
+              <div>
+                <span class="contact-label">WhatsApp / Téléphone</span>
+                <a href="https://wa.me/{{ delegate.phone|cut:' '|cut:'+' }}" class="contact-value">{{ delegate.phone }}</a>
+              </div>
+            </div>
+            {% endif %}
+            <div class="contact-item">
+              <div class="contact-ico"><i class="fas fa-envelope"></i></div>
+              <div>
+                <span class="contact-label">E-mail</span>
+                {% if delegate.email %}
+                <a href="mailto:{{ delegate.email }}" class="contact-value">{{ delegate.email }}</a>
+                {% else %}
+                <span class="contact-value" style="opacity:.5;font-style:italic;">Non renseigné</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-ico"><i class="fas fa-layer-group"></i></div>
+              <div>
+                <span class="contact-label">Niveau représenté</span>
+                <span class="contact-value">{{ delegate.get_level_display }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dernières actualités -->
+        <div class="del-card">
+          <div class="del-card-header">
+            <div class="del-card-icon"><i class="fas fa-newspaper"></i></div>
+            <h3 class="del-card-title">Dernières Actualités</h3>
+          </div>
+          <div class="del-card-body">
+            {% for news in latest_news %}
+            <a href="{% url 'news_detail' news.pk %}" class="news-item">
+              {% if news.image %}
+              <img src="{{ news.image.url }}" class="news-thumb" alt="">
+              {% else %}
+              <div class="news-thumb-placeholder"><i class="fas fa-newspaper"></i></div>
+              {% endif %}
+              <div>
+                <p class="news-title">{{ news.title_fr|truncatechars:48 }}</p>
+                <span class="news-date"><i class="far fa-clock me-1"></i>{{ news.published_at|date:"d M Y" }}</span>
+              </div>
+            </a>
+            {% empty %}
+            <p style="color:var(--muted);font-size:.85rem;font-style:italic;">Aucune actualité récente.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Colonne droite ── -->
+      <div class="col-lg-7" data-aos="fade-up" data-aos-delay="150">
+
+        <!-- Bio -->
+        <div class="del-card">
+          <div class="del-card-header">
+            <div class="del-card-icon"><i class="fas fa-user-tag"></i></div>
+            <h3 class="del-card-title">À propos du Délégué</h3>
+          </div>
+          <div class="del-card-body">
+            {% if delegate.bio %}
+            <div class="bio-text">{{ delegate.bio|linebreaks }}</div>
+            {% else %}
+            <div class="bio-text">
+              En tant que délégué du niveau <strong>{{ delegate.get_level_display }}</strong>, 
+              mon rôle est de faciliter la communication entre les étudiants et le département 
+              d'informatique, tout en veillant au bien-être et à l'épanouissement de chaque camarade.
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Missions -->
+        <div class="del-card">
+          <div class="del-card-header">
+            <div class="del-card-icon"><i class="fas fa-tasks"></i></div>
+            <h3 class="del-card-title">Missions du Délégué</h3>
+          </div>
+          <div class="del-card-body">
+            <div class="mission-item">
+              <div class="mission-dot"><i class="fas fa-users"></i></div>
+              <p class="mission-text">Représentation des étudiants auprès des professeurs et de l'administration.</p>
+            </div>
+            <div class="mission-item">
+              <div class="mission-dot"><i class="fas fa-broadcast-tower"></i></div>
+              <p class="mission-text">Diffusion des informations officielles du département à toute la classe.</p>
+            </div>
+            <div class="mission-item">
+              <div class="mission-dot"><i class="fas fa-calendar-alt"></i></div>
+              <p class="mission-text">Organisation et coordination de la vie sociale et académique de la classe.</p>
+            </div>
+            <div class="mission-item">
+              <div class="mission-dot"><i class="fas fa-hands-helping"></i></div>
+              <p class="mission-text">Soutien et accompagnement des camarades en difficulté scolaire ou personnelle.</p>
+            </div>
+            <div class="mission-item">
+              <div class="mission-dot"><i class="fas fa-link"></i></div>
+              <p class="mission-text">Interface entre les étudiants et les structures officielles de l'UY1.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Infos supplémentaires -->
+        <div class="del-card">
+          <div class="del-card-header">
+            <div class="del-card-icon"><i class="fas fa-info-circle"></i></div>
+            <h3 class="del-card-title">Département Informatique · UY1</h3>
+          </div>
+          <div class="del-card-body">
+            <div class="contact-item">
+              <div class="contact-ico"><i class="fas fa-university"></i></div>
+              <div>
+                <span class="contact-label">Établissement</span>
+                <span class="contact-value">Faculté des Sciences — Université de Yaoundé I</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-ico"><i class="fas fa-code"></i></div>
+              <div>
+                <span class="contact-label">Département</span>
+                <span class="contact-value">Informatique (Computer Science)</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-ico" style="background:rgba(34,197,94,.1);color:#16a34a;"><i class="fas fa-check-circle"></i></div>
+              <div>
+                <span class="contact-label">Statut</span>
+                <span class="contact-value" style="color:#16a34a;">Délégué actif — {{ delegate.year }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="del-cta">
+  <div class="cta-ring cta-ring-1"></div>
+  <div class="cta-ring cta-ring-2"></div>
+  <div class="del-cta-inner" data-aos="fade-up">
+    <h2>Besoin d'aide ou d'information ?</h2>
+    <p>{{ delegate.name }} est votre premier point de contact au sein du département.</p>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="https://wa.me/{{ delegate.phone|cut:' '|cut:'+' }}" target="_blank" class="btn-cta-wa">
+        <i class="fab fa-whatsapp" style="font-size:.95rem"></i> Discuter sur WhatsApp
+      </a>
+      {% if delegate.email %}
+      <a href="mailto:{{ delegate.email }}" class="btn-cta-outline">
+        <i class="fas fa-envelope" style="font-size:.85rem"></i> Envoyer un e-mail
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

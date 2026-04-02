@@ -1,7 +1,13 @@
 from django.contrib import admin
 from .models import (
-    Member, Project, Event, EventRegistration, News, Gallery, 
-    Contact, SiteSettings, SponsorshipSession, Mentor, Mentee
+    Member, Project, Event, EventRegistration, 
+    Professor, Classroom, Delegate, News, Gallery, GalleryAlbum, 
+    Contact, SiteSettings, SponsorshipSession, Mentor, Mentee, Match,
+    Contest, Candidate, Vote, Archive, ArchiveComment,
+    JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
+    JUINActivity, JUINDonation, JUINSponsor, JUINTeam,
+    ProjectSubmission, ClubCommission, ClubCommissionApplication,
+    AcademicResource, JobOffer
 )
 
 # Sponsorship System Utils
@@ -158,8 +164,82 @@ def export_sponsorship_pdf(modeladmin, request, queryset):
     return response
 export_sponsorship_pdf.short_description = "Générer Rapport PDF"
 
+def approve_commission_application(modeladmin, request, queryset):
+    """Approuve la candidature et crée un profil membre si inexistant"""
+    success_count = 0
+    for app in queryset.filter(status='pending'):
+        app.status = 'approved'
+        app.save()
+        
+        # Check if member already exists by email
+        member, created = Member.objects.get_or_create(
+            email=app.email,
+            defaults={
+                'nom_prenom': app.nom_prenom,
+                'telephone': app.telephone,
+                'niveau': app.niveau,
+                'photo': app.photo,
+                'is_active': True,
+                'member_type': 'simple'
+            }
+        )
+        
+        if created:
+            # Send welcome email or something
+            pass
+        else:
+            member.is_active = True
+            member.save()
+            
+        success_count += 1
+        
+    messages.success(request, f"{success_count} candidatures approuvées et membres synchronisés.")
+
+approve_commission_application.short_description = "Approuver et Créer/Activer Membre"
+
 
 # --- ADMIN CLASSES ---
+
+@admin.register(JUINTeam)
+class JUINTeamAdmin(admin.ModelAdmin):
+    list_display = ('name', 'competition', 'captain_name', 'members_count', 'statut')
+    list_filter = ('competition__edition', 'competition', 'statut')
+    search_fields = ('name', 'captain_name', 'captain_email')
+    list_editable = ('statut',)
+    actions = ['approve_teams']
+
+    def approve_teams(self, request, queryset):
+        count = queryset.update(statut='approved')
+        self.message_user(request, f"{count} équipes ont été approuvées.")
+    approve_teams.short_description = "Marquer les équipes sélectionnées comme approuvées"
+
+
+@admin.register(AcademicResource)
+class AcademicResourceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'resource_type', 'niveau', 'subject', 'is_approved', 'created_at')
+    list_filter = ('resource_type', 'niveau', 'is_approved')
+    search_fields = ('title', 'subject', 'description')
+    list_editable = ('is_approved',)
+    actions = ['approve_resources']
+    
+    def approve_resources(self, request, queryset):
+        count = queryset.update(is_approved=True)
+        self.message_user(request, f"{count} ressources ont été approuvées.")
+    approve_resources.short_description = "Approuver les ressources sélectionnées"
+
+
+@admin.register(JobOffer)
+class JobOfferAdmin(admin.ModelAdmin):
+    list_display = ('title', 'company', 'offer_type', 'is_approved', 'is_active', 'created_at')
+    list_filter = ('offer_type', 'is_approved', 'is_active')
+    search_fields = ('title', 'company', 'location', 'description')
+    list_editable = ('is_approved', 'is_active')
+    actions = ['approve_offers']
+    
+    def approve_offers(self, request, queryset):
+        count = queryset.update(is_approved=True)
+        self.message_user(request, f"{count} offres ont été approuvées.")
+    approve_offers.short_description = "Approuver les offres sélectionnées"
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
@@ -351,3 +431,23 @@ class BlogArticleAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+@admin.register(ProjectSubmission)
+class ProjectSubmissionAdmin(admin.ModelAdmin):
+    list_display = ('project_name', 'submitter_name', 'domain', 'status', 'is_reviewed', 'created_at')
+    list_filter = ('status', 'is_reviewed', 'domain')
+    search_fields = ('project_name', 'submitter_name', 'submitter_email')
+    ordering = ('-created_at',)
+
+@admin.register(ClubCommission)
+class ClubCommissionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'icon')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+
+@admin.register(ClubCommissionApplication)
+class ClubCommissionApplicationAdmin(admin.ModelAdmin):
+    list_display = ('nom_prenom', 'commission', 'role_applied', 'status', 'created_at')
+    list_filter = ('status', 'commission', 'role_applied')
+    search_fields = ('nom_prenom', 'email', 'telephone')
+    actions = [approve_commission_application]

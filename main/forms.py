@@ -2,7 +2,11 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Row, Column, HTML
-from .models import Member, EventRegistration, Contact
+from .models import (
+    Member, EventRegistration, Contact, 
+    ProjectSubmission, ClubCommission, ClubCommissionApplication,
+    AcademicResource, JobOffer
+)
 
 
 
@@ -13,11 +17,21 @@ class MemberRegistrationForm(forms.ModelForm):
         model = Member
         fields = [
             'nom_prenom', 'matricule', 'date_naissance', 'lieu_naissance', 
-            'telephone', 'email', 'niveau', 'photo', 'bio'
+            'telephone', 'email', 'niveau', 'photo', 'bio', 'skills', 'technologies', 'other_roles', 'needs',
+            'github_url', 'linkedin_url', 'twitter_url', 'website_url'
         ]
         widgets = {
             'date_naissance': forms.DateInput(attrs={'type': 'date'}),
             'photo': forms.FileInput(attrs={'accept': 'image/*'}),
+            'bio': forms.Textarea(attrs={'rows': 3}),
+            'skills': forms.TextInput(attrs={'placeholder': 'Ex: Leadership, Gestion de projet...'}),
+            'technologies': forms.TextInput(attrs={'placeholder': 'Ex: Python, React, PostgreSQL...'}),
+            'other_roles': forms.TextInput(attrs={'placeholder': 'Ex: UI/UX Designer, Rédacteur web...'}),
+            'needs': forms.TextInput(attrs={'placeholder': 'Ex: Recherche stage, Mentorat technique...'}),
+            'github_url': forms.URLInput(attrs={'placeholder': 'https://github.com/votre_profil'}),
+            'linkedin_url': forms.URLInput(attrs={'placeholder': 'https://linkedin.com/in/votre_profil'}),
+            'twitter_url': forms.URLInput(attrs={'placeholder': 'https://x.com/votre_profil'}),
+            'website_url': forms.URLInput(attrs={'placeholder': 'https://votresite.com'}),
         }
     
     def __init__(self, *args, **kwargs):
@@ -40,8 +54,22 @@ class MemberRegistrationForm(forms.ModelForm):
                     Column('email', css_class='form-group col-md-6 mb-3'),
                 ),
                 'niveau',
-                'bio',
                 'photo',  # Ajout du champ photo
+                'bio',
+            ),
+            Fieldset(
+                _('Portfolio & Compétences'),
+                'skills',
+                'technologies',
+                'other_roles',
+                'needs',
+            ),
+            Fieldset(
+                _('Réseaux Sociaux et Web'),
+                'github_url',
+                'linkedin_url',
+                'twitter_url',
+                'website_url',
             ),
             HTML('''
                 <div class="form-check mb-3">
@@ -65,6 +93,8 @@ class MemberRegistrationForm(forms.ModelForm):
                 field.widget.attrs.update({
                     'class': 'form-control',
                 })
+        
+        self.fields['photo'].required = True
     
     def clean_photo(self):
         """Validation de la photo"""
@@ -123,6 +153,8 @@ class EventRegistrationForm(forms.ModelForm):
                 field.widget.attrs.update({
                     'class': 'form-control'
                 })
+                
+        self.fields['photo'].required = True
 
     def clean_photo(self):
         """Validation de la photo"""
@@ -351,6 +383,8 @@ class JUINCommissionApplicationForm(forms.ModelForm):
                 field.widget.attrs.update({'class': 'form-select'})
             else:
                 field.widget.attrs.update({'class': 'form-control'})
+                
+        self.fields['photo'].required = True
 
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')
@@ -447,6 +481,8 @@ class JUINSponsorRequestForm(forms.ModelForm):
                 field.widget.attrs.update({'class': 'form-select'})
             else:
                 field.widget.attrs.update({'class': 'form-control'})
+                
+        self.fields['logo'].required = True
 
     def clean_logo(self):
         logo = self.cleaned_data.get('logo')
@@ -482,6 +518,8 @@ class JUINTeamRegistrationForm(forms.ModelForm):
                 field.widget.attrs.update({'class': 'form-control'})
             else:
                 field.widget.attrs.update({'class': 'form-control'})
+                
+        self.fields['logo'].required = True
         
         if competition:
             if competition.comp_type == 'sport':
@@ -498,3 +536,90 @@ class JUINTeamRegistrationForm(forms.ModelForm):
             if logo.size > 5 * 1024 * 1024:
                 raise forms.ValidationError("L'image ne doit pas dépasser 5 MB.")
         return logo
+# =============================================================================
+# NEW FEATURES: PROJECTS & COMMISSIONS
+# =============================================================================
+
+class ProjectSubmissionForm(forms.ModelForm):
+    """Formulaire de soumission de projet par un visiteur"""
+    class Meta:
+        model = ProjectSubmission
+        fields = [
+            'project_name', 'description', 'domain', 'presentation_time', 
+            'status', 'additional_info', 'submitter_name', 'submitter_email', 'submitter_tel', 'logo'
+        ]
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Décrivez votre projet...'}),
+            'additional_info': forms.Textarea(attrs={'rows': 3}),
+            'logo': forms.FileInput(attrs={'accept': 'image/*'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name != 'logo':
+                field.widget.attrs.update({'class': 'form-control'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
+        
+        self.fields['logo'].required = True
+
+    def clean_logo(self):
+        logo = self.cleaned_data.get('logo')
+        if logo:
+            if logo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("Le logo ne doit pas dépasser 5 MB.")
+            if not logo.content_type.startswith('image/'):
+                raise forms.ValidationError("Le fichier doit être une image.")
+        return logo
+
+class ClubCommissionApplicationForm(forms.ModelForm):
+    """Formulaire de candidature à une direction du Club"""
+    class Meta:
+        model = ClubCommissionApplication
+        fields = [
+            'commission', 'nom_prenom', 'email', 'telephone', 
+            'niveau', 'photo', 'motivation', 'role_applied'
+        ]
+        widgets = {
+            'motivation': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Pourquoi souhaitez-vous rejoindre cette direction ?'}),
+            'photo': forms.FileInput(attrs={'accept': 'image/*'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['commission'].empty_label = "-- Choisissez une Direction --"
+        self.fields['photo'].required = True
+        for field_name, field in self.fields.items():
+            if field_name not in ('photo', 'commission'):
+                field.widget.attrs.update({'class': 'form-control'})
+            elif field_name == 'commission':
+                field.widget.attrs.update({'class': 'form-select'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
+
+class AcademicResourceForm(forms.ModelForm):
+    class Meta:
+        model = AcademicResource
+        fields = ['title', 'resource_type', 'niveau', 'subject', 'description', 'file']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Informations additionnelles (optionnel)'}),
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
+
+class JobOfferForm(forms.ModelForm):
+    class Meta:
+        model = JobOffer
+        fields = ['title', 'company', 'location', 'offer_type', 'apply_link', 'deadline', 'description', 'requirements']
+        widgets = {
+            'deadline': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})

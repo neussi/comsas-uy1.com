@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Soumettre un Projet - COM.S.AS{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --rose-light: #fce4ec;
+  --rose-mid: #f48fb1;
+  --rose-main: #e91e8c;
+  --rose-deep: #c2185b;
+  --dark: #1a1a2e;
+  --muted: #9e7b89;
+}
+
+/* ── HERO ── */
+.create-hero {
+  position: relative;
+  padding: 80px 24px 70px;
+  text-align: center;
+  overflow: hidden;
+  background: #fff;
+}
+.create-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(233,30,140,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(233,30,140,.055) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 100%);
+}
+.jh-ring { position: absolute; border-radius: 50%; pointer-events: none; }
+.jh-ring-1 { width: 580px; height: 580px; border: 1.5px solid rgba(233,30,140,.09); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+.jh-ring-2 { width: 860px; height: 860px; border: 1px solid rgba(233,30,140,.05); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+.jh-blob-tr { position: absolute; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(233,30,140,.11), transparent 70%); top: -100px; right: -80px; }
+.jh-blob-bl { position: absolute; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(244,143,177,.12), transparent 70%); bottom: -80px; left: -60px; }
+.hero-inner { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
+
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(233,30,140,.08); border: 1px solid rgba(233,30,140,.18);
+  color: var(--rose-deep); font-size: .74rem; font-weight: 700;
+  letter-spacing: .9px; text-transform: uppercase;
+  padding: 6px 18px; border-radius: 50px; margin-bottom: 26px;
+}
+.create-hero h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900;
+  color: var(--dark); line-height: 1.1; margin-bottom: 16px;
+}
+.create-hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.create-hero p { color: var(--muted); font-size: 1rem; line-height: 1.75; margin-bottom: 0; }
+
+/* Wave */
+.wave-sep { width: 100%; overflow: hidden; line-height: 0; background: #fff; }
+.wave-sep svg { display: block; width: 100%; height: 52px; }
+
+/* ── FORM SECTION ── */
+.form-section { padding: 60px 0 90px; background: #fdf8fa; }
+
+.form-card {
+  background: #fff;
+  border-radius: 24px;
+  border: 1.5px solid #f0e8ed;
+  box-shadow: 0 8px 40px rgba(233,30,140,.08);
+  overflow: hidden;
+}
+
+/* Top gradient strip */
+.step-strip {
+  background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+  padding: 16px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.step-strip-text { color: #fff; font-size: .82rem; font-weight: 700; opacity: .92; }
+.step-dots { display: flex; gap: 6px; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.35); }
+.step-dot.active { background: #fff; width: 24px; border-radius: 4px; }
+
+/* Section headers */
+.form-section-label {
+  display: flex; align-items: center; gap: 10px;
+  font-size: .72rem; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--rose-main);
+  margin-bottom: 20px; padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--rose-light);
+}
+
+/* Divider */
+.form-divider {
+  border: none;
+  border-top: 1.5px solid var(--rose-light);
+  margin: 32px 0;
+}
+
+/* Coordinator section header */
+.coord-header {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--rose-light);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+}
+.coord-header-icon {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: .85rem; flex-shrink: 0;
+}
+.coord-header-title { font-size: .9rem; font-weight: 700; color: var(--dark); margin: 0; }
+.coord-header-sub { font-size: .75rem; color: var(--muted); margin: 0; }
+
+/* Crispy field overrides */
+.form-card .form-control,
+.form-card .form-select {
+  border: 1.5px solid #f0e8ed;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-size: .9rem;
+  color: var(--dark);
+  background: #fff;
+  transition: border-color .25s, box-shadow .25s;
+}
+.form-card .form-control:focus,
+.form-card .form-select:focus {
+  border-color: var(--rose-main);
+  box-shadow: 0 0 0 4px rgba(233,30,140,.1);
+  outline: none;
+}
+.form-card textarea.form-control { min-height: 120px; resize: vertical; }
+.form-card label { font-size: .82rem; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+.form-card .form-text { font-size: .74rem; color: var(--muted); }
+
+/* Submit button */
+.btn-submit-rose {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+  color: #fff !important; font-weight: 700; font-size: .95rem;
+  padding: 14px 40px; border-radius: 50px; border: none; cursor: pointer;
+  box-shadow: 0 10px 32px rgba(233,30,140,.28);
+  transition: transform .25s, box-shadow .25s;
+  width: 100%; justify-content: center;
+}
+.btn-submit-rose:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 44px rgba(233,30,140,.40);
+}
+
+/* Back link */
+.back-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  color: var(--muted); text-decoration: none; font-size: .84rem; font-weight: 600;
+  transition: color .2s;
+}
+.back-link:hover { color: var(--rose-main); }
+
+/* Logo float */
+.comsas-logo-float {
+  position: absolute; top: 16px; right: 20px;
+  opacity: .06; width: 120px; pointer-events: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="create-hero">
+  <div class="jh-ring jh-ring-1"></div>
+  <div class="jh-ring jh-ring-2"></div>
+  <div class="jh-blob-tr"></div>
+  <div class="jh-blob-bl"></div>
+  <div class="hero-inner">
+    <div class="hero-pill">
+      <i class="fas fa-lightbulb" style="font-size:.65rem"></i> Innovation COM.S.AS
+    </div>
+    <h1>Soumettez votre <em>Projet</em></h1>
+    <p class="mx-auto" style="max-width:560px">
+      Vous avez une idée, un prototype ou un produit fini ? Partagez-le avec la communauté tech de l'UY1.
+    </p>
+  </div>
+</section>
+
+<div class="wave-sep">
+  <svg viewBox="0 0 1440 52" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,26 C480,52 960,0 1440,26 L1440,52 L0,52 Z" fill="#fdf8fa"/>
+  </svg>
+</div>
+
+<!-- FORM -->
+<section class="form-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <div class="form-card" data-aos="fade-up" style="position:relative;">
+          <img src="{% static 'images/comsas.png' %}" class="comsas-logo-float" alt="">
+
+          <!-- Top strip -->
+          <div class="step-strip">
+            <span class="step-strip-text"><i class="fas fa-rocket me-2"></i>Nouveau projet</span>
+            <div class="step-dots">
+              <div class="step-dot active"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+            </div>
+          </div>
+
+          <div class="p-4 p-md-5">
+            <form method="post" class="needs-validation">
+              {% csrf_token %}
+
+              <!-- Projet -->
+              <div class="mb-4">
+                <div class="form-section-label">
+                  <i class="fas fa-code-branch"></i> Informations du projet
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    {{ form.project_name|as_crispy_field }}
+                  </div>
+                  <div class="col-md-6">
+                    {{ form.domain|as_crispy_field }}
+                  </div>
+                  <div class="col-12">
+                    {{ form.description|as_crispy_field }}
+                  </div>
+                  <div class="col-md-6">
+                    {{ form.status|as_crispy_field }}
+                  </div>
+                  <div class="col-md-6">
+                    {{ form.presentation_time|as_crispy_field }}
+                  </div>
+                </div>
+              </div>
+
+              <hr class="form-divider">
+
+              <!-- Coordonnées -->
+              <div class="mb-4">
+                <div class="coord-header">
+                  <div class="coord-header-icon">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div>
+                    <p class="coord-header-title">Vos Coordonnées</p>
+                    <p class="coord-header-sub">Pour que nous puissions vous recontacter</p>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-12">
+                    {{ form.submitter_name|as_crispy_field }}
+                  </div>
+                  <div class="col-md-6">
+                    {{ form.submitter_email|as_crispy_field }}
+                  </div>
+                  <div class="col-md-6">
+                    {{ form.submitter_tel|as_crispy_field }}
+                  </div>
+                  <div class="col-12">
+                    {{ form.additional_info|as_crispy_field }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="mt-4 pt-2">
+                <button type="submit" class="btn-submit-rose">
+                  <i class="fas fa-paper-plane" style="font-size:.85rem"></i>
+                  Soumettre le projet
+                </button>
+              </div>
+
+            </form>
+
+            <div class="mt-4 text-center">
+              <a href="javascript:history.back()" class="back-link">
+                <i class="fas fa-arrow-left" style="font-size:.75rem"></i> Retour
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

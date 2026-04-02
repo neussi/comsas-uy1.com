@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Partager une ressource - COM.S.AS{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light min-vh-100">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex bg-primary bg-opacity-10 text-primary p-3 rounded-circle mb-3">
+                            <i class="fas fa-cloud-upload-alt fa-2x"></i>
+                        </div>
+                        <h2 class="fw-bold">Partager une ressource</h2>
+                        <p class="text-muted">Aidez la communauté en partageant vos anciennes épreuves ou supports de
+                            cours utiles.</p>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">Soumettre la
+                                ressource <i class="fas fa-paper-plane ms-2"></i></button>
+                        </div>
+                    </form>
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'resources_list' %}" class="text-muted text-decoration-none"><i
+                                class="fas fa-arrow-left me-1"></i> Retour à la bibliothèque</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

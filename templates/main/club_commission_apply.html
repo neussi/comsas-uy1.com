@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Postuler à une Direction - COM.S.AS{% endblock %}
+
+{% block extra_css %}
+<style>
+:root{
+  --rose-light:#fce4ec;--rose-mid:#f48fb1;
+  --rose-main:#e91e8c;--rose-deep:#c2185b;
+  --dark:#1a1a2e;--muted:#9e7b89;
+}
+
+.page-bg{background:#f8f4f6;padding:60px 0 90px;}
+
+/* ── CARD ── */
+.apply-card{
+  border-radius:28px;overflow:hidden;border:none;
+  box-shadow:0 20px 60px rgba(233,30,140,.10);
+  background:#fff;
+}
+
+/* ── HEADER ── */
+.apply-header{
+  position:relative;padding:52px 48px 44px;
+  text-align:center;overflow:hidden;background:#fff;
+  border-bottom:2px solid var(--rose-light);
+}
+.apply-header::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(233,30,140,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(233,30,140,.06) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 30%,transparent 100%);
+}
+.apply-header::after{
+  content:'';position:absolute;
+  width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(233,30,140,.10),transparent 70%);
+  top:-100px;right:-80px;pointer-events:none;
+}
+.header-blob-left{
+  position:absolute;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(244,143,177,.12),transparent 70%);
+  bottom:-80px;left:-60px;pointer-events:none;
+}
+.header-inner-wrap{position:relative;z-index:1;}
+
+.header-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:68px;height:68px;border-radius:20px;
+  background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));
+  box-shadow:0 10px 32px rgba(233,30,140,.28);
+  font-size:1.6rem;color:#fff;margin-bottom:20px;
+}
+.apply-header h2{
+  font-size:clamp(1.6rem,4vw,2.2rem);font-weight:900;
+  color:var(--dark);margin-bottom:10px;
+}
+.apply-header h2 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.apply-header p{color:var(--muted);font-size:.95rem;line-height:1.6;margin:0;}
+
+.steps-row{
+  display:flex;justify-content:center;gap:10px;
+  margin-top:28px;flex-wrap:wrap;
+}
+.step-chip{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(233,30,140,.07);border:1px solid rgba(233,30,140,.15);
+  color:var(--rose-deep);font-size:.75rem;font-weight:700;letter-spacing:.4px;
+  padding:6px 16px;border-radius:50px;
+}
+
+/* ── BODY ── */
+.form-body{padding:40px 48px 52px;}
+
+/* Info banner */
+.info-banner{
+  display:flex;align-items:flex-start;gap:14px;
+  background:rgba(233,30,140,.05);
+  border:1px solid rgba(233,30,140,.15);
+  border-radius:16px;padding:16px 20px;margin-bottom:40px;
+}
+.info-banner i{color:var(--rose-main);font-size:1.2rem;margin-top:2px;flex-shrink:0;}
+.info-banner p{font-size:.85rem;line-height:1.6;color:var(--muted);margin:0;}
+.info-banner strong{color:var(--dark);}
+
+/* Section title */
+.section-label{
+  display:flex;align-items:center;gap:10px;
+  font-weight:700;font-size:1rem;color:var(--dark);
+  margin-bottom:24px;padding-bottom:12px;
+  border-bottom:2px solid var(--rose-light);
+}
+.section-label .sl-icon{
+  width:32px;height:32px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--rose-light),#f8bbd0);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;color:var(--rose-main);
+}
+/* Override couleur icônes de section */
+.section-label i.text-primary{color:var(--rose-main)!important;}
+
+/* Inputs crispy override */
+.apply-card .form-control,
+.apply-card .form-select{
+  border:1.5px solid #ede0e6!important;
+  border-radius:12px!important;
+  padding:11px 16px!important;
+  font-size:.9rem!important;
+  transition:border-color .2s,box-shadow .2s!important;
+}
+.apply-card .form-control:focus,
+.apply-card .form-select:focus{
+  border-color:var(--rose-main)!important;
+  box-shadow:0 0 0 4px rgba(233,30,140,.10)!important;
+}
+.apply-card label{font-size:.82rem;font-weight:700;color:var(--dark);}
+
+/* Séparateur interne */
+.form-section-sep{height:1px;background:var(--rose-light);margin:36px 0;}
+
+/* Submit */
+.btn-submit-rose{
+  display:inline-flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));
+  color:#fff!important;font-weight:700;font-size:1rem;
+  padding:15px 48px;border-radius:50px;border:none;
+  box-shadow:0 10px 36px rgba(233,30,140,.30);
+  transition:transform .25s,box-shadow .25s;
+  text-decoration:none;
+}
+.btn-submit-rose:hover{
+  transform:translateY(-3px);
+  box-shadow:0 18px 48px rgba(233,30,140,.42);color:#fff;
+}
+.submit-note{
+  margin-top:14px;font-size:.78rem;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.submit-note i{color:var(--rose-mid);}
+
+@media(max-width:640px){
+  .apply-header{padding:36px 20px 28px;}
+  .form-body{padding:28px 20px 36px;}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-bg">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-xl-8">
+        <div class="apply-card" data-aos="fade-up">
+
+          <!-- HEADER -->
+          <div class="apply-header">
+            <div class="header-blob-left"></div>
+            <div class="header-inner-wrap">
+              <div class="header-icon"><i class="fas fa-rocket"></i></div>
+              <h2>Devenir <em>Acteur</em> du Club</h2>
+              <p>Rejoignez l'une de nos directions pour impacter la vie estudiantine<br>
+                 et laisser votre empreinte au sein du COM.S.AS.</p>
+              <div class="steps-row">
+                <div class="step-chip"><i class="fas fa-pencil-alt"></i> Remplir</div>
+                <div class="step-chip"><i class="fas fa-paper-plane"></i> Soumettre</div>
+                <div class="step-chip"><i class="fas fa-check-circle"></i> Validation</div>
+                <div class="step-chip"><i class="fas fa-id-badge"></i> Profil activé</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BODY -->
+          <div class="form-body">
+
+            <div class="info-banner">
+              <i class="fas fa-info-circle"></i>
+              <p><strong>Bon à savoir :</strong> Une fois votre candidature acceptée, un profil
+              membre sera automatiquement créé / activé pour vous sur la plateforme.</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+
+              <!-- Direction -->
+              <div class="section-label">
+                <div class="sl-icon"><i class="fas fa-compass"></i></div>
+                Choix de la Direction
+              </div>
+              {{ form.commission|as_crispy_field }}
+              {{ form.role_applied|as_crispy_field }}
+
+              <div class="form-section-sep"></div>
+
+              <!-- Infos perso -->
+              <div class="section-label">
+                <div class="sl-icon"><i class="fas fa-user-edit"></i></div>
+                Informations Personnelles
+              </div>
+              <div class="row">
+                <div class="col-md-7 mb-3">{{ form.nom_prenom|as_crispy_field }}</div>
+                <div class="col-md-5 mb-3">{{ form.niveau|as_crispy_field }}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">{{ form.email|as_crispy_field }}</div>
+                <div class="col-md-6 mb-3">{{ form.telephone|as_crispy_field }}</div>
+              </div>
+              {{ form.photo|as_crispy_field }}
+
+              <div class="form-section-sep"></div>
+
+              <!-- Motivation -->
+              <div class="section-label">
+                <div class="sl-icon"><i class="fas fa-heart"></i></div>
+                Lettre de Motivation
+              </div>
+              {{ form.motivation|as_crispy_field }}
+
+              <!-- Submit -->
+              <div class="text-center mt-5">
+                <button type="submit" class="btn-submit-rose">
+                  <i class="fas fa-paper-plane"></i>
+                  Envoyer ma candidature
+                </button>
+                <div class="submit-note">
+                  <i class="fas fa-lock"></i> Vos données sont traitées de façon confidentielle
+                </div>
+              </div>
+
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

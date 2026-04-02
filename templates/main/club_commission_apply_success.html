@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Candidature Envoyée - COM.S.AS{% endblock %}
+
+{% block extra_css %}
+<style>
+:root{--rose-light:#fce4ec;--rose-mid:#f48fb1;--rose-main:#e91e8c;--rose-deep:#c2185b;--dark:#1a1a2e;--muted:#9e7b89;}
+
+.success-section{
+  min-height:80vh;display:flex;align-items:center;justify-content:center;
+  padding:60px 16px;background:#fff;position:relative;overflow:hidden;
+}
+.success-section::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(233,30,140,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(233,30,140,.05) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+.sb-a{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(233,30,140,.10),transparent 70%);top:-180px;right:-150px;pointer-events:none;}
+.sb-b{position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(244,143,177,.12),transparent 70%);bottom:-120px;left:-100px;pointer-events:none;}
+
+.success-card{
+  position:relative;z-index:1;
+  background:#fff;border-radius:32px;padding:56px 48px 52px;
+  text-align:center;
+  box-shadow:0 24px 72px rgba(233,30,140,.12);
+  border:1.5px solid rgba(233,30,140,.10);
+}
+
+/* Icône */
+.icon-wrap{position:relative;width:100px;height:100px;margin:0 auto 32px;}
+.icon-ring{
+  position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose-light),#f8bbd0);
+  animation:pulse-ring 2.2s ease-in-out infinite;
+}
+@keyframes pulse-ring{0%,100%{transform:scale(1);}50%{transform:scale(1.12);opacity:.7;}}
+.icon-inner{
+  position:relative;z-index:1;width:100%;height:100%;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));
+  display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:#fff;
+  box-shadow:0 12px 36px rgba(233,30,140,.32);
+  animation:pop-in .6s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pop-in{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+.check-svg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;}
+.check-path{stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none;stroke-dasharray:60;stroke-dashoffset:60;animation:draw-check .5s .5s ease forwards;}
+@keyframes draw-check{to{stroke-dashoffset:0;}}
+
+/* Pill */
+.status-pill{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.18);
+  color:var(--rose-deep);font-size:.72rem;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;padding:5px 16px;border-radius:50px;margin-bottom:18px;
+}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--rose-main);animation:blink 1.2s ease-in-out infinite;display:inline-block;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+.success-card h2{font-size:clamp(1.8rem,4vw,2.4rem);font-weight:900;color:var(--dark);margin-bottom:16px;}
+.success-card h2 em{font-style:normal;background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.success-card p{color:var(--muted);font-size:.95rem;line-height:1.75;margin-bottom:36px;}
+
+/* Timeline */
+.success-timeline{display:flex;justify-content:center;align-items:flex-start;margin-bottom:40px;}
+.stl-item{display:flex;flex-direction:column;align-items:center;flex:1;max-width:90px;}
+.stl-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;margin-bottom:8px;}
+.stl-dot.done{background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));color:#fff;box-shadow:0 4px 12px rgba(233,30,140,.25);}
+.stl-dot.pending{background:var(--rose-light);color:var(--rose-mid);}
+.stl-label{font-size:.68rem;font-weight:700;color:var(--muted);text-align:center;line-height:1.3;}
+.stl-line{flex:1;height:2px;background:var(--rose-light);margin-top:17px;}
+.stl-line.done{background:linear-gradient(90deg,var(--rose-main),var(--rose-mid));}
+
+/* Boutons */
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.btn-rose{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));color:#fff;font-weight:700;font-size:.88rem;padding:12px 28px;border-radius:50px;text-decoration:none;box-shadow:0 8px 24px rgba(233,30,140,.28);transition:transform .2s,box-shadow .2s;}
+.btn-rose:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(233,30,140,.38);color:#fff;}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--dark);font-weight:700;font-size:.88rem;padding:12px 28px;border-radius:50px;text-decoration:none;border:1.5px solid #ede0e6;transition:border-color .2s,color .2s,transform .2s;}
+.btn-outline:hover{border-color:var(--rose-mid);color:var(--rose-main);transform:translateY(-2px);}
+
+/* Confettis */
+.conf-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;}
+.conf{position:absolute;top:-20px;animation:fall linear forwards;}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="conf-wrap" id="confetti"></div>
+
+<section class="success-section">
+  <div class="sb-a"></div>
+  <div class="sb-b"></div>
+
+  <div class="col-lg-6 col-xl-5">
+    <div class="success-card" data-aos="zoom-in">
+
+      <div class="icon-wrap">
+        <div class="icon-ring"></div>
+        <div class="icon-inner">
+          <svg class="check-svg" viewBox="0 0 48 48">
+            <path class="check-path" d="M12 24 L21 33 L36 16"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="status-pill">
+        <span class="status-dot"></span> Candidature transmise
+      </div>
+
+      <h2>Candidature <em>Reçue !</em></h2>
+
+      <p>
+        Merci pour votre engagement envers le COM.S.AS.<br>
+        Votre candidature a été transmise au bureau exécutif.
+        Vous recevrez une réponse par email dès que votre demande aura été traitée.
+      </p>
+
+      <!-- Timeline -->
+      <div class="success-timeline">
+        <div class="stl-item">
+          <div class="stl-dot done"><i class="fas fa-pencil-alt"></i></div>
+          <div class="stl-label">Formulaire<br>rempli</div>
+        </div>
+        <div class="stl-line done"></div>
+        <div class="stl-item">
+          <div class="stl-dot done"><i class="fas fa-paper-plane"></i></div>
+          <div class="stl-label">Candidature<br>envoyée</div>
+        </div>
+        <div class="stl-line"></div>
+        <div class="stl-item">
+          <div class="stl-dot pending"><i class="fas fa-search"></i></div>
+          <div class="stl-label">Examen<br>du bureau</div>
+        </div>
+        <div class="stl-line"></div>
+        <div class="stl-item">
+          <div class="stl-dot pending"><i class="fas fa-id-badge"></i></div>
+          <div class="stl-label">Profil<br>activé</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <a href="{% url 'home' %}" class="btn-rose">
+          <i class="fas fa-home" style="font-size:.8rem"></i> Accueil
+        </a>
+        <a href="{% url 'club_commissions_list' %}" class="btn-outline">
+          <i class="fas fa-th-large" style="font-size:.8rem"></i> Voir les Directions
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% block extra_js %}
+<script>
+const colors=['#e91e8c','#f48fb1','#fce4ec','#c2185b','#ff6bae','#fff'];
+const wrap=document.getElementById('confetti');
+for(let i=0;i<55;i++){
+  const c=document.createElement('div');
+  c.className='conf';
+  const size=6+Math.random()*7;
+  c.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${2.5+Math.random()*2.5}s;animation-delay:${Math.random()*.8}s;`;
+  wrap.appendChild(c);
+}
+</script>
+{% endblock %}
+{% endblock %}

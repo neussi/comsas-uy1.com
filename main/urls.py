@@ -77,6 +77,7 @@ urlpatterns = [
     path('departement/enseignants/', views.department_professors, name='department_professors'),
     path('departement/salles/', views.department_classrooms, name='department_classrooms'),
     path('departement/delegues/', views.department_delegates, name='department_delegates'),
+    path('departement/delegues/<slug:slug>/', views.delegate_detail, name='delegate_detail'),
     
     # Blog
     path('blog/', views.blog_list, name='blog_list'),
@@ -105,6 +106,26 @@ urlpatterns = [
     # FreemoPay Webhooks & Async checks
     path('api/payments/webhook/freemopay/', views.juin_payment_webhook, name='juin_freemopay_webhook'),
     path('api/payments/status/<uuid:external_id>/', views.juin_payment_status_check, name='juin_payment_status'),
+
+    # ============= NOUVELLES FONCTIONNALITÉS 2026 =============
+    # Projets
+    path('projets/soumettre/', views.project_submit, name='project_submit'),
+    path('projets/succes/', views.project_submit_success, name='project_submit_success'),
+    
+    # Directions du Club
+    path('directions/', views.club_commissions_list, name='club_commissions_list'),
+    path('directions/postuler/', views.club_commission_apply, name='club_commission_apply'),
+    path('directions/succes/', views.club_commission_apply_success, name='club_commission_apply_success'),
+    path('directions/<slug:slug>/', views.club_commission_detail, name='club_commission_detail'),
+    
+    # Ressources & Alumni
+    path('ressources/', views.resources_list, name='resources_list'),
+    path('ressources/ajouter/', views.resource_upload, name='resource_upload'),
+    path('alumni/opportunites/', views.job_board, name='job_board'),
+    path('alumni/opportunites/ajouter/', views.job_offer_create, name='job_offer_create'),
+    
+    # Portfolios
+    path('portfolio/<slug:slug>/', views.member_portfolio, name='member_portfolio'),
 ]
 
 if settings.DEBUG:

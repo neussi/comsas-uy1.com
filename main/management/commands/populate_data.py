@@ -170,11 +170,11 @@ class Command(BaseCommand):
                         'description': "Passionné(e) par la tech et la mode.",
                         'status': 'approved',
                         'votes_count': random.randint(5, 50),
-                        'photo': get_image_content("comsas.png")
+                        'image': get_image_content("comsas.png")
                     }
                 )
-                if not created and not cand.photo:
-                    cand.photo = get_image_content("comsas.png")
+                if not created and not cand.image:
+                    cand.image = get_image_content("comsas.png")
                     cand.save()
 
         self.stdout.write(self.style.SUCCESS('Successfully populated database!'))

@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Opportunités & Alumni - COM.S.AS{% endblock %}
+
+{% block extra_css %}
+<style>
+:root{--rose-light:#fce4ec;--rose-mid:#f48fb1;--rose-main:#e91e8c;--rose-deep:#c2185b;--dark:#1a1a2e;--muted:#9e7b89;}
+
+/* ── HERO ── */
+.job-hero{position:relative;padding:100px 24px 90px;text-align:center;overflow:hidden;background:#fff;}
+.job-hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(233,30,140,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(233,30,140,.055) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 30%,transparent 100%);
+}
+.jh-ring{position:absolute;border-radius:50%;pointer-events:none;}
+.jh-ring-1{width:580px;height:580px;border:1.5px solid rgba(233,30,140,.09);top:50%;left:50%;transform:translate(-50%,-50%);}
+.jh-ring-2{width:860px;height:860px;border:1px solid rgba(233,30,140,.05);top:50%;left:50%;transform:translate(-50%,-50%);}
+.jh-blob-tr{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);top:-100px;right:-80px;}
+.jh-blob-bl{position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(244,143,177,.12),transparent 70%);bottom:-80px;left:-60px;}
+.hero-inner{position:relative;z-index:1;max-width:680px;margin:0 auto;}
+
+.hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.18);color:var(--rose-deep);font-size:.74rem;font-weight:700;letter-spacing:.9px;text-transform:uppercase;padding:6px 18px;border-radius:50px;margin-bottom:26px;}
+.job-hero h1{font-size:clamp(2.2rem,5.5vw,3.5rem);font-weight:900;color:var(--dark);line-height:1.1;margin-bottom:18px;}
+.job-hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.job-hero p{color:var(--muted);font-size:1rem;line-height:1.75;margin-bottom:36px;}
+
+.btn-hero-rose{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));color:#fff!important;font-weight:700;font-size:.92rem;padding:13px 34px;border-radius:50px;text-decoration:none;box-shadow:0 10px 32px rgba(233,30,140,.28);transition:transform .25s,box-shadow .25s;}
+.btn-hero-rose:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(233,30,140,.40);}
+
+.hero-stats{display:flex;justify-content:center;align-items:center;margin-top:48px;background:#fff;border:1.5px solid var(--rose-light);border-radius:20px;padding:18px 0;box-shadow:0 4px 24px rgba(233,30,140,.07);max-width:420px;margin-left:auto;margin-right:auto;}
+.stat-i{flex:1;text-align:center;padding:0 16px;}
+.stat-i strong{display:block;font-size:1.7rem;font-weight:800;color:var(--dark);}
+.stat-i span{font-size:.7rem;color:var(--muted);font-weight:600;letter-spacing:.7px;text-transform:uppercase;}
+.stat-div{width:1px;height:36px;background:var(--rose-light);}
+
+/* Wave */
+.wave-sep{width:100%;overflow:hidden;line-height:0;background:#fff;}
+.wave-sep svg{display:block;width:100%;height:52px;}
+
+/* ── BOARD ── */
+.board-section{padding:60px 0 90px;background:#fff;}
+
+/* Filtre */
+.filter-bar{background:#fff;border:1.5px solid var(--rose-light);border-radius:60px;padding:8px 8px 8px 24px;display:flex;align-items:center;gap:12px;max-width:620px;margin:0 auto 52px;box-shadow:0 4px 20px rgba(233,30,140,.07);}
+.filter-bar select{flex:1;border:none;outline:none;background:transparent;font-family:inherit;font-size:.88rem;font-weight:600;color:var(--muted);}
+.btn-filter{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));color:#fff;font-weight:700;font-size:.82rem;padding:10px 24px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 6px 18px rgba(233,30,140,.25);transition:transform .2s;}
+.btn-filter:hover{transform:translateY(-1px);}
+
+/* Card */
+.job-card{background:#fff;border-radius:22px;padding:28px 26px 24px;display:flex;flex-direction:column;height:100%;border:1.5px solid #f0e8ed;box-shadow:0 4px 20px rgba(0,0,0,.05);transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s,border-color .35s;position:relative;overflow:hidden;}
+.job-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--rose-main),var(--rose-deep));transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.34,1.56,.64,1);}
+.job-card:hover{transform:translateY(-7px);box-shadow:0 18px 48px rgba(233,30,140,.13);border-color:rgba(233,30,140,.18);}
+.job-card:hover::after{transform:scaleX(1);}
+
+/* Badge */
+.job-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:50px;font-size:.7rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;}
+.badge-stage_acad{background:#e0f2fe;color:#0284c7;border:1px solid #7dd3fc;}
+.badge-stage_pro{background:#fef9c3;color:#d97706;border:1px solid #fde047;}
+.badge-emploi{background:#dcfce7;color:#166534;border:1px solid #86efac;}
+.badge-freelance{background:var(--rose-light);color:var(--rose-deep);border:1px solid var(--rose-mid);}
+
+.job-title{font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:4px;}
+.job-company{font-size:.83rem;font-weight:600;color:var(--rose-main);display:flex;align-items:center;gap:5px;margin-bottom:14px;}
+.job-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+.meta-item{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;color:var(--muted);font-weight:500;}
+
+.job-desc{font-size:.83rem;line-height:1.68;color:#7a6670;flex-grow:1;border-left:3px solid var(--rose-light);padding:10px 14px;background:#fdf8fa;border-radius:0 10px 10px 0;margin-bottom:20px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+
+.card-footer-row{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid #f5eef2;}
+.poster{display:flex;align-items:center;gap:9px;}
+.poster-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem;font-weight:700;flex-shrink:0;}
+.poster-name{font-size:.78rem;font-weight:700;color:var(--dark);}
+.poster-label{font-size:.65rem;color:var(--muted);}
+.deadline-box{text-align:right;}
+.deadline-box small{font-size:.65rem;color:var(--muted);display:block;}
+.deadline-date{font-size:.82rem;font-weight:700;}
+.date-ok{color:#16a34a;}.date-ko{color:#dc2626;}
+
+.btn-postuler{display:inline-flex;align-items:center;gap:6px;background:var(--rose-light);color:var(--rose-deep);font-size:.78rem;font-weight:700;padding:8px 20px;border-radius:50px;text-decoration:none;position:relative;z-index:5;transition:background .25s,color .25s,transform .2s;}
+.btn-postuler:hover{background:linear-gradient(135deg,var(--rose-main),var(--rose-deep));color:#fff;transform:translateX(2px);}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="job-hero">
+  <div class="jh-ring jh-ring-1"></div>
+  <div class="jh-ring jh-ring-2"></div>
+  <div class="jh-blob-tr"></div>
+  <div class="jh-blob-bl"></div>
+  <div class="hero-inner" data-aos="fade-down">
+    <div class="hero-pill"><i class="fas fa-briefcase" style="font-size:.65rem"></i> Réseau COM.S.AS</div>
+    <h1>Opportunités <em>&amp; Alumni</em></h1>
+    <p class="mx-auto" style="max-width:650px">
+      Découvrez les stages et emplois partagés exclusivement par le réseau des anciens du COM.S.AS et nos partenaires.
+    </p>
+    <a href="{% url 'job_offer_create' %}" class="btn-hero-rose">
+      <i class="fas fa-plus-circle" style="font-size:.85rem"></i>
+      Partager une Opportunité
+    </a>
+    <div class="hero-stats">
+      <div class="stat-i"><strong>{{ offers.count }}</strong><span>Offres actives</span></div>
+      <div class="stat-div"></div>
+      <div class="stat-i"><strong>{{ types|length }}</strong><span>Types de contrat</span></div>
+      <div class="stat-div"></div>
+      <div class="stat-i"><strong>700+</strong><span>Alumni réseau</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="wave-sep">
+  <svg viewBox="0 0 1440 52" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,26 C480,52 960,0 1440,26 L1440,52 L0,52 Z" fill="#fdf8fa"/>
+  </svg>
+</div>
+
+<section class="board-section">
+  <div class="container">
+
+    <!-- Filtre -->
+    <form method="GET" action="{% url 'job_board' %}">
+      <div class="filter-bar">
+        <i class="fas fa-sliders-h" style="color:var(--rose-mid);font-size:.85rem;flex-shrink:0;"></i>
+        <select name="type">
+          <option value="">Tous les types de contrat</option>
+          {% for value, label in types %}
+          <option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn-filter">
+          <i class="fas fa-search" style="font-size:.75rem"></i> Filtrer
+        </button>
+      </div>
+    </form>
+
+    <!-- Offres -->
+    <div class="row g-4">
+      {% for offer in offers %}
+      <div class="col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+        <div class="job-card">
+          <span class="job-badge badge-{{ offer.offer_type }}">
+            <i class="fas fa-briefcase"></i> {{ offer.get_offer_type_display }}
+          </span>
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h3 class="job-title">{{ offer.title }}</h3>
+              <div class="job-company"><i class="far fa-building"></i> {{ offer.company }}</div>
+            </div>
+            {% if offer.deadline %}
+            <div class="deadline-box">
+              <small>Date limite</small>
+              <div class="deadline-date {% if offer.deadline < now.date %}date-ko{% else %}date-ok{% endif %}">
+                {{ offer.deadline|date:"d M Y" }}
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="job-meta">
+            <span class="meta-item"><i class="fas fa-map-marker-alt" style="color:#ef4444"></i> {{ offer.location }}</span>
+            <span class="meta-item"><i class="far fa-clock" style="color:var(--rose-mid)"></i> {{ offer.created_at|timesince }}</span>
+          </div>
+
+          <div class="job-desc">{{ offer.description|safe|truncatewords_html:30 }}</div>
+
+          <div class="card-footer-row">
+            <div class="poster">
+              <div class="poster-avatar">
+                {% if offer.posted_by %}{{ offer.posted_by.nom_prenom|make_list|first|upper }}{% else %}C{% endif %}
+              </div>
+              <div>
+                <div class="poster-name">{% if offer.posted_by %}{{ offer.posted_by.nom_prenom|truncatechars:18 }}{% else %}Équipe COM.S.AS{% endif %}</div>
+                <div class="poster-label">Partagé par</div>
+              </div>
+            </div>
+            <a href="{% if '@' in offer.apply_link %}mailto:{{ offer.apply_link }}{% else %}{{ offer.apply_link }}{% endif %}"
+               target="_blank" class="btn-postuler">
+              Postuler <i class="fas fa-arrow-right" style="font-size:.65rem"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center py-5">
+        <div style="width:80px;height:80px;border-radius:50%;background:var(--rose-light);display:inline-flex;align-items:center;justify-content:center;font-size:2rem;color:var(--rose-mid);margin-bottom:20px;">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <h4>Aucune offre disponible</h4>
+        <p class="text-muted">Revenez bientôt ou publiez la première opportunité pour le réseau !</p>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

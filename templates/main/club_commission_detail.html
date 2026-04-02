@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ commission.name }} - COM.S.AS{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --rose-light: #fce4ec;
+    --rose-mid:   #f48fb1;
+    --rose-main:  #e91e8c;
+    --rose-deep:  #c2185b;
+    --rose-soft:  #fdf0f5;
+  }
+
+  /* ── HEADER ── */
+  .commission-header {
+    position: relative;
+    padding: 90px 24px 80px;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(145deg, #fce4ec 0%, #fdf0f5 40%, #fff0f7 70%, #fce4ec 100%);
+  }
+  .commission-header::before,
+  .commission-header::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    opacity: .18;
+  }
+  .commission-header::before {
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, var(--rose-main), transparent 70%);
+    top: -160px; right: -120px;
+  }
+  .commission-header::after {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, var(--rose-mid), transparent 70%);
+    bottom: -120px; left: -80px;
+  }
+  .header-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px; height: 80px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+    box-shadow: 0 12px 36px rgba(233,30,140,.30);
+    margin-bottom: 24px;
+    font-size: 2rem;
+    color: #fff;
+  }
+  .commission-header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+  }
+  .commission-header p.lead {
+    color: #9e7b89;
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  /* ── SECTION ── */
+  .members-section { padding: 60px 0 80px; background: #fdf0f5; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--rose-light);
+  }
+  .section-header h2 { font-size: 1.6rem; font-weight: 700; color: #1a1a2e; }
+
+  .btn-apply {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+    color: #fff !important;
+    font-weight: 600;
+    font-size: .9rem;
+    padding: 11px 26px;
+    border-radius: 50px;
+    box-shadow: 0 6px 20px rgba(233,30,140,.28);
+    transition: transform .2s, box-shadow .2s;
+    text-decoration: none;
+  }
+  .btn-apply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(233,30,140,.38);
+  }
+
+  /* ── CARD ── */
+  .member-card {
+    border-radius: 20px;
+    overflow: hidden;
+    border: none;
+    background: #fff;
+    box-shadow: 0 8px 32px rgba(233,30,140,.10);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+  }
+  .member-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(233,30,140,.18);
+  }
+  .profile-img-container {
+    position: relative;
+    padding-top: 100%;
+    background: var(--rose-light);
+  }
+  .profile-img-container img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .avatar-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--rose-main);
+  }
+  .role-badge {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+    color: #fff;
+    padding: 7px 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: .72rem;
+    letter-spacing: .3px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<header class="commission-header">
+  <div class="header-inner">
+    <div class="icon-wrap">
+      <i class="fas {{ commission.icon }}"></i>
+    </div>
+    <h1 class="display-5 fw-bold">{{ commission.name }}</h1>
+    <p class="lead mx-auto" style="max-width: 700px;">
+      {{ commission.description|default:"Cette direction assure la mission stratégique du club dans son domaine de spécialisation." }}
+    </p>
+  </div>
+</header>
+
+<section class="members-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="fw-bold mb-0">Membres de la Direction</h2>
+      <a href="{% url 'club_commission_apply' %}" class="btn-apply">
+        <i class="fas fa-paper-plane" style="font-size:.85rem;"></i>
+        Postuler
+      </a>
+    </div>
+
+    <div class="row g-4">
+      {% for member in members %}
+      <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+        <div class="member-card">
+          <div class="profile-img-container">
+            {% if member.photo %}
+              <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}">
+            {% else %}
+              <div class="avatar-placeholder">
+                <i class="fas fa-user"></i>
+              </div>
+            {% endif %}
+            <div class="role-badge">{{ member.get_role_applied_display }}</div>
+          </div>
+          <div class="p-3 text-center">
+            <h6 class="fw-bold mb-1 text-truncate">{{ member.nom_prenom }}</h6>
+            <p class="text-muted small mb-0">{{ member.niveau }}</p>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center py-5">
+        <div class="mb-4" style="opacity:.3;">
+          <i class="fas fa-user-friends fa-4x" style="color:var(--rose-main);"></i>
+        </div>
+        <h4>Aucun membre validé</h4>
+        <p class="text-muted">Cette direction attend ses premiers membres. Postulez dès maintenant !</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

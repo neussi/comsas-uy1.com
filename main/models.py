@@ -42,6 +42,19 @@ class Member(models.Model):
     poste_bureau = models.CharField(max_length=100, blank=True, null=True, verbose_name="Poste au bureau")
     photo = models.ImageField(upload_to='members/', blank=True, null=True)
     bio = RichTextField(blank=True, null=True, verbose_name="Biographie")
+    
+    # Portfolio fields
+    portfolio_slug = models.SlugField(unique=True, blank=True, null=True, verbose_name="Slug Portfolio")
+    skills = models.TextField(blank=True, null=True, verbose_name="Compétences", help_text="Séparez par des virgules")
+    technologies = models.TextField(blank=True, null=True, verbose_name="Technologies maîtrisées", help_text="Ex: Python, React, PostgreSQL")
+    other_roles = models.TextField(blank=True, null=True, verbose_name="Autres casquettes", help_text="Ex: Designer, Rédacteur web, Graphiste")
+    needs = models.TextField(blank=True, null=True, verbose_name="Besoins", help_text="Ex: Recherche de stage, Mentorat technique, Emploi")
+    github_url = models.URLField(blank=True, null=True, verbose_name="Lien GitHub")
+    linkedin_url = models.URLField(blank=True, null=True, verbose_name="Lien LinkedIn")
+    twitter_url = models.URLField(blank=True, null=True, verbose_name="Lien Twitter/X")
+    website_url = models.URLField(blank=True, null=True, verbose_name="Site Web personnel")
+    portfolio_enabled = models.BooleanField(default=True, verbose_name="Activer le portfolio")
+    
     is_active = models.BooleanField(default=False)
     date_adhesion = models.DateTimeField(auto_now_add=True)
     
@@ -52,6 +65,17 @@ class Member(models.Model):
     
     def __str__(self):
         return self.nom_prenom
+
+    def save(self, *args, **kwargs):
+        if not self.portfolio_slug:
+            self.portfolio_slug = slugify(self.nom_prenom)
+            # Ensure uniqueness
+            original_slug = self.portfolio_slug
+            counter = 1
+            while Member.objects.filter(portfolio_slug=self.portfolio_slug).exists():
+                self.portfolio_slug = f"{original_slug}-{counter}"
+                counter += 1
+        super().save(*args, **kwargs)
 
 class Project(models.Model):
     """Modèle pour les projets de l'association"""
@@ -117,6 +141,10 @@ class Event(models.Model):
     
     # Badge Configuration
     badge_enabled = models.BooleanField(default=True, verbose_name="Activer les badges")
+    
+    # Galerie
+    gallery_album = models.ForeignKey('GalleryAlbum', on_delete=models.SET_NULL, null=True, blank=True,
+                                      related_name='events', verbose_name="Album galerie lié")
 
     class Meta:
         verbose_name = "Événement"
@@ -305,6 +333,97 @@ class SiteSettings(models.Model):
     
     def __str__(self):
         return self.site_name
+
+# ------------- PROJECT SUBMISSION SYSTEM -------------
+
+class ProjectSubmission(models.Model):
+    """Soumission de projet par un visiteur"""
+    STATUS_CHOICES = [
+        ('idea', 'Idée'),
+        ('prototype', 'Prototype'),
+        ('final', 'Finalisé'),
+        ('market', 'Déjà sur le marché'),
+    ]
+    
+    project_name = models.CharField(max_length=200, verbose_name="Nom du projet")
+    description = models.TextField(verbose_name="Description du projet")
+    domain = models.CharField(max_length=100, verbose_name="Domaine / Secteur")
+    presentation_time = models.CharField(max_length=100, verbose_name="Heure de disponibilité pour présentation")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='idea', verbose_name="État d'avancement")
+    additional_info = models.TextField(blank=True, null=True, verbose_name="Informations complémentaires")
+    
+    submitter_name = models.CharField(max_length=200, verbose_name="Nom du porteur")
+    submitter_email = models.EmailField(verbose_name="Email de contact")
+    submitter_tel = models.CharField(max_length=20, verbose_name="Téléphone")
+    logo = models.ImageField(upload_to='projects/logos/', blank=True, null=True, verbose_name="Logo du projet")
+    
+    is_reviewed = models.BooleanField(default=False, verbose_name="Revu par l'admin")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Soumission de Projet"
+        verbose_name_plural = "Soumissions de Projets"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.project_name} - {self.submitter_name}"
+
+# ------------- CLUB COMMISSIONS (DIRECTIONS) -------------
+
+class ClubCommission(models.Model):
+    """Directions permanentes du Club COMS.A.S"""
+    name = models.CharField(max_length=255, verbose_name="Nom de la direction")
+    slug = models.SlugField(unique=True, verbose_name="Slug")
+    description = models.TextField(verbose_name="Description / Missions", blank=True)
+    icon = models.CharField(max_length=50, default='fa-folder', verbose_name="Icône FontAwesome")
+    
+    class Meta:
+        verbose_name = "Direction du Club"
+        verbose_name_plural = "Directions du Club"
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+class ClubCommissionApplication(models.Model):
+    """Candidature à une direction du Club"""
+    STATUT_CHOICES = [
+        ('pending', 'En attente'),
+        ('approved', 'Approuvé'),
+        ('rejected', 'Rejeté'),
+    ]
+    ROLE_CHOICES = [
+        ('director', 'Directeur(trice)'),
+        ('deputy_director', 'Directeur(trice) Adjoint(e)'),
+        ('rapporteur', 'Rapporteur(e)'),
+        ('deputy_rapporteur', 'Rapporteur(e) Adjoint(e)'),
+        ('member', 'Membre Simple'),
+    ]
+    
+    commission = models.ForeignKey(ClubCommission, on_delete=models.CASCADE, related_name='applications', verbose_name="Direction")
+    nom_prenom = models.CharField(max_length=200, verbose_name="Nom et Prénom")
+    email = models.EmailField(verbose_name="Adresse e-mail")
+    telephone = models.CharField(max_length=20, verbose_name="Numéro de téléphone")
+    niveau = models.CharField(max_length=50, verbose_name="Niveau d'étude")
+    photo = models.ImageField(upload_to='club/applications/', verbose_name="Photo portrait")
+    motivation = models.TextField(verbose_name="Motivation")
+    role_applied = models.CharField(max_length=30, choices=ROLE_CHOICES, default='member', verbose_name="Poste souhaité")
+    
+    status = models.CharField(max_length=20, choices=STATUT_CHOICES, default='pending', verbose_name="Statut")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Candidature Direction Club"
+        verbose_name_plural = "Candidatures Directions Club"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.nom_prenom} -> {self.commission.name}"
 
 # ------------- SPONSORSHIP SYSTEM -------------
 
@@ -617,12 +736,19 @@ class Delegate(models.Model):
     ]
     
     name = models.CharField(max_length=200, verbose_name="Nom complet")
+    slug = models.SlugField(unique=True, blank=True, null=True, verbose_name="Slug")
     level = models.CharField(max_length=20, choices=LEVEL_CHOICES, verbose_name="Niveau")
     photo = models.ImageField(upload_to='department/delegates/', blank=True, null=True, verbose_name="Photo")
     phone = models.CharField(max_length=20, verbose_name="Téléphone (WhatsApp)")
     email = models.EmailField(blank=True, verbose_name="Email")
     year = models.CharField(max_length=9, verbose_name="Année académique (ex: 2025-2026)", default="2025-2026")
     motto = models.CharField(max_length=200, blank=True, verbose_name="Devise / Citation")
+    bio = models.TextField(blank=True, null=True, verbose_name="Biographie / Message")
+    
+    # Social links
+    linkedin_url = models.URLField(blank=True, null=True, verbose_name="Lien LinkedIn")
+    github_url = models.URLField(blank=True, null=True, verbose_name="Lien GitHub")
+    facebook_url = models.URLField(blank=True, null=True, verbose_name="Lien Facebook")
     
     class Meta:
         verbose_name = "Délégué"
@@ -631,6 +757,18 @@ class Delegate(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.level})"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.name)
+            # Basic uniqueness check
+            original_slug = self.slug
+            counter = 1
+            while Delegate.objects.filter(slug=self.slug).exists():
+                self.slug = f"{original_slug}-{counter}"
+                counter += 1
+        super().save(*args, **kwargs)
 
 class BlogArticle(models.Model):
     """Article de blog (Conseils, Tutos...)"""
@@ -1109,3 +1247,71 @@ class JUINSponsor(models.Model):
             'partner': '#06b6d4', 'institution': '#8b5cf6', 'media': '#f43f5e',
         }
         return colors.get(self.tier, '#6b7280')
+
+# ---------------------------------------------------------
+# NOUVEAUX MODULES: RESSOURCES ACADEMIQUES & JOB BOARD
+# ---------------------------------------------------------
+
+RESOURCE_TYPE_CHOICES = [
+    ('exam', 'Ancienne Épreuve'),
+    ('tutorial', 'Tutoriel / Guide'),
+    ('course', 'Support de Cours'),
+    ('td', 'Fiche de TD/TP'),
+    ('other', 'Autre'),
+]
+
+NIVEAU_CHOICES = [
+    ('L1', 'Licence 1'), ('L2', 'Licence 2'), ('L3', 'Licence 3'),
+    ('ICT-L1', 'ICT4D L1'), ('ICT-L2', 'ICT4D L2'), ('ICT-L3', 'ICT4D L3'),
+    ('M1', 'Master 1'), ('M2', 'Master 2'),
+]
+
+class AcademicResource(models.Model):
+    """Modèle pour les ressources académiques partagées par/pour les étudiants."""
+    title = models.CharField(max_length=200, verbose_name="Titre de la ressource")
+    resource_type = models.CharField(max_length=20, choices=RESOURCE_TYPE_CHOICES, verbose_name="Type de document")
+    niveau = models.CharField(max_length=50, choices=NIVEAU_CHOICES, verbose_name="Niveau d'études")
+    subject = models.CharField(max_length=100, verbose_name="Matière / Unité d'enseignement")
+    description = models.TextField(blank=True, verbose_name="Description brève", help_text="Facultatif")
+    file = models.FileField(upload_to='academic_resources/', verbose_name="Document (PDF/ZIP/DOC)")
+    uploaded_by = models.ForeignKey('Member', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Partagé par")
+    is_approved = models.BooleanField(default=False, verbose_name="Approuvé pour publication")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Ressource Académique"
+        verbose_name_plural = "Ressources Académiques"
+        ordering = ['-created_at']
+        
+    def __str__(self):
+        return f"{self.title} ({self.subject} - {self.niveau})"
+
+OFFER_TYPE_CHOICES = [
+    ('stage_acad', 'Stage Académique'),
+    ('stage_pro', 'Stage Professionnel'),
+    ('emploi', 'Emploi (CDD/CDI)'),
+    ('freelance', 'Mission Freelance / Projet'),
+]
+
+class JobOffer(models.Model):
+    """Modèle pour les offres de stages/emplois proposées par le réseau (Alumni ou partenaires)."""
+    title = models.CharField(max_length=200, verbose_name="Intitulé du poste")
+    company = models.CharField(max_length=150, verbose_name="Entreprise")
+    location = models.CharField(max_length=150, verbose_name="Localisation")
+    offer_type = models.CharField(max_length=20, choices=OFFER_TYPE_CHOICES, verbose_name="Type de contrat")
+    description = RichTextField(verbose_name="Description et missions")
+    requirements = models.TextField(blank=True, verbose_name="Pré-requis / Profil recherché", help_text="Technologies, compétences, etc.")
+    posted_by = models.ForeignKey('Member', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Partagé par (Membre/Alumni)")
+    apply_link = models.CharField(max_length=255, verbose_name="Lien ou Email pour postuler")
+    deadline = models.DateField(blank=True, null=True, verbose_name="Date limite de candidature")
+    is_approved = models.BooleanField(default=False, verbose_name="Approuvé pour publication")
+    is_active = models.BooleanField(default=True, verbose_name="Offre ouverte")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Offre Pro (Alumni)"
+        verbose_name_plural = "Offres Pro (Alumni/Partenaires)"
+        ordering = ['-created_at']
+        
+    def __str__(self):
+        return f"{self.title} chez {self.company}"

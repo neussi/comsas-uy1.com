@@ -11,8 +11,8 @@ urlpatterns = [
     # Dashboard administrateur personnalisé
     path('dashboard/', include('admin_dashboard.urls')),
     
-    # Interface d'administration Django par défaut désactivée
-    # path('admin/', admin.site.urls),
+    # Interface d'administration Django par défaut
+    path('admin/', admin.site.urls),
     
     # CKEditor pour l'upload de fichiers
     path('ckeditor/', include('ckeditor_uploader.urls')),

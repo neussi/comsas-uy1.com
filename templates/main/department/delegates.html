@@ -68,7 +68,10 @@
                                 {% endif %}
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <h5 class="fw-bold mb-1">{{ delegate.name }}</h5>
+                                <h5 class="fw-bold mb-1">
+                                    <a href="{% url 'delegate_detail' delegate.slug %}"
+                                        class="text-dark text-decoration-none hover-primary stretched-link">{{ delegate.name }}</a>
+                                </h5>
                                 <p class="text-muted small mb-0 fst-italic">"{{ delegate.motto|default:'Toujours à votre écoute' }}"</p>
 
                                 <div class="mt-2">

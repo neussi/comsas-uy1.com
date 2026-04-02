@@ -15,7 +15,8 @@ from .models import (
     SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote, Archive, ArchiveComment,
     JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
-    JUINActivity, JUINDonation, JUINSponsor
+    JUINActivity, JUINDonation, JUINSponsor,
+    ClubCommission, ClubCommissionApplication, ProjectSubmission
 )
 from .forms import (
     MemberRegistrationForm, EventRegistrationForm, 
@@ -25,7 +26,7 @@ from .forms import (
 from .freemopay_service import FreemopayService
 
 from .utils import generate_ticket
-
+from django.db.models import Q
 
 def home(request):
     """Page d'accueil"""
@@ -139,23 +140,26 @@ def members(request):
     from django.db.models import Case, When, Value, IntegerField
     
     bureau_order = Case(
-        When(poste_bureau__icontains='Président', then=Value(1)),
-        When(poste_bureau__icontains='Vice-Président', then=Value(2)),
-        When(poste_bureau__icontains='Secrétaire Général', then=Value(3)),
-        When(poste_bureau__icontains='Secrétaire', then=Value(4)),
-        When(poste_bureau__icontains='Trésorier', then=Value(5)),
-        When(poste_bureau__icontains='Commissaire', then=Value(6)),
-        When(poste_bureau__icontains='Censeur', then=Value(7)),
-        When(poste_bureau__icontains='Conseiller', then=Value(8)),
-        default=Value(10),
+        When(poste_bureau__iexact='Président', then=Value(1)),
+        When(poste_bureau__iexact='Vice-Président 1', then=Value(2)),
+        When(poste_bureau__iexact='Vice-Président 2', then=Value(3)),
+        When(poste_bureau__iexact='Secrétaire Général', then=Value(4)),
+        When(poste_bureau__iexact='Secrétaire', then=Value(5)),
+        When(poste_bureau__iexact='Secrétaire Adjoint', then=Value(6)),
+        When(poste_bureau__iexact='Trésorier', then=Value(7)),
+        When(poste_bureau__iexact='Censeur', then=Value(8)),
+        When(poste_bureau__iexact='Censeur Adjoint', then=Value(9)),
+        When(poste_bureau__iexact='Commissaire aux Comptes 1', then=Value(10)),
+        When(poste_bureau__iexact='Commissaire aux Comptes 2', then=Value(11)),
+        When(poste_bureau__iexact='Conseiller Technique', then=Value(12)),
+        default=Value(20),
         output_field=IntegerField(),
     )
     
     bureau_members = Member.objects.filter(
         member_type='bureau',
         is_active=True
-    ).order_by(bureau_order, 'nom_prenom')
-    
+    ).order_by(bureau_order, 'nom_prenom')    
     # Membres fondateurs
     founder_members = Member.objects.filter(
         member_type='founder',
@@ -404,10 +408,20 @@ def event_detail(request, pk):
     else:
         form = EventRegistrationForm()
     
+    # Participants
+    participants = event.eventregistration_set.filter(is_confirmed=True).order_by('nom_prenom')
+    
+    # Galerie
+    images = []
+    if event.gallery_album:
+        images = event.gallery_album.images.all()
+
     context = {
         'event': event,
         'form': form,
         'can_register': can_register,
+        'participants': participants,
+        'images': images,
     }
     
     return render(request, 'main/event_detail.html', context)
@@ -1486,3 +1500,168 @@ def juin_guide(request):
     return render(request, 'main/juin_guide.html')
 
 
+
+# =============================================================================
+# NEW FEATURES: PROJECTS & COMMISSIONS
+# =============================================================================
+from .forms import ProjectSubmissionForm, ClubCommissionApplicationForm
+
+def project_submit(request):
+    """Soumission d'un projet par un visiteur"""
+    if request.method == 'POST':
+        form = ProjectSubmissionForm(request.POST)
+        if form.is_valid():
+            submission = form.save()
+            messages.success(request, "Votre projet a été soumis avec succès ! Nous vous contacterons bientôt.")
+            return redirect('project_submit_success')
+    else:
+        form = ProjectSubmissionForm()
+    
+    return render(request, 'main/project_submit.html', {'form': form})
+
+def project_submit_success(request):
+    """Page de succès après soumission de projet"""
+    return render(request, 'main/project_submit_success.html')
+
+def club_commissions_list(request):
+    """Liste des directions permanentes du Club"""
+    commissions = ClubCommission.objects.all()
+    return render(request, 'main/club_commissions_list.html', {'commissions': commissions})
+
+def club_commission_detail(request, slug):
+    """Détail d'une direction avec ses membres"""
+    commission = get_object_or_404(ClubCommission, slug=slug)
+    
+    # Ordering members by role
+    from django.db.models import Case, When, Value, IntegerField
+    role_order = Case(
+        When(role_applied='director', then=Value(1)),
+        When(role_applied='deputy_director', then=Value(2)),
+        When(role_applied='rapporteur', then=Value(3)),
+        When(role_applied='deputy_rapporteur', then=Value(4)),
+        When(role_applied='member', then=Value(5)),
+        default=Value(10),
+        output_field=IntegerField(),
+    )
+    members = commission.applications.filter(status='approved').order_by(role_order, 'nom_prenom')
+    
+    return render(request, 'main/club_commission_detail.html', {
+        'commission': commission,
+        'members': members
+    })
+
+def club_commission_apply(request):
+    """Formulaire de candidature à une direction"""
+    if request.method == 'POST':
+        form = ClubCommissionApplicationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Votre candidature a été envoyée avec succès !")
+            return redirect('club_commission_apply_success')
+    else:
+        form = ClubCommissionApplicationForm()
+        
+    return render(request, 'main/club_commission_apply.html', {'form': form})
+
+def club_commission_apply_success(request):
+    """Page de succès après candidature"""
+    return render(request, 'main/club_commission_apply_success.html')
+
+
+def member_portfolio(request, slug):
+    member = get_object_or_404(Member, portfolio_slug=slug, portfolio_enabled=True)
+    
+    member_projects = Project.objects.filter(title_fr__icontains=member.nom_prenom) | \
+                      Project.objects.filter(description_fr__icontains=member.nom_prenom)
+
+    from django.db.models import Q  # ← Import Q directement
+    
+    similar_members = Member.objects.filter(
+        portfolio_enabled=True
+    ).exclude(id=member.id).filter(
+        Q(promotion=member.promotion) | Q(niveau=member.niveau)  # ← Q sans préfixe models.
+    ).order_by('?')[:3]
+    
+    return render(request, 'main/member_portfolio.html', {
+        'member': member,
+        'member_projects': member_projects,
+        'similar_members': similar_members
+    })
+
+def delegate_detail(request, slug):
+    """Page de détail d'un délégué"""
+    delegate = get_object_or_404(Delegate, slug=slug)
+    latest_news = BlogArticle.objects.filter(is_published=True).order_by('-published_at')[:3]
+    return render(request, 'main/delegate_detail.html', {
+        'delegate': delegate,
+        'latest_news': latest_news
+    })
+
+# =============================================================================
+# NEW MODULES: ACADEMIC RESOURCES & JOB BOARD
+# =============================================================================
+
+from .models import AcademicResource, JobOffer, NIVEAU_CHOICES, RESOURCE_TYPE_CHOICES, OFFER_TYPE_CHOICES
+from .forms import AcademicResourceForm, JobOfferForm
+
+def resources_list(request):
+    """Page listant les ressources académiques"""
+    resources = AcademicResource.objects.filter(is_approved=True).order_by('-created_at')
+    
+    # Filtres
+    niveau = request.GET.get('niveau')
+    resource_type = request.GET.get('type')
+    
+    if niveau:
+        resources = resources.filter(niveau=niveau)
+    if resource_type:
+        resources = resources.filter(resource_type=resource_type)
+        
+    return render(request, 'main/resources_list.html', {
+        'resources': resources,
+        'niveaux': NIVEAU_CHOICES,
+        'types': RESOURCE_TYPE_CHOICES,
+    })
+
+def resource_upload(request):
+    """Soumettre une ressource"""
+    if request.method == 'POST':
+        form = AcademicResourceForm(request.POST, request.FILES)
+        if form.is_valid():
+            resource = form.save(commit=False)
+            resource.is_approved = False  # Modération requise
+            resource.save()
+            messages.success(request, "Merci ! Votre ressource a été soumise et est en attente de modération.")
+            return redirect('resources_list')
+    else:
+        form = AcademicResourceForm()
+        
+    return render(request, 'main/resource_upload.html', {'form': form})
+
+def job_board(request):
+    """Job Board Alumni"""
+    offers = JobOffer.objects.filter(is_active=True, is_approved=True).order_by('-created_at')
+    
+    offer_type = request.GET.get('type')
+    if offer_type:
+        offers = offers.filter(offer_type=offer_type)
+        
+    return render(request, 'main/job_board.html', {
+        'offers': offers,
+        'types': OFFER_TYPE_CHOICES,
+    })
+
+def job_offer_create(request):
+    """Publier une offre d'emploi ou de stage"""
+    if request.method == 'POST':
+        form = JobOfferForm(request.POST)
+        if form.is_valid():
+            offer = form.save(commit=False)
+            offer.is_approved = False
+            offer.save()
+            messages.success(request, "Merci ! L'offre a été soumise avec succès.")
+            return redirect('job_board')
+    else:
+        form = JobOfferForm()
+        
+    return render(request, 'main/job_offer_create.html', {'form': form})

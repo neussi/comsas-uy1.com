@@ -4,55 +4,854 @@
 
 {% block title %}Devenir Membre - Rejoindre le COM.S.AS{% endblock %}
 
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+    :root {
+        --rose-light: #fce4ec;
+        --rose-mid: #f48fb1;
+        --rose-main: #e91e8c;
+        --rose-deep: #c2185b;
+        --rose-glow: rgba(233, 30, 140, .18);
+        --dark: #1a1a2e;
+        --dark-soft: #2d2d44;
+        --muted: #9e7b89;
+        --surface: #fff;
+        --bg: #f9f4f7;
+    }
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ═══════════════ PAGE BG ═══════════════ */
+    .page-bg {
+        background: var(--bg);
+        padding: 0 0 100px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-bg::before {
+        content: '';
+        position: absolute;
+        width: 800px;
+        height: 800px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(233, 30, 140, .07), transparent 65%);
+        top: -300px;
+        right: -200px;
+        pointer-events: none;
+    }
+
+    .page-bg::after {
+        content: '';
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(244, 143, 177, .06), transparent 65%);
+        bottom: -200px;
+        left: -150px;
+        pointer-events: none;
+    }
+
+    /* ═══════════════ HERO ═══════════════ */
+    .join-hero {
+        position: relative;
+        padding: 90px 0 70px;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .join-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(233, 30, 140, .055) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(233, 30, 140, .055) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, black 20%, transparent 100%);
+        -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, black 20%, transparent 100%);
+        pointer-events: none;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(233, 30, 140, .08);
+        border: 1px solid rgba(233, 30, 140, .22);
+        color: var(--rose-deep);
+        font-family: 'Syne', sans-serif;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+        padding: 8px 22px;
+        border-radius: 50px;
+        margin-bottom: 28px;
+        animation: fadeSlideUp .6s ease both;
+    }
+
+    .hero-badge i {
+        font-size: .7rem;
+    }
+
+    .join-hero h1 {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(2.4rem, 6vw, 3.8rem);
+        font-weight: 900;
+        color: var(--dark);
+        line-height: 1.1;
+        margin-bottom: 18px;
+        animation: fadeSlideUp .6s .1s ease both;
+    }
+
+    .join-hero h1 em {
+        font-style: normal;
+        background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .join-hero p {
+        font-size: 1rem;
+        color: var(--muted);
+        max-width: 560px;
+        margin: 0 auto 42px;
+        line-height: 1.7;
+        animation: fadeSlideUp .6s .2s ease both;
+    }
+
+    /* Perks row */
+    .perks-row {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        animation: fadeSlideUp .6s .3s ease both;
+    }
+
+    .perk-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1.5px solid rgba(233, 30, 140, .15);
+        border-radius: 50px;
+        padding: 9px 20px;
+        font-size: .8rem;
+        font-weight: 600;
+        color: var(--dark-soft);
+        box-shadow: 0 4px 16px rgba(233, 30, 140, .07);
+    }
+
+    .perk-pill i {
+        color: var(--rose-main);
+        font-size: .75rem;
+    }
+
+    /* ═══════════════ MAIN CARD ═══════════════ */
+    .join-card {
+        background: var(--surface);
+        border-radius: 32px;
+        border: none;
+        overflow: hidden;
+        box-shadow:
+            0 2px 0 rgba(233, 30, 140, .10),
+            0 24px 80px rgba(233, 30, 140, .11),
+            0 4px 24px rgba(0, 0, 0, .04);
+        animation: fadeSlideUp .7s .15s ease both;
+    }
+
+    /* ═══════════════ CARD HEADER ═══════════════ */
+    .card-hero {
+        position: relative;
+        padding: 52px 52px 44px;
+        text-align: center;
+        overflow: hidden;
+        background: linear-gradient(160deg, #fff9fb 0%, #fff 60%);
+        border-bottom: 2px solid var(--rose-light);
+    }
+
+    .card-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 80% 20%, rgba(233, 30, 140, .08) 0%, transparent 50%),
+            radial-gradient(circle at 20% 80%, rgba(244, 143, 177, .07) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    /* Decorative circles */
+    .deco-ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 1.5px dashed rgba(233, 30, 140, .18);
+        pointer-events: none;
+    }
+
+    .deco-ring-1 {
+        width: 200px;
+        height: 200px;
+        top: -80px;
+        right: -60px;
+    }
+
+    .deco-ring-2 {
+        width: 120px;
+        height: 120px;
+        bottom: -40px;
+        left: -30px;
+    }
+
+    .deco-ring-3 {
+        width: 60px;
+        height: 60px;
+        top: 30px;
+        left: 60px;
+        border-color: rgba(244, 143, 177, .22);
+    }
+
+    .card-hero-inner {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-icon-wrap {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 22px;
+    }
+
+    .hero-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 74px;
+        height: 74px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+        box-shadow: 0 12px 40px rgba(233, 30, 140, .32);
+        font-size: 1.8rem;
+        color: #fff;
+    }
+
+    .hero-icon-badge {
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        background: linear-gradient(135deg, #ff6b9d, var(--rose-main));
+        color: #fff;
+        font-size: .6rem;
+        font-weight: 800;
+        letter-spacing: .3px;
+        padding: 3px 8px;
+        border-radius: 50px;
+        border: 2px solid #fff;
+        white-space: nowrap;
+    }
+
+    .card-hero h2 {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 800;
+        color: var(--dark);
+        margin-bottom: 10px;
+    }
+
+    .card-hero h2 em {
+        font-style: normal;
+        background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .card-hero p {
+        color: var(--muted);
+        font-size: .9rem;
+        line-height: 1.6;
+        max-width: 460px;
+        margin: 0 auto 30px;
+    }
+
+    /* Progress steps */
+    .steps-track {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .step-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .step-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(233, 30, 140, .08);
+        border: 2px solid rgba(233, 30, 140, .2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .75rem;
+        color: var(--rose-main);
+        font-weight: 700;
+        transition: all .3s;
+    }
+
+    .step-node.active .step-circle {
+        background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+        border-color: transparent;
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(233, 30, 140, .30);
+    }
+
+    .step-label {
+        font-size: .65rem;
+        font-weight: 700;
+        color: var(--muted);
+        letter-spacing: .3px;
+        text-transform: uppercase;
+    }
+
+    .step-node.active .step-label {
+        color: var(--rose-deep);
+    }
+
+    .step-connector {
+        width: 40px;
+        height: 2px;
+        background: rgba(233, 30, 140, .15);
+        margin: 0 4px;
+        margin-bottom: 22px;
+        flex-shrink: 0;
+    }
+
+    /* ═══════════════ FORM BODY ═══════════════ */
+    .form-body {
+        padding: 48px 52px 60px;
+    }
+
+    /* Info banner */
+    .info-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        background: linear-gradient(135deg, rgba(233, 30, 140, .04), rgba(244, 143, 177, .04));
+        border: 1.5px solid rgba(233, 30, 140, .13);
+        border-radius: 16px;
+        padding: 18px 22px;
+        margin-bottom: 44px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-banner::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(to bottom, var(--rose-main), var(--rose-deep));
+        border-radius: 4px 0 0 4px;
+    }
+
+    .info-banner i {
+        color: var(--rose-main);
+        font-size: 1.1rem;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+
+    .info-banner p {
+        font-size: .85rem;
+        line-height: 1.65;
+        color: var(--muted);
+        margin: 0;
+    }
+
+    .info-banner strong {
+        color: var(--dark);
+    }
+
+    /* Section labels */
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: .95rem;
+        color: var(--dark);
+        margin-bottom: 26px;
+        padding-bottom: 14px;
+        border-bottom: 2px solid var(--rose-light);
+    }
+
+    .sl-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(233, 30, 140, .12), rgba(244, 143, 177, .15));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .78rem;
+        color: var(--rose-main);
+        flex-shrink: 0;
+    }
+
+    .section-count {
+        margin-left: auto;
+        font-size: .7rem;
+        font-weight: 700;
+        background: rgba(233, 30, 140, .08);
+        color: var(--rose-deep);
+        padding: 3px 10px;
+        border-radius: 50px;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Separator */
+    .form-sep {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--rose-light), transparent);
+        margin: 40px 0;
+    }
+
+    /* Input overrides */
+    .join-card .form-control,
+    .join-card .form-select {
+        border: 1.5px solid #ede0e6 !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-size: .9rem !important;
+        background: #fdfbfc !important;
+        color: var(--dark) !important;
+        transition: border-color .2s, box-shadow .2s, background .2s !important;
+    }
+
+    .join-card .form-control:focus,
+    .join-card .form-select:focus {
+        border-color: var(--rose-main) !important;
+        box-shadow: 0 0 0 4px rgba(233, 30, 140, .09) !important;
+        background: #fff !important;
+    }
+
+    .join-card label {
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--dark-soft);
+        margin-bottom: 6px;
+    }
+
+    .join-card textarea.form-control {
+        min-height: 120px !important;
+        resize: vertical;
+    }
+
+    /* Field icon wrappers for special fields */
+    .field-icon-wrap {
+        position: relative;
+    }
+
+    .field-icon-wrap .form-control,
+    .field-icon-wrap .form-select {
+        padding-left: 42px !important;
+    }
+
+    .field-icon-wrap .fi-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--rose-mid);
+        font-size: .85rem;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    /* Portfolio section special card */
+    .portfolio-section {
+        background: linear-gradient(135deg, rgba(233, 30, 140, .03), rgba(252, 228, 236, .25));
+        border: 1.5px solid rgba(233, 30, 140, .1);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .portfolio-section::after {
+        content: '';
+        position: absolute;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(233, 30, 140, .07), transparent 70%);
+        top: -60px;
+        right: -40px;
+        pointer-events: none;
+    }
+
+    /* Tags-style hints */
+    .field-hint {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+    }
+
+    .field-hint span {
+        font-size: .7rem;
+        background: rgba(233, 30, 140, .07);
+        border: 1px solid rgba(233, 30, 140, .15);
+        color: var(--rose-deep);
+        padding: 2px 10px;
+        border-radius: 50px;
+        cursor: default;
+    }
+
+    /* Photo upload custom */
+    .photo-upload-area {
+        border: 2px dashed rgba(233, 30, 140, .25);
+        border-radius: 16px;
+        padding: 28px 20px;
+        text-align: center;
+        background: rgba(233, 30, 140, .025);
+        transition: border-color .2s, background .2s;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .photo-upload-area:hover {
+        border-color: var(--rose-main);
+        background: rgba(233, 30, 140, .04);
+    }
+
+    .photo-upload-area i {
+        font-size: 2rem;
+        color: var(--rose-mid);
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .photo-upload-area p {
+        font-size: .82rem;
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .photo-upload-area strong {
+        color: var(--rose-main);
+    }
+
+    /* Privacy alert */
+    .privacy-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: rgba(233, 30, 140, .03);
+        border: 1px solid rgba(233, 30, 140, .10);
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-top: 36px;
+    }
+
+    .privacy-alert i {
+        color: var(--rose-mid);
+        font-size: .9rem;
+        margin-top: 2px;
+    }
+
+    .privacy-alert small {
+        color: var(--muted);
+        font-size: .78rem;
+        line-height: 1.6;
+    }
+
+    /* Submit button */
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+        color: #fff !important;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 17px 52px;
+        border-radius: 50px;
+        border: none;
+        box-shadow: 0 12px 40px rgba(233, 30, 140, .32);
+        transition: transform .28s, box-shadow .28s;
+        text-decoration: none;
+        width: 100%;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-submit::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, .15), transparent);
+        opacity: 0;
+        transition: opacity .25s;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 54px rgba(233, 30, 140, .42);
+    }
+
+    .btn-submit:hover::before {
+        opacity: 1;
+    }
+
+    .btn-submit:active {
+        transform: translateY(-1px);
+    }
+
+    .submit-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 14px;
+        font-size: .76rem;
+        color: var(--muted);
+    }
+
+    .submit-note i {
+        color: var(--rose-mid);
+    }
+
+    /* Card footer */
+    .card-foot {
+        background: linear-gradient(135deg, #fdf8fb, #fce4ec22);
+        border-top: 2px solid var(--rose-light);
+        padding: 22px 52px;
+        text-align: center;
+    }
+
+    .card-foot small {
+        color: var(--muted);
+        font-size: .82rem;
+    }
+
+    .card-foot a {
+        color: var(--rose-main);
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .card-foot a:hover {
+        color: var(--rose-deep);
+    }
+
+    /* ═══════════════ ANIMATIONS ═══════════════ */
+    @keyframes fadeSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(22px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-8px);
+        }
+    }
+
+    .hero-icon {
+        animation: float 4s ease-in-out infinite;
+    }
+
+    /* ═══════════════ FLOATING DECORATIONS ═══════════════ */
+    .float-deco {
+        position: fixed;
+        pointer-events: none;
+        z-index: 0;
+        border-radius: 50%;
+        opacity: .5;
+    }
+
+    .fd1 {
+        width: 340px;
+        height: 340px;
+        background: radial-gradient(circle, rgba(233, 30, 140, .06), transparent 70%);
+        top: 10%;
+        right: -80px;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .fd2 {
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(244, 143, 177, .07), transparent 70%);
+        bottom: 20%;
+        left: -60px;
+        animation: float 8s ease-in-out infinite reverse;
+    }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 640px) {
+        .card-hero {
+            padding: 36px 24px 28px;
+        }
+
+        .form-body {
+            padding: 32px 22px 44px;
+        }
+
+        .card-foot {
+            padding: 18px 22px;
+        }
+
+        .step-connector {
+            width: 24px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Hero Section -->
-<section class="position-relative py-5 overflow-hidden">
-    <div class="position-absolute top-0 start-0 w-100 h-100 bg-white"></div>
-    <div class="position-absolute top-50 start-50 translate-middle"
-        style="width: 100%; height: 100%; max-width: 1200px; opacity: 0.05; background: radial-gradient(circle, var(--secondary-color) 0%, transparent 70%); pointer-events: none;">
+<div class="float-deco fd1"></div>
+<div class="float-deco fd2"></div>
+
+<div class="page-bg">
+
+    <!-- ── HERO ── -->
+    <div class="join-hero">
+        <div class="container position-relative z-1">
+            <div class="hero-badge">
+                <i class="fas fa-user-plus"></i> Adhésion COM.S.AS
+            </div>
+            <h1>Rejoignez la <em>Communauté</em></h1>
+            <p>Participez à nos projets, accédez à des formations exclusives et développez votre réseau professionnel au
+                sein du club.</p>
+
+            <div class="perks-row">
+                <div class="perk-pill"><i class="fas fa-bolt"></i> Projets innovants</div>
+                <div class="perk-pill"><i class="fas fa-graduation-cap"></i> Formations exclusives</div>
+                <div class="perk-pill"><i class="fas fa-users"></i> Réseau fort</div>
+                <div class="perk-pill"><i class="fas fa-trophy"></i> Évènements premium</div>
+            </div>
+        </div>
     </div>
 
-    <div class="container position-relative z-1 text-center mt-5">
-        <span
-            class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-2 mb-3 fw-medium animate-fade-in-up">
-            <i class="fas fa-user-plus me-2"></i>Adhésion
-        </span>
-        <h1 class="display-3 fw-bold mb-3 animate-fade-in-up text-dark" style="animation-delay: 0.1s;">
-            Rejoignez la <span class="text-primary typing-effect"
-                data-words='["Communauté", "Famille", "Révolution"]'></span>
-        </h1>
-        <p class="lead text-muted mx-auto animate-fade-in-up" style="max-width: 700px; animation-delay: 0.2s;">
-            Participez à nos projets, accédez à des formations exclusives et développez votre réseau professionnel.
-        </p>
-    </div>
-</section>
-
-<section class="py-5">
-    <div class="container">
+    <!-- ── CARD ── -->
+    <div class="container position-relative z-1">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-lift transition-all">
-                    <div class="card-header bg-white border-bottom border-light p-4 text-center">
-                        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3"
-                            style="width: 60px; height: 60px;">
-                            <i class="fas fa-id-card fa-2x text-primary"></i>
+            <div class="col-lg-9 col-xl-8">
+                <div class="join-card">
+
+                    <!-- CARD HEADER -->
+                    <div class="card-hero">
+                        <div class="deco-ring deco-ring-1"></div>
+                        <div class="deco-ring deco-ring-2"></div>
+                        <div class="deco-ring deco-ring-3"></div>
+                        <div class="card-hero-inner">
+                            <div class="hero-icon-wrap">
+                                <div class="hero-icon"><i class="fas fa-id-card"></i></div>
+                                <div class="hero-icon-badge">✦ Nouveau</div>
+                            </div>
+                            <h2>Formulaire <em>d'Inscription</em></h2>
+                            <p>Remplissez les informations ci-dessous pour valider votre adhésion et rejoindre
+                                l'aventure.</p>
+
+                            <!-- Steps track -->
+                            <div class="steps-track">
+                                <div class="step-node active">
+                                    <div class="step-circle"><i class="fas fa-pencil-alt" style="font-size:.65rem;"></i>
+                                    </div>
+                                    <div class="step-label">Remplir</div>
+                                </div>
+                                <div class="step-connector"></div>
+                                <div class="step-node">
+                                    <div class="step-circle"><i class="fas fa-paper-plane"
+                                            style="font-size:.65rem;"></i></div>
+                                    <div class="step-label">Soumettre</div>
+                                </div>
+                                <div class="step-connector"></div>
+                                <div class="step-node">
+                                    <div class="step-circle"><i class="fas fa-check" style="font-size:.65rem;"></i>
+                                    </div>
+                                    <div class="step-label">Validation</div>
+                                </div>
+                                <div class="step-connector"></div>
+                                <div class="step-node">
+                                    <div class="step-circle"><i class="fas fa-star" style="font-size:.65rem;"></i></div>
+                                    <div class="step-label">Membre !</div>
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="fw-bold text-dark mb-1">Formulaire d'Inscription</h3>
-                        <p class="text-muted small mb-0">Remplissez les informations ci-dessous pour valider votre
-                            adhésion.</p>
                     </div>
 
-                    <div class="card-body p-4 p-md-5">
-                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    <!-- FORM BODY -->
+                    <div class="form-body">
+
+                        <div class="info-banner">
+                            <i class="fas fa-sparkles"></i>
+                            <p><strong>Bienvenue !</strong> Une fois votre inscription validée par nos équipes, votre
+                                profil membre sera automatiquement activé et vous recevrez un email de confirmation.</p>
+                        </div>
+
+                        <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
 
-                            <!-- Custom styling for crispy forms -->
-                            <div class="row g-3">
+                            <!-- ── SECTION 1 : Identité ── -->
+                            <div class="section-label">
+                                <div class="sl-icon"><i class="fas fa-user-circle"></i></div>
+                                Informations Personnelles
+                                <span class="section-count">01 / 03</span>
+                            </div>
+
+                            <div class="row g-3 mb-2">
                                 <div class="col-12">
                                     {{ form.nom_prenom|as_crispy_field }}
                                 </div>
-                                <div class="col-12">
+                                <div class="col-md-6">
                                     {{ form.matricule|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.niveau|as_crispy_field }}
                                 </div>
                                 <div class="col-md-6">
                                     {{ form.email|as_crispy_field }}
@@ -66,45 +865,110 @@
                                 <div class="col-md-6">
                                     {{ form.lieu_naissance|as_crispy_field }}
                                 </div>
-                                <div class="col-12">
-                                    {{ form.photo|as_crispy_field }}
-                                </div>
-                                <div class="col-12">
-                                    {{ form.bio|as_crispy_field }}
+                            </div>
+
+                            <div class="form-sep"></div>
+
+                            <!-- ── SECTION 2 : Photo ── -->
+                            <div class="section-label">
+                                <div class="sl-icon"><i class="fas fa-camera"></i></div>
+                                Photo de Profil
+                                <span class="section-count">02 / 03</span>
+                            </div>
+
+                            <div class="photo-upload-area mb-3" onclick="document.getElementById('id_photo').click()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p><strong>Cliquez pour choisir</strong> ou glissez votre photo ici<br>
+                                    <span style="font-size:.73rem;">JPG, PNG ou WEBP — max 5 Mo recommandé</span>
+                                </p>
+                            </div>
+                            <div style="display:none;">{{ form.photo|as_crispy_field }}</div>
+
+                            <div class="form-sep"></div>
+
+                            <!-- ── SECTION 3 : Portfolio ── -->
+                            <div class="section-label">
+                                <div class="sl-icon"><i class="fas fa-layer-group"></i></div>
+                                Profil &amp; Portfolio
+                                <span class="section-count">03 / 03</span>
+                            </div>
+
+                            <div class="portfolio-section position-relative z-1">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        {{ form.skills|as_crispy_field }}
+                                        <div class="field-hint">
+                                            <span>Design</span><span>Marketing</span><span>Dev</span><span>Finance</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.technologies|as_crispy_field }}
+                                        <div class="field-hint">
+                                            <span>Python</span><span>Figma</span><span>React</span><span>Excel</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.other_roles|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.needs|as_crispy_field }}
+                                    </div>
+                                    <div class="col-12">
+                                        {{ form.bio|as_crispy_field }}
+                                    </div>
+                                    <div class="col-12">
+                                        <hr class="my-3 border-light opacity-50">
+                                        <h5 class="fw-bold mb-3 text-secondary">Réseaux Sociaux & Liens Web (Optionnel)
+                                        </h5>
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.linkedin_url|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.github_url|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.twitter_url|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.website_url|as_crispy_field }}
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- Privacy -->
                             <div class="alert alert-light border border-light mt-4 d-flex align-items-start gap-3">
-                                <i class="fas fa-info-circle text-primary mt-1"></i>
-                                <small class="text-muted">Vos données personnelles sont traitées avec confidentialité et
-                                    utilisées uniquement dans le cadre des activités de l'association.</small>
+                                <i class="fas fa-shield-alt"></i>
+                                <small>Vos données personnelles sont traitées avec confidentialité et utilisées
+                                    uniquement dans le cadre des activités de l'association COM.S.AS.</small>
                             </div>
 
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">
-                                    <i class="fas fa-paper-plane me-2"></i>Soumettre ma demande
+                            <!-- Submit -->
+                            <div class="text-center mt-5">
+                                <button type="submit" class="btn-submit">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Soumettre ma demande d'adhésion
                                 </button>
+                                <div class="submit-note">
+                                    <i class="fas fa-lock"></i>
+                                    Données confidentielles &nbsp;·&nbsp;
+                                    <i class="fas fa-check-circle"></i>
+                                    Validation sous 48h
+                                </div>
                             </div>
+
                         </form>
                     </div>
-                    <div class="card-footer bg-light p-4 text-center border-top border-light">
-                        <small class="text-muted">Déjà membre ? <a href="#"
-                                class="fw-bold text-primary text-decoration-none">Connectez-vous</a></small>
+
+                    <!-- CARD FOOTER -->
+                    <div class="card-foot">
+                        <small>Déjà membre ? <a href="#">Connectez-vous ici</a> &nbsp;·&nbsp; Des questions ? <a
+                                href="#">Contactez-nous</a></small>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
-</section>
-
-<style>
-    .hover-lift {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .hover-lift:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
-    }
-</style>
+</div>
 {% endblock %}
