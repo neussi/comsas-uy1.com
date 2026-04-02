@@ -23,7 +23,9 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
-                        <span class="me-2 fs-4">{{ commission.icon }}</span>
+                        <div class="me-2 fs-4 text-primary" style="width: 40px; text-align: center;">
+                            <i class="{{ commission.icon|default:'fas fa-folder' }}"></i>
+                        </div>
                         <div>
                             <h5 class="fw-bold mb-0">{{ commission.name }}</h5>
                             <small class="text-muted">{{ commission.slug }}</small>

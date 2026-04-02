@@ -24,15 +24,11 @@
                     <textarea name="description" class="form-control"
                         rows="3">{{ commission.description|default:'' }}</textarea>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Icône</label>
-                    <input type="text" name="icon" class="form-control"
-                        value="{{ commission.icon|default:'fas fa-star' }}" placeholder="fas fa-star">
-                </div>
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Couleur (hex)</label>
-                    <input type="text" name="color" class="form-control"
-                        value="{{ commission.color|default:'#e91e8c' }}" placeholder="#e91e8c">
+                    <label class="form-label fw-semibold">Icône (FontAwesome)</label>
+                    <input type="text" name="icon" class="form-control"
+                        value="{{ commission.icon|default:'fas fa-folder' }}" placeholder="fas fa-folder">
+                    <small class="text-muted">Ex: fas fa-users, fas fa-code, etc.</small>
                 </div>
                 <button type="submit" class="btn btn-primary">{{ action }} la commission</button>
             </form>

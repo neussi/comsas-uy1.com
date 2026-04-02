@@ -1771,7 +1771,7 @@ def club_commission_create(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         description = request.POST.get('description', '')
-        icon = request.POST.get('icon', 'fa-users')
+        icon = request.POST.get('icon', 'fa-users')[:50] # Sécurité max_length=50
         if name:
             from django.utils.text import slugify
             slug = slugify(name)
@@ -1792,7 +1792,7 @@ def club_commission_edit(request, pk):
     if request.method == 'POST':
         commission.name = request.POST.get('name', commission.name)
         commission.description = request.POST.get('description', commission.description)
-        commission.icon = request.POST.get('icon', commission.icon)
+        commission.icon = request.POST.get('icon', commission.icon)[:50] # Sécurité max_length=50
         commission.save()
         messages.success(request, 'Commission mise à jour.')
         return redirect('admin_club_commissions')
