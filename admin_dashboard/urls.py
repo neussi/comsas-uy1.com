@@ -176,4 +176,19 @@ urlpatterns = [
     path('juin/equipes/', views.juin_teams_list, name='admin_juin_teams'),
     path('juin/equipes/<int:pk>/edit/', views.juin_team_edit, name='admin_juin_team_edit'),
     path('juin/equipes/<int:pk>/delete/', views.juin_team_delete, name='admin_juin_team_delete'),
+
+    # ============= SOUMISSIONS DE PROJETS =============
+    path('soumissions/', views.project_submissions_list, name='admin_project_submissions'),
+    path('soumissions/<int:pk>/', views.project_submission_detail, name='admin_project_submission_detail'),
+    path('soumissions/<int:pk>/delete/', views.project_submission_delete, name='admin_project_submission_delete'),
+
+    # ============= COMMISSIONS DU CLUB =============
+    path('commissions/', views.club_commissions_list, name='admin_club_commissions'),
+    path('commissions/<int:pk>/edit/', views.club_commission_edit, name='admin_club_commission_edit'),
+    path('commissions/<int:pk>/delete/', views.club_commission_delete, name='admin_club_commission_delete'),
+
+    # ============= CANDIDATURES COMMISSIONS CLUB =============
+    path('commissions/candidatures/', views.club_applications_list, name='admin_club_applications'),
+    path('commissions/candidatures/<int:pk>/', views.club_application_detail, name='admin_club_application_detail'),
+    path('commissions/candidatures/<int:pk>/delete/', views.club_application_delete, name='admin_club_application_delete'),
 ]

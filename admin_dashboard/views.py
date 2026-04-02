@@ -26,7 +26,11 @@ from main.models import (
     News, Gallery, Contact, SiteSettings,
     SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote,
-    RequestDocument, Professor, Classroom, Delegate, BlogArticle
+    RequestDocument, Professor, Classroom, Delegate, BlogArticle,
+    ProjectSubmission, ClubCommission, ClubCommissionApplication,
+    JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
+    JUINActivity, JUINDonation, JUINSponsor, JUINTeam,
+    AcademicResource, JobOffer
 )
 from .forms import (
     ProjectForm, EventForm, NewsForm, GalleryForm, SiteSettingsForm, MemberForm,
@@ -1665,3 +1669,202 @@ def juin_team_delete(request, pk):
     return render(request, 'admin_dashboard/juin/confirm_delete.html', {'object': team, 'cancel_url': 'admin_juin_teams'})
 
 
+# ============================================================
+# PROJECT SUBMISSIONS MANAGEMENT
+# ============================================================
+
+@custom_staff_member_required
+def project_submissions_list(request):
+    """Liste des projets soumis via le formulaire public."""
+    queryset = ProjectSubmission.objects.all().order_by('-created_at')
+    status_filter = request.GET.get('status', '')
+    reviewed_filter = request.GET.get('reviewed', '')
+    q = request.GET.get('q', '')
+    if q:
+        queryset = queryset.filter(
+            Q(project_name__icontains=q) | Q(submitter_name__icontains=q) | Q(submitter_email__icontains=q)
+        )
+    if status_filter:
+        queryset = queryset.filter(status=status_filter)
+    if reviewed_filter == '0':
+        queryset = queryset.filter(is_reviewed=False)
+    elif reviewed_filter == '1':
+        queryset = queryset.filter(is_reviewed=True)
+    paginator = Paginator(queryset, 20)
+    submissions = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_dashboard/projects/submissions_list.html', {
+        'submissions': submissions,
+        'q': q,
+        'status_filter': status_filter,
+        'reviewed_filter': reviewed_filter,
+        'pending_count': ProjectSubmission.objects.filter(is_reviewed=False).count(),
+    })
+
+
+@custom_staff_member_required
+def project_submission_detail(request, pk):
+    """Détail et traitement d'une soumission de projet."""
+    submission = get_object_or_404(ProjectSubmission, pk=pk)
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'publish':
+            Project.objects.get_or_create(
+                title_fr=submission.project_name,
+                defaults={'description_fr': submission.description or '', 'status': 'active', 'is_featured': False}
+            )
+            submission.is_reviewed = True
+            submission.save()
+            try:
+                from django.core.mail import send_mail
+                from django.conf import settings as dj_settings
+                send_mail(
+                    '✅ Votre projet est publié — COM.S.AS',
+                    f'Bonjour {submission.submitter_name},\n\nVotre projet "{submission.project_name}" a été publié sur la plateforme COM.S.AS !\n\nCordialement,\nL\'équipe COM.S.AS',
+                    dj_settings.DEFAULT_FROM_EMAIL, [submission.submitter_email], fail_silently=True,
+                )
+            except Exception:
+                pass
+            messages.success(request, f'Projet "{submission.project_name}" publié et porteur notifié par email.')
+        elif action == 'reviewed':
+            submission.is_reviewed = True
+            submission.save()
+            messages.success(request, 'Soumission marquée comme traitée.')
+        elif action == 'delete':
+            submission.delete()
+            messages.success(request, 'Soumission supprimée.')
+            return redirect('admin_project_submissions')
+        return redirect('admin_project_submission_detail', pk=pk)
+    return render(request, 'admin_dashboard/projects/submission_detail.html', {'submission': submission})
+
+
+@custom_staff_member_required
+def project_submission_delete(request, pk):
+    submission = get_object_or_404(ProjectSubmission, pk=pk)
+    if request.method == 'POST':
+        submission.delete()
+        messages.success(request, 'Soumission supprimée.')
+        return redirect('admin_project_submissions')
+    return render(request, 'admin_dashboard/projects/submission_confirm_delete.html', {'object': submission})
+
+
+# ============================================================
+# CLUB COMMISSIONS MANAGEMENT
+# ============================================================
+
+@custom_staff_member_required
+def club_commissions_list(request):
+    commissions = ClubCommission.objects.annotate(
+        app_count=Count('applications'),
+        approved_count=Count('applications', filter=Q(applications__status='approved')),
+        pending_count=Count('applications', filter=Q(applications__status='pending')),
+    ).order_by('name')
+    return render(request, 'admin_dashboard/commissions/list.html', {
+        'commissions': commissions,
+    })
+
+
+@custom_staff_member_required
+def club_commission_edit(request, pk):
+    commission = get_object_or_404(ClubCommission, pk=pk)
+    if request.method == 'POST':
+        commission.name = request.POST.get('name', commission.name)
+        commission.description = request.POST.get('description', commission.description)
+        commission.icon = request.POST.get('icon', commission.icon)
+        commission.save()
+        messages.success(request, 'Commission mise à jour.')
+        return redirect('admin_club_commissions')
+    return render(request, 'admin_dashboard/commissions/form.html', {'commission': commission, 'action': 'Modifier'})
+
+
+@custom_staff_member_required
+def club_commission_delete(request, pk):
+    commission = get_object_or_404(ClubCommission, pk=pk)
+    if request.method == 'POST':
+        commission.delete()
+        messages.success(request, 'Commission supprimée.')
+        return redirect('admin_club_commissions')
+    return render(request, 'admin_dashboard/commissions/confirm_delete.html', {'object': commission})
+
+
+# ============================================================
+# CLUB COMMISSION APPLICATIONS MANAGEMENT
+# ============================================================
+
+@custom_staff_member_required
+def club_applications_list(request):
+    queryset = ClubCommissionApplication.objects.select_related('commission').order_by('-created_at')
+    status_f = request.GET.get('status', '')
+    comm_f = request.GET.get('commission', '')
+    q = request.GET.get('q', '')
+    if q:
+        queryset = queryset.filter(Q(nom_prenom__icontains=q) | Q(email__icontains=q))
+    if status_f:
+        queryset = queryset.filter(status=status_f)
+    if comm_f:
+        queryset = queryset.filter(commission__id=comm_f)
+    paginator = Paginator(queryset, 20)
+    applications = paginator.get_page(request.GET.get('page'))
+    return render(request, 'admin_dashboard/commissions/applications_list.html', {
+        'applications': applications,
+        'commissions': ClubCommission.objects.all(),
+        'status_f': status_f,
+        'comm_f': comm_f,
+        'q': q,
+        'total': ClubCommissionApplication.objects.count(),
+        'pending': ClubCommissionApplication.objects.filter(status='pending').count(),
+        'approved': ClubCommissionApplication.objects.filter(status='approved').count(),
+    })
+
+
+@custom_staff_member_required
+def club_application_detail(request, pk):
+    application = get_object_or_404(ClubCommissionApplication, pk=pk)
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        subject = body = None
+        if action == 'approve':
+            application.status = 'approved'
+            application.save()
+            member, created = Member.objects.get_or_create(
+                email=application.email,
+                defaults={
+                    'nom_prenom': application.nom_prenom, 'telephone': application.telephone,
+                    'niveau': application.niveau, 'photo': application.photo,
+                    'is_active': True, 'member_type': 'simple',
+                }
+            )
+            if not created:
+                member.is_active = True
+                member.save()
+            subject = '✅ Candidature acceptée — Commission Club'
+            body = f'Bonjour {application.nom_prenom},\n\nVotre candidature pour la commission "{application.commission}" a été acceptée. Bienvenue !\n\nCordialement,\nL\'équipe COM.S.AS'
+            messages.success(request, f'Candidature de {application.nom_prenom} approuvée et membre activé.')
+        elif action == 'reject':
+            application.status = 'rejected'
+            application.save()
+            subject = '❌ Candidature non retenue — Commission Club'
+            body = f'Bonjour {application.nom_prenom},\n\nVotre candidature pour la commission "{application.commission}" n\'a pas été retenue cette fois-ci.\n\nCordialement,\nL\'équipe COM.S.AS'
+            messages.warning(request, f'Candidature de {application.nom_prenom} rejetée.')
+        elif action == 'delete':
+            application.delete()
+            messages.success(request, 'Candidature supprimée.')
+            return redirect('admin_club_applications')
+        if subject and body:
+            try:
+                from django.core.mail import send_mail
+                from django.conf import settings as dj_settings
+                send_mail(subject, body, dj_settings.DEFAULT_FROM_EMAIL, [application.email], fail_silently=True)
+            except Exception:
+                pass
+        return redirect('admin_club_application_detail', pk=pk)
+    return render(request, 'admin_dashboard/commissions/application_detail.html', {'application': application})
+
+
+@custom_staff_member_required
+def club_application_delete(request, pk):
+    application = get_object_or_404(ClubCommissionApplication, pk=pk)
+    if request.method == 'POST':
+        application.delete()
+        messages.success(request, 'Candidature supprimée.')
+        return redirect('admin_club_applications')
+    return render(request, 'admin_dashboard/commissions/confirm_delete.html', {'object': application})

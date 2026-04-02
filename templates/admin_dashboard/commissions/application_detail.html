@@ -1,0 +1,109 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Détail Candidature — {{ application.nom_prenom }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold">👤 {{ application.nom_prenom }}</h1>
+        <a href="{% url 'admin_club_applications' %}" class="btn btn-outline-secondary btn-sm"><i
+                class="fas fa-arrow-left me-1"></i>Retour</a>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show"><button type="button" class="btn-close"
+            data-bs-dismiss="alert"></button>{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-4">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-user me-2 text-primary"></i>Informations du candidat</h5>
+                </div>
+                <div class="card-body">
+                    {% if application.photo %}
+                    <img src="{{ application.photo.url }}" alt="Photo" class="rounded-circle mb-3"
+                        style="width:80px;height:80px;object-fit:cover;">
+                    {% endif %}
+                    <table class="table table-borderless table-sm">
+                        <tr>
+                            <th>Nom complet</th>
+                            <td>{{ application.nom_prenom }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td><a href="mailto:{{ application.email }}">{{ application.email }}</a></td>
+                        </tr>
+                        <tr>
+                            <th>Téléphone</th>
+                            <td>{{ application.telephone }}</td>
+                        </tr>
+                        <tr>
+                            <th>Niveau</th>
+                            <td>{{ application.niveau }}</td>
+                        </tr>
+                        <tr>
+                            <th>Commission</th>
+                            <td><strong>{{ application.commission }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Rôle souhaité</th>
+                            <td>{{ application.get_role_applied_display|default:application.role_applied }}</td>
+                        </tr>
+                        <tr>
+                            <th>Candidature le</th>
+                            <td>{{ application.created_at|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    </table>
+                    {% if application.motivation %}
+                    <div class="p-3 bg-light rounded mt-2">
+                        <h6 class="fw-bold text-muted small mb-2">MOTIVATION</h6>
+                        <p class="mb-0 small">{{ application.motivation }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white border-0 pt-4">
+                    <h5 class="fw-bold mb-0">Statut actuel :
+                        {% if application.status == 'approved' %}<span class="badge bg-success">✅ Approuvé</span>
+                        {% elif application.status == 'rejected' %}<span class="badge bg-danger">❌ Rejeté</span>
+                        {% else %}<span class="badge bg-warning text-dark">⏳ En attente</span>{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if application.status != 'approved' %}
+                        <form method="post">
+                            <{% csrf_token %} <input type="hidden" name="action" value="approve">
+                                <button class="btn btn-success w-100"><i class="fas fa-check me-2"></i>✅ Approuver et
+                                    notifier par email</button>
+                        </form>
+                        {% endif %}
+                        {% if application.status != 'rejected' %}
+                        <form method="post">{% csrf_token %}
+                            <input type="hidden" name="action" value="reject">
+                            <button class="btn btn-danger w-100"><i class="fas fa-times me-2"></i>❌ Rejeter et notifier
+                                par email</button>
+                        </form>
+                        {% endif %}
+                        <hr>
+                        <form method="post" onsubmit="return confirm('Supprimer définitivement cette candidature ?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <button class="btn btn-outline-danger w-100"><i class="fas fa-trash me-2"></i>Supprimer la
+                                candidature</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

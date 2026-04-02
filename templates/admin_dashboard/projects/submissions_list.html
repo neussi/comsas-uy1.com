@@ -1,0 +1,121 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Soumissions de Projets{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold">📂 Soumissions de Projets</h1>
+            <p class="text-muted mb-0">Projets soumis via le formulaire public</p>
+        </div>
+        {% if pending_count > 0 %}
+        <span class="badge bg-danger fs-6">{{ pending_count }} non traité(s)</span>
+        {% endif %}
+    </div>
+
+    <!-- Filtres -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <input type="text" name="q" class="form-control form-control-sm"
+                        placeholder="Rechercher projet, porteur, email…" value="{{ q }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">Tous les statuts</option>
+                        <option value="pending" {% if status_filter=='pending' %}selected{% endif %}>En attente</option>
+                        <option value="approved" {% if status_filter=='approved' %}selected{% endif %}>Approuvé</option>
+                        <option value="rejected" {% if status_filter=='rejected' %}selected{% endif %}>Rejeté</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="reviewed" class="form-select form-select-sm">
+                        <option value="">Tous</option>
+                        <option value="0" {% if reviewed_filter=='0' %}selected{% endif %}>Non traités</option>
+                        <option value="1" {% if reviewed_filter=='1' %}selected{% endif %}>Traités</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-sm w-100"><i
+                            class="fas fa-filter me-1"></i>Filtrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Projet</th>
+                            <th>Porteur</th>
+                            <th>Email</th>
+                            <th>Domaine</th>
+                            <th>Statut</th>
+                            <th>Traité</th>
+                            <th>Date</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in submissions %}
+                        <tr>
+                            <td class="fw-semibold">{{ sub.project_name|truncatechars:30 }}</td>
+                            <td>{{ sub.submitter_name }}</td>
+                            <td><small>{{ sub.submitter_email }}</small></td>
+                            <td><span class="badge bg-secondary">{{ sub.domain }}</span></td>
+                            <td>
+                                {% if sub.status == 'approved' %}
+                                <span class="badge bg-success">Approuvé</span>
+                                {% elif sub.status == 'rejected' %}
+                                <span class="badge bg-danger">Rejeté</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">En attente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if sub.is_reviewed %}
+                                <i class="fas fa-check-circle text-success"></i>
+                                {% else %}
+                                <i class="fas fa-clock text-warning"></i>
+                                {% endif %}
+                            </td>
+                            <td><small>{{ sub.created_at|date:"d/m/Y" }}</small></td>
+                            <td class="text-end">
+                                <a href="{% url 'admin_project_submission_detail' sub.pk %}"
+                                    class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> Voir
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">Aucune soumission trouvée.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if submissions.has_other_pages %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if submissions.has_previous %}<li class="page-item"><a class="page-link"
+                    href="?page={{ submissions.previous_page_number }}">Précédent</a></li>{% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ submissions.number }} / {{
+                    submissions.paginator.num_pages }}</span></li>
+            {% if submissions.has_next %}<li class="page-item"><a class="page-link"
+                    href="?page={{ submissions.next_page_number }}">Suivant</a></li>{% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

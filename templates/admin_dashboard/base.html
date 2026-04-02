@@ -540,6 +540,29 @@
                 </a>
             </div>
 
+            <div class="menu-header">Club COM.S.AS</div>
+            <div class="menu-item">
+                <a href="{% url 'admin_club_commissions' %}"
+                    class="menu-link {% if 'club_commission' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-layer-group"></i>
+                    <div>Commissions</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_club_applications' %}"
+                    class="menu-link {% if 'club_application' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-file-alt"></i>
+                    <div>Candidatures Commissions</div>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_project_submissions' %}"
+                    class="menu-link {% if 'project_submission' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-folder-open"></i>
+                    <div>Soumissions de Projets</div>
+                </a>
+            </div>
+
             <div class="menu-header">Communication</div>
             <div class="menu-item">
                 <a href="{% url 'admin_messages_list' %}"

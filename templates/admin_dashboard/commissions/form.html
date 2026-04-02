@@ -1,0 +1,42 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Modifier Commission{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold">🏛️ {{ action }} Commission</h1>
+        <a href="{% url 'admin_club_commissions' %}" class="btn btn-outline-secondary btn-sm"><i
+                class="fas fa-arrow-left me-1"></i>Retour</a>
+    </div>
+    <div class="card border-0 shadow-sm" style="max-width: 640px;">
+        <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nom de la commission</label>
+                    <input type="text" name="name" class="form-control" value="{{ commission.name|default:'' }}"
+                        required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Description / Mission</label>
+                    <textarea name="description" class="form-control"
+                        rows="3">{{ commission.description|default:'' }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Icône</label>
+                    <input type="text" name="icon" class="form-control"
+                        value="{{ commission.icon|default:'fas fa-star' }}" placeholder="fas fa-star">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Couleur (hex)</label>
+                    <input type="text" name="color" class="form-control"
+                        value="{{ commission.color|default:'#e91e8c' }}" placeholder="#e91e8c">
+                </div>
+                <button type="submit" class="btn btn-primary">{{ action }} la commission</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
