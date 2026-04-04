@@ -29,8 +29,8 @@ class Member(models.Model):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nom_prenom = models.CharField(max_length=200, verbose_name="Nom et Prénom")
-    date_naissance = models.DateField(verbose_name="Date de naissance")
-    lieu_naissance = models.CharField(max_length=100, verbose_name="Lieu de naissance")
+    date_naissance = models.DateField(verbose_name="Date de naissance", blank=True, null=True)
+    lieu_naissance = models.CharField(max_length=100, verbose_name="Lieu de naissance", blank=True, null=True)
     niveau = models.CharField(max_length=20, choices=LEVEL_CHOICES, verbose_name="Niveau", blank=True, null=True)
     promotion = models.CharField(max_length=20, verbose_name="Promotion (année de sortie)", blank=True, null=True)
     telephone = models.CharField(max_length=20, verbose_name="Numéro de téléphone")
