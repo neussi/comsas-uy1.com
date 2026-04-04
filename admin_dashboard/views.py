@@ -1846,8 +1846,14 @@ def club_application_detail(request, pk):
         action = request.POST.get('action')
         subject = body = None
         if action == 'approve':
+            # Permettre à l'admin de choisir/confirmer le rôle lors de la validation
+            new_role = request.POST.get('role_applied')
+            if new_role:
+                application.role_applied = new_role
+            
             application.status = 'approved'
             application.save()
+            
             member, created = Member.objects.get_or_create(
                 email=application.email,
                 defaults={
@@ -1859,9 +1865,10 @@ def club_application_detail(request, pk):
             if not created:
                 member.is_active = True
                 member.save()
+            
             subject = '✅ Candidature acceptée — Commission Club'
-            body = f'Bonjour {application.nom_prenom},\n\nVotre candidature pour la commission "{application.commission}" a été acceptée. Bienvenue !\n\nCordialement,\nL\'équipe COM.S.AS'
-            messages.success(request, f'Candidature de {application.nom_prenom} approuvée et membre activé.')
+            body = f'Bonjour {application.nom_prenom},\n\nVotre candidature pour la commission "{application.commission}" a été acceptée avec le rôle : {application.get_role_applied_display()}.\n\nBienvenue !\n\nCordialement,\nL\'équipe COM.S.AS'
+            messages.success(request, f'Candidature de {application.nom_prenom} approuvée en tant que {application.get_role_applied_display()}.')
         elif action == 'reject':
             application.status = 'rejected'
             application.save()

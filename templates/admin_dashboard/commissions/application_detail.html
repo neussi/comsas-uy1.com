@@ -71,34 +71,62 @@
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-0 pt-4">
-                    <h5 class="fw-bold mb-0">Statut actuel :
+                    <h5 class="fw-bold mb-0">Décision / Statut :
                         {% if application.status == 'approved' %}<span class="badge bg-success">✅ Approuvé</span>
                         {% elif application.status == 'rejected' %}<span class="badge bg-danger">❌ Rejeté</span>
                         {% else %}<span class="badge bg-warning text-dark">⏳ En attente</span>{% endif %}
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="d-grid gap-2">
-                        {% if application.status != 'approved' %}
-                        <form method="post">
-                            <{% csrf_token %} <input type="hidden" name="action" value="approve">
-                                <button class="btn btn-success w-100"><i class="fas fa-check me-2"></i>✅ Approuver et
-                                    notifier par email</button>
-                        </form>
-                        {% endif %}
+                    <div class="d-grid gap-3">
+
+                        <!-- Formulaire de Validation / Mise à jour du Rôle -->
+                        <div class="p-3 border rounded bg-light">
+                            <h6 class="fw-bold mb-3">{% if application.status == 'approved' %}Mettre à jour le rôle{%
+                                else %}Valider la candidature{% endif %}</h6>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="approve">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Attribuer un rôle définitif :</label>
+                                    <select name="role_applied" class="form-select">
+                                        <option value="director" {% if application.role_applied=='director' %}selected{%
+                                            endif %}>Directeur(trice)</option>
+                                        <option value="deputy_director" {% if
+                                            application.role_applied=='deputy_director' %}selected{% endif %}>
+                                            Directeur(trice) Adjoint(e)</option>
+                                        <option value="rapporteur" {% if application.role_applied=='rapporteur'
+                                            %}selected{% endif %}>Rapporteur(e)</option>
+                                        <option value="deputy_rapporteur" {% if
+                                            application.role_applied=='deputy_rapporteur' %}selected{% endif %}>
+                                            Rapporteur(e) Adjoint(e)</option>
+                                        <option value="member" {% if application.role_applied=='member' %}selected{%
+                                            endif %}>Membre Simple</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-success w-100">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    {% if application.status == 'approved' %}Enregistrer les modifications{% else
+                                    %}Confirmer et approuver{% endif %}
+                                </button>
+                            </form>
+                        </div>
+
                         {% if application.status != 'rejected' %}
                         <form method="post">{% csrf_token %}
                             <input type="hidden" name="action" value="reject">
-                            <button class="btn btn-danger w-100"><i class="fas fa-times me-2"></i>❌ Rejeter et notifier
-                                par email</button>
+                            <button class="btn btn-outline-danger btn-sm w-100"><i class="fas fa-times me-2"></i>Rejeter
+                                la candidature</button>
                         </form>
                         {% endif %}
-                        <hr>
+
+                        <hr class="my-1">
+
                         <form method="post" onsubmit="return confirm('Supprimer définitivement cette candidature ?');">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="delete">
-                            <button class="btn btn-outline-danger w-100"><i class="fas fa-trash me-2"></i>Supprimer la
-                                candidature</button>
+                            <button class="btn btn-link btn-sm text-danger w-100 text-decoration-none"><i
+                                    class="fas fa-trash me-2"></i>Supprimer le dossier</button>
                         </form>
                     </div>
                 </div>
