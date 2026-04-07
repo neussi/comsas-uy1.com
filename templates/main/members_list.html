@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}Annuaire des Membres — COMS.A.S{% endblock %}
 
@@ -163,7 +164,7 @@
                         {% with skills=member.skills|split:"," %}
                         {% for skill in skills|slice:":4" %}
                         <span class="skill-badge">{{ skill.strip }}</span>
-                        endfor %}
+                        {% endfor %}
                         {% endwith %}
                         {% endif %}
                     </div>
