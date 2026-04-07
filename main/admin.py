@@ -633,4 +633,35 @@ class ClubCommissionApplicationAdmin(admin.ModelAdmin):
 
     def motivation_courte(self, obj):
         return (obj.motivation or '')[:60] + '...' if obj.motivation else ''
-    motivation_courte.short_description = 'Motivation'
+@admin.register(Contest)
+class ContestAdmin(admin.ModelAdmin):
+    list_display = ('title', 'start_date', 'end_date', 'allow_public_candidates', 'is_active')
+    list_filter = ('is_active', 'allow_public_candidates')
+    search_fields = ('title', 'description')
+    prepopulated_fields = {'slug': ('title',)}
+
+@admin.register(Candidate)
+class CandidateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'contest', 'status', 'votes_count', 'total_revenue', 'created_at')
+    list_filter = ('status', 'contest')
+    search_fields = ('name', 'description')
+    list_editable = ('status',)
+    actions = ['approve_candidates', 'reject_candidates']
+
+    def approve_candidates(self, request, queryset):
+        count = queryset.update(status='approved')
+        self.message_user(request, f"{count} candidats ont été approuvés.")
+    approve_candidates.short_description = "✅ Approuver les candidats sélectionnés"
+
+    def reject_candidates(self, request, queryset):
+        count = queryset.update(status='rejected')
+        self.message_user(request, f"{count} candidats ont été rejetés.")
+    reject_candidates.short_description = "❌ Rejeter les candidats sélectionnés"
+
+@admin.register(Vote)
+class VoteAdmin(admin.ModelAdmin):
+    list_display = ('transaction_id', 'contest', 'candidate', 'vote_count', 'amount', 'status', 'created_at')
+    list_filter = ('status', 'contest', 'created_at')
+    search_fields = ('transaction_id', 'voter_phone', 'voter_email')
+    readonly_fields = ('created_at',)
+

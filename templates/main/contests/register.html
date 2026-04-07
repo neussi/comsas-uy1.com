@@ -3,92 +3,154 @@
 
 {% block title %}S'enregistrer au concours - {{ contest.title }} | COMS.A.S{% endblock %}
 
-{% block content %}
-<section class="py-5 bg-light">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <nav aria-label="breadcrumb" class="mb-4" data-aos="fade-up">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'contest_list' %}">Concours</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'contest_detail' contest.slug %}">{{ contest.title
-                                }}</a></li>
-                        <li class="breadcrumb-item active">Inscription</li>
-                    </ol>
-                </nav>
+{% block extra_css %}
+<style>
+    .registration-hero {
+        background: linear-gradient(135deg, rgba(233, 30, 99, 0.05) 0%, rgba(255, 255, 255, 1) 100%);
+        padding: 60px 0;
+        border-bottom: 1px solid rgba(233, 30, 99, 0.1);
+    }
 
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden" data-aos="fade-up">
-                    <div class="card-header bg-primary py-4 text-center text-white border-0">
-                        <h2 class="fw-bold mb-0">Formulaire d'Inscription</h2>
-                        <p class="mb-0 opacity-75">{{ contest.title }}</p>
+    .glass-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(233, 30, 99, 0.1);
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(233, 30, 99, 0.1);
+    }
+
+    .form-section-title {
+        color: var(--rose);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-section-title::after {
+        content: '';
+        flex-grow: 1;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(233, 30, 99, 0.2), transparent);
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+        border: none;
+        padding: 16px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 10px 25px rgba(233, 30, 99, 0.3);
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 16px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .file-input-wrapper:hover {
+        border-color: var(--rose);
+        background: rgba(233, 30, 99, 0.02);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="registration-hero">
+    <div class="container text-center" data-aos="fade-down">
+        <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+            <i class="fas fa-edit me-2"></i>Inscription
+        </div>
+        <h1 class="display-4 fw-bold mb-2">Rejoignez la <span class="text-primary">Compétition</span></h1>
+        <p class="text-muted lead">{{ contest.title }}</p>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="glass-card p-4 p-md-5" data-aos="fade-up">
+                    <div class="alert bg-primary bg-opacity-5 text-primary border-0 rounded-4 mb-5 p-4">
+                        <div class="d-flex gap-3">
+                            <i class="fas fa-info-circle fa-2x mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Information importante</h6>
+                                <p class="mb-0 small opacity-75">Votre candidature sera examinée par notre équipe. Vous
+                                    recevrez une notification dès qu'elle sera validée et visible sur la plateforme.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body p-4 p-md-5">
-                        <div class="alert bg-primary bg-opacity-10 text-primary border-0 rounded-4 mb-4">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Remplissez ce formulaire pour soumettre votre candidature. Elle sera visible sur le site
-                            après validation par l'administrateur.
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation">
+                        {% csrf_token %}
+
+                        <div class="form-section-title">
+                            <i class="fas fa-user"></i> Identité du Candidat
+                        </div>
+                        <div class="mb-4">
+                            {{ form.name|as_crispy_field }}
                         </div>
 
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
+                        <div class="form-section-title">
+                            <i class="fas fa-align-left"></i> Présentation
+                        </div>
+                        <div class="mb-4">
+                            {{ form.description|as_crispy_field }}
+                        </div>
 
-                            <div class="row">
-                                <div class="col-md-12 mb-3">
-                                    {{ form.name|as_crispy_field }}
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    {{ form.description|as_crispy_field }}
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    {{ form.image|as_crispy_field }}
-                                    <small class="text-muted">Une photo de vous ou une image représentative de votre
-                                        projet (Max 5Mo).</small>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    {{ form.video_url|as_crispy_field }}
-                                    <small class="text-muted">Lien vers une vidéo de présentation (YouTube, Vimeo, etc.
-                                        - Optionnel).</small>
-                                </div>
+                        <div class="form-section-title">
+                            <i class="fas fa-camera"></i> Visuels
+                        </div>
+                        <div class="mb-4">
+                            {{ form.image|as_crispy_field }}
+                            <div class="form-text mt-2">
+                                <i class="fas fa-image me-1"></i> Formats acceptés : JPG, PNG (Max 5Mo).
                             </div>
+                        </div>
 
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit"
-                                    class="btn btn-primary btn-lg rounded-pill shadow-sm py-3 fw-bold">
-                                    Soumettre ma candidature
-                                </button>
-                                <a href="{% url 'contest_detail' contest.slug %}" class="btn btn-link text-muted">
-                                    Annuler et retour
-                                </a>
+                        <div class="form-section-title">
+                            <i class="fas fa-video"></i> Média Additionnel (Optionnel)
+                        </div>
+                        <div class="mb-5">
+                            {{ form.video_url|as_crispy_field }}
+                            <div class="form-text mt-2">
+                                <i class="fab fa-youtube me-1"></i> Collez ici un lien YouTube ou Vimeo.
                             </div>
-                        </form>
-                    </div>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-primary btn-submit rounded-pill shadow-sm">
+                                <i class="fas fa-paper-plane me-2"></i> ENVOYER MA CANDIDATURE
+                            </button>
+                            <a href="{% url 'contest_detail' contest.slug %}"
+                                class="btn btn-light rounded-pill py-3 text-muted">
+                                Annuler et retourner au concours
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="text-center mt-5 text-muted small" data-aos="fade-up" data-aos-delay="200">
+                    En soumettant ce formulaire, vous acceptez que le COMS.A.S utilise vos informations à des fins de
+                    gestion du concours.
                 </div>
             </div>
         </div>
     </div>
 </section>
-
-<style>
-    .rounded-4 {
-        border-radius: 1.5rem !important;
-    }
-
-    .form-control,
-    .form-select {
-        border-radius: 0.75rem;
-        padding: 0.75rem 1rem;
-        border: 1px solid #dee2e6;
-    }
-
-    .form-control:focus {
-        box-shadow: 0 0 0 0.25rem rgba(233, 30, 99, 0.1);
-        border-color: #E91E63;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
-        border: none;
-    }
-</style>
 {% endblock %}
