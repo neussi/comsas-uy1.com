@@ -103,17 +103,18 @@
                         </button>
                         {% else %}
                         <button class="btn btn-primary w-100 rounded-pill btn-vote hover-scale"
-                            data-candidate-id="{{ candidate.id }}" data-contest-slug="{{ contest.slug }}">
-                            <i class="fas fa-thumbs-up me-2"></i>Voter
+                            data-candidate-id="{{ candidate.id }}" data-candidate-name="{{ candidate.name }}"
+                            data-contest-slug="{{ contest.slug }}">
+                            <i class="fas fa-thumbs-up me-2"></i>Voter (100F)
                         </button>
-                        {% endif %}
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <div class="alert alert-warning text-center shadow-sm py-4 mb-5 rounded-4">
+        <div class="alert alert-warning text-center shadow-sm py-4 mb-5 rounded-4 border-0"
+            style="background: rgba(255,193,7,0.1); color: #856404;">
             <h4 class="alert-heading fw-bold"><i class="fas fa-lock me-2"></i>Les votes sont clos</h4>
             <p class="mb-0">Merci de votre participation. Voici les résultats finaux de ce concours.</p>
         </div>
@@ -122,7 +123,7 @@
         <!-- Results Chart -->
         <div class="row justify-content-center mt-5" data-aos="fade-up">
             <div class="col-lg-10">
-                <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="card shadow border-0 rounded-4 overflow-hidden bg-white">
                     <div class="card-header bg-white border-bottom-0 pt-4 pb-0 text-center">
                         <h4 class="fw-bold text-dark"><i class="fas fa-chart-bar me-2 text-primary"></i>Résultats en
                             temps réel</h4>
@@ -138,35 +139,90 @@
     </div>
 </section>
 
-<!-- Modal Vote Confirmation -->
+<!-- Modal Vote Freemopay -->
 <div class="modal fade" id="voteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold">Confirmer votre vote</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-dark text-white border-0 py-3">
+                <h5 class="modal-title fw-bold">Soutenir <span id="modalCandidateName" class="text-primary"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4">
-                <p class="text-muted mb-4">Pour valider votre vote, veuillez entrer vos identifiants étudiants.</p>
+            <div class="modal-body p-4" id="modalStep1">
+                <div class="text-center mb-4">
+                    <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">
+                        1 voix = 100 FCFA
+                    </div>
+                    <p class="text-muted small">Sélectionnez le nombre de voix pour soutenir votre candidat.</p>
+                </div>
+
                 <form id="voteForm">
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control rounded-3" id="email" placeholder="name@example.com"
-                            required>
-                        <label for="email">Email étudiant</label>
+                    <div class="mb-4 text-center">
+                        <label class="form-label fw-bold d-block mb-3">Nombre de voix</label>
+                        <div class="d-flex align-items-center justify-content-center gap-3">
+                            <button type="button" class="btn btn-outline-secondary rounded-circle btn-qty"
+                                data-action="minus" style="width: 45px; height: 45px;">-</button>
+                            <input type="number" id="voteCount" value="1" min="1" max="1000"
+                                class="form-control text-center fw-bold fs-4 border-0 bg-light" style="width: 100px;">
+                            <button type="button" class="btn btn-outline-secondary rounded-circle btn-qty"
+                                data-action="plus" style="width: 45px; height: 45px;">+</button>
+                        </div>
                     </div>
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control rounded-3" id="matricule" placeholder="Matricule"
-                            required>
-                        <label for="matricule">Matricule</label>
+
+                    <div class="card border-0 bg-light rounded-4 mb-4">
+                        <div class="card-body d-flex justify-content-between align-items-center py-3">
+                            <span class="fw-bold">Total à payer</span>
+                            <span class="h4 fw-bold text-primary mb-0"><span id="totalAmount">100</span> FCFA</span>
+                        </div>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Numéro Mobile Money (Orange ou MTN)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">+237</span>
+                            <input type="tel" class="form-control border-start-0 ps-0 rounded-end-pill" id="voterPhone"
+                                placeholder="6XXXXXXXX" required maxlength="9">
+                        </div>
+                        <div class="form-text text-center mt-2 small">Un message de confirmation apparaîtra sur votre
+                            téléphone.</div>
+                    </div>
+
                     <input type="hidden" id="candidateId">
                 </form>
-                <div id="voteError" class="alert alert-danger d-none mt-3 rounded-3 small"></div>
+
+                <div id="voteError" class="alert alert-danger d-none mt-3 rounded-pill small py-2 px-3 text-center">
+                </div>
             </div>
-            <div class="modal-footer border-0 pt-0 px-4 pb-4">
+
+            <!-- Attente de paiement -->
+            <div class="modal-body p-5 text-center d-none" id="modalStepWaiting">
+                <div class="spinner-border text-primary mb-4" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 class="fw-bold mb-2">Paiement en cours...</h5>
+                <p class="text-muted mb-4">Veuillez valider la transaction sur votre téléphone (<span
+                        id="waitPhone"></span>).</p>
+                <div class="alert bg-primary bg-opacity-10 text-primary small rounded-4 border-0">
+                    <i class="fas fa-info-circle me-2"></i>Ne fermez pas cette fenêtre tant que le paiement n'est pas
+                    confirmé.
+                </div>
+            </div>
+
+            <!-- Succès -->
+            <div class="modal-body p-5 text-center d-none" id="modalStepSuccess">
+                <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4"
+                    style="width: 80px; height: 80px;">
+                    <i class="fas fa-check fa-2x"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Merci pour votre vote !</h4>
+                <p class="text-muted mb-0">Vos <span id="successVoteCount" class="fw-bold text-dark"></span> voix ont
+                    été enregistrées avec succès pour <span id="successCandidate" class="fw-bold text-dark"></span>.</p>
+            </div>
+
+            <div class="modal-footer border-0 p-4 pt-0" id="modalFooter">
                 <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary rounded-pill px-4" id="confirmVoteBtn">
-                    Confirmé le vote
+                <button type="button" class="btn btn-primary rounded-pill px-4 flex-grow-1" id="confirmVoteBtn">
+                    Payer et Voter
                 </button>
             </div>
         </div>
@@ -186,12 +242,12 @@
             data: {
                 labels: chartLabels,
                 datasets: [{
-                    label: 'Nombre de votes',
+                    label: 'Nombre de voix',
                     data: chartData,
-                    backgroundColor: 'rgba(13, 110, 253, 0.7)',
-                    borderColor: 'rgba(13, 110, 253, 1)',
+                    backgroundColor: 'rgba(233, 30, 99, 0.7)', // Pink COMSAS
+                    borderColor: 'rgba(233, 30, 99, 1)',
                     borderWidth: 1,
-                    borderRadius: 5,
+                    borderRadius: 10,
                     barPercentage: 0.6
                 }]
             },
@@ -199,87 +255,146 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: false }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            borderDash: [5, 5]
-                        },
-                        ticks: {
-                            stepSize: 1
-                        }
+                        grid: { borderDash: [5, 5] }
                     },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+                    x: { grid: { display: false } }
                 }
             }
         });
 
-        // Voting Logic
+        // Voting Logic Freemopay
         const voteModal = new bootstrap.Modal(document.getElementById('voteModal'));
-        const voteBtn = document.querySelectorAll('.btn-vote');
+        const voteBtns = document.querySelectorAll('.btn-vote');
         const confirmBtn = document.getElementById('confirmVoteBtn');
-        const voteError = document.getElementById('voteError');
+        const voteCountInput = document.getElementById('voteCount');
+        const totalAmountSpan = document.getElementById('totalAmount');
+        const qtyBtns = document.querySelectorAll('.btn-qty');
 
-        voteBtn.forEach(btn => {
+        // Update total
+        const updateTotal = () => {
+            const votes = parseInt(voteCountInput.value) || 1;
+            totalAmountSpan.textContent = votes * 100;
+        };
+
+        voteCountInput.addEventListener('input', updateTotal);
+        qtyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.dataset.action;
+                let current = parseInt(voteCountInput.value) || 1;
+                if (action === 'plus') current++;
+                if (action === 'minus' && current > 1) current--;
+                voteCountInput.value = current;
+                updateTotal();
+            });
+        });
+
+        voteBtns.forEach(btn => {
             btn.addEventListener('click', function () {
-                if (this.disabled) return;
                 document.getElementById('candidateId').value = this.dataset.candidateId;
-                voteError.classList.add('d-none'); // Reset error
+                document.getElementById('modalCandidateName').textContent = this.dataset.candidateName;
+                document.getElementById('voteError').classList.add('d-none');
+
+                // Reset views
+                document.getElementById('modalStep1').classList.remove('d-none');
+                document.getElementById('modalStepWaiting').classList.add('d-none');
+                document.getElementById('modalStepSuccess').classList.add('d-none');
+                document.getElementById('modalFooter').classList.remove('d-none');
+
                 voteModal.show();
             });
         });
 
         confirmBtn.addEventListener('click', function () {
             const candidateId = document.getElementById('candidateId').value;
-            const email = document.getElementById('email').value;
-            const matricule = document.getElementById('matricule').value;
-            const btnSource = document.querySelector('.btn-vote[data-candidate-id="' + candidateId + '"]');
+            const voteCount = document.getElementById('voteCount').value;
+            const phone = document.getElementById('voterPhone').value;
+            const voteError = document.getElementById('voteError');
 
-            if (!btnSource) return;
-            const contestSlug = btnSource.dataset.contestSlug;
-
-            if (!email || !matricule) {
-                voteError.textContent = "Veuillez remplir tous les champs.";
+            if (!phone || phone.length < 9) {
+                voteError.textContent = "Veuillez entrer un numéro valide (9 chiffres).";
                 voteError.classList.remove('d-none');
                 return;
             }
 
-            // Disable button loading state could be added here
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Initiation...';
 
-            fetch(`/concours/${contestSlug}/vote/${candidateId}/`, {
+            // Create Vote and Initiate Freemopay
+            const formData = new FormData();
+            formData.append('candidate_id', candidateId);
+            formData.append('vote_count', voteCount);
+            formData.append('phone', '237' + phone);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'contest_vote_initiate' %}", {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}' // Ensure CSRF token is sent
-                },
-                body: JSON.stringify({ email: email, matricule: matricule })
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        voteModal.hide();
-                        // Show success message or reload
-                        // Ideally using a toast, but reload works for now to update counts
-                        location.reload();
+                        // Step Waiting
+                        document.getElementById('modalStep1').classList.add('d-none');
+                        document.getElementById('modalFooter').classList.add('d-none');
+                        document.getElementById('modalStepWaiting').classList.remove('d-none');
+                        document.getElementById('waitPhone').textContent = '237' + phone;
+
+                        // Start Polling
+                        startPolling(data.transaction_id);
                     } else {
-                        voteError.textContent = data.error || "Une erreur est survenue.";
+                        voteError.textContent = data.error || "Erreur lors de l'initiation.";
                         voteError.classList.remove('d-none');
+                        confirmBtn.disabled = false;
+                        confirmBtn.textContent = 'Payer et Voter';
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    voteError.textContent = "Erreur de connexion.";
+                    voteError.textContent = "Erreur réseau.";
                     voteError.classList.remove('d-none');
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = 'Payer et Voter';
                 });
         });
+
+        function startPolling(txId) {
+            const interval = setInterval(() => {
+                fetch(`/api/vote/status/${txId}/`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.is_confirmed) {
+                            clearInterval(interval);
+                            showSuccess(data);
+                        } else if (data.status === 'failed' || data.status === 'cancelled') {
+                            clearInterval(interval);
+                            alert("Le paiement a échoué ou a été annulé.");
+                            location.reload();
+                        }
+                    });
+            }, 3000);
+
+            // Timeout after 3 minutes
+            setTimeout(() => {
+                clearInterval(interval);
+            }, 180000);
+        }
+
+        function showSuccess(data) {
+            document.getElementById('modalStepWaiting').classList.add('d-none');
+            document.getElementById('modalStepSuccess').classList.remove('d-none');
+            document.getElementById('successVoteCount').textContent = data.vote_count;
+            document.getElementById('successCandidate').textContent = data.candidate_name;
+
+            setTimeout(() => {
+                location.reload();
+            }, 4000);
+        }
     });
 </script>
+{% endblock %}
 {% endblock %}

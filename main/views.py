@@ -1720,3 +1720,76 @@ def juin_candidates_status(request, contest_slug):
         'contest': contest,
         'candidates': candidates
     })
+
+from .freemopay_service import FreemopayPaymentProcessor, FreemopayWebhookHandler
+
+@csrf_exempt
+def juin_freemopay_webhook(request):
+    """Webhook pour recevoir les notifications de paiement Freemopay"""
+    if request.method == 'POST':
+        result = FreemopayWebhookHandler.handle_webhook(request.body)
+        if result.get('success'):
+            return JsonResponse({'status': 'ok'})
+        return JsonResponse({'status': 'error', 'message': result.get('error')}, status=400)
+    return HttpResponseForbidden()
+
+def contest_vote_initiate(request):
+    """Initier un vote payant (100 FCFA/voix)"""
+    if request.method == 'POST':
+        candidate_id = request.POST.get('candidate_id')
+        vote_count = int(request.POST.get('vote_count', 1))
+        phone = request.POST.get('phone')
+        
+        if not candidate_id or not phone or vote_count < 1:
+            return JsonResponse({'success': False, 'error': 'Données invalides'}, status=400)
+            
+        candidate = get_object_or_404(Candidate, id=candidate_id)
+        amount = vote_count * 100
+        transaction_id = f"VOTE-{uuid.uuid4().hex[:8].upper()}"
+        
+        vote = Vote.objects.create(
+            contest=candidate.contest,
+            candidate=candidate,
+            voter_phone=phone,
+            vote_count=vote_count,
+            amount=amount,
+            transaction_id=transaction_id,
+            status='pending',
+            ip_address=request.META.get('REMOTE_ADDR'),
+            user_agent=request.META.get('HTTP_USER_AGENT')
+        )
+        
+        processor = FreemopayPaymentProcessor()
+        result = processor.process_vote_payment(vote)
+        
+        if result.get('success'):
+            return JsonResponse({
+                'success': True,
+                'transaction_id': transaction_id,
+                'amount': amount,
+                'message': result.get('message')
+            })
+        else:
+            vote.status = 'failed'
+            vote.save()
+            return JsonResponse({'success': False, 'error': result.get('error')})
+            
+    return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
+
+def vote_status_check(request, transaction_id):
+    """Vérifier le statut d'un vote (polling)"""
+    vote = get_object_or_404(Vote, transaction_id=transaction_id)
+    
+    # Si toujours en cours, on peut tenter une vérification active si besoin
+    if vote.status == 'processing':
+        processor = FreemopayPaymentProcessor()
+        check = processor.verify_payment_status(vote)
+        if check.get('success') and check.get('status') == 'completed':
+            processor.confirm_payment(vote)
+            
+    return JsonResponse({
+        'status': vote.status,
+        'is_confirmed': vote.status == 'completed',
+        'candidate_name': vote.candidate.name,
+        'vote_count': vote.vote_count
+    })

@@ -606,6 +606,7 @@ class Candidate(models.Model):
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='approved', verbose_name="Statut")
     votes_count = models.IntegerField(default=0, verbose_name="Nombre de votes") # Denormalized for performance
+    total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Revenus générés (FCFA)")
     
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -618,30 +619,47 @@ class Candidate(models.Model):
         return f"{self.name} ({self.contest.title})"
 
 class Vote(models.Model):
-    """Vote individuel"""
+    """Vote individuel ou multiple (payant)"""
+    VOTE_STATUS = [
+        ('pending', 'En attente'),
+        ('processing', 'En cours'),
+        ('completed', 'Confirmé'),
+        ('failed', 'Échoué'),
+        ('cancelled', 'Annulé'),
+    ]
+
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE, verbose_name="Concours")
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, verbose_name="Candidat")
     
-    # Secure Verification info
-    voter_email = models.EmailField(verbose_name="Email Votant", default="")
-    voter_matricule = models.CharField(max_length=20, verbose_name="Matricule Votant", default="")
+    # Voter info
+    voter_email = models.EmailField(verbose_name="Email Votant", default="", blank=True)
+    voter_matricule = models.CharField(max_length=20, verbose_name="Matricule Votant", default="", blank=True)
+    voter_phone = models.CharField(max_length=20, verbose_name="Téléphone Votant", default="")
     
-    ip_address = models.GenericIPAddressField(verbose_name="Adresse IP")
+    # Payment info
+    vote_count = models.IntegerField(default=1, verbose_name="Nombre de voix")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Montant payé (FCFA)")
+    transaction_id = models.CharField(max_length=100, unique=True, null=True, blank=True, verbose_name="ID Transaction")
+    payment_reference = models.CharField(max_length=100, blank=True, null=True, verbose_name="Référence Paiement")
+    withdrawal_reference = models.CharField(max_length=100, blank=True, null=True, verbose_name="Référence Retrait")
+    status = models.CharField(max_length=20, choices=VOTE_STATUS, default='pending', verbose_name="Statut")
+    
+    # Audit info
+    ip_address = models.GenericIPAddressField(verbose_name="Adresse IP", null=True, blank=True)
     session_key = models.CharField(max_length=40, blank=True, null=True, verbose_name="Clé de session")
     user_agent = models.TextField(blank=True, null=True, verbose_name="User Agent")
     
     created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(blank=True, null=True, verbose_name="Date de confirmation")
 
     class Meta:
         verbose_name = "Vote"
         verbose_name_plural = "Votes"
-        # Strict "One Person, One Vote" constraints
-        constraints = [
-            models.UniqueConstraint(fields=['contest', 'voter_email'], name='unique_vote_email_per_contest'),
-            models.UniqueConstraint(fields=['contest', 'voter_matricule'], name='unique_vote_matricule_per_contest'),
-        ]
+        ordering = ['-created_at']
         indexes = [
             models.Index(fields=['contest', 'ip_address', 'session_key']),
+            models.Index(fields=['transaction_id']),
+            models.Index(fields=['payment_reference']),
         ]
 
     def __str__(self):

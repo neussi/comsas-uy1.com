@@ -113,8 +113,10 @@ urlpatterns = [
     path('juin/devenir-partenaire/', views.juin_sponsor_request, name='juin_become_partner'),
     
     # FreemoPay Webhooks & Async checks
-    path('api/payments/webhook/freemopay/', views.juin_payment_webhook, name='juin_freemopay_webhook'),
+    path('api/payments/webhook/freemopay/', views.juin_freemopay_webhook, name='juin_freemopay_webhook'),
     path('api/payments/status/<uuid:external_id>/', views.juin_payment_status_check, name='juin_payment_status'),
+    path('api/vote/initiate/', views.contest_vote_initiate, name='contest_vote_initiate'),
+    path('api/vote/status/<str:transaction_id>/', views.vote_status_check, name='vote_status_check'),
 
     # ============= NOUVELLES FONCTIONNALITÉS 2026 =============
     # Projets
