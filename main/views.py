@@ -15,7 +15,7 @@ from .models import (
     SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote, Archive, ArchiveComment,
     JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
-    JUINActivity, JUINDonation, JUINSponsor,
+    JUINActivity, JUINDonation, JUINSponsor, JUINTeam,
     ClubCommission, ClubCommissionApplication, ProjectSubmission
 )
 from .forms import (

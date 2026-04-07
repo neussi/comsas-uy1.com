@@ -7,121 +7,172 @@
 {% block extra_css %}
 <style>
     :root {
-        --primary: #2563eb;
-        --secondary: #64748b;
-        --accent: #E91E63;
-        --bg-light: #f8fafc;
+        --primary: #E91E63;
+        --primary-dark: #C2185B;
+        --secondary: #1a0a10;
+        --accent: #FF9800;
+        --bg-light: #fdf5f8;
         --glass: rgba(255, 255, 255, 0.9);
+        --rose-pale: rgba(233, 30, 99, 0.05);
     }
 
     .members-page {
         background: var(--bg-light);
         min-height: 100vh;
-        padding: 80px 0;
+        padding: 100px 0;
+        background-image: radial-gradient(circle at 10% 20%, rgba(233, 30, 99, 0.03) 0%, transparent 20%),
+            radial-gradient(circle at 90% 80%, rgba(233, 30, 99, 0.03) 0%, transparent 20%);
     }
 
     .search-section {
         background: white;
         padding: 40px;
-        border-radius: 24px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        margin-bottom: 50px;
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(233, 30, 99, 0.08);
+        margin-bottom: 60px;
+        border: 1px solid rgba(233, 30, 99, 0.1);
     }
 
     .member-card {
         background: white;
-        border-radius: 20px;
-        padding: 30px;
+        border-radius: 28px;
+        padding: 35px;
         text-align: center;
-        transition: all 0.3s ease;
-        border: 1px solid #e2e8f0;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid #eee;
         height: 100%;
         position: relative;
         overflow: hidden;
     }
 
+    .member-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
     .member-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        transform: translateY(-15px);
+        box-shadow: 0 30px 60px rgba(233, 30, 99, 0.15);
         border-color: var(--primary);
+    }
+
+    .member-card:hover::before {
+        opacity: 1;
+    }
+
+    .member-photo-wrap {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        margin: 0 auto 25px;
+        padding: 5px;
+        background: linear-gradient(135deg, var(--rose-pale), #fff);
+        border: 1px solid #eee;
+        transition: all 0.3s;
+    }
+
+    .member-card:hover .member-photo-wrap {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        transform: scale(1.05);
     }
 
     .member-photo {
-        width: 120px;
-        height: 120px;
+        width: 100%;
+        height: 100%;
         border-radius: 50%;
-        margin: 0 auto 20px;
         object-fit: cover;
-        border: 4px solid #f1f5f9;
-        transition: border-color 0.3s;
-    }
-
-    .member-card:hover .member-photo {
-        border-color: var(--primary);
+        border: 4px solid white;
     }
 
     .member-name {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: #1e293b;
-        margin-bottom: 5px;
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: var(--secondary);
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
     }
 
     .member-level {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         color: var(--primary);
-        font-weight: 700;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 15px;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+        display: inline-block;
+        padding: 4px 12px;
+        background: var(--rose-pale);
+        border-radius: 50px;
     }
 
     .member-skills {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 8px;
         justify-content: center;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
     }
 
     .skill-badge {
         font-size: 0.7rem;
-        padding: 4px 10px;
-        background: #f1f5f9;
-        color: #475569;
+        padding: 5px 12px;
+        background: #f8f9fa;
+        color: #555;
         border-radius: 50px;
-        font-weight: 600;
+        font-weight: 700;
+        border: 1px solid #f0f0f0;
     }
 
     .btn-portfolio {
-        background: var(--primary);
+        background: var(--secondary);
         color: white;
-        padding: 10px 25px;
+        padding: 12px 30px;
         border-radius: 50px;
         text-decoration: none;
-        font-weight: 700;
-        font-size: 0.9rem;
+        font-weight: 800;
+        font-size: 0.85rem;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         transition: all 0.3s;
+        border: none;
+        width: 100%;
+        justify-content: center;
     }
 
     .btn-portfolio:hover {
-        background: #1d4ed8;
+        background: var(--primary);
         color: white;
-        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+        box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3);
     }
 
     .search-input {
         border-radius: 50px;
-        padding: 15px 30px;
-        border: 2px solid #e2e8f0;
+        padding: 18px 35px;
+        border: 2px solid #f1f5f9;
+        font-size: 1.1rem;
+        font-weight: 500;
     }
 
     .search-input:focus {
         border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        box-shadow: 0 0 0 5px rgba(233, 30, 99, 0.1);
+    }
+
+    .btn-search {
+        background: var(--primary);
+        color: white;
+        border-radius: 50px;
+        font-weight: 800;
+        padding: 15px;
+        border: none;
     }
 </style>
 {% endblock %}
@@ -130,18 +181,25 @@
 <div class="members-page">
     <div class="container">
         <div class="text-center mb-5">
-            <h1 class="display-4 fw-bold">🚀 Annuaire <span class="text-primary">COMS.A.S</span></h1>
-            <p class="text-muted lead">Découvrez l'excellence et les talents de notre communauté.</p>
+            <span class="badge bg-danger mb-3"
+                style="padding: 8px 20px; border-radius: 50px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800;">Annuaire
+                Officiel</span>
+            <h1 class="display-3 fw-bold" style="color: var(--secondary); letter-spacing: -2px;">Talents <span
+                    style="color: var(--primary);">COMS.A.S</span></h1>
+            <p class="text-muted lead mx-auto" style="max-width: 600px;">L'élite de l'informatique à l'Université de
+                Yaoundé 1. Découvrez nos profils et expertises.</p>
         </div>
 
         <div class="search-section">
             <form method="get" class="row g-3">
                 <div class="col-md-10">
                     <input type="text" name="q" class="form-control search-input"
-                        placeholder="Rechercher un membre par nom, compétence ou technologie..." value="{{ q }}">
+                        placeholder="Expertise, nom ou technologie..." value="{{ q }}">
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100 h-100 rounded-pill fw-bold">Rechercher</button>
+                    <button type="submit" class="btn btn-search w-100 h-100 rounded-pill">
+                        <i class="fas fa-search me-2"></i>Filtrer
+                    </button>
                 </div>
             </form>
         </div>
@@ -150,11 +208,13 @@
             {% for member in members %}
             <div class="col-md-6 col-lg-4 col-xl-3">
                 <div class="member-card">
-                    {% if member.photo %}
-                    <img src="{{ member.photo.url }}" class="member-photo" alt="{{ member.nom_prenom }}">
-                    {% else %}
-                    <img src="{% static 'images/default-avatar.png' %}" class="member-photo" alt="Avatar">
-                    {% endif %}
+                    <div class="member-photo-wrap">
+                        {% if member.photo %}
+                        <img src="{{ member.photo.url }}" class="member-photo" alt="{{ member.nom_prenom }}">
+                        {% else %}
+                        <img src="{% static 'images/default-avatar.png' %}" class="member-photo" alt="Avatar">
+                        {% endif %}
+                    </div>
 
                     <h3 class="member-name">{{ member.nom_prenom }}</h3>
                     <div class="member-level">{{ member.get_niveau_display }}</div>
@@ -162,7 +222,7 @@
                     <div class="member-skills">
                         {% if member.skills %}
                         {% with skills=member.skills|split:"," %}
-                        {% for skill in skills|slice:":4" %}
+                        {% for skill in skills|slice:":3" %}
                         <span class="skill-badge">{{ skill.strip }}</span>
                         {% endfor %}
                         {% endwith %}
@@ -171,33 +231,49 @@
 
                     <a href="{% if member.slug %}{% url 'delegate_detail' member.slug %}{% else %}#{% endif %}"
                         class="btn-portfolio">
-                        <i class="fas fa-external-link-alt"></i> Portfolio
+                        Consulter le Profil <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
             {% empty %}
             <div class="col-12 text-center py-5">
-                <i class="fas fa-user-friends fa-4x text-light mb-3"></i>
-                <p class="text-muted">Aucun membre trouvé pour cette recherche.</p>
+                <div class="py-5 px-4 rounded-4" style="border: 2px dashed #ddd; background: #fff;">
+                    <i class="fas fa-user-slash fa-3x text-muted mb-3 opacity-25"></i>
+                    <h3 class="text-muted fw-bold">Aucun résultat</h3>
+                    <p class="text-muted">Nous n'avons trouvé personne correspondant à "{{ q }}".</p>
+                </div>
             </div>
             {% endfor %}
         </div>
 
         <!-- Pagination -->
         {% if members.has_other_pages %}
-        <nav class="mt-5">
-            <ul class="pagination justify-content-center">
+        <nav class="mt-5 pt-4">
+            <ul class="pagination justify-content-center gap-2">
                 {% if members.has_previous %}
-                <li class="page-item"><a class="page-link"
-                        href="?page={{ members.previous_page_number }}&q={{ q }}">Précédent</a></li>
+                <li class="page-item">
+                    <a class="page-link rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 45px; height: 45px; border: none; background: white; color: var(--primary);"
+                        href="?page={{ members.previous_page_number }}&q={{ q }}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
                 {% endif %}
 
-                <li class="page-item disabled"><span class="page-link">Page {{ members.number }} de {{
-                        members.paginator.num_pages }}</span></li>
+                <li class="page-item active">
+                    <span class="page-link rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 45px; height: 45px; border: none; background: var(--primary);">{{ members.number
+                        }}</span>
+                </li>
 
                 {% if members.has_next %}
-                <li class="page-item"><a class="page-link"
-                        href="?page={{ members.next_page_number }}&q={{ q }}">Suivant</a></li>
+                <li class="page-item">
+                    <a class="page-link rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 45px; height: 45px; border: none; background: white; color: var(--primary);"
+                        href="?page={{ members.next_page_number }}&q={{ q }}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
                 {% endif %}
             </ul>
         </nav>
