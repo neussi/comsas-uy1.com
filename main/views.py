@@ -1460,7 +1460,9 @@ def juin_competition_register(request, competition_slug):
 def juin_competitions_status(request):
     """Page affichant l'état des compétitions et les équipes engagées"""
     edition = JUINEdition.objects.filter(is_active=True).first()
-    competitions = JUINCompetition.objects.filter(edition=edition).prefetch_related('teams') if edition else []
+    competitions = JUINCompetition.objects.filter(edition=edition).prefetch_related(
+        models.Prefetch('teams', queryset=JUINTeam.objects.filter(statut='approved'))
+    ) if edition else []
     
     context = {
         'edition': edition,
@@ -1665,3 +1667,55 @@ def job_offer_create(request):
         form = JobOfferForm()
         
     return render(request, 'main/job_offer_create.html', {'form': form})
+
+def members_list(request):
+    """Annuaire de tous les membres du COMSAS"""
+    members = Member.objects.filter(is_active=True).order_by('nom_prenom')
+    
+    # Recherche
+    q = request.GET.get('q', '')
+    if q:
+        members = members.filter(Q(nom_prenom__icontains=q) | Q(skills__icontains=q) | Q(technologies__icontains=q))
+    
+    paginator = Paginator(members, 15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'main/members_list.html', {
+        'members': page_obj,
+        'q': q
+    })
+
+def juin_candidate_register(request, contest_slug):
+    """Inscription individuelle à un concours J.U.IN"""
+    contest = get_object_or_404(Contest, slug=contest_slug, is_active=True)
+    
+    if request.method == 'POST':
+        from .forms import CandidateRegistrationForm
+        form = CandidateRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            candidate = form.save(commit=False)
+            candidate.contest = contest
+            candidate.status = 'pending'
+            candidate.save()
+            # On génère un ticket pour le candidat si nécessaire
+            messages.success(request, "Votre candidature a été soumise avec succès ! En attente de validation.")
+            return redirect('juin')
+    else:
+        from .forms import CandidateRegistrationForm
+        form = CandidateRegistrationForm()
+    
+    return render(request, 'main/juin_candidate_register.html', {
+        'form': form,
+        'contest': contest
+    })
+
+def juin_candidates_status(request, contest_slug):
+    """Affichage des candidats retenus pour un concours"""
+    contest = get_object_or_404(Contest, slug=contest_slug)
+    candidates = Candidate.objects.filter(contest=contest, status='approved').order_by('name')
+    
+    return render(request, 'main/juin_candidates.html', {
+        'contest': contest,
+        'candidates': candidates
+    })

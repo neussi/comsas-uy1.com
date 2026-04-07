@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Candidature Individuelle — {{ contest.title }} | J.U.IN 2026{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-pale: rgba(233, 30, 99, 0.05);
+        --rose-border: rgba(233, 30, 99, 0.15);
+        --dark: #121212;
+    }
+
+    .apply-page {
+        min-height: 100vh;
+        padding: 80px 0;
+        background: #fdf2f8;
+    }
+
+    .apply-card {
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0 15px 40px rgba(233, 30, 99, 0.1);
+        overflow: hidden;
+        border: 1px solid var(--rose-border);
+    }
+
+    .apply-header {
+        background: var(--dark);
+        color: white;
+        padding: 40px;
+        text-align: center;
+        position: relative;
+    }
+
+    .apply-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--rose), #f06292);
+    }
+
+    .apply-body {
+        padding: 50px;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        padding: 12px 18px;
+        border: 2px solid #f1f5f9;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: var(--rose);
+        box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.1);
+    }
+
+    .btn-submit {
+        background: var(--rose);
+        color: white;
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-weight: 700;
+        border: none;
+        width: 100%;
+        margin-top: 20px;
+        box-shadow: 0 10px 20px rgba(233, 30, 99, 0.2);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(233, 30, 99, 0.3);
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="apply-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="apply-card">
+                    <div class="apply-header">
+                        <h1 class="h3 fw-bold mb-2">🚀 Candidature Individuelle</h1>
+                        <p class="text-white-50 mb-0">Concours : <strong>{{ contest.title }}</strong></p>
+                    </div>
+                    <div class="apply-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="form-label">Nom du candidat / Projet</label>
+                                    {{ form.name }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Photo Portrait / Image du Projet</label>
+                                    {{ form.image }}
+                                    <small class="text-muted">Une image de haute qualité pour votre profil de
+                                        candidat.</small>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Lien Vidéo (Optionnel)</label>
+                                    {{ form.video_url }}
+                                    <small class="text-muted">YouTube, Vimeo, etc. pour présenter votre talent ou
+                                        projet.</small>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Bio / Description du Projet</label>
+                                    {{ form.description }}
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-submit">Soumettre ma candidature</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

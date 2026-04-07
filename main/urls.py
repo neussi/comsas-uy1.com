@@ -98,7 +98,15 @@ urlpatterns = [
     path('juin/postuler/', views.juin_apply_commission, name='juin_apply'),
     path('juin/postuler/succes/', views.juin_apply_success, name='juin_apply_success'),
     path('juin/commission/<slug:slug>/', views.juin_commission_detail, name='juin_commission_detail'),
-    path('juin/soutenir/', views.juin_donate, name='juin_donate'),
+    
+    # Concours / Candidats
+    path('juin/concours/<slug:contest_slug>/postuler/', views.juin_candidate_register, name='juin_candidate_register'),
+    path('juin/concours/<slug:contest_slug>/candidats/', views.juin_candidates_status, name='juin_candidates'),
+
+    # Membres
+    path('membres/', views.members_list, name='members_list'),
+    
+    path('contact/', views.contact, name='contact'),
     path('juin/guide/', views.juin_guide, name='juin_guide'),
     path('juin/sponsors/', views.juin_sponsors_list, name='juin_sponsors'),
     path('juin/devenir-partenaire/', views.juin_sponsor_request, name='juin_become_partner'),

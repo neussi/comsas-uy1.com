@@ -566,14 +566,23 @@
                                 <div class="col-md-12">
                                     <label class="form-label">Nom complet *</label>
                                     {{ form.captain_name }}
+                                    {% if form.captain_name.errors %}
+                                    <div class="field-error">{{ form.captain_name.errors.0 }}</div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Adresse e-mail *</label>
                                     {{ form.captain_email }}
+                                    {% if form.captain_email.errors %}
+                                    <div class="field-error">{{ form.captain_email.errors.0 }}</div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">WhatsApp *</label>
                                     {{ form.captain_phone }}
+                                    {% if form.captain_phone.errors %}
+                                    <div class="field-error">{{ form.captain_phone.errors.0 }}</div>
+                                    {% endif %}
                                 </div>
                             </div>
 

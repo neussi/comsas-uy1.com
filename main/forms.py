@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Fieldset, Submit, Row, Column, HTML
 from .models import (
     Member, EventRegistration, Contact, 
     ProjectSubmission, ClubCommission, ClubCommissionApplication,
-    AcademicResource, JobOffer
+    AcademicResource, JobOffer, Candidate, JUINTeam
 )
 
 
@@ -526,9 +526,17 @@ class JUINTeamRegistrationForm(forms.ModelForm):
                 self.fields['project_title'].label = "Nom du Club / Quartier (Optionnel)"
                 self.fields['project_description'].label = "Commentaire additionnel"
                 self.fields['project_description'].widget.attrs['placeholder'] = "Infos sur les couleurs de l'équipe, etc."
+                self.fields['project_title'].required = False
+                self.fields['project_description'].required = False
             elif competition.comp_type == 'computer':
                 self.fields['project_title'].required = True
                 self.fields['project_description'].required = True
+            else:
+                self.fields['project_title'].required = False
+                self.fields['project_description'].required = False
+        else:
+            self.fields['project_title'].required = False
+            self.fields['project_description'].required = False
 
     def clean_logo(self):
         logo = self.cleaned_data.get('logo')
@@ -620,6 +628,19 @@ class JobOfferForm(forms.ModelForm):
             'deadline': forms.DateInput(attrs={'type': 'date'}),
         }
         
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
+
+class CandidateRegistrationForm(forms.ModelForm):
+    class Meta:
+        model = Candidate
+        fields = ['name', 'description', 'image', 'video_url']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Parlez-nous de vous ou de votre projet...'}),
+        }
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():

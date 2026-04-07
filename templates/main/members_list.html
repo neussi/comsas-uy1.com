@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Annuaire des Membres — COMS.A.S{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #2563eb;
+        --secondary: #64748b;
+        --accent: #E91E63;
+        --bg-light: #f8fafc;
+        --glass: rgba(255, 255, 255, 0.9);
+    }
+
+    .members-page {
+        background: var(--bg-light);
+        min-height: 100vh;
+        padding: 80px 0;
+    }
+
+    .search-section {
+        background: white;
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        margin-bottom: 50px;
+    }
+
+    .member-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid #e2e8f0;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .member-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary);
+    }
+
+    .member-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        object-fit: cover;
+        border: 4px solid #f1f5f9;
+        transition: border-color 0.3s;
+    }
+
+    .member-card:hover .member-photo {
+        border-color: var(--primary);
+    }
+
+    .member-name {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 5px;
+    }
+
+    .member-level {
+        font-size: 0.85rem;
+        color: var(--primary);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+    }
+
+    .member-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .skill-badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+
+    .btn-portfolio {
+        background: var(--primary);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+    }
+
+    .btn-portfolio:hover {
+        background: #1d4ed8;
+        color: white;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    }
+
+    .search-input {
+        border-radius: 50px;
+        padding: 15px 30px;
+        border: 2px solid #e2e8f0;
+    }
+
+    .search-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="members-page">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold">🚀 Annuaire <span class="text-primary">COMS.A.S</span></h1>
+            <p class="text-muted lead">Découvrez l'excellence et les talents de notre communauté.</p>
+        </div>
+
+        <div class="search-section">
+            <form method="get" class="row g-3">
+                <div class="col-md-10">
+                    <input type="text" name="q" class="form-control search-input"
+                        placeholder="Rechercher un membre par nom, compétence ou technologie..." value="{{ q }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 h-100 rounded-pill fw-bold">Rechercher</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="row g-4">
+            {% for member in members %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="member-card">
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" class="member-photo" alt="{{ member.nom_prenom }}">
+                    {% else %}
+                    <img src="{% static 'images/default-avatar.png' %}" class="member-photo" alt="Avatar">
+                    {% endif %}
+
+                    <h3 class="member-name">{{ member.nom_prenom }}</h3>
+                    <div class="member-level">{{ member.get_niveau_display }}</div>
+
+                    <div class="member-skills">
+                        {% if member.skills %}
+                        {% with skills=member.skills|split:"," %}
+                        {% for skill in skills|slice:":4" %}
+                        <span class="skill-badge">{{ skill.strip }}</span>
+                        endfor %}
+                        {% endwith %}
+                        {% endif %}
+                    </div>
+
+                    <a href="{% url 'delegate_detail' member.slug %}" class="btn-portfolio">
+                        <i class="fas fa-external-link-alt"></i> Portfolio
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-user-friends fa-4x text-light mb-3"></i>
+                <p class="text-muted">Aucun membre trouvé pour cette recherche.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if members.has_other_pages %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if members.has_previous %}
+                <li class="page-item"><a class="page-link"
+                        href="?page={{ members.previous_page_number }}&q={{ q }}">Précédent</a></li>
+                {% endif %}
+
+                <li class="page-item disabled"><span class="page-link">Page {{ members.number }} de {{
+                        members.paginator.num_pages }}</span></li>
+
+                {% if members.has_next %}
+                <li class="page-item"><a class="page-link"
+                        href="?page={{ members.next_page_number }}&q={{ q }}">Suivant</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

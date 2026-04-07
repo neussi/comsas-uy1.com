@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Candidats Officiels — {{ contest.title }} | J.U.IN 2026{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-pale: rgba(233, 30, 99, 0.05);
+        --rose-border: rgba(233, 30, 99, 0.15);
+        --dark: #121212;
+    }
+
+    .candidates-page {
+        min-height: 100vh;
+        padding: 80px 0;
+        background: #fafafa;
+    }
+
+    .candidate-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid #eee;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-align: center;
+        padding: 30px;
+        height: 100%;
+        position: relative;
+    }
+
+    .candidate-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        border-color: var(--rose);
+    }
+
+    .candidate-img-wrapper {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        position: relative;
+        padding: 5px;
+        background: linear-gradient(135deg, var(--rose), #f06292);
+        box-shadow: 0 8px 16px rgba(233, 30, 99, 0.2);
+    }
+
+    .candidate-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+    }
+
+    .candidate-name {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--dark);
+        margin-bottom: 5px;
+    }
+
+    .candidate-level {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--rose);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+    }
+
+    .vote-count-badge {
+        display: inline-block;
+        background: #f1f5f9;
+        color: #475569;
+        padding: 6px 15px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .btn-vote {
+        background: var(--dark);
+        color: white;
+        width: 100%;
+        padding: 12px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        display: inline-block;
+        margin-top: 20px;
+        transition: all 0.3s;
+    }
+
+    .btn-vote:hover {
+        background: var(--rose);
+        color: white;
+        box-shadow: 0 10px 20px rgba(233, 30, 99, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="candidates-page">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-danger mb-2"
+                style="padding: 6px 16px; border-radius: 50px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">J.U.IN
+                2026</span>
+            <h1 class="display-4 fw-bold">Candidats retenus : <span class="text-danger">{{ contest.title }}</span></h1>
+            <p class="text-muted lead">Découvrez les finalistes et soutenez vos talents préférés.</p>
+        </div>
+
+        <div class="row g-4">
+            {% for candidate in candidates %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="candidate-card">
+                    <div class="candidate-img-wrapper">
+                        {% if candidate.image %}
+                        <img src="{{ candidate.image.url }}" class="candidate-img" alt="{{ candidate.name }}">
+                        {% else %}
+                        <img src="{% static 'images/default-avatar.png' %}" class="candidate-img" alt="Avatar">
+                        {% endif %}
+                    </div>
+
+                    <h3 class="candidate-name">{{ candidate.name }}</h3>
+                    <p class="small text-muted">{{ candidate.description|truncatechars:100 }}</p>
+
+                    <div class="vote-count-badge">
+                        <i class="fas fa-heart text-danger me-1"></i> {{ candidate.votes_count }} soutiens
+                    </div>
+
+                    <a href="{% url 'vote_candidate' contest.slug candidate.id %}" class="btn-vote">
+                        Soutenir ce candidat
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="p-5 border-2 border-dashed rounded-4" style="border: 2px dashed #ddd;">
+                    <i class="fas fa-user-edit fa-3x text-muted mb-3 opacity-25"></i>
+                    <h3 class="text-muted fw-bold">Aucun candidat validé</h3>
+                    <p class="text-muted">Le comité d'organisation sélectionne actuellement les dossiers retenus.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
