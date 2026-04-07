@@ -229,7 +229,7 @@
                         {% endif %}
                     </div>
 
-                    <a href="{% if member.slug %}{% url 'delegate_detail' member.slug %}{% else %}#{% endif %}"
+                    <a href="{% if member.portfolio_slug %}{% url 'delegate_detail' member.portfolio_slug %}{% else %}#{% endif %}"
                         class="btn-portfolio">
                         Consulter le Profil <i class="fas fa-arrow-right"></i>
                     </a>
@@ -262,7 +262,8 @@
 
                 <li class="page-item active">
                     <span class="page-link rounded-circle d-flex align-items-center justify-content-center"
-                        style="width: 45px; height: 45px; border: none; background: var(--primary);">{{ members.number }}</span>
+                        style="width: 45px; height: 45px; border: none; background: var(--primary);">{{ members.number
+                        }}</span>
                 </li>
 
                 {% if members.has_next %}
