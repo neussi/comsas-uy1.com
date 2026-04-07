@@ -1611,10 +1611,8 @@
         <div class="toast show border-0 shadow-lg mb-2 w-100" role="alert" aria-live="assertive" data-bs-autohide="true"
             data-bs-delay="5000" style="background:var(--gradient-dark);border-radius:16px;overflow:hidden;">
             <div class="toast-header border-0" style="background:rgba(233,30,99,.15);">
-                <i class="fas fa-{% if message.tags == 'success' %}check-circle"
-                    style="color:#10b981{% elif message.tags == 'error' %}times-circle"
-                    style="color:#ef4444{% elif message.tags == 'warning' %}exclamation-triangle"
-                    style="color:#f59e0b{% else %}info-circle" style="color:var(--rose-light){% endif %} me-2"></i>
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}times-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"
+                    style="color:{% if message.tags == 'success' %}#10b981{% elif message.tags == 'error' %}#ef4444{% elif message.tags == 'warning' %}#f59e0b{% else %}var(--rose-light){% endif %};"></i>
                 <strong class="me-auto text-white" style="font-size:.85rem;">Notification</strong>
                 <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="toast"
                     aria-label="Fermer"></button>
