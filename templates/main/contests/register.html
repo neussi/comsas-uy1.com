@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}S'enregistrer au concours - {{ contest.title }} | COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb" class="mb-4" data-aos="fade-up">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contest_list' %}">Concours</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contest_detail' contest.slug %}">{{ contest.title
+                                }}</a></li>
+                        <li class="breadcrumb-item active">Inscription</li>
+                    </ol>
+                </nav>
+
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden" data-aos="fade-up">
+                    <div class="card-header bg-primary py-4 text-center text-white border-0">
+                        <h2 class="fw-bold mb-0">Formulaire d'Inscription</h2>
+                        <p class="mb-0 opacity-75">{{ contest.title }}</p>
+                    </div>
+                    <div class="card-body p-4 p-md-5">
+                        <div class="alert bg-primary bg-opacity-10 text-primary border-0 rounded-4 mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Remplissez ce formulaire pour soumettre votre candidature. Elle sera visible sur le site
+                            après validation par l'administrateur.
+                        </div>
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    {{ form.name|as_crispy_field }}
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    {{ form.description|as_crispy_field }}
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    {{ form.image|as_crispy_field }}
+                                    <small class="text-muted">Une photo de vous ou une image représentative de votre
+                                        projet (Max 5Mo).</small>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    {{ form.video_url|as_crispy_field }}
+                                    <small class="text-muted">Lien vers une vidéo de présentation (YouTube, Vimeo, etc.
+                                        - Optionnel).</small>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit"
+                                    class="btn btn-primary btn-lg rounded-pill shadow-sm py-3 fw-bold">
+                                    Soumettre ma candidature
+                                </button>
+                                <a href="{% url 'contest_detail' contest.slug %}" class="btn btn-link text-muted">
+                                    Annuler et retour
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .rounded-4 {
+        border-radius: 1.5rem !important;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(233, 30, 99, 0.1);
+        border-color: #E91E63;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+        border: none;
+    }
+</style>
+{% endblock %}

@@ -369,6 +369,75 @@ tech, etudiant informatique{% endblock %}
 </section>
 {% endif %}
 
+{% if active_contests %}
+<!-- ═══════════════════════════════════════════
+     CONCOURS & ÉLECTIONS
+═══════════════════════════════════════════ -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
+                    <i class="fas fa-trophy me-2"></i>Compétitions
+                </div>
+                <h2 class="fw-bold mb-3">Concours & <span class="text-primary">Élections</span></h2>
+                <p class="text-muted">Participez à la vie du département. Votez pour vos favoris ou présentez votre
+                    propre candidature.</p>
+            </div>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {% for contest in active_contests %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="card h-100 border-0 shadow-lg hover-lift overflow-hidden rounded-4">
+                    <div class="position-relative">
+                        {% if contest.image %}
+                        <img src="{{ contest.image.url }}" class="card-img-top" alt="{{ contest.title }}"
+                            style="height: 220px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-primary d-flex align-items-center justify-content-center text-white"
+                            style="height: 220px; background: linear-gradient(135deg, #E91E63 0%, #f06292 100%);">
+                            <i class="fas fa-trophy fa-4x opacity-50"></i>
+                        </div>
+                        {% endif %}
+                        <div class="position-absolute top-0 end-0 m-3 badge bg-danger shadow-sm animate-pulse">
+                            <i class="fas fa-circle small me-1"></i> EN DIRECT
+                        </div>
+                    </div>
+
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <h4 class="card-title fw-bold mb-2">{{ contest.title }}</h4>
+                        <p class="text-muted small mb-3">
+                            <i class="far fa-clock me-1"></i> Fin le {{ contest.end_date|date:"d F Y à H:i" }}
+                        </p>
+                        <p class="card-text mb-4 text-muted small">{{ contest.description|truncatewords:15 }}</p>
+
+                        <div class="mt-auto d-grid gap-2">
+                            <a href="{% url 'contest_detail' contest.slug %}"
+                                class="btn btn-primary rounded-pill shadow-sm hover-lift">
+                                <i class="fas fa-check-circle me-2"></i> Voter maintenant
+                            </a>
+
+                            {% if contest.allow_public_candidates %}
+                            <a href="{% url 'juin_candidate_register' contest.slug %}"
+                                class="btn btn-outline-primary rounded-pill hover-lift">
+                                <i class="fas fa-user-plus me-2"></i> S'enregistrer comme candidat
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'contest_list' %}" class="btn btn-link text-primary text-decoration-none fw-bold">
+                Voir toutes les compétitions <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <!-- ═══════════════════════════════════════════
      NOS PILIERS (ACTIVITÉS)
 ═══════════════════════════════════════════ -->

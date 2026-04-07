@@ -88,11 +88,18 @@
                                 </p>
                                 <p class="card-text mb-4 text-muted">{{ contest.description|truncatewords:20 }}</p>
 
-                                <div class="mt-auto">
+                                <div class="mt-auto d-grid gap-2">
                                     <a href="{% url 'contest_detail' contest.slug %}"
-                                        class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm hover-lift">
+                                        class="btn btn-primary btn-lg rounded-pill shadow-sm hover-lift">
                                         <i class="fas fa-check-circle me-2"></i> Voter maintenant
                                     </a>
+
+                                    {% if contest.allow_public_candidates %}
+                                    <a href="{% url 'juin_candidate_register' contest.slug %}"
+                                        class="btn btn-outline-primary btn-lg rounded-pill hover-lift">
+                                        <i class="fas fa-user-plus me-2"></i> S'enregistrer comme candidat
+                                    </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

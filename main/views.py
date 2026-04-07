@@ -58,8 +58,8 @@ def home(request):
     total_members = Member.objects.filter(is_active=True).count()
     completed_projects = Project.objects.filter(status='completed').count()
     
-    # JUIN 2026 context
-    juin_edition = JUINEdition.objects.filter(is_active=True).first()
+    # Concours actifs pour la home
+    active_contests = Contest.objects.filter(is_active=True).order_by('-start_date')[:3]
     
     context = {
         'site_settings': site_settings,
@@ -71,6 +71,7 @@ def home(request):
         'total_members': total_members,
         'completed_projects': completed_projects,
         'juin_edition': juin_edition,
+        'active_contests': active_contests,
     }
 
     
@@ -1687,10 +1688,14 @@ def members_list(request):
         'q': q
     })
 
-def juin_candidate_register(request, contest_slug):
-    """Inscription individuelle à un concours J.U.IN"""
+def contest_candidate_register(request, contest_slug):
+    """Inscription individuelle à un concours (Général)"""
     contest = get_object_or_404(Contest, slug=contest_slug, is_active=True)
     
+    if not contest.allow_public_candidates:
+        messages.error(request, "Les inscriptions publiques ne sont pas ouvertes pour ce concours.")
+        return redirect('contest_detail', slug=contest.slug)
+
     if request.method == 'POST':
         from .forms import CandidateRegistrationForm
         form = CandidateRegistrationForm(request.POST, request.FILES)
@@ -1699,14 +1704,13 @@ def juin_candidate_register(request, contest_slug):
             candidate.contest = contest
             candidate.status = 'pending'
             candidate.save()
-            # On génère un ticket pour le candidat si nécessaire
-            messages.success(request, "Votre candidature a été soumise avec succès ! En attente de validation.")
-            return redirect('juin')
+            messages.success(request, "Votre candidature a été soumise avec succès ! Elle sera visible après validation par l'administration.")
+            return redirect('contest_detail', slug=contest.slug)
     else:
         from .forms import CandidateRegistrationForm
         form = CandidateRegistrationForm()
     
-    return render(request, 'main/juin_candidate_register.html', {
+    return render(request, 'main/contests/register.html', {
         'form': form,
         'contest': contest
     })
@@ -1793,3 +1797,9 @@ def vote_status_check(request, transaction_id):
         'candidate_name': vote.candidate.name,
         'vote_count': vote.vote_count
     })
+
+def vote_complete(request, transaction_id):
+    """Page de confirmation finale du vote (Succès ou Échec)"""
+    vote = get_object_or_404(Vote, transaction_id=transaction_id)
+    return render(request, 'main/contests/vote_complete.html', {'vote': vote})
+

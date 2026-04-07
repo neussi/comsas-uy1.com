@@ -365,13 +365,12 @@
                 fetch(`/api/vote/status/${txId}/`)
                     .then(r => r.json())
                     .then(data => {
-                        if (data.is_confirmed) {
+                        if (data.is_confirmed || data.status === 'completed') {
                             clearInterval(interval);
-                            showSuccess(data);
+                            window.location.href = `/concours/vote/merci/${txId}/`;
                         } else if (data.status === 'failed' || data.status === 'cancelled') {
                             clearInterval(interval);
-                            alert("Le paiement a échoué ou a été annulé.");
-                            location.reload();
+                            window.location.href = `/concours/vote/merci/${txId}/`;
                         }
                     });
             }, 3000);
@@ -382,14 +381,9 @@
         }
 
         function showSuccess(data) {
-            document.getElementById('modalStepWaiting').classList.add('d-none');
-            document.getElementById('modalStepSuccess').classList.remove('d-none');
-            document.getElementById('successVoteCount').textContent = data.vote_count;
-            document.getElementById('successCandidate').textContent = data.candidate_name;
-
-            setTimeout(() => {
-                location.reload();
-            }, 4000);
+            // This is no longer used since we redirect in startPolling, 
+            // but left as a fallback if needed.
+            window.location.href = `/concours/vote/merci/${txId}/`;
         }
     });
 </script>
