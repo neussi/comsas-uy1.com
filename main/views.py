@@ -60,8 +60,8 @@ def home(request):
     total_members = Member.objects.filter(is_active=True).count()
     completed_projects = Project.objects.filter(status='completed').count()
     
-    # Concours actifs pour la home
-    active_contests = Contest.objects.filter(is_active=True).order_by('-start_date')[:3]
+    # Edition JUIN actuelle
+    juin_edition = JUINEdition.objects.filter(is_active=True).first()
     
     context = {
         'site_settings': site_settings,
