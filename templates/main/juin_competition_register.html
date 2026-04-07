@@ -4,7 +4,8 @@
 {% block title %}Inscription — {{ competition.name }} | J.U.IN 2026{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
 <style>
     :root {
         --rose: #E91E63;
@@ -21,7 +22,11 @@
         --gradient-dark: linear-gradient(135deg, #2d0617 0%, #1a0a10 100%);
     }
 
-    *, *::before, *::after { box-sizing: border-box; }
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
 
     body {
         font-family: 'Plus Jakarta Sans', sans-serif;
@@ -44,7 +49,7 @@
         right: -10%;
         width: 600px;
         height: 600px;
-        background: radial-gradient(circle, rgba(233,30,99,.06) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(233, 30, 99, .06) 0%, transparent 70%);
         pointer-events: none;
         z-index: 0;
     }
@@ -56,7 +61,7 @@
         left: -10%;
         width: 400px;
         height: 400px;
-        background: radial-gradient(circle, rgba(233,30,99,.04) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(233, 30, 99, .04) 0%, transparent 70%);
         pointer-events: none;
         z-index: 0;
     }
@@ -74,7 +79,9 @@
         margin-bottom: 32px;
     }
 
-    .back-link:hover { color: var(--rose); }
+    .back-link:hover {
+        color: var(--rose);
+    }
 
     .back-link i {
         width: 28px;
@@ -89,7 +96,10 @@
         transition: background .2s;
     }
 
-    .back-link:hover i { background: var(--rose); color: white; }
+    .back-link:hover i {
+        background: var(--rose);
+        color: white;
+    }
 
     /* ── Main card ── */
     .compete-card {
@@ -97,10 +107,10 @@
         border-radius: 32px;
         overflow: hidden;
         box-shadow:
-            0 4px 6px rgba(0,0,0,.02),
-            0 20px 60px rgba(233,30,99,.1),
-            0 1px 0 rgba(255,255,255,.8) inset;
-        border: 1px solid rgba(233,30,99,.08);
+            0 4px 6px rgba(0, 0, 0, .02),
+            0 20px 60px rgba(233, 30, 99, .1),
+            0 1px 0 rgba(255, 255, 255, .8) inset;
+        border: 1px solid rgba(233, 30, 99, .08);
         position: relative;
         z-index: 1;
     }
@@ -119,7 +129,9 @@
     .left-panel::before {
         content: '';
         position: absolute;
-        top: 0; left: 0; right: 0;
+        top: 0;
+        left: 0;
+        right: 0;
         height: 3px;
         background: var(--gradient);
     }
@@ -131,7 +143,7 @@
         right: -60px;
         width: 240px;
         height: 240px;
-        background: radial-gradient(circle, rgba(233,30,99,.15) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(233, 30, 99, .15) 0%, transparent 70%);
         pointer-events: none;
     }
 
@@ -139,8 +151,8 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: rgba(233,30,99,.2);
-        border: 1px solid rgba(233,30,99,.35);
+        background: rgba(233, 30, 99, .2);
+        border: 1px solid rgba(233, 30, 99, .35);
         color: var(--rose-light);
         padding: 5px 14px;
         border-radius: 50px;
@@ -160,7 +172,7 @@
     }
 
     .left-panel p {
-        color: rgba(255,255,255,.45);
+        color: rgba(255, 255, 255, .45);
         font-size: .88rem;
         line-height: 1.7;
         margin-bottom: 32px;
@@ -178,8 +190,8 @@
         width: 40px;
         height: 40px;
         border-radius: 12px;
-        background: rgba(255,255,255,.07);
-        border: 1px solid rgba(255,255,255,.1);
+        background: rgba(255, 255, 255, .07);
+        border: 1px solid rgba(255, 255, 255, .1);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -193,20 +205,20 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1px;
-        color: rgba(255,255,255,.35);
+        color: rgba(255, 255, 255, .35);
         margin-bottom: 2px;
     }
 
     .info-value {
         font-size: .9rem;
         font-weight: 600;
-        color: rgba(255,255,255,.8);
+        color: rgba(255, 255, 255, .8);
     }
 
     /* ── Note box ── */
     .note-box {
-        background: rgba(255,255,255,.04);
-        border: 1px solid rgba(255,255,255,.08);
+        background: rgba(255, 255, 255, .04);
+        border: 1px solid rgba(255, 255, 255, .08);
         border-radius: 16px;
         padding: 18px 20px;
         margin-top: auto;
@@ -215,18 +227,20 @@
     .note-box h6 {
         font-size: .78rem;
         font-weight: 700;
-        color: rgba(255,255,255,.7);
+        color: rgba(255, 255, 255, .7);
         margin-bottom: 8px;
         display: flex;
         align-items: center;
         gap: 8px;
     }
 
-    .note-box h6 i { color: var(--rose-light); }
+    .note-box h6 i {
+        color: var(--rose-light);
+    }
 
     .note-box p {
         font-size: .75rem;
-        color: rgba(255,255,255,.35);
+        color: rgba(255, 255, 255, .35);
         margin: 0;
         line-height: 1.6;
     }
@@ -255,7 +269,7 @@
         margin-bottom: 6px;
     }
 
-    .right-panel > p {
+    .right-panel>p {
         color: var(--text-muted);
         font-size: .88rem;
         margin-bottom: 36px;
@@ -300,7 +314,7 @@
     .form-control,
     .form-select,
     textarea.form-control {
-        border: 1.5px solid rgba(233,30,99,.15);
+        border: 1.5px solid rgba(233, 30, 99, .15);
         border-radius: 12px;
         padding: 11px 15px;
         font-size: .88rem;
@@ -316,13 +330,13 @@
     textarea.form-control:focus {
         border-color: var(--rose);
         background: var(--blanc);
-        box-shadow: 0 0 0 4px rgba(233,30,99,.1);
+        box-shadow: 0 0 0 4px rgba(233, 30, 99, .1);
         outline: none;
     }
 
     .form-control::placeholder,
     textarea.form-control::placeholder {
-        color: rgba(138,96,112,.4);
+        color: rgba(138, 96, 112, .4);
     }
 
     textarea.form-control {
@@ -376,7 +390,7 @@
         content: '!';
         width: 14px;
         height: 14px;
-        background: rgba(233,30,99,.12);
+        background: rgba(233, 30, 99, .12);
         border-radius: 50%;
         display: inline-flex;
         align-items: center;
@@ -395,7 +409,7 @@
         border: none;
         border-radius: 50px;
         padding: 14px 48px;
-        box-shadow: 0 8px 24px rgba(233,30,99,.35);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .35);
         transition: transform .2s, box-shadow .2s, opacity .2s;
         cursor: pointer;
         display: inline-flex;
@@ -405,7 +419,7 @@
 
     .btn-submit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(233,30,99,.45);
+        box-shadow: 0 14px 32px rgba(233, 30, 99, .45);
         opacity: .95;
         color: white;
     }
@@ -416,8 +430,8 @@
 
     /* ── Alert non-field errors ── */
     .alert-field {
-        background: rgba(233,30,99,.08);
-        border: 1px solid rgba(233,30,99,.25);
+        background: rgba(233, 30, 99, .08);
+        border: 1px solid rgba(233, 30, 99, .25);
         color: var(--rose-dark);
         border-radius: 14px;
         padding: 14px 18px;
@@ -436,15 +450,34 @@
 
     /* ── Responsive ── */
     @media (max-width: 991px) {
-        .left-panel { min-height: unset; padding: 36px 28px; }
-        .right-panel { padding: 36px 28px; }
-        .deco-icon { display: none; }
+        .left-panel {
+            min-height: unset;
+            padding: 36px 28px;
+        }
+
+        .right-panel {
+            padding: 36px 28px;
+        }
+
+        .deco-icon {
+            display: none;
+        }
     }
 
     @media (max-width: 575px) {
-        .compete-page { padding: 32px 0 60px; }
-        .left-panel, .right-panel { padding: 28px 20px; }
-        .btn-submit { width: 100%; justify-content: center; }
+        .compete-page {
+            padding: 32px 0 60px;
+        }
+
+        .left-panel,
+        .right-panel {
+            padding: 28px 20px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 {% endblock %}
@@ -505,12 +538,14 @@
                         </div>
 
                         <!-- Deco -->
-                        <i class="deco-icon fas {% if competition.comp_type == 'sport' %}fa-futbol{% elif competition.comp_type == 'gaming' %}fa-gamepad{% else %}fa-laptop-code{% endif %}"></i>
+                        <i
+                            class="deco-icon fas {% if competition.comp_type == 'sport' %}fa-futbol{% elif competition.comp_type == 'gaming' %}fa-gamepad{% else %}fa-laptop-code{% endif %}"></i>
 
                         <!-- Note -->
                         <div class="note-box">
                             <h6><i class="fas fa-shield-alt"></i>Validation requise</h6>
-                            <p>Toutes les inscriptions sont soumises à validation par le comité d'organisation. Assurez-vous que les informations du capitaine sont correctes.</p>
+                            <p>Toutes les inscriptions sont soumises à validation par le comité d'organisation.
+                                Assurez-vous que les informations du capitaine sont correctes.</p>
                         </div>
 
                     </div>
@@ -523,7 +558,7 @@
                         <h2>Formulaire d'Inscription</h2>
                         <p>Complétez avec soin les détails de votre équipe ou candidature individuelle.</p>
 
-                        <form method="post" enctype="multipart/form-data" novalidate>
+                        <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
 
                             <!-- Section 1 : L'Équipe -->
@@ -548,9 +583,12 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">Liste des membres <span style="color:var(--text-muted);font-weight:400;">— un par ligne</span></label>
+                                    <label class="form-label">Liste des membres <span
+                                            style="color:var(--text-muted);font-weight:400;">— un par
+                                            ligne</span></label>
                                     {{ form.members_list }}
-                                    <div class="form-text"><i class="fas fa-info-circle me-1"></i>Notez un membre par ligne : Nom Prénom — Établissement</div>
+                                    <div class="form-text"><i class="fas fa-info-circle me-1"></i>Notez un membre par
+                                        ligne : Nom Prénom — Établissement</div>
                                 </div>
                             </div>
 
@@ -601,7 +639,8 @@
                                 </div>
                                 {% if competition.comp_type != 'sport' %}
                                 <div class="col-md-6">
-                                    <label class="form-label">Logo de l'équipe / Projet <span style="color:var(--text-muted);font-weight:400;">— optionnel</span></label>
+                                    <label class="form-label">Logo de l'équipe / Projet <span
+                                            style="color:var(--text-muted);font-weight:400;">— optionnel</span></label>
                                     {{ form.logo }}
                                 </div>
                                 {% endif %}

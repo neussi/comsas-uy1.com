@@ -169,7 +169,8 @@
                         {% endif %}
                     </div>
 
-                    <a href="{% url 'delegate_detail' member.slug %}" class="btn-portfolio">
+                    <a href="{% if member.slug %}{% url 'delegate_detail' member.slug %}{% else %}#{% endif %}"
+                        class="btn-portfolio">
                         <i class="fas fa-external-link-alt"></i> Portfolio
                     </a>
                 </div>

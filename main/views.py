@@ -1459,9 +1459,10 @@ def juin_competition_register(request, competition_slug):
 
 def juin_competitions_status(request):
     """Page affichant l'état des compétitions et les équipes engagées"""
+    from django.db import models as db_models
     edition = JUINEdition.objects.filter(is_active=True).first()
     competitions = JUINCompetition.objects.filter(edition=edition).prefetch_related(
-        models.Prefetch('teams', queryset=JUINTeam.objects.filter(statut='approved'))
+        db_models.Prefetch('teams', queryset=JUINTeam.objects.filter(statut='approved'))
     ) if edition else []
     
     context = {
