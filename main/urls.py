@@ -98,6 +98,7 @@ urlpatterns = [
     path('juin/postuler/', views.juin_apply_commission, name='juin_apply'),
     path('juin/postuler/succes/', views.juin_apply_success, name='juin_apply_success'),
     path('juin/commission/<slug:slug>/', views.juin_commission_detail, name='juin_commission_detail'),
+    path('juin/soutenir/', views.juin_donate, name='juin_donate'),
     
     # Concours / Candidats
     path('juin/concours/<slug:contest_slug>/postuler/', views.juin_candidate_register, name='juin_candidate_register'),
