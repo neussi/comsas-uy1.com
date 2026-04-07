@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 import json
+import uuid
+import logging
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import JsonResponse, FileResponse, Http404
@@ -1763,6 +1765,7 @@ def contest_vote_initiate(request):
             user_agent=request.META.get('HTTP_USER_AGENT')
         )
         
+        from .freemopay_service import FreemopayPaymentProcessor
         processor = FreemopayPaymentProcessor()
         result = processor.process_vote_payment(vote)
         
