@@ -1720,7 +1720,7 @@ def project_submission_detail(request, pk):
                     'description_en': submission.description or '',
                     'budget_required': 0.00,
                     'start_date': timezone.now().date(),
-                    'status': 'active', 
+                    'status': 'ongoing', 
                     'is_featured': False,
                     'image': submission.logo
                 }
