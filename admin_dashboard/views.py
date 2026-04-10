@@ -1711,9 +1711,19 @@ def project_submission_detail(request, pk):
     if request.method == 'POST':
         action = request.POST.get('action')
         if action == 'publish':
+            from django.utils import timezone
             Project.objects.get_or_create(
                 title_fr=submission.project_name,
-                defaults={'description_fr': submission.description or '', 'status': 'active', 'is_featured': False}
+                defaults={
+                    'title_en': submission.project_name,
+                    'description_fr': submission.description or '',
+                    'description_en': submission.description or '',
+                    'budget_required': 0.00,
+                    'start_date': timezone.now().date(),
+                    'status': 'active', 
+                    'is_featured': False,
+                    'image': submission.logo
+                }
             )
             submission.is_reviewed = True
             submission.save()
