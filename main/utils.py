@@ -5,6 +5,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
+from reportlab.pdfbase.pdfmetrics import stringWidth
 from django.conf import settings
 from django.urls import reverse
 import os
@@ -157,30 +158,31 @@ def generate_member_card(member):
     c.drawImage(ImageReader(qr_buffer), qr_x, qr_y, width=qr_size, height=qr_size)
     
     # Signature (Image) - Bas Centre
-    # Positionnement plus serré
-    label_x = text_x + 15*mm # Décalé un peu vers la droite pour centrer dans l'espace vide
+    label_x = text_x + 15*mm 
     label_y = 12*mm 
     
     c.setFont("Helvetica-Oblique", 6)
     c.setFillColorRGB(0, 0, 0)
     c.drawCentredString(label_x, label_y, "Le Président du COMS.A.S")
     
+    # We'll use the signature from the most recent active event or site settings if available,
+    # but the user provided a specific path: /home/npe-tech/Projets/Comsas/static/images/signature.png
     sig_file = os.path.join(settings.BASE_DIR, 'static', 'images', 'signature.png')
     
     if os.path.exists(sig_file):
         try:
             # Signature
-            c.drawImage(sig_file, label_x - 15*mm, 3*mm, width=30*mm, height=8.5*mm, mask='auto', preserveAspectRatio=True)
+            c.drawImage(sig_file, label_x - 15*mm, 3.5*mm, width=30*mm, height=8.5*mm, mask='auto', preserveAspectRatio=True)
             
-            # Nom
-            c.setFont("Helvetica-Bold", 6)
-            c.drawCentredString(label_x, 2*mm, "Neussi Patrice .E ")
-        except Exception as e:
-            c.setFont("Helvetica", 5)
-            c.drawCentredString(label_x, 5*mm, "Neussi Patrice .E")
+            # Nom (Dynamisé si possible via SiteSettings ou Event, mais ici on garde le président par défaut)
+            c.setFont("Helvetica-Bold", 6.5)
+            c.drawCentredString(label_x, 2.5*mm, "Neussi Patrice .E ")
+        except:
+            c.setFont("Helvetica-Bold", 6.5)
+            c.drawCentredString(label_x, 2.5*mm, "Neussi Patrice .E")
     else:
-        c.setFont("Helvetica-Bold", 6)
-        c.drawCentredString(label_x, 5*mm, "Neussi Patrice .E")
+        c.setFont("Helvetica-Bold", 6.5)
+        c.drawCentredString(label_x, 2.5*mm, "Neussi Patrice .E")
     
     c.showPage()
     c.save()
@@ -325,13 +327,17 @@ def generate_ticket(registration):
     p.setFont("Helvetica-Bold", 36)
     p.drawString(content_x + 1*inch, ticket_height - 1.1*inch, "TICKET")
     
-    # Event title
+    # Event title (Improved wrapping/truncation)
     p.setFont("Helvetica-Bold", 14)
     p.setFillColor(COMSAS_PINK)
-    event_title = registration.event.title_fr
-    if len(event_title) > 45:
-        event_title = event_title[:42] + "..."
-    p.drawString(content_x, ticket_height - 1.6*inch, event_title.upper())
+    event_title = registration.event.title_fr.upper()
+    
+    if stringWidth(event_title, "Helvetica-Bold", 14) > (ticket_width - content_x - 0.5*inch):
+        p.setFont("Helvetica-Bold", 11)
+        if stringWidth(event_title, "Helvetica-Bold", 11) > (ticket_width - content_x - 0.5*inch):
+            event_title = event_title[:65] + "..."
+            
+    p.drawString(content_x, ticket_height - 1.6*inch, event_title)
     
     # Event details
     y_pos = ticket_height - 2.0*inch

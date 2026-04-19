@@ -16,6 +16,7 @@ def generate_certificate(registration):
     """
     Generates a premium participation certificate with elegant design.
     Matches the example with decorative borders, dual logos, and QR code.
+    Updated to include up to 3 partner logos and the president's signature.
     """
     event = registration.event
     
@@ -23,8 +24,9 @@ def generate_certificate(registration):
     if not event.certificate_enabled:
         return None
     
-    # 1. Generate QR Code linking to event detail page
-    event_url = settings.SITE_URL + reverse('event_detail', kwargs={'pk': event.pk})
+    # 1. Generate QR Code linking to verification page
+    # Using the new verification URL
+    verify_url = settings.SITE_URL + reverse('ticket_verify', kwargs={'uuid': registration.uuid})
     
     qr = qrcode.QRCode(
         version=1,
@@ -32,7 +34,7 @@ def generate_certificate(registration):
         box_size=6,
         border=2,
     )
-    qr.add_data(event_url)
+    qr.add_data(verify_url)
     qr.make(fit=True)
     
     qr_img = qr.make_image(fill_color="black", back_color="white")
@@ -97,17 +99,25 @@ def generate_certificate(registration):
     draw_corner_ornament(page_width - border_margin - 0.3*inch, border_margin + 0.3*inch, 180)
     draw_corner_ornament(border_margin + 0.3*inch, border_margin + 0.3*inch, 270)
     
-    # --- HEADER: "ATTESTATION DE PARTICIPATION" in LARGE BOLD ---
+    # --- HEADER: "ATTESTATION DE PARTICIPATION" ---
     y_pos = page_height - border_margin - 0.9*inch
     p.setFillColor(TEXT_DARK)
     p.setFont("Times-Bold", 30)
     p.drawCentredString(page_width/2, y_pos, "ATTESTATION DE PARTICIPATION")
     
-    # --- Event Title (below main title) ---
+    # --- Event Title (Truncated if too long) ---
     y_pos -= 0.45*inch
     p.setFillColor(TEXT_LIGHT)
-    p.setFont("Times-Roman", 18)  # Increased from 12
+    p.setFont("Times-Roman", 18)
     title_text = event.certificate_title or event.title_fr.upper()
+    
+    # Overflow check for title
+    max_title_width = page_width - 2*inch
+    if stringWidth(title_text, "Times-Roman", 18) > max_title_width:
+        p.setFont("Times-Roman", 14)
+        if stringWidth(title_text, "Times-Roman", 14) > max_title_width:
+            title_text = title_text[:100] + "..."
+            
     p.drawCentredString(page_width/2, y_pos, title_text)
     
     # --- "CE CERTIFICAT EST DÉCERNÉ À:" ---
@@ -116,7 +126,7 @@ def generate_certificate(registration):
     p.setFillColor(TEXT_LIGHT)
     p.drawCentredString(page_width/2, y_pos, "CE CERTIFICAT EST DÉCERNÉ À :")
     
-    # --- Participant Name (Elegant Script Style) ---
+    # --- Participant Name ---
     y_pos -= 0.7*inch
     p.setFont("Times-Italic", 38)
     p.setFillColor(TEXT_DARK)
@@ -125,15 +135,11 @@ def generate_certificate(registration):
     
     # --- Description Text ---
     y_pos -= 1.0*inch
-    p.setFont("Times-Roman", 11)  # Increased from 9
+    p.setFont("Times-Roman", 11)
     p.setFillColor(TEXT_DARK)
     
-    # Default description if not set
-    description = event.certificate_description or f"""Le computer science association (Club informatique) de l'université de Yaoundé 1 en abrégé COMS.A.S, par la voix de son président 
-    certifie que le nommé a participé au {event.title_fr} tenu du {event.date_event.strftime('%d au %d %B %Y')}
-au centre universitaire des technologies et de l'information de cette université et qui avait pour module : {event.title_fr}.
-Ce dernier a démontré un engagement sérieux dans l'apprentissage des technologies et
-des connaissances abordées. En foi de quoi la présente attestation est établie pour lui valoir ce que de droit."""
+    # Custom main text or default fallback
+    description = event.certificate_main_text or event.certificate_description or f"""Le computer science association (Club informatique) de l'université de Yaoundé 1 en abrégé COMS.A.S, par la voix de son président certifie que le nommé a participé au {event.title_fr} tenu du {event.date_event.strftime('%d au %d %B %Y')} au centre universitaire des technologies et de l'information de cette université. Ce dernier a démontré un engagement sérieux dans l'apprentissage des technologies et des connaissances abordées. En foi de quoi la présente attestation est établie pour lui valoir ce que de droit."""
     
     # Wrap text
     max_width = page_width - 2.5*inch
@@ -143,7 +149,7 @@ des connaissances abordées. En foi de quoi la présente attestation est établi
     
     for word in words:
         test_line = current_line + " " + word if current_line else word
-        if stringWidth(test_line, "Times-Roman", 10) <= max_width:
+        if stringWidth(test_line, "Times-Roman", 11) <= max_width:
             current_line = test_line
         else:
             if current_line:
@@ -152,68 +158,93 @@ des connaissances abordées. En foi de quoi la présente attestation est établi
     if current_line:
         lines.append(current_line)
     
-    # Draw wrapped text (max 6 lines)
-    line_height = 0.30*inch
-    for i, line in enumerate(lines[:8]):
+    # Draw wrapped text
+    line_height = 0.28*inch
+    for i, line in enumerate(lines[:10]): # Increased line limit
         p.drawCentredString(page_width/2, y_pos - i*line_height, line)
     
-    # --- FOOTER SECTION (Well-spaced, no overlaps, MOVED HIGHER) ---
-    footer_y_base = border_margin + 1.5*inch  # Moved up from 1.2
+    # --- FOOTER SECTION (MOVED HIGHER to avoid overlap) ---
+    footer_y_base = border_margin + 1.45*inch
     
-    # Left Column: "Fait à :" + President
-    left_x = border_margin + 1.8*inch
+    # Center section for president and department head
+    center_sep = 2.0*inch
+    
+    # President Signature/Stamp (drawn BELOW the text if exists)
+    if event.president_signature:
+        sig_width = 1.4*inch
+        sig_height = 0.7*inch
+        sig_x = (page_width/2 - center_sep) - sig_width/2
+        sig_y = footer_y_base + 0.2*inch
+        p.drawImage(ImageReader(event.president_signature.path), sig_x, sig_y, width=sig_width, height=sig_height, mask='auto', preserveAspectRatio=True)
+    
+    # Text for "Fait à :" + President
+    left_x = page_width/2 - center_sep
     p.setFont("Times-Roman", 9)
     p.setFillColor(TEXT_DARK)
-    p.drawCentredString(left_x, footer_y_base + 0.85*inch, "Fait à :")  # Increased from 0.4
+    p.drawCentredString(left_x, footer_y_base + 0.85*inch, "Fait à :")
     
     p.setFont("Times-Bold", 10)
-    p.drawCentredString(left_x, footer_y_base + 0.25*inch, event.certificate_president_name)  # Increased from 0.15
+    p.drawCentredString(left_x, footer_y_base + 0.25*inch, event.certificate_president_name)
     
     p.setFont("Times-Roman", 8)
     p.setFillColor(TEXT_LIGHT)
-    p.drawCentredString(left_x, footer_y_base, event.certificate_president_title)  # Changed from -0.05
+    p.drawCentredString(left_x, footer_y_base, event.certificate_president_title)
     
-    # Center: COMS.A.S Logo (side by side with UY1 at bottom)
-    center_x = page_width / 2
-    
-    # Right Column: "Le :" + Department Head
-    right_x = page_width - border_margin - 1.8*inch
+    # Text for "Le :" + Department Head
+    right_x = page_width/2 + center_sep
     p.setFont("Times-Roman", 9)
     p.setFillColor(TEXT_DARK)
-    p.drawCentredString(right_x, footer_y_base + 0.85*inch, "Le :")  # Increased from 0.4
+    p.drawCentredString(right_x, footer_y_base + 0.85*inch, "Le :")
     
     p.setFont("Times-Bold", 10)
-    p.drawCentredString(right_x, footer_y_base + 0.25*inch, event.certificate_dept_head_name)  # Increased from 0.15
+    p.drawCentredString(right_x, footer_y_base + 0.25*inch, event.certificate_dept_head_name)
     
     p.setFont("Times-Roman", 8)
     p.setFillColor(TEXT_LIGHT)
-    p.drawCentredString(right_x, footer_y_base, event.certificate_dept_head_title)  # Changed from -0.05
+    p.drawCentredString(right_x, footer_y_base, event.certificate_dept_head_title)
     
-    # --- LOGOS AT BOTTOM (Side by side, centered, LARGER and HIGHER) ---
-    logo_y = border_margin + 0.55*inch  # Moved up from 0.35
-    logo_size = 1.5*inch  # Increased from 0.6
-    logo_spacing = 1.2*inch  # Increased spacing
+    # --- LOGOS AT BOTTOM (Dynamic Partners Layout) ---
+    logo_y = border_margin + 0.45*inch
+    logo_size = 1.0*inch # Slightly smaller to fit more
     
-    # UY1 Logo (left of center)
-    uy1_logo_path = os.path.join(settings.BASE_DIR, 'static/images/uy1.png')
-    uy1_x = center_x - logo_spacing
-    if os.path.exists(uy1_logo_path):
-        uy1_logo = ImageReader(uy1_logo_path)
-        p.drawImage(uy1_logo, uy1_x - logo_size/2, logo_y,
-                   width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
+    # Collect all existing logos
+    logos = []
+    # Always include COMSAS
+    comsas_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
+    if os.path.exists(comsas_path):
+        logos.append(comsas_path)
     
-    # COMS.A.S Logo (right of center)
-    comsas_x = center_x + logo_spacing
-    comsas_logo_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
-    if os.path.exists(comsas_logo_path):
-        comsas_logo = ImageReader(comsas_logo_path)
-        p.drawImage(comsas_logo, comsas_x - logo_size/2, logo_y,
-                   width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
+    # Add UY1
+    uy1_path = os.path.join(settings.BASE_DIR, 'static/images/uy1.png')
+    if os.path.exists(uy1_path):
+        logos.append(uy1_path)
+        
+    # Add Partner Logos
+    if event.partner_logo_1: logos.append(event.partner_logo_1.path)
+    if event.partner_logo_2: logos.append(event.partner_logo_2.path)
+    if event.partner_logo_3: logos.append(event.partner_logo_3.path)
     
-    # --- QR Code (bottom right, MOVED HIGHER) ---
-    qr_size = 0.7*inch
+    # Deduplicate and limit to 5 logos total (COMSAS + UY1 + 3 Partners)
+    unique_logos = []
+    for l in logos:
+        if l not in unique_logos: unique_logos.append(l)
+    
+    n_logos = len(unique_logos)
+    spacing = 1.2*inch
+    start_x = (page_width - (n_logos - 1) * spacing) / 2
+    
+    for i, logo_path in enumerate(unique_logos):
+        lx = start_x + (i * spacing)
+        try:
+            img = ImageReader(logo_path)
+            p.drawImage(img, lx - logo_size/2, logo_y, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
+        except:
+            pass
+            
+    # --- QR Code ---
+    qr_size = 0.65*inch
     qr_x = page_width - border_margin - qr_size - 0.4*inch
-    qr_y = border_margin + 0.6*inch  # Moved up from 0.3
+    qr_y = border_margin + 0.6*inch
     
     qr_reader = ImageReader(qr_blob)
     p.drawImage(qr_reader, qr_x, qr_y, width=qr_size, height=qr_size)
@@ -221,12 +252,15 @@ des connaissances abordées. En foi de quoi la présente attestation est établi
     # QR label
     p.setFont("Helvetica", 6)
     p.setFillColor(TEXT_LIGHT)
-    p.drawCentredString(qr_x + qr_size/2, qr_y - 0.12*inch, "Voir l'événement")
+    p.drawCentredString(qr_x + qr_size/2, qr_y - 0.12*inch, "Vérifier l'authenticité")
     
     p.showPage()
     p.save()
     
     buffer.seek(0)
+    # Cleanup old file if exists
+    if registration.certificate_pdf:
+        registration.certificate_pdf.delete(save=False)
     registration.certificate_pdf.save(f'certificate_{registration.uuid}.pdf', File(buffer), save=True)
     
     return registration.certificate_pdf.url

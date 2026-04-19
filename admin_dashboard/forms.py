@@ -115,12 +115,75 @@ class EventForm(forms.ModelForm):
         fields = [
             'title_fr', 'title_en', 'description_fr', 'description_en',
             'image', 'date_event', 'location', 'max_participants',
-            'registration_deadline', 'is_featured', 'is_active'
+            'registration_deadline', 'is_featured', 'is_active',
+            'certificate_enabled', 'certificate_title', 'certificate_main_text', 'certificate_description',
+            'certificate_president_name', 'certificate_president_title',
+            'certificate_dept_head_name', 'certificate_dept_head_title', 'president_signature',
+            'partner_logo_1', 'partner_logo_2', 'partner_logo_3', 'badge_enabled'
         ]
         widgets = {
             'date_event': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'registration_deadline': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'certificate_main_text': forms.Textarea(attrs={'rows': 4}),
+            'certificate_description': forms.Textarea(attrs={'rows': 3}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Informations Générales'),
+                Row(
+                    Column('title_fr', css_class='form-group col-md-6 mb-3'),
+                    Column('title_en', css_class='form-group col-md-6 mb-3'),
+                ),
+                'description_fr',
+                'description_en',
+                'image',
+                Row(
+                    Column('date_event', css_class='form-group col-md-6 mb-3'),
+                    Column('registration_deadline', css_class='form-group col-md-6 mb-3'),
+                ),
+                Row(
+                    Column('location', css_class='form-group col-md-6 mb-3'),
+                    Column('max_participants', css_class='form-group col-md-6 mb-3'),
+                ),
+                Row(
+                    Column('is_featured', css_class='form-group col-md-6 mb-3'),
+                    Column('is_active', css_class='form-group col-md-6 mb-3'),
+                ),
+            ),
+            Fieldset(
+                _('Configuration des Attestations'),
+                'certificate_enabled',
+                'certificate_title',
+                'certificate_main_text',
+                'certificate_description',
+                Row(
+                    Column('certificate_president_name', css_class='form-group col-md-6 mb-3'),
+                    Column('certificate_president_title', css_class='form-group col-md-6 mb-3'),
+                ),
+                Row(
+                    Column('certificate_dept_head_name', css_class='form-group col-md-6 mb-3'),
+                    Column('certificate_dept_head_title', css_class='form-group col-md-6 mb-3'),
+                ),
+                'president_signature',
+            ),
+            Fieldset(
+                _('Partenaires'),
+                Row(
+                    Column('partner_logo_1', css_class='form-group col-md-4 mb-3'),
+                    Column('partner_logo_2', css_class='form-group col-md-4 mb-3'),
+                    Column('partner_logo_3', css_class='form-group col-md-4 mb-3'),
+                ),
+            ),
+            Fieldset(
+                _('Badges'),
+                'badge_enabled',
+            ),
+            Submit('submit', _('Enregistrer'), css_class='btn btn-primary btn-lg w-100')
+        )
 
 class NewsForm(forms.ModelForm):
     """Formulaire pour les actualités"""

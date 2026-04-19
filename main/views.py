@@ -432,6 +432,17 @@ def event_detail(request, pk):
     
     return render(request, 'main/event_detail.html', context)
 
+def verify_ticket(request, uuid):
+    """
+    Vérifie l'authenticité d'un ticket ou d'une attestation via son UUID.
+    """
+    registration = get_object_or_404(EventRegistration, uuid=uuid)
+    
+    return render(request, 'main/ticket_verify.html', {
+        'registration': registration,
+        'event': registration.event
+    })
+
 def event_registration_success(request, uuid):
     """Page de confirmation d'inscription à un événement"""
     registration = get_object_or_404(EventRegistration, uuid=uuid)

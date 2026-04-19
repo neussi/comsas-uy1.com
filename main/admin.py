@@ -436,10 +436,84 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title_fr', 'date_event', 'location', 'is_active', 'is_featured')
-    list_filter = ('is_active', 'is_featured')
+    list_display = ('title_fr', 'date_event', 'location', 'is_active', 'is_featured', 'certificates_sent')
+    list_filter = ('is_active', 'is_featured', 'certificates_sent')
     list_editable = ('is_active', 'is_featured')
     search_fields = ('title_fr', 'location')
+    actions = ['send_event_certificates']
+
+    def send_event_certificates(self, request, queryset):
+        """
+        Génère et envoie les attestations par email pour tous les participants confirmés des événements sélectionnés.
+        """
+        for event in queryset:
+            registrations = EventRegistration.objects.filter(event=event, is_confirmed=True)
+            count = 0
+            
+            from .certificate_utils import generate_certificate
+            from .badge_utils import generate_badge
+            
+            for reg in registrations:
+                try:
+                    # 1. Générer l'attestation si activée
+                    cert_url = None
+                    if event.certificate_enabled:
+                        cert_url = generate_certificate(reg)
+                    
+                    # 2. Générer le badge si activé
+                    if event.badge_enabled:
+                        generate_badge(reg)
+                        
+                    # 3. Envoyer l'email
+                    subject = f"Votre attestation : {event.title_fr}"
+                    message = f"Bonjour {reg.nom_prenom},\n\nFélicitations pour votre participation à l'événement '{event.title_fr}'.\n\nVous trouverez ci-joint votre attestation de participation (si applicable) ainsi que votre badge.\n\nCordialement,\nL'équipe COM.S.AS"
+                    
+                    email = EmailMessage(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [reg.email],
+                    )
+                    
+                    # Attach certificate
+                    if reg.certificate_pdf:
+                        email.attach_file(reg.certificate_pdf.path)
+                    
+                    # Attach badge
+                    if reg.badge_pdf:
+                        email.attach_file(reg.badge_pdf.path)
+                        
+                    email.send(fail_silently=True)
+                    count += 1
+                except Exception as e:
+                    self.message_user(request, f"Erreur pour {reg.email}: {str(e)}", messages.ERROR)
+            
+            event.certificates_sent = True
+            event.save()
+            self.message_user(request, f"{count} attestations/badges envoyés pour '{event.title_fr}'.")
+            
+    send_event_certificates.short_description = "📧 Générer et envoyer les attestations"
+
+    fieldsets = (
+        ('Informations Générales', {
+            'fields': ('title_fr', 'title_en', 'description_fr', 'description_en', 'image', 'date_event', 
+                       'location', 'max_participants', 'registration_deadline', 'is_featured', 'is_active')
+        }),
+        ('Configuration des Attestations', {
+            'fields': ('certificate_enabled', 'certificate_title', 'certificate_main_text', 'certificate_description', 
+                       'certificate_president_name', 'certificate_president_title', 
+                       'certificate_dept_head_name', 'certificate_dept_head_title', 'president_signature', 'certificates_sent'),
+            'classes': ('collapse',)
+        }),
+        ('Partenaires', {
+            'fields': ('partner_logo_1', 'partner_logo_2', 'partner_logo_3'),
+            'classes': ('collapse',)
+        }),
+        ('Badges & Galerie', {
+            'fields': ('badge_enabled', 'gallery_album'),
+            'classes': ('collapse',)
+        }),
+    )
 
 @admin.register(EventRegistration)
 class EventRegistrationAdmin(admin.ModelAdmin):

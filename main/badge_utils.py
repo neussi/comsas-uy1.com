@@ -35,6 +35,7 @@ def generate_badge(registration):
     """
     Generates a CLEAN & PREMIUM event badge (A6 vertical).
     Features: Tech Pattern Background, Strategic Colors, Readable Text.
+    Updated: Title overflow fix and Partner Logos.
     """
     event = registration.event
     
@@ -64,38 +65,19 @@ def generate_badge(registration):
     p.setFillColor(colors.white)
     p.rect(0, 0, width, height, fill=1, stroke=0)
     
-    # --- TECH PATTERN BACKGROUND (Subtle Watermarks) ---
+    # --- TECH PATTERN BACKGROUND ---
     p.saveState()
-    # Very light grey
     p.setFillColor(colors.Color(0.96, 0.96, 0.98)) 
     p.setStrokeColor(colors.Color(0.93, 0.93, 0.95))
     p.setLineWidth(1.5)
     
-    # Symbol 1: Code Tags </>
     p.setFont("Helvetica-Bold", 30)
     p.drawCentredString(width*0.2, height*0.35, "</>")
-    
-    # Symbol 2: Curly Braces { }
     p.setFont("Helvetica-Bold", 20)
     p.drawCentredString(width*0.8, height*0.55, "{ }")
-    
-    # Symbol 3: Binary/Circuit Circles (Top Right area)
-    for i in range(5):
-        cx, cy = width * (0.6 + i*0.2), height * 0.25
-        # Don't draw if outside
-    
-    # Symbol 4: Network Nodes (Triangular connection) - Bottom Rightish
-    nx, ny = width*0.8, height*0.2
-    p.circle(nx, ny, 2*mm, fill=1, stroke=0)
-    p.circle(nx-10*mm, ny+8*mm, 2*mm, fill=1, stroke=0)
-    p.circle(nx-8*mm, ny-8*mm, 2*mm, fill=1, stroke=0)
-    p.setLineWidth(0.8)
-    p.line(nx, ny, nx-10*mm, ny+8*mm)
-    p.line(nx, ny, nx-8*mm, ny-8*mm)
-    
     p.restoreState()
 
-    # Dark Header (Top 40%)
+    # Dark Header
     p.setFillColor(HEADER_BG)
     header_path = p.beginPath()
     header_path.moveTo(0, height)
@@ -105,8 +87,7 @@ def generate_badge(registration):
     header_path.close()
     p.drawPath(header_path, fill=1, stroke=0)
     
-    # 2. Strategic "Bordure" Accents
-    # Accent 1: Cyan Corner (Top Left)
+    # Accents
     p.saveState()
     p.setFillColor(WAVE_CYAN)
     cyan_path = p.beginPath()
@@ -117,7 +98,7 @@ def generate_badge(registration):
     p.drawPath(cyan_path, fill=1, stroke=0)
     p.restoreState()
     
-    # Accent 2: Red Edge (Right Side)
+    # Accent 2: Red Edge
     p.saveState()
     p.setFillColor(WAVE_RED)
     red_path = p.beginPath()
@@ -129,7 +110,7 @@ def generate_badge(registration):
     p.drawPath(red_path, fill=1, stroke=0)
     p.restoreState()
     
-    # Accent 3: Bottom Footer Curve
+    # Bottom Footer Curve
     p.saveState()
     p.setFillColor(HEADER_BG)
     footer_path = p.beginPath()
@@ -139,41 +120,30 @@ def generate_badge(registration):
     footer_path.curveTo(width/2, 15*mm, 0, 5*mm, 0, 5*mm)
     footer_path.close()
     p.drawPath(footer_path, fill=1, stroke=0)
-    
-    # Colored line at bottom
-    p.setStrokeColor(WAVE_CYAN)
-    p.setLineWidth(2)
-    p.line(0, 0, width, 0)
     p.restoreState()
 
     # 3. Logo (Top Left)
-    logo_size = 13*mm
-    logo_y = height - 18*mm
-    logo_x = 10*mm # Left aligned
+    logo_size = 11*mm
+    logo_y = height - 16*mm
+    logo_x = 8*mm
     
     comsas_logo_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
     if os.path.exists(comsas_logo_path):
+        p.saveState()
         p.setFillColor(colors.white)
-        # Circle bg
-        p.circle(logo_x + logo_size/2, logo_y + logo_size/2, logo_size/2 + 2*mm, fill=1, stroke=0)
+        p.circle(logo_x + logo_size/2, logo_y + logo_size/2, logo_size/2 + 1.5*mm, fill=1, stroke=0)
         p.drawImage(ImageReader(comsas_logo_path), logo_x, logo_y, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
+        p.restoreState()
 
-    # 4. Photo (Centered in Header)
+    # 4. Photo
     photo_x = (width - PHOTO_SIZE) / 2
-    photo_y = height - 55*mm 
+    photo_y = height - 52*mm 
     
     # Photo Border
-    p.setLineWidth(3)
+    p.setLineWidth(2.5)
     p.setStrokeColor(colors.white) 
-    p.circle(photo_x + PHOTO_SIZE/2, photo_y + PHOTO_SIZE/2, PHOTO_SIZE/2 + 1.5*mm, fill=0, stroke=1)
+    p.circle(photo_x + PHOTO_SIZE/2, photo_y + PHOTO_SIZE/2, PHOTO_SIZE/2 + 1.2*mm, fill=0, stroke=1)
     
-    # Tech Rings
-    p.setLineWidth(1)
-    p.setStrokeColor(WAVE_CYAN)
-    p.arc(photo_x - 2*mm, photo_y - 2*mm, photo_x + PHOTO_SIZE + 2*mm, photo_y + PHOTO_SIZE + 2*mm, 45, 135)
-    p.setStrokeColor(WAVE_RED)
-    p.arc(photo_x - 2*mm, photo_y - 2*mm, photo_x + PHOTO_SIZE + 2*mm, photo_y + PHOTO_SIZE + 2*mm, 225, 315)
-
     # Draw Photo
     has_photo = False
     img_path = None
@@ -181,16 +151,11 @@ def generate_badge(registration):
     if registration.photo:
         img_path = registration.photo.path
     else:
-        # Fallback to Member profile photo if the email matches
         from main.models import Member
         linked_member = Member.objects.filter(email=registration.email).first()
-        if not linked_member:
-            linked_member = Member.objects.filter(nom_prenom__iexact=registration.nom_prenom).first()
         if linked_member and getattr(linked_member, 'photo', None):
-            try:
-                img_path = linked_member.photo.path
-            except ValueError:
-                pass
+            try: img_path = linked_member.photo.path
+            except: pass
 
     if img_path:
         try:
@@ -201,98 +166,85 @@ def generate_badge(registration):
                 img_buffer.seek(0)
                 p.drawImage(ImageReader(img_buffer), photo_x, photo_y, width=PHOTO_SIZE, height=PHOTO_SIZE, mask='auto', preserveAspectRatio=True)
                 has_photo = True
-        except Exception as e:
-            print(f"Photo error: {e}")
+        except: pass
             
     if not has_photo:
-        # Default Avatar
         p.setFillColor(colors.Color(0.9, 0.9, 0.9))
         p.circle(width/2, photo_y + PHOTO_SIZE/2, PHOTO_SIZE/2, fill=1, stroke=0)
-        p.setFillColor(HEADER_BG)
-        p.circle(width/2, photo_y + PHOTO_SIZE*0.65, 7*mm, fill=1, stroke=0)
-        p.ellipse(width/2 - 12*mm, photo_y, width/2 + 12*mm, photo_y + 14*mm, fill=1, stroke=0)
 
-    # 5. Header Text: "PARTICIPANT" ONLY (In Dark Header)
-    text_y_cursor = photo_y - 8*mm
+    # 5. Header Text
     p.setFont("Helvetica-Bold", 14)
     p.setFillColor(TEXT_WHITE)
-    p.drawCentredString(width/2, text_y_cursor, "PARTICIPANT")
+    p.drawCentredString(width/2, photo_y - 8*mm, "PARTICIPANT")
     
-    # 6. Body Content (White Section)
-    
-    # Event Title - MOVED DOWN to White Section for Visibility
-    # Position: Just below the header curve (~height - HEADER_HEIGHT - 10mm)
+    # 6. Body Content
     title_y = height - HEADER_HEIGHT - 8*mm
     p.setFont("Helvetica-Bold", 10)
-    p.setFillColor(WAVE_CYAN) # Cyan text on White bg is readable
-    p.drawCentredString(width/2, title_y, event.title_fr[:50].upper())
+    p.setFillColor(WAVE_CYAN)
     
-    # Name - Moved down further
+    event_title = event.title_fr.upper()
+    if stringWidth(event_title, "Helvetica-Bold", 10) > width - 15*mm:
+        p.setFont("Helvetica-Bold", 8)
+        if stringWidth(event_title, "Helvetica-Bold", 8) > width - 15*mm:
+            event_title = event_title[:60] + "..."
+            
+    p.drawCentredString(width/2, title_y, event_title)
+    
+    # Name
     name_y = title_y - 12*mm
-    p.setFont("Helvetica-Bold", 24)
+    p.setFont("Helvetica-Bold", 22)
     p.setFillColor(TEXT_BLACK)
     
     name = registration.nom_prenom.upper()
-    if stringWidth(name, "Helvetica-Bold", 24) > width - 10*mm:
-        p.setFont("Helvetica-Bold", 20)
-    if stringWidth(name, "Helvetica-Bold", 20) > width - 10*mm:
-        p.setFont("Helvetica-Bold", 16)
+    if stringWidth(name, "Helvetica-Bold", 22) > width - 10*mm:
+        p.setFont("Helvetica-Bold", 18)
+    if stringWidth(name, "Helvetica-Bold", 18) > width - 10*mm:
+        p.setFont("Helvetica-Bold", 14)
         
     p.drawCentredString(width/2, name_y, name)
     
     # Info List
-    info_y_cursor = name_y - 15*mm
-    p.setFont("Helvetica", 11)
-    
-    info_lines = []
-    if registration.promotion:
-        info_lines.append(f"Promotion: {registration.promotion}")
-    if registration.email:
-        info_lines.append(f"Email: {registration.email}")
-        
-    for line in info_lines:
-        w = stringWidth(line, "Helvetica", 11)
+    info_y_cursor = name_y - 12*mm
+    p.setFont("Helvetica", 9)
+    for line in [f"Promotion: {registration.promotion}", f"Email: {registration.email}"]:
+        w = stringWidth(line, "Helvetica", 9)
         start_x = (width - w) / 2
-        
-        # Red Square Bullet
         p.setFillColor(WAVE_RED)
-        p.rect(start_x - 5*mm, info_y_cursor, 2.5*mm, 2.5*mm, fill=1, stroke=0)
-        
-        # Text
+        p.rect(start_x - 4*mm, info_y_cursor, 2*mm, 2*mm, fill=1, stroke=0)
         p.setFillColor(colors.black)
         p.drawString(start_x, info_y_cursor, line)
+        info_y_cursor -= 6*mm
         
-        info_y_cursor -= 7*mm
-        
-    # 7. Footer (QR & Barcode)
-    qr_size = 15*mm
-    qr_y = 15*mm
-    qr_x = 10*mm
+    # --- Partner Logos on Badge (Dynamic) ---
+    p_logos = []
+    if event.partner_logo_1: p_logos.append(event.partner_logo_1.path)
+    if event.partner_logo_2: p_logos.append(event.partner_logo_2.path)
+    if event.partner_logo_3: p_logos.append(event.partner_logo_3.path)
     
-    # QR Code
+    if p_logos:
+        p_logo_size = 8*mm
+        p_logo_y = 10*mm
+        p_spacing = 10*mm
+        p_start_x = (width - (len(p_logos)-1)*p_spacing) / 2
+        for i, lp in enumerate(p_logos):
+            try: p.drawImage(ImageReader(lp), p_start_x + i*p_spacing - p_logo_size/2, p_logo_y, width=p_logo_size, height=p_logo_size, mask='auto', preserveAspectRatio=True)
+            except: pass
+
+    # 7. Footer (QR)
+    qr_size = 14*mm
+    qr_y = 15*mm
+    qr_x = 8*mm
+    
     qr_url = settings.SITE_URL + reverse('ticket_verify', kwargs={'uuid': registration.uuid})
     qr = qrcode.QRCode(box_size=10, border=1)
     qr.add_data(qr_url)
     qr.make(fit=True)
-    qr_img = qr.make_image(fill_color="black", back_color="white")
-    
     qr_blob = BytesIO()
-    qr_img.save(qr_blob, 'PNG')
+    qr.make_image().save(qr_blob, 'PNG')
     qr_blob.seek(0)
     p.drawImage(ImageReader(qr_blob), qr_x, qr_y, width=qr_size, height=qr_size)
     
-    # Tech Barcode
-    bar_x = width - 15*mm - 35*mm
-    bar_y = qr_y + 2*mm
-    bar_h = 18*mm
-    p.setStrokeColor(TEXT_BLACK)
-    for i in range(30):
-        w = 0.5 if i % 3 == 0 else 1.2
-        p.setLineWidth(w)
-        p.line(bar_x + i*1.2*mm, bar_y, bar_x + i*1.2*mm, bar_y + bar_h)
-
-    # Scan Text
-    p.setFont("Helvetica", 7)
+    p.setFont("Helvetica", 6)
     p.setFillColor(HEADER_BG)
     p.drawCentredString(qr_x + qr_size/2, qr_y - 3*mm, "SCANNEZ-MOI")
 
@@ -300,9 +252,7 @@ def generate_badge(registration):
     p.save()
     
     buffer.seek(0)
-    filename = f'badge_{registration.uuid}.pdf'
-    if registration.badge_pdf:
-        registration.badge_pdf.delete(save=False)
-    registration.badge_pdf.save(filename, File(buffer), save=True)
+    if registration.badge_pdf: registration.badge_pdf.delete(save=False)
+    registration.badge_pdf.save(f'badge_{registration.uuid}.pdf', File(buffer), save=True)
     
     return registration.badge_pdf.url

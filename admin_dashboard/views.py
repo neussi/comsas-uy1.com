@@ -1908,3 +1908,58 @@ def club_application_delete(request, pk):
         messages.success(request, 'Candidature supprimée.')
         return redirect('admin_club_applications')
     return render(request, 'admin_dashboard/commissions/confirm_delete.html', {'object': application})
+@custom_staff_member_required
+def admin_send_event_certificates(request, pk):
+    """
+    Génère et envoie les attestations par email pour tous les participants confirmés d'un événement.
+    """
+    event = get_object_or_404(Event, pk=pk)
+    registrations = EventRegistration.objects.filter(event=event, is_confirmed=True)
+    count = 0
+    
+    from main.certificate_utils import generate_certificate
+    from main.badge_utils import generate_badge
+    from django.core.mail import EmailMessage
+    from django.conf import settings
+    
+    for reg in registrations:
+        try:
+            # 1. Générer l'attestation si activée
+            if event.certificate_enabled:
+                generate_certificate(reg)
+            
+            # 2. Générer le badge si activé
+            if event.badge_enabled:
+                generate_badge(reg)
+                
+            # 3. Envoyer l'email
+            subject = f"Votre attestation : {event.title_fr}"
+            message = f"Bonjour {reg.nom_prenom},\n\nFélicitations pour votre participation à l'événement '{event.title_fr}'.\n\nVous trouverez ci-joint votre attestation de participation (si applicable) ainsi que votre badge.\n\nCordialement,\nL'équipe COM.S.AS"
+            
+            email = EmailMessage(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [reg.email],
+            )
+            
+            # Re-fetch registration to get updated PDF paths
+            reg.refresh_from_db()
+            
+            # Attach certificate
+            if reg.certificate_pdf and reg.certificate_pdf.name:
+                email.attach_file(reg.certificate_pdf.path)
+            
+            # Attach badge
+            if reg.badge_pdf and reg.badge_pdf.name:
+                email.attach_file(reg.badge_pdf.path)
+                
+            email.send(fail_silently=True)
+            count += 1
+        except Exception as e:
+            messages.error(request, f"Erreur pour {reg.email}: {str(e)}")
+    
+    event.certificates_sent = True
+    event.save()
+    messages.success(request, f"{count} attestations/badges envoyés pour '{event.title_fr}'.")
+    return redirect('admin_event_registrations', pk=event.pk)

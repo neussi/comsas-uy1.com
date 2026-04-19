@@ -133,11 +133,21 @@ class Event(models.Model):
     # Certificate Configuration
     certificate_enabled = models.BooleanField(default=True, verbose_name="Activer les attestations")
     certificate_title = models.CharField(max_length=200, blank=True, verbose_name="Titre de l'attestation")
+    certificate_main_text = models.TextField(blank=True, verbose_name="Texte principal personnalisé", help_text="Texte central de l'attestation. Laissez vide pour utiliser le texte par défaut.")
     certificate_description = models.TextField(blank=True, verbose_name="Description pour l'attestation")
     certificate_president_name = models.CharField(max_length=100, default="Président COMS.A.S", verbose_name="Nom du président")
     certificate_president_title = models.CharField(max_length=100, default="Président du COMS.A.S", verbose_name="Titre du président")
     certificate_dept_head_name = models.CharField(max_length=100, default="Chef de département", verbose_name="Nom du chef de département")
     certificate_dept_head_title = models.CharField(max_length=100, default="Chef de département informatique", verbose_name="Titre du chef de département")
+    
+    # New: Partner Logos & Signature
+    partner_logo_1 = models.ImageField(upload_to='events/partners/', blank=True, null=True, verbose_name="Logo Partenaire 1")
+    partner_logo_2 = models.ImageField(upload_to='events/partners/', blank=True, null=True, verbose_name="Logo Partenaire 2")
+    partner_logo_3 = models.ImageField(upload_to='events/partners/', blank=True, null=True, verbose_name="Logo Partenaire 3")
+    president_signature = models.ImageField(upload_to='events/signatures/', blank=True, null=True, verbose_name="Signature/Cachet du Président")
+    
+    # New: Status tracking for automated dispatch
+    certificates_sent = models.BooleanField(default=False, verbose_name="Attestations envoyées par mail")
     
     # Badge Configuration
     badge_enabled = models.BooleanField(default=True, verbose_name="Activer les badges")

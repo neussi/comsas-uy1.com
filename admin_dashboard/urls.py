@@ -59,6 +59,7 @@ urlpatterns = [
     path('registrations/<int:pk>/delete/', views.delete_registration, name='admin_delete_registration'),
     path('events/<int:pk>/registrations/export/', views.event_registrations_export_excel, name='admin_export_registrations'),
     path('registrations/<int:pk>/confirm/', views.confirm_registration, name='admin_confirm_registration'),
+    path('events/<int:pk>/send-certificates/', views.admin_send_event_certificates, name='admin_send_event_certificates'),
     
     # ============= GESTION DES ACTUALITÉS =============
     path('news/', views.news_list, name='admin_news_list'),
