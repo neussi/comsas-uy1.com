@@ -13,270 +13,179 @@ from django.urls import reverse
 from PIL import Image, ImageOps, ImageDraw
 
 def create_circular_mask(image_path, size=(400, 400)):
-    """Creates a circular mask for an image"""
+    """Creates a premium circular mask with high fidelity"""
     try:
-        if not os.path.exists(image_path):
-            return None
+        if not os.path.exists(image_path): return None
         img = Image.open(image_path).convert("RGBA")
         img = ImageOps.fit(img, size, centering=(0.5, 0.5))
-        
         mask = Image.new('L', size, 0)
         draw = ImageDraw.Draw(mask)
         draw.ellipse((0, 0) + size, fill=255)
-        
         output = Image.new('RGBA', size, (0, 0, 0, 0))
         output.paste(img, (0, 0), mask=mask)
         return output
-    except Exception as e:
-        print(f"Error creating circular mask: {e}")
-        return None
+    except: return None
 
 def generate_badge(registration):
     """
-    Generates a CLEAN & PREMIUM event badge (A6 vertical).
-    Features: Tech Pattern Background, Strategic Colors, Readable Text.
-    Updated: Title overflow fix and Partner Logos.
+    ULTIMATE PREMIUM TECH BADGE (REFINED).
+    Fixed spacing, reduced photo size, and dynamic name scaling.
     """
     event = registration.event
-    
-    # Check if badges are enabled
-    if not getattr(event, 'badge_enabled', True):
-        return None
+    if not getattr(event, 'badge_enabled', True): return None
 
     # --- SETUP ---
     buffer = BytesIO()
-    width, height = A6  # 105mm x 148mm
+    width, height = A6
     p = canvas.Canvas(buffer, pagesize=A6)
     
-    # Colors
-    HEADER_BG = colors.Color(31/255, 41/255, 55/255) # Dark Navy
-    WAVE_CYAN = colors.Color(6/255, 182/255, 212/255) # Cyan
-    WAVE_RED = colors.Color(239/255, 68/255, 68/255) # Red
-    TEXT_BLACK = colors.Color(17/255, 24/255, 39/255)
-    TEXT_WHITE = colors.white
-    
-    # Layout Config
-    HEADER_HEIGHT = 65*mm
-    PHOTO_SIZE = 36*mm
-    PHOTO_CENTER_Y = height - 35*mm
-    
-    # 1. Backgrounds
-    # White Body
-    p.setFillColor(colors.white)
+    # Premium Palette
+    ORANGE_MANDAT = colors.Color(243/255, 146/255, 0/255)
+    TECH_DARK = colors.Color(17/255, 24/255, 39/255)
+    OFF_WHITE = colors.Color(0.98, 0.98, 0.98)
+
+    # 1. Background: Dual-Tone High Fidelity
+    p.setFillColor(OFF_WHITE)
     p.rect(0, 0, width, height, fill=1, stroke=0)
     
-    # --- TECH PATTERN BACKGROUND ---
-    p.saveState()
-    p.setFillColor(colors.Color(0.96, 0.96, 0.98)) 
-    p.setStrokeColor(colors.Color(0.93, 0.93, 0.95))
-    p.setLineWidth(1.5)
+    # Vertical Brand Sidebar (Left)
+    sidebar_w = 12*mm
+    p.setFillColor(TECH_DARK)
+    p.rect(0, 0, sidebar_w, height, fill=1, stroke=0)
     
-    p.setFont("Helvetica-Bold", 30)
-    p.drawCentredString(width*0.2, height*0.35, "</>")
-    p.setFont("Helvetica-Bold", 20)
-    p.drawCentredString(width*0.8, height*0.55, "{ }")
+    # Accent Line (Orange)
+    p.setFillColor(ORANGE_MANDAT)
+    p.rect(sidebar_w - 1*mm, 0, 1*mm, height, fill=1, stroke=0)
+
+    # 2. Tech Watermark Pattern (Circuit Nodes)
+    p.setStrokeColor(colors.Color(0, 0, 0, 0.05))
+    p.setLineWidth(0.3)
+    p.circle(width*0.8, height*0.8, 15*mm, fill=0, stroke=1)
+    p.circle(width*0.8, height*0.8, 12*mm, fill=0, stroke=1)
+    p.line(width*0.8, height*0.8, width, height)
+    
+    # 3. Vertical Branding (Sidebar)
+    p.saveState()
+    p.translate(sidebar_w/2 + 1*mm, height/2)
+    p.rotate(90)
+    p.setFillColor(colors.white)
+    p.setFont("Helvetica-Bold", 10)
+    p.drawCentredString(0, 0, "COMPUTER SCIENCE ASSOCIATION")
     p.restoreState()
 
-    # Dark Header
-    p.setFillColor(HEADER_BG)
-    header_path = p.beginPath()
-    header_path.moveTo(0, height)
-    header_path.lineTo(width, height)
-    header_path.lineTo(width, height - HEADER_HEIGHT)
-    header_path.curveTo(width*0.7, height - HEADER_HEIGHT + 5*mm, width*0.3, height - HEADER_HEIGHT - 5*mm, 0, height - HEADER_HEIGHT)
-    header_path.close()
-    p.drawPath(header_path, fill=1, stroke=0)
-    
-    # Accents
-    p.saveState()
-    p.setFillColor(WAVE_CYAN)
-    cyan_path = p.beginPath()
-    cyan_path.moveTo(0, height)
-    cyan_path.lineTo(30*mm, height)
-    cyan_path.curveTo(15*mm, height - 15*mm, 5*mm, height - 20*mm, 0, height - 35*mm)
-    cyan_path.close()
-    p.drawPath(cyan_path, fill=1, stroke=0)
-    p.restoreState()
-    
-    # Accent 2: Red Edge
-    p.saveState()
-    p.setFillColor(WAVE_RED)
-    red_path = p.beginPath()
-    base_y = height - HEADER_HEIGHT
-    red_path.moveTo(width, base_y + 15*mm)
-    red_path.lineTo(width, base_y - 15*mm)
-    red_path.curveTo(width - 15*mm, base_y, width - 25*mm, base_y + 5*mm, width - 20*mm, base_y + 15*mm)
-    red_path.close()
-    p.drawPath(red_path, fill=1, stroke=0)
-    p.restoreState()
-    
-    # Bottom Footer Curve
-    p.saveState()
-    p.setFillColor(HEADER_BG)
-    footer_path = p.beginPath()
-    footer_path.moveTo(0, 0)
-    footer_path.lineTo(width, 0)
-    footer_path.lineTo(width, 8*mm)
-    footer_path.curveTo(width/2, 15*mm, 0, 5*mm, 0, 5*mm)
-    footer_path.close()
-    p.drawPath(footer_path, fill=1, stroke=0)
-    p.restoreState()
+    # 4. Header Section (Top Right - Refined Spacing)
+    comsas_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
+    if os.path.exists(comsas_path):
+        # Slightly more breathing room from top/right
+        p.drawImage(ImageReader(comsas_path), width - 25*mm, height - 25*mm, width=16*mm, height=16*mm, mask='auto', preserveAspectRatio=True)
 
-    # 3. Logo (Top Left)
-    logo_size = 11*mm
-    logo_y = height - 16*mm
-    logo_x = 8*mm
+    header_x = sidebar_w + 6*mm
+    p.setFillColor(TECH_DARK)
+    p.setFont("Helvetica-Bold", 14)
+    # Shifting text down significantly to clear the logo (which is at height - 25mm to height - 9mm)
+    p.drawString(header_x, height - 20*mm, "PASS OFFICIEL") 
     
-    comsas_logo_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
-    if os.path.exists(comsas_logo_path):
-        p.saveState()
-        p.setFillColor(colors.white)
-        p.circle(logo_x + logo_size/2, logo_y + logo_size/2, logo_size/2 + 1.5*mm, fill=1, stroke=0)
-        p.drawImage(ImageReader(comsas_logo_path), logo_x, logo_y, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
-        p.restoreState()
+    p.setFillColor(ORANGE_MANDAT)
+    p.setFont("Helvetica-Bold", 10)
+    # --- MULTI-LINE TITLE WRAPPING ---
+    title = event.title_fr.upper()
+    max_title_w = (width - sidebar_w - 30*mm) # Stay clear of logo area
+    words = title.split()
+    t_lines, curr_t = [], ""
+    for w in words:
+        if stringWidth(curr_t + " " + w, "Helvetica-Bold", 10) < max_title_w:
+            curr_t += " " + w if curr_t else w
+        else:
+            t_lines.append(curr_t)
+            curr_t = w
+    if curr_t: t_lines.append(curr_t)
+    
+    t_y = height - 25*mm
+    for t_line in t_lines[:3]: # Allow up to 3 lines
+        p.drawString(header_x, t_y, t_line)
+        t_y -= 4*mm
 
-    # 4. Photo
-    photo_x = (width - PHOTO_SIZE) / 2
-    photo_y = height - 52*mm 
+    # 5. Profile Photo (Reduced to 45mm for better spacing)
+    photo_size = 45*mm
+    px, py = sidebar_w + (width - sidebar_w - photo_size)/2, height - 82*mm
     
-    # Photo Border
+    # Premium Ring
+    p.setStrokeColor(ORANGE_MANDAT)
     p.setLineWidth(2.5)
-    p.setStrokeColor(colors.white) 
-    p.circle(photo_x + PHOTO_SIZE/2, photo_y + PHOTO_SIZE/2, PHOTO_SIZE/2 + 1.2*mm, fill=0, stroke=1)
+    p.circle(px + photo_size/2, py + photo_size/2, photo_size/2 + 2*mm, fill=0, stroke=1)
     
-    # Draw Photo
-    has_photo = False
-    img_path = None
-    
-    if registration.photo:
-        img_path = registration.photo.path
-    else:
+    img_path = registration.photo.path if registration.photo else None
+    if not img_path:
         from main.models import Member
-        linked_member = Member.objects.filter(email=registration.email).first()
-        if linked_member and getattr(linked_member, 'photo', None):
-            try: img_path = linked_member.photo.path
-            except: pass
-
+        m = Member.objects.filter(email=registration.email).first()
+        if m and m.photo: img_path = m.photo.path
+        
     if img_path:
         try:
-            avatar_img = create_circular_mask(img_path, size=(600, 600))
-            if avatar_img:
-                img_buffer = BytesIO()
-                avatar_img.save(img_buffer, format='PNG')
-                img_buffer.seek(0)
-                p.drawImage(ImageReader(img_buffer), photo_x, photo_y, width=PHOTO_SIZE, height=PHOTO_SIZE, mask='auto', preserveAspectRatio=True)
-                has_photo = True
+            avatar = create_circular_mask(img_path, size=(600, 600))
+            if avatar:
+                img_buf = BytesIO()
+                avatar.save(img_buf, format='PNG')
+                img_buf.seek(0)
+                p.drawImage(ImageReader(img_buf), px, py, width=photo_size, height=photo_size, mask='auto', preserveAspectRatio=True)
         except: pass
-            
-    if not has_photo:
-        p.setFillColor(colors.Color(0.9, 0.9, 0.9))
-        p.circle(width/2, photo_y + PHOTO_SIZE/2, PHOTO_SIZE/2, fill=1, stroke=0)
 
-    # 5. Header Text
-    p.setFont("Helvetica-Bold", 14)
-    p.setFillColor(TEXT_WHITE)
-    p.drawCentredString(width/2, photo_y - 8*mm, "PARTICIPANT")
+    # 6. Participant Identity (Dynamic Scaling)
+    y_label = py - 12*mm # Spacing from photo
+    p.setFillColor(ORANGE_MANDAT)
+    p.setFont("Helvetica-Bold", 11)
+    p.drawCentredString(sidebar_w + (width-sidebar_w)/2, y_label, "PARTICIPANT")
     
-    # --- Header Branding (COMSAS Logo) ---
-    header_logo_size = 10*mm
-    header_logo_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
-    if os.path.exists(header_logo_path):
-        p.drawImage(ImageReader(header_logo_path), 5*mm, height - HEADER_HEIGHT + (HEADER_HEIGHT - header_logo_size)/2, width=header_logo_size, height=header_logo_size, mask='auto', preserveAspectRatio=True)
-
-    # 6. Body Content
-    title_y = height - HEADER_HEIGHT - 6*mm
-    p.setFont("Helvetica-Bold", 10)
-    p.setFillColor(WAVE_CYAN)
+    y_name = y_label - 10*mm
+    p.setFillColor(TECH_DARK)
     
-    event_title = event.title_fr.upper()
-    max_badge_title_width = width - 10*mm
-    
-    # Multi-line Title Scaling for Badges
-    if stringWidth(event_title, "Helvetica-Bold", 10) > max_badge_title_width:
-        p.setFont("Helvetica-Bold", 8)
-        if stringWidth(event_title, "Helvetica-Bold", 8) > max_badge_title_width:
-            words = event_title.split()
-            lines = []
-            current_line = ""
-            for word in words:
-                test_line = f"{current_line} {word}".strip()
-                if stringWidth(test_line, "Helvetica-Bold", 8) <= max_badge_title_width:
-                    current_line = test_line
-                else:
-                    lines.append(current_line)
-                    current_line = word
-            lines.append(current_line)
-            for i, line in enumerate(lines[:2]):
-                p.drawCentredString(width/2, title_y - (i*3.5*mm), line)
-            title_y -= (len(lines[:2]) - 1) * 3.5*mm
-        else:
-            p.drawCentredString(width/2, title_y, event_title)
-    else:
-        p.drawCentredString(width/2, title_y, event_title)
-    
-    # Name
-    name_y = title_y - 12*mm
-    p.setFont("Helvetica-Bold", 22)
-    p.setFillColor(TEXT_BLACK)
-    
+    # --- DYNAMIC FONT SCALING ---
     name = registration.nom_prenom.upper()
-    if stringWidth(name, "Helvetica-Bold", 22) > width - 10*mm:
-        p.setFont("Helvetica-Bold", 18)
-    if stringWidth(name, "Helvetica-Bold", 18) > width - 10*mm:
-        p.setFont("Helvetica-Bold", 14)
-        
-    p.drawCentredString(width/2, name_y, name)
+    max_w = (width - sidebar_w - 10*mm)
+    initial_fs = 26
+    while stringWidth(name, "Helvetica-Bold", initial_fs) > max_w and initial_fs > 12:
+        initial_fs -= 2
     
-    # Info List
-    info_y_cursor = name_y - 11*mm
-    p.setFont("Helvetica", 9)
-    for line in [f"Promotion: {registration.promotion}", f"Email: {registration.email}"]:
-        w = stringWidth(line, "Helvetica", 9)
-        start_x = (width - w) / 2
-        p.setFillColor(WAVE_RED)
-        p.rect(start_x - 4*mm, info_y_cursor, 2*mm, 2*mm, fill=1, stroke=0)
-        p.setFillColor(colors.black)
-        p.drawString(start_x, info_y_cursor, line)
-        info_y_cursor -= 6*mm
-        
-    # --- Partner Logos on Badge (Dynamic Layout) ---
-    p_logos = []
-    if event.partner_logo_1: p_logos.append(event.partner_logo_1.path)
-    if event.partner_logo_2: p_logos.append(event.partner_logo_2.path)
-    if event.partner_logo_3: p_logos.append(event.partner_logo_3.path)
+    p.setFont("Helvetica-Bold", initial_fs)
+    p.drawCentredString(sidebar_w + (width-sidebar_w)/2, y_name, name)
     
-    if p_logos:
-        p_logo_size = 9*mm
-        p_logo_y = 6*mm
-        p_spacing = 15*mm
-        p_start_x = (width - (len(p_logos)-1)*p_spacing) / 2
-        for i, lp in enumerate(p_logos):
-            try: p.drawImage(ImageReader(lp), p_start_x + i*p_spacing - p_logo_size/2, p_logo_y, width=p_logo_size, height=p_logo_size, mask='auto', preserveAspectRatio=True)
-            except: pass
+    y_prom = y_name - 7*mm
+    p.setFont("Helvetica", 10)
+    p.setFillColor(colors.gray)
+    p.drawCentredString(sidebar_w + (width-sidebar_w)/2, y_prom, f"Prom: {registration.promotion}")
 
-    # 7. Footer (QR)
-    qr_size = 14*mm
-    qr_y = 15*mm
-    qr_x = 8*mm
+    # 7. Officiality Section (Balanced Footer)
+    sig_y = 15*mm
+    p.setFont("Helvetica-Bold", 8)
+    p.setFillColor(TECH_DARK)
+    p.drawString(sidebar_w + 6*mm, sig_y + 10*mm, "Le Président du COMS.A.S")
     
+    sig_path = event.president_signature.path if event.president_signature else os.path.join(settings.BASE_DIR, 'static/images/signature.png')
+    if os.path.exists(sig_path):
+        # Slightly enlarged signature to look "Official" but not crowded
+        p.drawImage(ImageReader(sig_path), sidebar_w + 6*mm, sig_y - 12*mm, width=38*mm, height=22*mm, mask='auto', preserveAspectRatio=True)
+
+    # 8. QR Code & Identity
+    qr_s = 20*mm
+    qx, qy = width - qr_s - 6*mm, 8*mm
     qr_url = settings.SITE_URL + reverse('ticket_verify', kwargs={'uuid': registration.uuid})
-    qr = qrcode.QRCode(box_size=10, border=1)
-    qr.add_data(qr_url)
-    qr.make(fit=True)
-    qr_blob = BytesIO()
-    qr.make_image().save(qr_blob, 'PNG')
-    qr_blob.seek(0)
-    p.drawImage(ImageReader(qr_blob), qr_x, qr_y, width=qr_size, height=qr_size)
+    qr = qrcode.QRCode(box_size=10, border=1); qr.add_data(qr_url); qr.make(fit=True)
+    qb = BytesIO(); qr.make_image().save(qb, 'PNG'); qb.seek(0)
+    p.drawImage(ImageReader(qb), qx, qy, width=qr_s, height=qr_s)
     
-    p.setFont("Helvetica", 6)
-    p.setFillColor(HEADER_BG)
-    p.drawCentredString(qr_x + qr_size/2, qr_y - 3*mm, "SCANNEZ-MOI")
+    # Partner Logos (Small aligned bottom)
+    uy1_path = os.path.join(settings.BASE_DIR, 'static/images/uy1.png')
+    lp = [uy1_path]
+    if event.partner_logo_1: lp.append(event.partner_logo_1.path)
+    if event.partner_logo_2: lp.append(event.partner_logo_2.path)
+    
+    for i, lpath in enumerate(lp[:3]):
+        try: p.drawImage(ImageReader(lpath), width - 38*mm - i*11*mm, 8*mm, width=8*mm, height=8*mm, mask='auto', preserveAspectRatio=True)
+        except: pass
 
     p.showPage()
     p.save()
-    
     buffer.seek(0)
     if registration.badge_pdf: registration.badge_pdf.delete(save=False)
     registration.badge_pdf.save(f'badge_{registration.uuid}.pdf', File(buffer), save=True)
-    
     return registration.badge_pdf.url

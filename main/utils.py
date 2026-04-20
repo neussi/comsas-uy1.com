@@ -146,43 +146,98 @@ def generate_member_card(member):
         profile_url = settings.SITE_URL + reverse('member_profile', args=[member.id])
     except:
         profile_url = getattr(settings, 'SITE_URL', 'https://comsas-uy1.com') + f"/membre/{member.id}"
-        
-    qr = qrcode.QRCode(box_size=2, border=0)
+    # --- FOND & DESIGN (Premium Tech Theme) ---
+    ORANGE_MANDAT = colors.Color(243/255, 146/255, 0/255)
+    TECH_DARK = colors.Color(31/255, 41/255, 55/255)
+    
+    # Background
+    c.setFillColor(TECH_DARK)
+    c.rect(0, 0, width, height, fill=1, stroke=0)
+    
+    # Tech Grid Layer
+    c.setStrokeColor(colors.white)
+    c.setLineWidth(0.05)
+    for i in range(0, int(width), int(5*mm)): c.line(i, 0, i, height)
+    for i in range(0, int(height), int(5*mm)): c.line(0, i, width, i)
+
+    # Accent Top Bar
+    c.setFillColor(ORANGE_MANDAT)
+    c.rect(0, height - 3*mm, width, 3*mm, fill=1, stroke=0)
+    
+    # --- LOGO & Identity ---
+    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'comsas.png')
+    if os.path.exists(logo_path):
+        try: c.drawImage(logo_path, 2*mm, height - 12*mm, width=8*mm, height=8*mm, mask='auto', preserveAspectRatio=True)
+        except: pass
+            
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica-Bold", 7)
+    c.drawString(11*mm, height - 8*mm, "COMPUTER SCIENCE ASSOCIATION")
+    c.setFont("Helvetica", 4.5)
+    c.drawString(11*mm, height - 10.5*mm, "Club Informatique de l'Université de Yaoundé 1")
+    
+    # --- Body Content (Card within Card for Contrast) ---
+    inner_x, inner_y = 2*mm, 2*mm 
+    inner_w, inner_h = width - 4*mm, height - 15*mm 
+    c.setFillColor(colors.white)
+    c.rect(inner_x, inner_y, inner_w, inner_h, fill=1, stroke=0)
+    
+    # --- Member Photo ---
+    photo_x, photo_y = 4*mm, 10*mm 
+    photo_w, photo_h = 24*mm, 28*mm
+    c.setStrokeColor(ORANGE_MANDAT)
+    c.setLineWidth(1)
+    c.rect(photo_x, photo_y, photo_w, photo_h, fill=0, stroke=1)
+    
+    if member.photo:
+        try: c.drawImage(member.photo.path, photo_x, photo_y, width=photo_w, height=photo_h, mask='auto', preserveAspectRatio=True, anchor='c')
+        except: pass
+            
+    # --- Details ---
+    tx = 30*mm
+    c.setFont("Helvetica-Bold", 8)
+    c.setFillColor(ORANGE_MANDAT)
+    c.drawString(tx, 32*mm, "CARTE DE MEMBRE")
+    
+    c.setFont("Helvetica-Bold", 10)
+    c.setFillColor(TECH_DARK)
+    c.drawString(tx, 27*mm, f"{member.nom_prenom.upper()}")
+    
+    status = "Membre Actif"
+    if member.member_type == 'bureau' and getattr(member, 'poste_bureau', None): status = member.poste_bureau
+    
+    c.setFont("Helvetica-Bold", 7)
+    c.setFillColor(ORANGE_MANDAT)
+    c.drawString(tx, 23*mm, status)
+    
+    c.setFont("Helvetica", 6)
+    c.setFillColor(colors.gray)
+    c.drawString(tx, 19*mm, f"ID: {member.matricule or 'N/A'}")
+    c.drawString(tx, 16*mm, f"Niveau: {getattr(member, 'niveau', 'N/A')}")
+    c.drawString(tx, 13*mm, f"Tél: {member.telephone or 'N/A'}")
+
+    # --- Officiality Section ---
+    sig_y_label = 11*mm
+    lx = width - 20*mm
+    c.setFont("Helvetica-Bold", 6)
+    c.setFillColor(TECH_DARK)
+    c.drawCentredString(lx, sig_y_label, "Le Président du COMS.A.S")
+    
+    # Signature/Stamp BELOW THE LABEL
+    sig_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'signature.png')
+    if os.path.exists(sig_path):
+        c.drawImage(sig_path, lx - 12*mm, 2*mm, width=24*mm, height=12*mm, mask='auto', preserveAspectRatio=True)
+
+    # QR Code Verification
+    qx, qy, qs = width - 11*mm, 15*mm, 7*mm
+    qr = qrcode.QRCode(box_size=1, border=0)
     qr.add_data(profile_url)
     qr.make(fit=True)
-    qr_img = qr.make_image(fill_color="black", back_color="white")
-    qr_buffer = BytesIO()
-    qr_img.save(qr_buffer)
-    qr_buffer.seek(0)
-    
-    c.drawImage(ImageReader(qr_buffer), qr_x, qr_y, width=qr_size, height=qr_size)
-    
-    # Signature (Image) - Bas Centre
-    label_x = text_x + 15*mm 
-    label_y = 12*mm 
-    
-    c.setFont("Helvetica-Oblique", 6)
-    c.setFillColorRGB(0, 0, 0)
-    c.drawCentredString(label_x, label_y, "Le Président du COMS.A.S")
-    
-    # We'll use the signature from the most recent active event or site settings if available,
-    # but the user provided a specific path: /home/npe-tech/Projets/Comsas/static/images/signature.png
-    sig_file = os.path.join(settings.BASE_DIR, 'static', 'images', 'signature.png')
-    
-    if os.path.exists(sig_file):
-        try:
-            # Signature
-            c.drawImage(sig_file, label_x - 15*mm, 3.5*mm, width=30*mm, height=8.5*mm, mask='auto', preserveAspectRatio=True)
-            
-            # Nom (Dynamisé si possible via SiteSettings ou Event, mais ici on garde le président par défaut)
-            c.setFont("Helvetica-Bold", 6.5)
-            c.drawCentredString(label_x, 2.5*mm, "Neussi Patrice .E ")
-        except:
-            c.setFont("Helvetica-Bold", 6.5)
-            c.drawCentredString(label_x, 2.5*mm, "Neussi Patrice .E")
-    else:
-        c.setFont("Helvetica-Bold", 6.5)
-        c.drawCentredString(label_x, 2.5*mm, "Neussi Patrice .E")
+    qimg = qr.make_image(fill_color="black", back_color="white")
+    qb = BytesIO()
+    qimg.save(qb)
+    qb.seek(0)
+    c.drawImage(ImageReader(qb), qx, qy, width=qs, height=qs)
     
     c.showPage()
     c.save()
@@ -260,194 +315,110 @@ def generate_ticket(registration):
     
     # 2. Generate PDF Ticket (Landscape orientation for ticket style)
     buffer = BytesIO()
-    # Ticket size: similar to concert ticket (8.5" x 3.5")
-    ticket_width = 8.5 * inch
-    ticket_height = 3.5 * inch
-    
+    ticket_width, ticket_height = 8.5 * inch, 3.5 * inch
     p = canvas.Canvas(buffer, pagesize=(ticket_width, ticket_height))
     
-    # COMS.A.S Brand Colors
-    COMSAS_PINK = colors.Color(236/255, 72/255, 153/255)  # Pink/Rose
-    DARK_GRAY = colors.Color(0.2, 0.2, 0.2)
-    LIGHT_GRAY = colors.Color(0.9, 0.9, 0.9)
+    # Orange Mandat Theme
+    ORANGE_MANDAT = colors.Color(243/255, 146/255, 0/255) # #F39200
+    TECH_GRAY = colors.Color(45/255, 45/255, 45/255)
     
-    # --- Main Ticket Body ---
-    # White background
     p.setFillColor(colors.white)
     p.rect(0, 0, ticket_width, ticket_height, fill=1, stroke=0)
     
-    # Pink accent bar at top
-    p.setFillColor(COMSAS_PINK)
-    p.rect(0, ticket_height - 0.4*inch, ticket_width, 0.4*inch, fill=1, stroke=0)
-    
-    # Pink accent bar at bottom
-    p.rect(0, 0, ticket_width, 0.3*inch, fill=1, stroke=0)
-    
-    # --- Left Stub Section (Tear-off) ---
+    # Stub background (Orange)
     stub_width = 1.8*inch
+    p.setFillColor(ORANGE_MANDAT)
+    p.rect(0, 0, stub_width, ticket_height, fill=1, stroke=0)
     
-    # Vertical dashed line separator
-    p.setStrokeColor(LIGHT_GRAY)
-    p.setDash(3, 3)
-    p.setLineWidth(1)
-    p.line(stub_width, 0.3*inch, stub_width, ticket_height - 0.4*inch)
-    p.setDash()  # Reset to solid
-    
-    # Stub content (rotated text)
+    # Tech accents on stub
+    p.setStrokeColor(colors.white)
+    p.setLineWidth(0.5)
+    for i in range(12):
+        p.line(0.2*inch, 0.4*inch + i*0.2*inch, stub_width - 0.2*inch, 0.4*inch + i*0.2*inch)
+
     p.saveState()
-    p.translate(stub_width/2, ticket_height/2)
+    p.translate(stub_width/2 + 0.1*inch, ticket_height/2)
     p.rotate(90)
-    p.setFillColor(DARK_GRAY)
-    p.setFont("Helvetica-Bold", 16)
+    p.setFillColor(colors.white)
+    p.setFont("Helvetica-Bold", 18)
     p.drawCentredString(0, 0, "ADMIT ONE")
     p.setFont("Helvetica", 10)
-    p.drawCentredString(0, -0.25*inch, registration.event.date_event.strftime('%d.%m.%Y'))
+    p.drawCentredString(0, -0.3*inch, registration.event.date_event.strftime('%d.%m.%Y'))
     p.restoreState()
     
-    # Barcode-style decoration on stub
-    p.setFillColor(DARK_GRAY)
-    for i in range(15):
-        x = 0.2*inch
-        y = 0.5*inch + (i * 0.15*inch)
-        width = 0.05*inch if i % 3 == 0 else 0.03*inch
-        p.rect(x, y, width, 0.1*inch, fill=1, stroke=0)
+    # --- Main Content ---
+    content_x = stub_width + 0.4*inch
     
-    # --- Main Ticket Content ---
-    content_x = stub_width + 0.5*inch
-    
-    # --- Logos Section ---
-    logo_size = 0.65*inch
-    logos_y = ticket_height - 1.2*inch
-    
-    # Collect logos
+    # Logos
+    logo_size, ly = 0.7*inch, ticket_height - 1.1*inch
     logos = []
     comsas_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
-    if os.path.exists(comsas_path):
-        logos.append(comsas_path)
+    if os.path.exists(comsas_path): logos.append(comsas_path)
+    if registration.event.partner_logo_1: logos.append(registration.event.partner_logo_1.path)
+    if registration.event.partner_logo_2: logos.append(registration.event.partner_logo_2.path)
     
-    event = registration.event
-    if event.partner_logo_1: logos.append(event.partner_logo_1.path)
-    if event.partner_logo_2: logos.append(event.partner_logo_2.path)
-    if event.partner_logo_3: logos.append(event.partner_logo_3.path)
+    for i, lp in enumerate(logos[:3]):
+        try: p.drawImage(ImageReader(lp), content_x + i*0.8*inch, ly, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
+        except: pass
+        
+    p.setFillColor(TECH_GRAY)
+    p.setFont("Helvetica-Bold", 34)
+    p.drawRightString(ticket_width - 0.5*inch, ticket_height - 0.95*inch, "TICKET")
     
-    # Deduplicate
-    unique_logos = []
-    for l in logos:
-        if l not in unique_logos: unique_logos.append(l)
+    # Title
+    y_title = ly - 0.6*inch
+    p.setFillColor(ORANGE_MANDAT)
+    p.setFont("Helvetica-Bold", 16)
+    title = registration.event.title_fr.upper()
+    max_w = ticket_width - content_x - 1.8*inch
     
-    # Draw logos spaced out
-    for i, logo_path in enumerate(unique_logos):
-        lx = content_x + (i * 0.8*inch)
-        try:
-            p.drawImage(ImageReader(logo_path), lx, logos_y, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
-        except:
-            pass
-            
-    # "TICKET" text (Moved right to avoid logo collision if many logos)
-    p.setFillColor(DARK_GRAY)
-    p.setFont("Helvetica-Bold", 32)
-    ticket_label_x = content_x + (len(unique_logos) * 0.8*inch) if unique_logos else content_x
-    p.drawString(max(ticket_label_x, content_x + 1.5*inch), ticket_height - 1.05*inch, "TICKET")
-    
-    # Event title (Rigorous Multi-line Scaling)
-    p.setFont("Helvetica-Bold", 14)
-    p.setFillColor(COMSAS_PINK)
-    event_title = event.title_fr.upper()
-    
-    max_title_width = ticket_width - content_x - 0.5*inch
-    
-    # Dynamic scaling and wrapping
-    font_size = 14
-    if stringWidth(event_title, "Helvetica-Bold", font_size) > max_title_width:
-        font_size = 11
-        if stringWidth(event_title, "Helvetica-Bold", font_size) > max_title_width:
-            # Multi-line logic
-            words = event_title.split()
-            lines = []
-            current_line = ""
-            for word in words:
-                test_line = f"{current_line} {word}".strip()
-                if stringWidth(test_line, "Helvetica-Bold", 10) <= max_title_width:
-                    current_line = test_line
-                else:
-                    lines.append(current_line)
-                    current_line = word
-            lines.append(current_line)
-            
-            p.setFont("Helvetica-Bold", 10)
-            for i, line in enumerate(lines[:2]): # Limit to 2 lines
-                p.drawString(content_x, ticket_height - 1.55*inch - (i*0.18*inch), line)
-        else:
-            p.setFont("Helvetica-Bold", 11)
-            p.drawString(content_x, ticket_height - 1.6*inch, event_title)
-    else:
-        p.drawString(content_x, ticket_height - 1.6*inch, event_title)
-    
-    # Event details
-    y_pos = ticket_height - 2.0*inch
-    p.setFont("Helvetica", 11)
-    p.setFillColor(DARK_GRAY)
-    
-    # Date and time
-    date_str = registration.event.date_event.strftime('%d %B %Y')
-    time_str = registration.event.date_event.strftime('%H:%M')
-    p.drawString(content_x, y_pos, f"DATE: {date_str} • {time_str}")
-    
-    # Location
-    y_pos -= 0.25*inch
-    location = registration.event.location
-    if len(location) > 50:
-        location = location[:47] + "..."
-    p.drawString(content_x, y_pos, f"LIEU: {location}")
-    
-    # Participant
-    y_pos -= 0.25*inch
-    p.setFont("Helvetica-Bold", 10)
-    p.setFillColor(COMSAS_PINK)
-    p.drawString(content_x, y_pos, "PARTICIPANT:")
-    p.setFont("Helvetica", 10)
-    p.setFillColor(DARK_GRAY)
-    p.drawString(content_x + 1.2*inch, y_pos, registration.nom_prenom.upper())
-    
-    # --- Right Section: QR Code ---
-    qr_size = 1.4*inch
-    qr_x = ticket_width - qr_size - 0.4*inch
-    qr_y = (ticket_height - qr_size) / 2
-    
-    # QR Code background
-    p.setFillColor(colors.white)
-    p.setStrokeColor(LIGHT_GRAY)
-    p.setLineWidth(1)
-    p.rect(qr_x - 0.1*inch, qr_y - 0.1*inch, 
-           qr_size + 0.2*inch, qr_size + 0.2*inch, 
-           fill=1, stroke=1)
+    if stringWidth(title, "Helvetica-Bold", 16) > max_w:
+        p.setFont("Helvetica-Bold", 12)
+        if stringWidth(title, "Helvetica-Bold", 12) > max_w:
+            words = title.split()
+            l1, l2 = "", ""
+            for w in words:
+                if stringWidth(l1 + " " + w, "Helvetica-Bold", 12) < max_w: l1 += " " + w if l1 else w
+                else: l2 += " " + w if l2 else w
+            p.drawString(content_x, y_title, l1)
+            p.drawString(content_x, y_title - 0.2*inch, l2)
+            y_title -= 0.3*inch
+        else: p.drawString(content_x, y_title, title)
+    else: p.drawString(content_x, y_title, title)
     
     # QR Code
-    blob.seek(0)
-    qr_img = ImageReader(blob)
-    p.drawImage(qr_img, qr_x, qr_y, width=qr_size, height=qr_size)
+    qr_s = 1.1*inch
+    qx, qy = ticket_width - qr_s - 0.4*inch, 0.6*inch
+    if 'blob' in locals():
+        blob.seek(0)
+        p.drawImage(ImageReader(blob), qx, qy, width=qr_s, height=qr_s)
     
-    # Scan instruction
     p.setFont("Helvetica", 7)
-    p.setFillColor(DARK_GRAY)
-    p.drawCentredString(qr_x + qr_size/2, qr_y - 0.25*inch, "SCAN À L'ENTRÉE")
+    p.setFillColor(colors.gray)
+    p.drawCentredString(qx + qr_s/2, qy - 0.15*inch, "SCAN & VERIFY")
     
-    # --- Footer ---
+    # Info
+    y_info = y_title - 0.6*inch
+    p.setFont("Helvetica", 10)
+    p.setFillColor(TECH_GRAY)
+    p.drawString(content_x, y_info, f"DATE: {registration.event.date_event.strftime('%d %B %Y • %H:%M')}")
+    p.drawString(content_x, y_info - 0.2*inch, f"LIEU: {registration.event.location[:50]}")
+    
+    y_part = y_info - 0.5*inch
+    p.setFont("Helvetica-Bold", 11)
+    p.setFillColor(ORANGE_MANDAT)
+    p.drawString(content_x, y_part, "PARTICIPANT:")
+    p.setFillColor(TECH_GRAY)
+    p.drawString(content_x + 1.1*inch, y_part, registration.nom_prenom.upper())
+    
+    # Footer
     p.setFont("Helvetica", 7)
-    p.setFillColor(colors.white)
-    p.drawString(0.3*inch, 0.12*inch, f"ID: {str(registration.uuid)[:13]}")
-    p.drawRightString(ticket_width - 0.3*inch, 0.12*inch, 
-                     "COMS.A.S • Université de Yaoundé 1")
-    
-    # Border
-    p.setStrokeColor(COMSAS_PINK)
-    p.setLineWidth(3)
-    p.rect(0, 0, ticket_width, ticket_height, fill=0, stroke=1)
+    p.setFillColor(colors.gray)
+    p.drawString(0.2*inch, 0.15*inch, f"ID: {str(registration.uuid)[:13]}")
+    p.drawRightString(ticket_width - 0.2*inch, 0.15*inch, "COMS.A.S • Université de Yaoundé 1")
     
     p.showPage()
     p.save()
-    
     buffer.seek(0)
     registration.ticket_pdf.save(f'ticket_{registration.uuid}.pdf', File(buffer), save=True)
-    
     return registration.ticket_pdf.url
