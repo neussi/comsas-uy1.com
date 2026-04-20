@@ -315,29 +315,73 @@ def generate_ticket(registration):
     # --- Main Ticket Content ---
     content_x = stub_width + 0.5*inch
     
-    # Logo
-    logo_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
-    if os.path.exists(logo_path):
-        logo_img = ImageReader(logo_path)
-        p.drawImage(logo_img, content_x, ticket_height - 1.3*inch, 
-                   width=0.8*inch, height=0.8*inch, mask='auto')
+    # --- Logos Section ---
+    logo_size = 0.65*inch
+    logos_y = ticket_height - 1.2*inch
     
-    # "TICKET" text
+    # Collect logos
+    logos = []
+    comsas_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
+    if os.path.exists(comsas_path):
+        logos.append(comsas_path)
+    
+    event = registration.event
+    if event.partner_logo_1: logos.append(event.partner_logo_1.path)
+    if event.partner_logo_2: logos.append(event.partner_logo_2.path)
+    if event.partner_logo_3: logos.append(event.partner_logo_3.path)
+    
+    # Deduplicate
+    unique_logos = []
+    for l in logos:
+        if l not in unique_logos: unique_logos.append(l)
+    
+    # Draw logos spaced out
+    for i, logo_path in enumerate(unique_logos):
+        lx = content_x + (i * 0.8*inch)
+        try:
+            p.drawImage(ImageReader(logo_path), lx, logos_y, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
+        except:
+            pass
+            
+    # "TICKET" text (Moved right to avoid logo collision if many logos)
     p.setFillColor(DARK_GRAY)
-    p.setFont("Helvetica-Bold", 36)
-    p.drawString(content_x + 1*inch, ticket_height - 1.1*inch, "TICKET")
+    p.setFont("Helvetica-Bold", 32)
+    ticket_label_x = content_x + (len(unique_logos) * 0.8*inch) if unique_logos else content_x
+    p.drawString(max(ticket_label_x, content_x + 1.5*inch), ticket_height - 1.05*inch, "TICKET")
     
-    # Event title (Improved wrapping/truncation)
+    # Event title (Rigorous Multi-line Scaling)
     p.setFont("Helvetica-Bold", 14)
     p.setFillColor(COMSAS_PINK)
-    event_title = registration.event.title_fr.upper()
+    event_title = event.title_fr.upper()
     
-    if stringWidth(event_title, "Helvetica-Bold", 14) > (ticket_width - content_x - 0.5*inch):
-        p.setFont("Helvetica-Bold", 11)
-        if stringWidth(event_title, "Helvetica-Bold", 11) > (ticket_width - content_x - 0.5*inch):
-            event_title = event_title[:65] + "..."
+    max_title_width = ticket_width - content_x - 0.5*inch
+    
+    # Dynamic scaling and wrapping
+    font_size = 14
+    if stringWidth(event_title, "Helvetica-Bold", font_size) > max_title_width:
+        font_size = 11
+        if stringWidth(event_title, "Helvetica-Bold", font_size) > max_title_width:
+            # Multi-line logic
+            words = event_title.split()
+            lines = []
+            current_line = ""
+            for word in words:
+                test_line = f"{current_line} {word}".strip()
+                if stringWidth(test_line, "Helvetica-Bold", 10) <= max_title_width:
+                    current_line = test_line
+                else:
+                    lines.append(current_line)
+                    current_line = word
+            lines.append(current_line)
             
-    p.drawString(content_x, ticket_height - 1.6*inch, event_title)
+            p.setFont("Helvetica-Bold", 10)
+            for i, line in enumerate(lines[:2]): # Limit to 2 lines
+                p.drawString(content_x, ticket_height - 1.55*inch - (i*0.18*inch), line)
+        else:
+            p.setFont("Helvetica-Bold", 11)
+            p.drawString(content_x, ticket_height - 1.6*inch, event_title)
+    else:
+        p.drawString(content_x, ticket_height - 1.6*inch, event_title)
     
     # Event details
     y_pos = ticket_height - 2.0*inch

@@ -177,18 +177,42 @@ def generate_badge(registration):
     p.setFillColor(TEXT_WHITE)
     p.drawCentredString(width/2, photo_y - 8*mm, "PARTICIPANT")
     
+    # --- Header Branding (COMSAS Logo) ---
+    header_logo_size = 10*mm
+    header_logo_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
+    if os.path.exists(header_logo_path):
+        p.drawImage(ImageReader(header_logo_path), 5*mm, height - HEADER_HEIGHT + (HEADER_HEIGHT - header_logo_size)/2, width=header_logo_size, height=header_logo_size, mask='auto', preserveAspectRatio=True)
+
     # 6. Body Content
-    title_y = height - HEADER_HEIGHT - 8*mm
+    title_y = height - HEADER_HEIGHT - 6*mm
     p.setFont("Helvetica-Bold", 10)
     p.setFillColor(WAVE_CYAN)
     
     event_title = event.title_fr.upper()
-    if stringWidth(event_title, "Helvetica-Bold", 10) > width - 15*mm:
+    max_badge_title_width = width - 10*mm
+    
+    # Multi-line Title Scaling for Badges
+    if stringWidth(event_title, "Helvetica-Bold", 10) > max_badge_title_width:
         p.setFont("Helvetica-Bold", 8)
-        if stringWidth(event_title, "Helvetica-Bold", 8) > width - 15*mm:
-            event_title = event_title[:60] + "..."
-            
-    p.drawCentredString(width/2, title_y, event_title)
+        if stringWidth(event_title, "Helvetica-Bold", 8) > max_badge_title_width:
+            words = event_title.split()
+            lines = []
+            current_line = ""
+            for word in words:
+                test_line = f"{current_line} {word}".strip()
+                if stringWidth(test_line, "Helvetica-Bold", 8) <= max_badge_title_width:
+                    current_line = test_line
+                else:
+                    lines.append(current_line)
+                    current_line = word
+            lines.append(current_line)
+            for i, line in enumerate(lines[:2]):
+                p.drawCentredString(width/2, title_y - (i*3.5*mm), line)
+            title_y -= (len(lines[:2]) - 1) * 3.5*mm
+        else:
+            p.drawCentredString(width/2, title_y, event_title)
+    else:
+        p.drawCentredString(width/2, title_y, event_title)
     
     # Name
     name_y = title_y - 12*mm
@@ -204,7 +228,7 @@ def generate_badge(registration):
     p.drawCentredString(width/2, name_y, name)
     
     # Info List
-    info_y_cursor = name_y - 12*mm
+    info_y_cursor = name_y - 11*mm
     p.setFont("Helvetica", 9)
     for line in [f"Promotion: {registration.promotion}", f"Email: {registration.email}"]:
         w = stringWidth(line, "Helvetica", 9)
@@ -215,16 +239,16 @@ def generate_badge(registration):
         p.drawString(start_x, info_y_cursor, line)
         info_y_cursor -= 6*mm
         
-    # --- Partner Logos on Badge (Dynamic) ---
+    # --- Partner Logos on Badge (Dynamic Layout) ---
     p_logos = []
     if event.partner_logo_1: p_logos.append(event.partner_logo_1.path)
     if event.partner_logo_2: p_logos.append(event.partner_logo_2.path)
     if event.partner_logo_3: p_logos.append(event.partner_logo_3.path)
     
     if p_logos:
-        p_logo_size = 8*mm
-        p_logo_y = 10*mm
-        p_spacing = 10*mm
+        p_logo_size = 9*mm
+        p_logo_y = 6*mm
+        p_spacing = 15*mm
         p_start_x = (width - (len(p_logos)-1)*p_spacing) / 2
         for i, lp in enumerate(p_logos):
             try: p.drawImage(ImageReader(lp), p_start_x + i*p_spacing - p_logo_size/2, p_logo_y, width=p_logo_size, height=p_logo_size, mask='auto', preserveAspectRatio=True)

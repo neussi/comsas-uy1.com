@@ -35,7 +35,8 @@
                     </span>
                     {% endif %}
                 </div>
-                <h1 class="display-4 fw-bold mb-4 text-dark">{{ event.title_fr }}</h1>
+                <h1 class="display-4 fw-bold mb-4 text-dark" style="overflow-wrap: break-word; word-wrap: break-word;">
+                    {{ event.title_fr }}</h1>
                 <p class="lead text-muted">{{ event.description_fr|striptags|truncatewords:25 }}</p>
                 <div class="mt-4 d-flex flex-wrap gap-4 align-items-center text-muted">
                     <div class="d-flex align-items-center">

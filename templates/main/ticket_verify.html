@@ -79,7 +79,35 @@
 
                 <div class="verification-card shadow-lg animate__animated animate__fadeInUp">
                     <div class="card-body p-4 p-md-5">
-                        {% if registration %}
+                        {% if not registration %}
+                        <div class="text-center mb-4">
+                            <div class="status-badge bg-info bg-opacity-10 text-info mx-auto mb-4">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3 class="fw-bold mb-3">Vérifier Documents</h3>
+                            <p class="text-muted small mb-4">Saisissez l'ID unique (UUID) de votre ticket ou
+                                attestation.</p>
+
+                            <form action="." method="GET" id="manual-verify-form">
+                                <div class="mb-3">
+                                    <input type="text" name="uuid" class="form-control form-control-lg border-2"
+                                        placeholder="Ex: d4de7327-94f2-4bd4-bebe-bcc6deaf695a" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 shadow">
+                                    <i class="fas fa-shield-alt me-2"></i>Lancer la vérification
+                                </button>
+                            </form>
+                        </div>
+                        <script>
+                            document.getElementById('manual-verify-form').addEventListener('submit', function (e) {
+                                e.preventDefault();
+                                const uuid = this.querySelector('input[name="uuid"]').value.trim();
+                                if (uuid) {
+                                    window.location.href = '/tickets/verify/' + uuid + '/';
+                                }
+                            });
+                        </script>
+                        {% else %}
                         <div
                             class="status-badge status-success mb-4 animate__animated animate__zoomIn animate__delay-1s">
                             <i class="fas fa-check"></i>

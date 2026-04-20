@@ -118,7 +118,7 @@ class EventForm(forms.ModelForm):
             'registration_deadline', 'is_featured', 'is_active',
             'certificate_enabled', 'certificate_title', 'certificate_main_text', 'certificate_description',
             'certificate_president_name', 'certificate_president_title',
-            'certificate_dept_head_name', 'certificate_dept_head_title', 'president_signature',
+            'president_signature',
             'partner_logo_1', 'partner_logo_2', 'partner_logo_3', 'badge_enabled'
         ]
         widgets = {
@@ -163,10 +163,6 @@ class EventForm(forms.ModelForm):
                 Row(
                     Column('certificate_president_name', css_class='form-group col-md-6 mb-3'),
                     Column('certificate_president_title', css_class='form-group col-md-6 mb-3'),
-                ),
-                Row(
-                    Column('certificate_dept_head_name', css_class='form-group col-md-6 mb-3'),
-                    Column('certificate_dept_head_title', css_class='form-group col-md-6 mb-3'),
                 ),
                 'president_signature',
             ),

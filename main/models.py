@@ -137,8 +137,6 @@ class Event(models.Model):
     certificate_description = models.TextField(blank=True, verbose_name="Description pour l'attestation")
     certificate_president_name = models.CharField(max_length=100, default="Président COMS.A.S", verbose_name="Nom du président")
     certificate_president_title = models.CharField(max_length=100, default="Président du COMS.A.S", verbose_name="Titre du président")
-    certificate_dept_head_name = models.CharField(max_length=100, default="Chef de département", verbose_name="Nom du chef de département")
-    certificate_dept_head_title = models.CharField(max_length=100, default="Chef de département informatique", verbose_name="Titre du chef de département")
     
     # New: Partner Logos & Signature
     partner_logo_1 = models.ImageField(upload_to='events/partners/', blank=True, null=True, verbose_name="Logo Partenaire 1")

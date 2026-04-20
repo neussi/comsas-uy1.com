@@ -86,6 +86,7 @@ urlpatterns = [
     
     # Ticketing
     path('tickets/download/<uuid:uuid>/', views.download_ticket, name='download_ticket'),
+    path('tickets/verify/', views.verify_ticket, name='ticket_verify_index'),
     path('tickets/verify/<uuid:uuid>/', views.verify_ticket, name='ticket_verify'),
 
     # ============= J.U.IN 2026 =============

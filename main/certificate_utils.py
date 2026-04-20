@@ -8,6 +8,7 @@ from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
 from reportlab.lib import colors
 from reportlab.pdfbase.pdfmetrics import stringWidth
+from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 
@@ -138,8 +139,11 @@ def generate_certificate(registration):
     p.setFont("Times-Roman", 11)
     p.setFillColor(TEXT_DARK)
     
-    # Custom main text or default fallback
-    description = event.certificate_main_text or event.certificate_description or f"""Le computer science association (Club informatique) de l'université de Yaoundé 1 en abrégé COMS.A.S, par la voix de son président certifie que le nommé a participé au {event.title_fr} tenu du {event.date_event.strftime('%d au %d %B %Y')} au centre universitaire des technologies et de l'information de cette université. Ce dernier a démontré un engagement sérieux dans l'apprentissage des technologies et des connaissances abordées. En foi de quoi la présente attestation est établie pour lui valoir ce que de droit."""
+    # Full text customization: if certificate_main_text is provided, use it exclusively
+    if event.certificate_main_text:
+        description = event.certificate_main_text
+    else:
+        description = event.certificate_description or f"Le computer science association (Club informatique) de l'université de Yaoundé 1 en abrégé COMS.A.S, par la voix de son président certifie que le nommé a participé au {event.title_fr} tenu du {event.date_event.strftime('%d au %d %B %Y')} au centre universitaire des technologies et de l'information de cette université. Ce dernier a démontré un engagement sérieux dans l'apprentissage des technologies et des connaissances abordées. En foi de quoi la présente attestation est établie pour lui valoir ce que de droit."
     
     # Wrap text
     max_width = page_width - 2.5*inch
@@ -160,48 +164,32 @@ def generate_certificate(registration):
     
     # Draw wrapped text
     line_height = 0.28*inch
-    for i, line in enumerate(lines[:10]): # Increased line limit
+    for i, line in enumerate(lines[:12]): # Increased line limit
         p.drawCentredString(page_width/2, y_pos - i*line_height, line)
     
-    # --- FOOTER SECTION (MOVED HIGHER to avoid overlap) ---
-    footer_y_base = border_margin + 1.45*inch
+    # --- FOOTER SECTION (Single Signature: President Only) ---
+    footer_y_base = border_margin + 1.2*inch
     
-    # Center section for president and department head
-    center_sep = 2.0*inch
-    
-    # President Signature/Stamp (drawn BELOW the text if exists)
+    # President Signature/Stamp (Centered)
     if event.president_signature:
-        sig_width = 1.4*inch
-        sig_height = 0.7*inch
-        sig_x = (page_width/2 - center_sep) - sig_width/2
-        sig_y = footer_y_base + 0.2*inch
+        sig_width = 1.6*inch
+        sig_height = 0.8*inch
+        sig_x = page_width/2 - sig_width/2
+        sig_y = footer_y_base + 0.3*inch
         p.drawImage(ImageReader(event.president_signature.path), sig_x, sig_y, width=sig_width, height=sig_height, mask='auto', preserveAspectRatio=True)
     
-    # Text for "Fait à :" + President
-    left_x = page_width/2 - center_sep
-    p.setFont("Times-Roman", 9)
+    # Text for President (Centered)
+    center_x = page_width/2
+    p.setFont("Times-Roman", 10)
     p.setFillColor(TEXT_DARK)
-    p.drawCentredString(left_x, footer_y_base + 0.85*inch, "Fait à :")
+    p.drawCentredString(center_x, footer_y_base + 0.95*inch, f"Fait à Yaoundé, le {timezone.now().strftime('%d/%m/%Y')}")
     
-    p.setFont("Times-Bold", 10)
-    p.drawCentredString(left_x, footer_y_base + 0.25*inch, event.certificate_president_name)
+    p.setFont("Times-Bold", 12)
+    p.drawCentredString(center_x, footer_y_base + 0.25*inch, event.certificate_president_name)
     
-    p.setFont("Times-Roman", 8)
+    p.setFont("Times-Roman", 10)
     p.setFillColor(TEXT_LIGHT)
-    p.drawCentredString(left_x, footer_y_base, event.certificate_president_title)
-    
-    # Text for "Le :" + Department Head
-    right_x = page_width/2 + center_sep
-    p.setFont("Times-Roman", 9)
-    p.setFillColor(TEXT_DARK)
-    p.drawCentredString(right_x, footer_y_base + 0.85*inch, "Le :")
-    
-    p.setFont("Times-Bold", 10)
-    p.drawCentredString(right_x, footer_y_base + 0.25*inch, event.certificate_dept_head_name)
-    
-    p.setFont("Times-Roman", 8)
-    p.setFillColor(TEXT_LIGHT)
-    p.drawCentredString(right_x, footer_y_base, event.certificate_dept_head_title)
+    p.drawCentredString(center_x, footer_y_base, event.certificate_president_title)
     
     # --- LOGOS AT BOTTOM (Dynamic Partners Layout) ---
     logo_y = border_margin + 0.45*inch
