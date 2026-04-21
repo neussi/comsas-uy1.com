@@ -39,20 +39,29 @@
         border-radius: 50%;
         pointer-events: none;
     }
+
     .pf-blob-1 {
-        width: 500px; height: 500px;
-        background: radial-gradient(circle, rgba(233,30,140,.10), transparent 70%);
-        top: -160px; right: -120px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(233, 30, 140, .10), transparent 70%);
+        top: -160px;
+        right: -120px;
     }
+
     .pf-blob-2 {
-        width: 300px; height: 300px;
-        background: radial-gradient(circle, rgba(244,143,177,.12), transparent 70%);
-        bottom: 60px; left: -80px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(244, 143, 177, .12), transparent 70%);
+        bottom: 60px;
+        left: -80px;
     }
+
     .pf-blob-3 {
-        width: 200px; height: 200px;
-        background: radial-gradient(circle, rgba(194,24,91,.07), transparent 70%);
-        top: 40%; left: 30%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(194, 24, 91, .07), transparent 70%);
+        top: 40%;
+        left: 30%;
     }
 
     .pf-ring {
@@ -60,16 +69,22 @@
         border-radius: 50%;
         pointer-events: none;
     }
+
     .pf-ring-1 {
-        width: 700px; height: 700px;
-        border: 1px solid rgba(233,30,140,.07);
-        top: 50%; left: 50%;
+        width: 700px;
+        height: 700px;
+        border: 1px solid rgba(233, 30, 140, .07);
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -60%);
     }
+
     .pf-ring-2 {
-        width: 1000px; height: 1000px;
-        border: 1px solid rgba(233,30,140,.04);
-        top: 50%; left: 50%;
+        width: 1000px;
+        height: 1000px;
+        border: 1px solid rgba(233, 30, 140, .04);
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -60%);
     }
 
@@ -83,6 +98,7 @@
         position: relative;
         display: inline-block;
     }
+
     .avatar-wrapper::before {
         content: '';
         position: absolute;
@@ -92,6 +108,7 @@
         z-index: 0;
         opacity: .18;
     }
+
     .avatar-wrapper::after {
         content: '';
         position: absolute;
@@ -100,20 +117,24 @@
         background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
         z-index: 0;
     }
+
     .profile-avatar {
         position: relative;
         z-index: 1;
-        width: 160px; height: 160px;
+        width: 160px;
+        height: 160px;
         border-radius: 24px;
         object-fit: cover;
         border: 4px solid #fff;
-        box-shadow: 0 20px 60px rgba(233,30,140,.22);
+        box-shadow: 0 20px 60px rgba(233, 30, 140, .22);
         display: block;
     }
+
     .avatar-initials {
         position: relative;
         z-index: 1;
-        width: 160px; height: 160px;
+        width: 160px;
+        height: 160px;
         border-radius: 24px;
         background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
         display: flex;
@@ -123,26 +144,29 @@
         font-weight: 900;
         color: #fff;
         border: 4px solid #fff;
-        box-shadow: 0 20px 60px rgba(233,30,140,.30);
+        box-shadow: 0 20px 60px rgba(233, 30, 140, .30);
         letter-spacing: -2px;
     }
+
     .avatar-status {
         position: absolute;
-        bottom: 8px; right: 8px;
-        width: 16px; height: 16px;
+        bottom: 8px;
+        right: 8px;
+        width: 16px;
+        height: 16px;
         background: #22c55e;
         border-radius: 50%;
         border: 3px solid #fff;
         z-index: 2;
-        box-shadow: 0 0 0 3px rgba(34,197,94,.25);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, .25);
     }
 
     .member-type-badge {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: rgba(233,30,140,.08);
-        border: 1px solid rgba(233,30,140,.18);
+        background: rgba(233, 30, 140, .08);
+        border: 1px solid rgba(233, 30, 140, .18);
         color: var(--rose-deep);
         font-size: .72rem;
         font-weight: 700;
@@ -160,6 +184,7 @@
         line-height: 1.1;
         margin-bottom: 8px;
     }
+
     .pf-title {
         font-size: 1.05rem;
         color: var(--muted);
@@ -169,7 +194,10 @@
         align-items: center;
         gap: 8px;
     }
-    .pf-title span { color: var(--rose-main); }
+
+    .pf-title span {
+        color: var(--rose-main);
+    }
 
     .social-row {
         display: flex;
@@ -177,8 +205,10 @@
         gap: 10px;
         margin-bottom: 32px;
     }
+
     .social-btn {
-        width: 42px; height: 42px;
+        width: 42px;
+        height: 42px;
         border-radius: 12px;
         display: inline-flex;
         align-items: center;
@@ -187,20 +217,33 @@
         border: 1.5px solid #f0e8ed;
         color: var(--muted);
         text-decoration: none;
-        box-shadow: 0 4px 12px rgba(0,0,0,.06);
-        transition: all .3s cubic-bezier(.34,1.56,.64,1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+        transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
         font-size: .95rem;
     }
+
     .social-btn:hover {
         transform: translateY(-4px);
         border-color: transparent;
         color: #fff;
-        box-shadow: 0 10px 24px rgba(0,0,0,.15);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, .15);
     }
-    .social-github:hover   { background: #1a1a1a; }
-    .social-linkedin:hover { background: #0077b5; }
-    .social-twitter:hover  { background: #1da1f2; }
-    .social-web:hover      { background: linear-gradient(135deg, var(--rose-main), var(--rose-deep)); }
+
+    .social-github:hover {
+        background: #1a1a1a;
+    }
+
+    .social-linkedin:hover {
+        background: #0077b5;
+    }
+
+    .social-twitter:hover {
+        background: #1da1f2;
+    }
+
+    .social-web:hover {
+        background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
+    }
 
     .stats-strip {
         display: flex;
@@ -210,8 +253,9 @@
         border-radius: 20px 20px 0 0;
         overflow: hidden;
         margin-top: 40px;
-        box-shadow: 0 -4px 24px rgba(233,30,140,.06);
+        box-shadow: 0 -4px 24px rgba(233, 30, 140, .06);
     }
+
     .stat-cell {
         flex: 1;
         text-align: center;
@@ -219,14 +263,22 @@
         border-right: 1px solid #f0e8ed;
         transition: background .2s;
     }
-    .stat-cell:last-child { border-right: none; }
-    .stat-cell:hover { background: var(--rose-light); }
+
+    .stat-cell:last-child {
+        border-right: none;
+    }
+
+    .stat-cell:hover {
+        background: var(--rose-light);
+    }
+
     .stat-cell strong {
         display: block;
         font-size: 1.5rem;
         font-weight: 800;
         color: var(--dark);
     }
+
     .stat-cell span {
         font-size: .66rem;
         font-weight: 700;
@@ -235,8 +287,17 @@
         color: var(--muted);
     }
 
-    .wave-sep { width: 100%; overflow: hidden; line-height: 0; }
-    .wave-sep svg { display: block; width: 100%; height: 52px; }
+    .wave-sep {
+        width: 100%;
+        overflow: hidden;
+        line-height: 0;
+    }
+
+    .wave-sep svg {
+        display: block;
+        width: 100%;
+        height: 52px;
+    }
 
     /* ── CONTENT ── */
     .pf-content {
@@ -248,12 +309,15 @@
         background: #fff;
         border-radius: 22px;
         border: 1.5px solid #f0e8ed;
-        box-shadow: 0 4px 24px rgba(0,0,0,.04);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, .04);
         overflow: hidden;
         margin-bottom: 24px;
         transition: box-shadow .3s;
     }
-    .pf-card:hover { box-shadow: 0 8px 36px rgba(233,30,140,.09); }
+
+    .pf-card:hover {
+        box-shadow: 0 8px 36px rgba(233, 30, 140, .09);
+    }
 
     .pf-card-header {
         display: flex;
@@ -262,8 +326,10 @@
         padding: 20px 24px 0;
         margin-bottom: 20px;
     }
+
     .pf-card-icon {
-        width: 40px; height: 40px;
+        width: 40px;
+        height: 40px;
         border-radius: 12px;
         background: var(--rose-light);
         display: flex;
@@ -273,6 +339,7 @@
         font-size: .9rem;
         flex-shrink: 0;
     }
+
     .pf-card-title {
         font-size: .82rem;
         font-weight: 700;
@@ -281,7 +348,10 @@
         color: var(--dark);
         margin: 0;
     }
-    .pf-card-body { padding: 0 24px 24px; }
+
+    .pf-card-body {
+        padding: 0 24px 24px;
+    }
 
     .bio-text {
         font-size: .93rem;
@@ -305,17 +375,22 @@
         font-size: .8rem;
         font-weight: 600;
         margin: 4px;
-        transition: all .3s cubic-bezier(.34,1.56,.64,1);
+        transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
         cursor: default;
     }
+
     .skill-tag:hover {
         background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
         color: #fff;
         border-color: transparent;
         transform: translateY(-3px) scale(1.04);
-        box-shadow: 0 8px 20px rgba(233,30,140,.25);
+        box-shadow: 0 8px 20px rgba(233, 30, 140, .25);
     }
-    .skill-tag i { font-size: .65rem; opacity: .6; }
+
+    .skill-tag i {
+        font-size: .65rem;
+        opacity: .6;
+    }
 
     .project-item {
         display: flex;
@@ -324,9 +399,14 @@
         padding: 12px 0;
         border-bottom: 1px solid #f5eef2;
     }
-    .project-item:last-child { border-bottom: none; }
+
+    .project-item:last-child {
+        border-bottom: none;
+    }
+
     .project-icon {
-        width: 40px; height: 40px;
+        width: 40px;
+        height: 40px;
         border-radius: 12px;
         background: var(--rose-light);
         display: flex;
@@ -337,17 +417,24 @@
         flex-shrink: 0;
         transition: all .25s;
     }
+
     .project-item:hover .project-icon {
         background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
         color: #fff;
     }
+
     .project-name {
         font-size: .88rem;
         font-weight: 700;
         color: var(--dark);
         margin: 0;
     }
-    .project-cat { font-size: .72rem; color: var(--muted); }
+
+    .project-cat {
+        font-size: .72rem;
+        color: var(--muted);
+    }
+
     .btn-see-project {
         margin-left: auto;
         display: inline-flex;
@@ -363,6 +450,7 @@
         transition: all .25s;
         flex-shrink: 0;
     }
+
     .btn-see-project:hover {
         background: linear-gradient(135deg, var(--rose-main), var(--rose-deep));
         color: #fff;
@@ -376,9 +464,14 @@
         padding: 12px 0;
         border-bottom: 1px solid #f5eef2;
     }
-    .contact-item:last-child { border-bottom: none; }
+
+    .contact-item:last-child {
+        border-bottom: none;
+    }
+
     .contact-ico {
-        width: 38px; height: 38px;
+        width: 38px;
+        height: 38px;
         border-radius: 12px;
         background: var(--rose-light);
         display: flex;
@@ -388,19 +481,24 @@
         font-size: .8rem;
         flex-shrink: 0;
     }
+
     .contact-label {
         font-size: .7rem;
         color: var(--muted);
         font-weight: 600;
         display: block;
     }
+
     .contact-value {
         font-size: .88rem;
         font-weight: 700;
         color: var(--dark);
         text-decoration: none;
     }
-    a.contact-value:hover { color: var(--rose-main); }
+
+    a.contact-value:hover {
+        color: var(--rose-main);
+    }
 
     .info-row {
         display: flex;
@@ -409,9 +507,14 @@
         padding: 10px 0;
         border-bottom: 1px solid #f5eef2;
     }
-    .info-row:last-child { border-bottom: none; }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
     .info-ico {
-        width: 34px; height: 34px;
+        width: 34px;
+        height: 34px;
         border-radius: 10px;
         background: var(--rose-light);
         display: flex;
@@ -423,16 +526,22 @@
     }
 
     .similar-avatar {
-        width: 56px; height: 56px;
+        width: 56px;
+        height: 56px;
         border-radius: 50%;
         object-fit: cover;
         border: 2px solid #fff;
-        box-shadow: 0 4px 12px rgba(233,30,140,.15);
+        box-shadow: 0 4px 12px rgba(233, 30, 140, .15);
         transition: transform .25s;
     }
-    .similar-avatar:hover { transform: scale(1.08); }
+
+    .similar-avatar:hover {
+        transform: scale(1.08);
+    }
+
     .similar-initials {
-        width: 56px; height: 56px;
+        width: 56px;
+        height: 56px;
         border-radius: 50%;
         background: linear-gradient(135deg, var(--rose-mid), var(--rose-main));
         display: flex;
@@ -442,11 +551,14 @@
         font-weight: 700;
         font-size: .9rem;
         border: 2px solid #fff;
-        box-shadow: 0 4px 12px rgba(233,30,140,.15);
+        box-shadow: 0 4px 12px rgba(233, 30, 140, .15);
         transition: transform .25s;
         margin: 0 auto;
     }
-    .similar-initials:hover { transform: scale(1.08); }
+
+    .similar-initials:hover {
+        transform: scale(1.08);
+    }
 
     /* ── CTA ── */
     .pf-cta {
@@ -456,48 +568,61 @@
         overflow: hidden;
         background: linear-gradient(135deg, var(--rose-main) 0%, var(--rose-deep) 100%);
     }
+
     .pf-cta::before {
         content: '';
-        position: absolute; inset: 0;
+        position: absolute;
+        inset: 0;
         background-image:
-            linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+            linear-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, .07) 1px, transparent 1px);
         background-size: 44px 44px;
     }
+
     .cta-ring {
         position: absolute;
         border-radius: 50%;
         pointer-events: none;
     }
+
     .cta-ring-1 {
-        width: 600px; height: 600px;
-        border: 1px solid rgba(255,255,255,.1);
-        top: 50%; left: 50%;
+        width: 600px;
+        height: 600px;
+        border: 1px solid rgba(255, 255, 255, .1);
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -50%);
     }
+
     .cta-ring-2 {
-        width: 900px; height: 900px;
-        border: 1px solid rgba(255,255,255,.06);
-        top: 50%; left: 50%;
+        width: 900px;
+        height: 900px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -50%);
     }
+
     .pf-cta-inner {
         position: relative;
         z-index: 1;
         max-width: 600px;
         margin: 0 auto;
     }
+
     .pf-cta h2 {
         font-size: clamp(1.6rem, 4vw, 2.4rem);
         font-weight: 900;
         color: #fff;
         margin-bottom: 14px;
     }
+
     .pf-cta p {
-        color: rgba(255,255,255,.78);
+        color: rgba(255, 255, 255, .78);
         font-size: 1rem;
         margin-bottom: 40px;
     }
+
     .btn-cta-white {
         display: inline-flex;
         align-items: center;
@@ -509,13 +634,15 @@
         padding: 13px 34px;
         border-radius: 50px;
         text-decoration: none;
-        box-shadow: 0 10px 32px rgba(0,0,0,.15);
+        box-shadow: 0 10px 32px rgba(0, 0, 0, .15);
         transition: transform .25s, box-shadow .25s;
     }
+
     .btn-cta-white:hover {
         transform: translateY(-3px);
-        box-shadow: 0 18px 44px rgba(0,0,0,.22);
+        box-shadow: 0 18px 44px rgba(0, 0, 0, .22);
     }
+
     .btn-cta-outline {
         display: inline-flex;
         align-items: center;
@@ -527,12 +654,13 @@
         padding: 12px 34px;
         border-radius: 50px;
         text-decoration: none;
-        border: 2px solid rgba(255,255,255,.5);
+        border: 2px solid rgba(255, 255, 255, .5);
         transition: border-color .25s, background .25s, transform .25s;
     }
+
     .btn-cta-outline:hover {
         border-color: #fff;
-        background: rgba(255,255,255,.1);
+        background: rgba(255, 255, 255, .1);
         transform: translateY(-3px);
     }
 </style>
@@ -556,11 +684,11 @@
                 <div class="col-lg-auto text-center text-lg-start" data-aos="fade-right">
                     <div class="avatar-wrapper d-inline-block">
                         {% if member.photo %}
-                            <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}" class="profile-avatar">
+                        <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}" class="profile-avatar">
                         {% else %}
-                            <div class="avatar-initials">
-                                {{ member.nom_prenom|make_list|first|upper }}
-                            </div>
+                        <div class="avatar-initials">
+                            {{ member.nom_prenom|make_list|first|upper }}
+                        </div>
                         {% endif %}
                         <div class="avatar-status"></div>
                     </div>
@@ -580,24 +708,28 @@
 
                     <div class="social-row">
                         {% if member.github_url %}
-                            <a href="{{ member.github_url }}" target="_blank" class="social-btn social-github" title="GitHub">
-                                <i class="fab fa-github"></i>
-                            </a>
+                        <a href="{{ member.github_url }}" target="_blank" class="social-btn social-github"
+                            title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
                         {% endif %}
                         {% if member.linkedin_url %}
-                            <a href="{{ member.linkedin_url }}" target="_blank" class="social-btn social-linkedin" title="LinkedIn">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
+                        <a href="{{ member.linkedin_url }}" target="_blank" class="social-btn social-linkedin"
+                            title="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
                         {% endif %}
                         {% if member.twitter_url %}
-                            <a href="{{ member.twitter_url }}" target="_blank" class="social-btn social-twitter" title="Twitter/X">
-                                <i class="fab fa-x-twitter"></i>
-                            </a>
+                        <a href="{{ member.twitter_url }}" target="_blank" class="social-btn social-twitter"
+                            title="Twitter/X">
+                            <i class="fab fa-x-twitter"></i>
+                        </a>
                         {% endif %}
                         {% if member.website_url %}
-                            <a href="{{ member.website_url }}" target="_blank" class="social-btn social-web" title="Site Web">
-                                <i class="fas fa-globe"></i>
-                            </a>
+                        <a href="{{ member.website_url }}" target="_blank" class="social-btn social-web"
+                            title="Site Web">
+                            <i class="fas fa-globe"></i>
+                        </a>
                         {% endif %}
                         <a href="mailto:{{ member.email }}" class="social-btn social-web" title="Email">
                             <i class="fas fa-envelope"></i>
@@ -639,7 +771,7 @@
 
 <div class="wave-sep" style="background:#fff;">
     <svg viewBox="0 0 1440 52" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-        <path d="M0,26 C480,52 960,0 1440,26 L1440,52 L0,52 Z" fill="#fdf8fa"/>
+        <path d="M0,26 C480,52 960,0 1440,26 L1440,52 L0,52 Z" fill="#fdf8fa" />
     </svg>
 </div>
 
@@ -659,11 +791,11 @@
                     </div>
                     <div class="pf-card-body">
                         {% if member.bio %}
-                            <div class="bio-text">{{ member.bio|safe }}</div>
+                        <div class="bio-text">{{ member.bio|safe }}</div>
                         {% else %}
-                            <div class="bio-text" style="color:var(--muted);font-style:italic;">
-                                Aucune biographie n'a encore été renseignée pour ce membre.
-                            </div>
+                        <div class="bio-text" style="color:var(--muted);font-style:italic;">
+                            Aucune biographie n'a encore été renseignée pour ce membre.
+                        </div>
                         {% endif %}
                     </div>
                 </div>
@@ -676,24 +808,24 @@
                     </div>
                     <div class="pf-card-body">
                         {% for project in member_projects %}
-                            <div class="project-item">
-                                <div class="project-icon"><i class="fas fa-code"></i></div>
-                                <div>
-                                    <p class="project-name">{{ project.title_fr }}</p>
-                                    <span class="project-cat">{{ project.category.name|default:"Projet Tech" }}</span>
-                                </div>
-                                <a href="{% url 'project_detail' project.id %}" class="btn-see-project">
-                                    Voir <i class="fas fa-arrow-right" style="font-size:.6rem"></i>
-                                </a>
+                        <div class="project-item">
+                            <div class="project-icon"><i class="fas fa-code"></i></div>
+                            <div>
+                                <p class="project-name">{{ project.title_fr }}</p>
+                                <span class="project-cat">{{ project.category.name|default:"Projet Tech" }}</span>
                             </div>
+                            <a href="{% url 'project_detail' project.id %}" class="btn-see-project">
+                                Voir <i class="fas fa-arrow-right" style="font-size:.6rem"></i>
+                            </a>
+                        </div>
                         {% empty %}
-                            <div class="project-item">
-                                <div class="project-icon"><i class="fas fa-check-circle"></i></div>
-                                <div>
-                                    <p class="project-name">Participation aux activités COM.S.AS</p>
-                                    <span class="project-cat">Promotion de l'informatique à l'UY1</span>
-                                </div>
+                        <div class="project-item">
+                            <div class="project-icon"><i class="fas fa-check-circle"></i></div>
+                            <div>
+                                <p class="project-name">Participation aux activités COM.S.AS</p>
+                                <span class="project-cat">Promotion de l'informatique à l'UY1</span>
                             </div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -711,59 +843,61 @@
                     </div>
                     <div class="pf-card-body">
                         {% if member.technologies %}
-                            <div class="mb-4">
-                                <h6 style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;">
-                                    Technologies maîtrisées
-                                </h6>
-                                <div class="d-flex flex-wrap mt-2">
-                                    {% for tech in member.technologies.split %}
-                                        <span class="skill-tag" style="background:#f0e8ed;border-color:transparent;">
-                                            <i class="fas fa-microchip"></i>{{ tech|cut:"," }}
-                                        </span>
-                                    {% endfor %}
-                                </div>
+                        <div class="mb-4">
+                            <h6 style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;">
+                                Technologies maîtrisées
+                            </h6>
+                            <div class="d-flex flex-wrap mt-2">
+                                {% for tech in member.technologies.split %}
+                                <span class="skill-tag" style="background:#f0e8ed;border-color:transparent;">
+                                    <i class="fas fa-microchip"></i>{{ tech|cut:"," }}
+                                </span>
+                                {% endfor %}
                             </div>
+                        </div>
                         {% endif %}
 
                         {% if member.skills %}
-                            <div class="mb-4">
-                                <h6 style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;">
-                                    Skills & Savoir-être
-                                </h6>
-                                <div class="d-flex flex-wrap mt-2">
-                                    {% for skill in member.skills.split %}
-                                        <span class="skill-tag">
-                                            <i class="fas fa-check"></i>{{ skill|cut:"," }}
-                                        </span>
-                                    {% endfor %}
-                                </div>
+                        <div class="mb-4">
+                            <h6 style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;">
+                                Skills & Savoir-être
+                            </h6>
+                            <div class="d-flex flex-wrap mt-2">
+                                {% for skill in member.skills.split %}
+                                <span class="skill-tag">
+                                    <i class="fas fa-check"></i>{{ skill|cut:"," }}
+                                </span>
+                                {% endfor %}
                             </div>
+                        </div>
                         {% endif %}
 
                         {% if member.other_roles %}
-                            <div class="mb-4">
-                                <h6 style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;">
-                                    Aussi connu(e) comme
-                                </h6>
-                                <p class="mb-0 fw-semibold" style="font-size:.85rem;color:var(--dark);">
-                                    {{ member.other_roles }}
-                                </p>
-                            </div>
+                        <div class="mb-4">
+                            <h6 style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;">
+                                Aussi connu(e) comme
+                            </h6>
+                            <p class="mb-0 fw-semibold" style="font-size:.85rem;color:var(--dark);">
+                                {{ member.other_roles }}
+                            </p>
+                        </div>
                         {% endif %}
 
                         {% if member.needs %}
-                            <div class="mb-2 p-3 rounded" style="background:var(--rose-light);">
-                                <h6 style="font-size:.75rem;font-weight:800;color:var(--rose-deep);text-transform:uppercase;">
-                                    <i class="fas fa-search me-1"></i>Recherche & Besoins
-                                </h6>
-                                <p class="mb-0 fw-bold" style="font-size:.85rem;color:var(--rose-main);">
-                                    {{ member.needs }}
-                                </p>
-                            </div>
+                        <div class="mb-2 p-3 rounded" style="background:var(--rose-light);">
+                            <h6
+                                style="font-size:.75rem;font-weight:800;color:var(--rose-deep);text-transform:uppercase;">
+                                <i class="fas fa-search me-1"></i>Recherche & Besoins
+                            </h6>
+                            <p class="mb-0 fw-bold" style="font-size:.85rem;color:var(--rose-main);">
+                                {{ member.needs }}
+                            </p>
+                        </div>
                         {% endif %}
 
-                        {% if not member.skills and not member.technologies and not member.other_roles and not member.needs %}
-                            <p style="color:var(--muted);font-size:.85rem;font-style:italic;">Profil non complété.</p>
+                        {% if not member.skills and not member.technologies and not member.other_roles and not
+                        member.needs %}
+                        <p style="color:var(--muted);font-size:.85rem;font-style:italic;">Profil non complété.</p>
                         {% endif %}
                     </div>
                 </div>
@@ -783,22 +917,22 @@
                             </div>
                         </div>
                         {% if member.telephone %}
-                            <div class="contact-item">
-                                <div class="contact-ico"><i class="fas fa-phone"></i></div>
-                                <div>
-                                    <span class="contact-label">Téléphone / WhatsApp</span>
-                                    <span class="contact-value">{{ member.telephone }}</span>
-                                </div>
+                        <div class="contact-item">
+                            <div class="contact-ico"><i class="fas fa-phone"></i></div>
+                            <div>
+                                <span class="contact-label">Téléphone / WhatsApp</span>
+                                <span class="contact-value">{{ member.telephone }}</span>
                             </div>
+                        </div>
                         {% endif %}
                         {% if member.adresse %}
-                            <div class="contact-item">
-                                <div class="contact-ico"><i class="fas fa-map-marker-alt"></i></div>
-                                <div>
-                                    <span class="contact-label">Localisation</span>
-                                    <span class="contact-value">{{ member.adresse }}</span>
-                                </div>
+                        <div class="contact-item">
+                            <div class="contact-ico"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <span class="contact-label">Localisation</span>
+                                <span class="contact-value">{{ member.adresse }}</span>
                             </div>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
@@ -818,16 +952,54 @@
                             </div>
                         </div>
                         {% if member.poste_bureau %}
-                            <div class="info-row">
-                                <div class="info-ico"><i class="fas fa-briefcase"></i></div>
-                                <div>
-                                    <span class="contact-label">Poste occupé</span>
-                                    <span class="contact-value">{{ member.poste_bureau }}</span>
-                                </div>
+                        <div class="info-row">
+                            <div class="info-ico"><i class="fas fa-briefcase"></i></div>
+                            <div>
+                                <span class="contact-label">Poste occupé</span>
+                                <span class="contact-value">{{ member.poste_bureau }}</span>
                             </div>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
+
+                <!-- Certificats & Badges (New Section) -->
+                {% if registrations %}
+                <div class="pf-card border-warning border-top border-4">
+                    <div class="pf-card-header">
+                        <div class="pf-card-icon" style="background:rgba(243,146,0,.1);color:#f39200;"><i
+                                class="fas fa-certificate"></i></div>
+                        <h3 class="pf-card-title">Récompenses & Documents</h3>
+                    </div>
+                    <div class="pf-card-body">
+                        <p class="small text-muted mb-3">Téléchargez vos documents officiels pour chaque événement.</p>
+                        {% for reg in registrations %}
+                        <div class="mb-3 p-3 border rounded-3 bg-light position-relative">
+                            <h6 class="fw-bold mb-2" style="font-size:.85rem;padding-right:20px;">{{ reg.event.title_fr
+                                }}</h6>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                {% if reg.certificate_pdf %}
+                                <a href="{{ reg.certificate_pdf.url }}" target="_blank"
+                                    class="btn btn-xs btn-sm btn-outline-primary rounded-pill">
+                                    <i class="fas fa-download me-1"></i> Attestation
+                                </a>
+                                {% endif %}
+                                {% if reg.badge_pdf %}
+                                <a href="{{ reg.badge_pdf.url }}" target="_blank"
+                                    class="btn btn-xs btn-sm btn-outline-warning rounded-pill">
+                                    <i class="fas fa-id-badge me-1"></i> Badge
+                                </a>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'ticket_verify' reg.uuid %}"
+                                class="position-absolute top-0 end-0 p-2 text-primary" title="Vérifier l'authenticité">
+                                <i class="fas fa-shield-alt"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- QR Code -->
                 <div class="pf-card">
@@ -844,8 +1016,8 @@
                                 alt="QR Code" class="img-fluid rounded" style="width:130px;height:130px;">
                         </div>
                         <div class="input-group input-group-sm mb-3">
-                            <input type="text" class="form-control bg-light border-light text-muted"
-                                id="profileUrl" value="{{ request.build_absolute_uri }}" readonly>
+                            <input type="text" class="form-control bg-light border-light text-muted" id="profileUrl"
+                                value="{{ request.build_absolute_uri }}" readonly>
                             <button class="btn btn-primary px-3" type="button" title="Copier le lien"
                                 onclick="navigator.clipboard.writeText(document.getElementById('profileUrl').value); alert('Lien copié !')">
                                 <i class="fas fa-copy"></i>
@@ -861,30 +1033,32 @@
 
                 <!-- Membres similaires -->
                 {% if similar_members %}
-                    <div class="pf-card">
-                        <div class="pf-card-header">
-                            <div class="pf-card-icon"><i class="fas fa-users"></i></div>
-                            <h3 class="pf-card-title">Membres Similaires</h3>
-                        </div>
-                        <div class="pf-card-body">
-                            <div class="row g-3 text-center">
-                                {% for sm in similar_members %}
-                                    <div class="col-4">
-                                        <a href="{% url 'member_portfolio' sm.portfolio_slug %}" class="text-decoration-none d-block">
-                                            {% if sm.photo %}
-                                                <img src="{{ sm.photo.url }}" class="similar-avatar d-block mx-auto mb-2" alt="{{ sm.nom_prenom }}">
-                                            {% else %}
-                                                <div class="similar-initials mb-2">{{ sm.nom_prenom|make_list|first|upper }}</div>
-                                            {% endif %}
-                                            <small style="font-size:.72rem;font-weight:700;color:var(--dark);display:block;">
-                                                {{ sm.nom_prenom|truncatechars:12 }}
-                                            </small>
-                                        </a>
-                                    </div>
-                                {% endfor %}
+                <div class="pf-card">
+                    <div class="pf-card-header">
+                        <div class="pf-card-icon"><i class="fas fa-users"></i></div>
+                        <h3 class="pf-card-title">Membres Similaires</h3>
+                    </div>
+                    <div class="pf-card-body">
+                        <div class="row g-3 text-center">
+                            {% for sm in similar_members %}
+                            <div class="col-4">
+                                <a href="{% url 'member_portfolio' sm.portfolio_slug %}"
+                                    class="text-decoration-none d-block">
+                                    {% if sm.photo %}
+                                    <img src="{{ sm.photo.url }}" class="similar-avatar d-block mx-auto mb-2"
+                                        alt="{{ sm.nom_prenom }}">
+                                    {% else %}
+                                    <div class="similar-initials mb-2">{{ sm.nom_prenom|make_list|first|upper }}</div>
+                                    {% endif %}
+                                    <small style="font-size:.72rem;font-weight:700;color:var(--dark);display:block;">
+                                        {{ sm.nom_prenom|truncatechars:12 }}
+                                    </small>
+                                </a>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
+                </div>
                 {% endif %}
 
             </div>
@@ -904,9 +1078,9 @@
                 <i class="fas fa-paper-plane" style="font-size:.85rem"></i> Envoyer un message
             </a>
             {% if member.linkedin_url %}
-                <a href="{{ member.linkedin_url }}" target="_blank" class="btn-cta-outline">
-                    <i class="fab fa-linkedin" style="font-size:.85rem"></i> LinkedIn
-                </a>
+            <a href="{{ member.linkedin_url }}" target="_blank" class="btn-cta-outline">
+                <i class="fab fa-linkedin" style="font-size:.85rem"></i> LinkedIn
+            </a>
             {% endif %}
         </div>
     </div>

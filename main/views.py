@@ -1605,10 +1605,14 @@ def member_portfolio(request, slug):
         Q(promotion=member.promotion) | Q(niveau=member.niveau)  # ← Q sans préfixe models.
     ).order_by('?')[:3]
     
+    from .models import EventRegistration
+    registrations = EventRegistration.objects.filter(email=member.email, is_confirmed=True).select_related('event')
+    
     return render(request, 'main/member_portfolio.html', {
         'member': member,
         'member_projects': member_projects,
-        'similar_members': similar_members
+        'similar_members': similar_members,
+        'registrations': registrations
     })
 
 def delegate_detail(request, slug):

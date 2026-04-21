@@ -17,10 +17,12 @@ jobs:
         port: 22
         script: |
           cd /root/system-sh/comsas-uy1.com
-          git pull origin main
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fd
           docker-compose build --no-cache
           docker-compose up -d
           sleep 15
           docker-compose exec -T web python manage.py migrate --noinput
           docker-compose exec -T web python manage.py collectstatic --noinput
-          echo "✅ Déploiement terminé avec succès"
+          echo "✅ Déploiement forcé terminé avec succès"
