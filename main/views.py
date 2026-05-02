@@ -1846,7 +1846,7 @@ def vote_complete(request, transaction_id):
 def juin_miss_mister_contest(request):
     """Page principale du concours Miss & Mister J.U.IN 2026"""
     # On cherche le concours spécifique J.U.IN
-    contest = Contest.objects.filter(slug__icontains='juin', slug__icontains='miss-mister').first()
+    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
     if not contest:
         contest = Contest.objects.filter(slug__icontains='miss-mister').first()
     

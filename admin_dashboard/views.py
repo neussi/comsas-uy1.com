@@ -2004,7 +2004,7 @@ def admin_juin_miss_mister_dashboard(request):
 def admin_juin_candidates_list(request):
     """Liste de tous les candidats avec actions d'administration"""
     # Recherche spécifique pour J.U.IN
-    contest = Contest.objects.filter(slug__icontains='juin', slug__icontains='miss-mister').first()
+    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
     if not contest:
         contest = Contest.objects.filter(slug__icontains='miss-mister').first()
         
@@ -2018,7 +2018,7 @@ def admin_juin_candidates_list(request):
 @custom_staff_member_required
 def admin_juin_votes_list(request):
     """Journal complet des votes et transactions"""
-    contest = Contest.objects.filter(slug__icontains='juin', slug__icontains='miss-mister').first()
+    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
     if not contest:
         contest = Contest.objects.filter(slug__icontains='miss-mister').first()
         
