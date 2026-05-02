@@ -1,459 +1,692 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}RÉSULTATS — MISS & MISTER J.U.IN 2026{% endblock %}
+{% block title %}RÉSULTATS LIVE — MISS & MISTER J.U.IN 2026{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-    :root {
-        --rose:        #E91E63;
-        --rose-deep:   #c2185b;
-        --rose-pale:   rgba(233, 30, 99, .07);
-        --rose-border: rgba(233, 30, 99, .18);
-        --rose-glow:   rgba(233, 30, 99, .25);
-        --blanc:       #ffffff;
-        --bg:          #fdf6f9;
-        --text-dark:   #1a0a10;
-        --text-muted:  #8a7080;
-        --gold:        #F5C518;
-        --silver:      #B8C0CC;
-        --bronze:      #CD8B5A;
-        --gradient:    linear-gradient(135deg, #E91E63 0%, #f06292 100%);
-        --card-shadow: 0 8px 40px rgba(233, 30, 99, .10);
-        --card-radius: 24px;
-    }
+/* ════════════════════════════════════════════
+   TOKENS
+════════════════════════════════════════════ */
+:root {
+    --rose:         #E91E63;
+    --rose-deep:    #B5124A;
+    --rose-soft:    #f48fb1;
+    --rose-pale:    rgba(233, 30, 99, .07);
+    --rose-pale2:   rgba(233, 30, 99, .12);
+    --rose-border:  rgba(233, 30, 99, .18);
+    --rose-glow:    rgba(233, 30, 99, .22);
+    --bg:           #fdf5f8;
+    --surface:      #ffffff;
+    --dark:         #140810;
+    --muted:        #9a7585;
+    --gold:         #E8B84B;
+    --silver:       #A8B4C0;
+    --bronze:       #C07B4A;
+    --grad-rose:    linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    --grad-gold:    linear-gradient(135deg, #E8B84B, #f5d787);
+    --grad-silver:  linear-gradient(135deg, #A8B4C0, #d0d8e0);
+    --grad-bronze:  linear-gradient(135deg, #C07B4A, #dda575);
+    --shadow-card:  0 12px 48px rgba(233, 30, 99, .09);
+    --shadow-hover: 0 20px 60px rgba(233, 30, 99, .18);
+    --r-card:       28px;
+    --r-sm:         14px;
+}
 
-    * { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-        font-family: 'DM Sans', sans-serif;
-        background: var(--bg);
-        color: var(--text-dark);
-    }
+body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    -webkit-font-smoothing: antialiased;
+}
 
-    /* ── HERO ── */
-    .results-hero {
-        position: relative;
-        overflow: hidden;
-        background: linear-gradient(160deg, #fff 0%, #fce4ec 60%, #fff 100%);
-        padding: 110px 0 70px;
-        text-align: center;
-    }
 
-    .results-hero::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background:
-            radial-gradient(ellipse 60% 50% at 20% 110%, rgba(233,30,99,.12) 0%, transparent 70%),
-            radial-gradient(ellipse 40% 40% at 80% -10%, rgba(233,30,99,.10) 0%, transparent 60%);
-        pointer-events: none;
-    }
+/* ════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════ */
+.r-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    padding: 120px 0 80px;
+    text-align: center;
+}
 
-    /* Floating circles décor */
-    .hero-circle {
-        position: absolute;
-        border-radius: 50%;
-        opacity: .06;
-        background: var(--rose);
-        animation: float 8s ease-in-out infinite;
-    }
-    .hero-circle:nth-child(1) { width:220px; height:220px; top:-60px; left:-60px; animation-delay:0s; }
-    .hero-circle:nth-child(2) { width:140px; height:140px; bottom:-40px; right:-30px; animation-delay:-3s; }
-    .hero-circle:nth-child(3) { width:90px; height:90px; top:30%; left:8%; animation-delay:-5s; }
+/* Royal ornament for results */
+.royal-ornament-results {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border: 1px solid rgba(233, 30, 99, 0.05);
+    border-radius: 50%;
+    top: -100px;
+    left: -100px;
+    animation: rotate-slow 40s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
 
-    @keyframes float {
-        0%,100% { transform: translateY(0) scale(1); }
-        50%      { transform: translateY(-18px) scale(1.04); }
-    }
+@keyframes rotate-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    .live-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(46,125,50,.1);
-        border: 1px solid rgba(46,125,50,.25);
-        color: #2e7d32;
-        padding: 6px 18px;
-        border-radius: 50px;
-        font-size: .72rem;
-        font-weight: 700;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        margin-bottom: 22px;
-    }
-    .pulse {
-        width: 8px; height: 8px;
-        background: #43a047;
-        border-radius: 50%;
-        animation: pulse-green 2s infinite;
-    }
-    @keyframes pulse-green {
-        0%   { box-shadow: 0 0 0 0 rgba(67,160,71,.5); }
-        70%  { box-shadow: 0 0 0 10px rgba(67,160,71,0); }
-        100% { box-shadow: 0 0 0 0 rgba(67,160,71,0); }
-    }
+/* Mesh gradient background */
+.r-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 50% -10%,  rgba(233,30,99,.13) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 10% 100%,  rgba(233,30,99,.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 90% 80%,   rgba(240,98,146,.07) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+}
 
-    .hero-title {
-        font-family: 'Playfair Display', serif;
-        font-size: clamp(2.4rem, 5vw, 4rem);
-        font-weight: 900;
-        line-height: 1.1;
-        margin-bottom: .5rem;
-    }
-    .hero-title span { color: var(--rose); }
+/* Grain overlay pour texture */
+.r-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+}
 
-    .hero-sub {
-        color: var(--text-muted);
-        font-size: 1.05rem;
-        font-weight: 400;
-    }
+.r-hero .container { position: relative; z-index: 1; }
 
-    /* ── STAT CHIPS ── */
-    .stat-chips {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 14px;
-        margin-top: 36px;
-    }
-    .stat-chip {
-        background: white;
-        border: 1px solid var(--rose-border);
-        border-radius: 50px;
-        padding: 10px 24px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        box-shadow: 0 4px 16px var(--rose-glow);
-        font-size: .9rem;
-    }
-    .stat-chip strong { color: var(--rose); font-size: 1.25rem; font-weight: 700; }
-    .stat-chip span   { color: var(--text-muted); }
+/* Orbes flottantes */
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: orb-drift 12s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+.orb-1 { width: 400px; height: 400px; top: -150px; left: -100px;  background: rgba(233,30,99,.08);  animation-delay: 0s; }
+.orb-2 { width: 280px; height: 280px; bottom: -80px; right: -60px; background: rgba(240,98,146,.07); animation-delay: -5s; }
+.orb-3 { width: 180px; height: 180px; top: 40%;  left: 5%;        background: rgba(233,30,99,.05);  animation-delay: -9s; }
 
-    /* ── SECTION ── */
-    .section-main { padding: 60px 0; }
+@keyframes orb-drift {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33%      { transform: translate(20px,-30px) scale(1.05); }
+    66%      { transform: translate(-15px, 20px) scale(.97); }
+}
 
-    /* ── CARD ── */
-    .card-box {
-        background: white;
-        border-radius: var(--card-radius);
-        padding: 36px;
-        box-shadow: var(--card-shadow);
-        border: 1px solid var(--rose-border);
-        height: 100%;
-    }
+/* Badge LIVE */
+.live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(46,125,50,.09);
+    border: 1px solid rgba(46,125,50,.22);
+    color: #2e7d32;
+    padding: 7px 20px;
+    border-radius: 50px;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+}
+.pulse-dot {
+    width: 8px; height: 8px;
+    background: #43a047;
+    border-radius: 50%;
+    animation: pulse-g 2s ease-in-out infinite;
+}
+@keyframes pulse-g {
+    0%   { box-shadow: 0 0 0 0 rgba(67,160,71,.5); }
+    70%  { box-shadow: 0 0 0 9px rgba(67,160,71,0); }
+    100% { box-shadow: 0 0 0 0 rgba(67,160,71,0); }
+}
 
-    .card-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 24px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .card-title i { color: var(--rose); }
+/* Titre */
+.hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -.01em;
+    margin-bottom: 14px;
+}
+.hero-title .accent { color: var(--rose); font-style: italic; }
 
-    /* ── PODIUM TOP 3 ── */
-    .podium {
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        gap: 12px;
-        margin-bottom: 40px;
-    }
-    .podium-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        flex: 1;
-        max-width: 160px;
-    }
-    .podium-avatar {
-        width: 72px; height: 72px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid;
-        margin-bottom: 10px;
-        box-shadow: 0 6px 20px rgba(0,0,0,.12);
-    }
-    .podium-item:nth-child(1) .podium-avatar { border-color: var(--silver); }
-    .podium-item:nth-child(2) .podium-avatar { border-color: var(--gold); width: 90px; height: 90px; }
-    .podium-item:nth-child(3) .podium-avatar { border-color: var(--bronze); }
+.hero-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: .01em;
+}
 
-    .podium-name { font-weight: 700; font-size: .8rem; text-align: center; margin-bottom: 4px; }
-    .podium-votes { font-size: .72rem; color: var(--rose); font-weight: 700; }
+/* Stat chips */
+.stat-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 40px;
+}
+.s-chip {
+    background: white;
+    border: 1px solid var(--rose-border);
+    border-radius: 50px;
+    padding: 11px 26px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 20px var(--rose-glow);
+    transition: transform .2s, box-shadow .2s;
+}
+.s-chip:hover { transform: translateY(-2px); box-shadow: 0 8px 28px var(--rose-glow); }
+.s-chip .num { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 700; color: var(--rose); line-height: 1; }
+.s-chip .lbl { font-size: .78rem; color: var(--muted); font-weight: 500; }
 
-    .podium-bar {
-        width: 100%;
-        border-radius: 12px 12px 0 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Playfair Display', serif;
-        font-size: 1.6rem;
-        font-weight: 900;
-        color: white;
-        margin-top: 10px;
-    }
-    .podium-item:nth-child(1) .podium-bar { background: var(--silver); height: 90px; }
-    .podium-item:nth-child(2) .podium-bar { background: var(--gold);   height: 130px; }
-    .podium-item:nth-child(3) .podium-bar { background: var(--bronze); height: 70px; }
 
-    /* ── LEADERBOARD ── */
-    .lb-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+/* ════════════════════════════════════════════
+   LAYOUT PRINCIPAL
+════════════════════════════════════════════ */
+.main-section { padding: 64px 0 40px; }
 
-    .lb-row {
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 3px 12px rgba(0,0,0,.04);
-        transition: transform .25s, box-shadow .25s;
-        border: 1px solid transparent;
-    }
-    .lb-row:hover {
-        transform: translateX(6px);
-        box-shadow: 0 6px 24px var(--rose-glow);
-        border-color: var(--rose-border);
-    }
+.card-panel {
+    background: var(--surface);
+    border-radius: var(--r-card);
+    padding: 38px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--rose-border);
+    height: 100%;
+    transition: box-shadow .3s;
+}
+.card-panel:hover { box-shadow: var(--shadow-hover); }
 
-    .lb-td { padding: 16px 18px; vertical-align: middle; }
-    .lb-td:first-child { border-radius: 16px 0 0 16px; }
-    .lb-td:last-child  { border-radius: 0 16px 16px 0; }
+.panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 26px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--dark);
+}
+.panel-title i { color: var(--rose); font-size: 1.1rem; }
+.panel-title .sub-label {
+    margin-left: auto;
+    font-family: 'Outfit', sans-serif;
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
 
-    .rank-badge {
-        width: 40px; height: 40px;
-        border-radius: 12px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 900; font-size: 1rem;
-        background: var(--rose-pale);
-        color: var(--rose);
-    }
+.divider {
+    border: none;
+    border-top: 1px solid var(--rose-border);
+    margin: 30px 0;
+}
 
-    .thumb {
-        width: 52px; height: 52px;
-        border-radius: 12px;
-        object-fit: cover;
-        margin-right: 14px;
-        flex-shrink: 0;
-    }
-    .thumb-placeholder {
-        width: 52px; height: 52px;
-        border-radius: 12px;
-        background: var(--rose-pale);
-        display: flex; align-items: center; justify-content: center;
-        color: var(--rose);
-        font-size: 1.3rem;
-        margin-right: 14px;
-        flex-shrink: 0;
-    }
 
-    .candidate-name { font-weight: 700; font-size: .95rem; }
-    .candidate-school { font-size: .75rem; color: var(--text-muted); }
+/* ════════════════════════════════════════════
+   PODIUM
+════════════════════════════════════════════ */
+.podium-wrap {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 0 0;
+    margin-bottom: 44px;
+}
 
-    .vote-count { font-weight: 800; color: var(--rose); font-size: 1rem; }
-    .vote-label { font-size: .7rem; color: var(--text-muted); font-weight: 500; }
+.p-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 150px;
+}
 
-    .progress-wrap { width: 110px; }
-    .progress-track {
-        height: 6px;
-        border-radius: 6px;
-        background: #f0e6eb;
-        overflow: hidden;
-        margin-top: 5px;
-    }
-    .progress-fill {
-        height: 100%;
-        background: var(--gradient);
-        border-radius: 6px;
-        transition: width .6s ease;
-    }
+/* Avatar */
+.p-avatar-wrap {
+    position: relative;
+    margin-bottom: 12px;
+}
+.p-avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid;
+    display: block;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+.p-avatar-ph {
+    border-radius: 50%;
+    border: 3px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--rose-pale);
+    color: var(--rose);
+}
 
-    /* Counter animation */
-    .counter { display: inline-block; }
+/* Couronnes */
+.p-crown {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.3rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
+}
 
-    /* ── CHARTS ── */
-    canvas { max-width: 100%; }
+/* Rangs */
+.p-item.rank-1 .p-avatar,
+.p-item.rank-1 .p-avatar-ph { border-color: var(--gold);   width: 92px; height: 92px; font-size: 2rem; }
+.p-item.rank-2 .p-avatar,
+.p-item.rank-2 .p-avatar-ph { border-color: var(--silver); width: 72px; height: 72px; font-size: 1.6rem; }
+.p-item.rank-3 .p-avatar,
+.p-item.rank-3 .p-avatar-ph { border-color: var(--bronze); width: 64px; height: 64px; font-size: 1.4rem; }
 
-    .chart-divider {
-        border: none;
-        border-top: 1px solid var(--rose-border);
-        margin: 28px 0;
-    }
+.p-name {
+    font-weight: 700;
+    font-size: .78rem;
+    text-align: center;
+    margin-bottom: 3px;
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.p-votes {
+    font-size: .7rem;
+    color: var(--rose);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
 
-    /* ── CTA ── */
-    .cta-section { padding: 60px 0; text-align: center; }
+/* Barre podium */
+.p-bar {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 2px 6px rgba(0,0,0,.2);
+    position: relative;
+    overflow: hidden;
+}
+.p-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,.15), transparent);
+}
+.p-item.rank-1 .p-bar { background: var(--grad-gold);   height: 120px; }
+.p-item.rank-2 .p-bar { background: var(--grad-silver); height: 90px; }
+.p-item.rank-3 .p-bar { background: var(--grad-bronze); height: 70px; }
 
-    .btn-juin {
-        background: var(--gradient);
-        color: white;
-        border: none;
-        padding: 16px 48px;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 1rem;
-        letter-spacing: .04em;
-        transition: transform .2s, box-shadow .2s;
-        box-shadow: 0 8px 28px var(--rose-glow);
-        text-decoration: none;
-        display: inline-block;
-    }
-    .btn-juin:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 14px 36px var(--rose-glow);
-        color: white;
-    }
 
-    /* ── ANIMATIONS ── */
-    [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
-    [data-reveal].visible { opacity: 1; transform: none; }
+/* ════════════════════════════════════════════
+   LEADERBOARD TABLE
+════════════════════════════════════════════ */
+.lb-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
 
-    @media (max-width: 768px) {
-        .card-box { padding: 24px 18px; }
-        .podium-item:nth-child(2) .podium-avatar { width: 74px; height: 74px; }
-    }
+.lb-row {
+    background: var(--surface);
+    border-radius: var(--r-sm);
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    border: 1px solid transparent;
+}
+.lb-row:hover {
+    transform: translateX(8px);
+    box-shadow: 0 6px 28px var(--rose-glow);
+    border-color: var(--rose-border);
+}
+
+.lb-td { padding: 14px 16px; vertical-align: middle; }
+.lb-td:first-child { border-radius: var(--r-sm) 0 0 var(--r-sm); }
+.lb-td:last-child  { border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+
+/* Rank badge */
+.rank-box {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: .95rem;
+    background: var(--rose-pale);
+    color: var(--rose);
+    flex-shrink: 0;
+}
+.rank-box.r1 { background: rgba(232,184,75,.15); color: #b8870d; }
+.rank-box.r2 { background: rgba(168,180,192,.15); color: #7a8897; }
+.rank-box.r3 { background: rgba(192,123,74,.15);  color: #9a5f2e; }
+
+/* Thumbnail */
+.lb-thumb {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-right: 13px;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,.1);
+}
+.lb-thumb-ph {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    background: var(--rose-pale);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--rose); font-size: 1.2rem;
+    margin-right: 13px;
+    flex-shrink: 0;
+}
+
+.c-name   { font-weight: 700; font-size: .92rem; line-height: 1.3; }
+.c-school { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+
+.vote-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--rose);
+    line-height: 1;
+}
+.vote-lbl { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+
+/* Progress */
+.prog-wrap { width: 100px; }
+.prog-track {
+    height: 5px;
+    border-radius: 5px;
+    background: rgba(233,30,99,.1);
+    overflow: hidden;
+    margin-top: 6px;
+}
+.prog-fill {
+    height: 100%;
+    background: var(--grad-rose);
+    border-radius: 5px;
+    transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+
+/* Type badge */
+.type-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.type-miss   { background: rgba(233,30,99,.1);  color: var(--rose); }
+.type-mister { background: rgba(20,8,16,.08);   color: var(--dark); }
+
+
+/* ════════════════════════════════════════════
+   CHARTS SIDEBAR
+════════════════════════════════════════════ */
+canvas { max-width: 100%; }
+
+
+/* ════════════════════════════════════════════
+   ÉVOLUTION CHART
+════════════════════════════════════════════ */
+.evo-section { padding: 0 0 60px; }
+
+
+/* ════════════════════════════════════════════
+   CTA FOOTER
+════════════════════════════════════════════ */
+.cta-section {
+    padding: 56px 0;
+    text-align: center;
+    position: relative;
+}
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 56px;
+    background: var(--rose-border);
+}
+
+.cta-label {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    letter-spacing: .03em;
+}
+
+.btn-vote {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--grad-rose);
+    color: white;
+    text-decoration: none;
+    padding: 17px 52px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: .97rem;
+    letter-spacing: .04em;
+    box-shadow: 0 10px 32px var(--rose-glow);
+    transition: transform .2s, box-shadow .2s;
+}
+.btn-vote:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 44px rgba(233,30,99,.28);
+    color: white;
+}
+.btn-vote i { font-size: .9rem; }
+
+
+/* ════════════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════════════ */
+[data-sr] {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity .65s ease, transform .65s ease;
+}
+[data-sr].in { opacity: 1; transform: none; }
+
+
+/* ════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════ */
+@media (max-width: 991px) {
+    .card-panel { padding: 28px 20px; }
+    .p-item.rank-1 .p-avatar,
+    .p-item.rank-1 .p-avatar-ph { width: 76px; height: 76px; }
+}
+@media (max-width: 575px) {
+    .hero-title { font-size: 2.4rem; }
+    .podium-wrap { gap: 6px; }
+    .p-name { font-size: .72rem; }
+    .prog-wrap { display: none; }
+    .s-chip .num { font-size: 1.4rem; }
+}
 </style>
 {% endblock %}
 
+
 {% block content %}
 
-<!-- ── HERO ── -->
-<section class="results-hero">
-    <div class="hero-circle"></div>
-    <div class="hero-circle"></div>
-    <div class="hero-circle"></div>
-    <div class="container position-relative">
-        <div class="live-badge">
-            <div class="pulse"></div>
+{# ══════════════════════════════ HERO ══════════════════════════════ #}
+<section class="r-hero">
+    <div class="royal-ornament-results"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="container">
+
+        <div class="live-pill">
+            <div class="pulse-dot"></div>
             Actualisé en temps réel
         </div>
-        <h1 class="hero-title">Statistiques <span>Live</span><br>Miss &amp; Mister J.U.IN 2026</h1>
-        <p class="hero-sub">Classement général en direct — 20ème édition · 1–5 juin 2026</p>
 
-        <!-- Chips résumé rapide -->
-        <div class="stat-chips">
-            <div class="stat-chip">
-                <strong>{{ total_votes }}</strong>
-                <span>votes enregistrés</span>
+        <h1 class="hero-title">
+            Classement <span class="accent">Live</span><br>
+            Miss &amp; Mister J.U.IN 2026
+        </h1>
+        <p class="hero-sub">20ème édition &nbsp;·&nbsp; 1–5 juin 2026 &nbsp;·&nbsp; Faculté des Sciences, UY1</p>
+
+        <div class="stat-row">
+            <div class="s-chip">
+                <div class="num">{{ total_votes }}</div>
+                <div class="lbl">votes enregistrés</div>
             </div>
-            <div class="stat-chip">
-                <strong>{{ candidates|length }}</strong>
-                <span>candidats</span>
+            <div class="s-chip">
+                <div class="num">{{ candidates|length }}</div>
+                <div class="lbl">candidats</div>
             </div>
-            <div class="stat-chip">
-                <strong>{{ misses|length }}</strong>
-                <span>Miss</span>
+            <div class="s-chip">
+                <div class="num">{{ misses|length }}</div>
+                <div class="lbl">Miss</div>
             </div>
-            <div class="stat-chip">
-                <strong>{{ misters|length }}</strong>
-                <span>Mister</span>
+            <div class="s-chip">
+                <div class="num">{{ misters|length }}</div>
+                <div class="lbl">Mister</div>
             </div>
         </div>
+
     </div>
 </section>
 
-<!-- ── MAIN ── -->
-<section class="section-main">
+
+{# ══════════════════════════════ MAIN ══════════════════════════════ #}
+<section class="main-section">
     <div class="container">
         <div class="row g-4 mb-4">
 
-            <!-- ── LEADERBOARD ── -->
-            <div class="col-lg-8" data-reveal>
-                <div class="card-box">
+            {# ── LEADERBOARD ── #}
+            <div class="col-lg-8" data-sr>
+                <div class="card-panel">
 
-                    <!-- PODIUM TOP 3 -->
+                    {# PODIUM #}
                     {% if candidates|length >= 3 %}
-                    <h5 class="card-title"><i class="fas fa-crown"></i> Podium</h5>
-                    <div class="podium">
-                        {# 2nd place #}
-                        <div class="podium-item">
-                            {% with c=candidates.1 %}
-                            {% if c.image %}
-                            <img src="{{ c.image.url }}" class="podium-avatar" alt="{{ c.name }}">
-                            {% else %}
-                            <div class="podium-avatar d-flex align-items-center justify-content-center" style="background:var(--rose-pale);color:var(--rose);font-size:1.6rem;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            {% endif %}
-                            <div class="podium-name">{{ c.name }}</div>
-                            <div class="podium-votes">{{ c.votes_count }} votes</div>
-                            {% endwith %}
-                            <div class="podium-bar">2</div>
-                        </div>
-                        {# 1st place #}
-                        <div class="podium-item">
-                            {% with c=candidates.0 %}
-                            {% if c.image %}
-                            <img src="{{ c.image.url }}" class="podium-avatar" alt="{{ c.name }}">
-                            {% else %}
-                            <div class="podium-avatar d-flex align-items-center justify-content-center" style="background:var(--rose-pale);color:var(--rose);font-size:1.8rem;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            {% endif %}
-                            <div class="podium-name">{{ c.name }}</div>
-                            <div class="podium-votes">{{ c.votes_count }} votes</div>
-                            {% endwith %}
-                            <div class="podium-bar">1</div>
-                        </div>
-                        {# 3rd place #}
-                        <div class="podium-item">
-                            {% with c=candidates.2 %}
-                            {% if c.image %}
-                            <img src="{{ c.image.url }}" class="podium-avatar" alt="{{ c.name }}">
-                            {% else %}
-                            <div class="podium-avatar d-flex align-items-center justify-content-center" style="background:var(--rose-pale);color:var(--rose);font-size:1.6rem;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            {% endwith %}
-                            <div class="podium-name">{{ c.name }}</div>
-                            <div class="podium-votes">{{ c.votes_count }} votes</div>
-                            {% endwith %}
-                            <div class="podium-bar">3</div>
-                        </div>
+                    <div class="panel-title">
+                        <i class="fas fa-crown"></i> Podium
+                        <span class="sub-label">Top 3</span>
                     </div>
-                    {% endif %}
 
-                    <!-- TABLE TOP 10 -->
-                    <h5 class="card-title"><i class="fas fa-trophy" style="color:var(--gold);"></i> Top 10 Général</h5>
+                    <div class="podium-wrap">
+
+                        {# ── 2ème place ── #}
+                        <div class="p-item rank-2">
+                            {% with c=candidates.1 %}
+                            <div class="p-avatar-wrap">
+                                {% if c.image %}
+                                <img src="{{ c.image.url }}" class="p-avatar" alt="{{ c.name }}">
+                                {% else %}
+                                <div class="p-avatar-ph"><i class="fas fa-user"></i></div>
+                                {% endif %}
+                            </div>
+                            <div class="p-name">{{ c.name }}</div>
+                            <div class="p-votes">{{ c.votes_count }} votes</div>
+                            {% endwith %}
+                            <div class="p-bar">2</div>
+                        </div>
+
+                        {# ── 1ère place ── #}
+                        <div class="p-item rank-1">
+                            {% with c=candidates.0 %}
+                            <div class="p-avatar-wrap">
+                                <div class="p-crown">👑</div>
+                                {% if c.image %}
+                                <img src="{{ c.image.url }}" class="p-avatar" alt="{{ c.name }}">
+                                {% else %}
+                                <div class="p-avatar-ph"><i class="fas fa-user"></i></div>
+                                {% endif %}
+                            </div>
+                            <div class="p-name">{{ c.name }}</div>
+                            <div class="p-votes">{{ c.votes_count }} votes</div>
+                            {% endwith %}
+                            <div class="p-bar">1</div>
+                        </div>
+
+                        {# ── 3ème place ── #}
+                        <div class="p-item rank-3">
+                            {% with c=candidates.2 %}
+                            <div class="p-avatar-wrap">
+                                {% if c.image %}
+                                <img src="{{ c.image.url }}" class="p-avatar" alt="{{ c.name }}">
+                                {% else %}
+                                <div class="p-avatar-ph"><i class="fas fa-user"></i></div>
+                                {% endif %}
+                            </div>
+                            <div class="p-name">{{ c.name }}</div>
+                            <div class="p-votes">{{ c.votes_count }} votes</div>
+                            {% endwith %}
+                            <div class="p-bar">3</div>
+                        </div>
+
+                    </div>{# /podium-wrap #}
+                    {% endif %}{# /candidates >= 3 #}
+
+                    <hr class="divider">
+
+                    {# TABLE TOP 10 #}
+                    <div class="panel-title">
+                        <i class="fas fa-trophy" style="color:var(--gold);"></i> Top 10 Général
+                        <span class="sub-label">Classement complet</span>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="lb-table">
                             <tbody>
-                                {# Calcul du max pour la barre de progression #}
-                                {% with max_votes=candidates.0.votes_count %}
+                                {% with max_v=candidates.0.votes_count %}
                                 {% for candidate in candidates|slice:":10" %}
-                                <tr class="lb-row" style="animation-delay: {{ forloop.counter0 }}00ms;">
-                                    <td class="lb-td" style="width:60px;">
-                                        <div class="rank-badge
-                                            {% if forloop.counter == 1 %}style="background:#fff7d6;color:#b8860b;"{% endif %}
-                                        ">{{ forloop.counter }}</div>
+                                <tr class="lb-row">
+                                    <td class="lb-td" style="width:56px;">
+                                        <div class="rank-box {% if forloop.counter == 1 %}r1{% elif forloop.counter == 2 %}r2{% elif forloop.counter == 3 %}r3{% endif %}">
+                                            {{ forloop.counter }}
+                                        </div>
                                     </td>
                                     <td class="lb-td">
                                         <div class="d-flex align-items-center">
                                             {% if candidate.image %}
-                                            <img src="{{ candidate.image.url }}" class="thumb" alt="{{ candidate.name }}">
+                                            <img src="{{ candidate.image.url }}" class="lb-thumb" alt="{{ candidate.name }}">
                                             {% else %}
-                                            <div class="thumb-placeholder"><i class="fas fa-user"></i></div>
+                                            <div class="lb-thumb-ph"><i class="fas fa-user"></i></div>
                                             {% endif %}
                                             <div>
-                                                <div class="candidate-name">{{ candidate.name }}</div>
-                                                <div class="candidate-school">{{ candidate.school }}</div>
+                                                <div class="c-name">{{ candidate.name }}</div>
+                                                <div class="c-school">{{ candidate.school }}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="lb-td text-end">
-                                        <div class="vote-count counter" data-target="{{ candidate.votes_count }}">{{ candidate.votes_count }}</div>
-                                        <div class="vote-label">votes</div>
+                                    <td class="lb-td" style="width:80px;">
+                                        {% if candidate.candidate_type == 'miss' %}
+                                        <span class="type-badge type-miss">Miss</span>
+                                        {% else %}
+                                        <span class="type-badge type-mister">Mister</span>
+                                        {% endif %}
                                     </td>
-                                    <td class="lb-td" style="width:120px;">
-                                        <div class="progress-wrap">
-                                            <div class="progress-track">
-                                                {# Barre relative au 1er candidat (max réel) #}
-                                                {% if max_votes > 0 %}
-                                                <div class="progress-fill" style="width: {% widthratio candidate.votes_count max_votes 100 %}%;"></div>
+                                    <td class="lb-td text-end" style="width:90px;">
+                                        <div class="vote-num counter" data-target="{{ candidate.votes_count }}">{{ candidate.votes_count }}</div>
+                                        <div class="vote-lbl">votes</div>
+                                    </td>
+                                    <td class="lb-td" style="width:115px;">
+                                        <div class="prog-wrap">
+                                            <div class="prog-track">
+                                                {% if max_v > 0 %}
+                                                <div class="prog-fill" style="width:{% widthratio candidate.votes_count max_v 100 %}%;"></div>
                                                 {% else %}
-                                                <div class="progress-fill" style="width:0%;"></div>
+                                                <div class="prog-fill" style="width:0%;"></div>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -464,62 +697,80 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
 
-            <!-- ── CHARTS ── -->
-            <div class="col-lg-4" data-reveal style="transition-delay:.15s;">
-                <div class="card-box">
-                    <h5 class="card-title"><i class="fas fa-university"></i> Par Établissement</h5>
+                </div>{# /card-panel #}
+            </div>{# /col-lg-8 #}
+
+
+            {# ── CHARTS SIDEBAR ── #}
+            <div class="col-lg-4" data-sr style="transition-delay:.12s;">
+                <div class="card-panel">
+
+                    <div class="panel-title">
+                        <i class="fas fa-university"></i> Par Établissement
+                    </div>
                     <canvas id="schoolChart"></canvas>
 
-                    <hr class="chart-divider">
+                    <hr class="divider">
 
-                    <h5 class="card-title"><i class="fas fa-venus-mars"></i> Miss / Mister</h5>
+                    <div class="panel-title">
+                        <i class="fas fa-venus-mars"></i> Miss / Mister
+                    </div>
                     <canvas id="typeChart"></canvas>
+
                 </div>
             </div>
-        </div>
 
-        <!-- ÉVOLUTION -->
-        <div class="row" data-reveal style="transition-delay:.25s;">
+        </div>{# /row #}
+
+
+        {# ÉVOLUTION #}
+        <div class="row evo-section" data-sr style="transition-delay:.22s;">
             <div class="col-12">
-                <div class="card-box">
-                    <h5 class="card-title"><i class="fas fa-chart-bar"></i> Évolution des Votes</h5>
+                <div class="card-panel">
+                    <div class="panel-title">
+                        <i class="fas fa-chart-area"></i> Évolution des Votes
+                        <span class="sub-label">Par candidat</span>
+                    </div>
                     <canvas id="votesChart" style="max-height:380px;"></canvas>
                 </div>
             </div>
         </div>
-    </div>
+
+    </div>{# /container #}
 </section>
 
-<!-- ── CTA ── -->
+
+{# ══════════════════════════════ CTA ══════════════════════════════ #}
 <div class="cta-section">
-    <p class="text-muted mb-4" style="font-size:.9rem;">Vous n'avez pas encore voté ?</p>
-    <a href="{% url 'juin_miss_mister' %}" class="btn-juin">
-        <i class="fas fa-heart me-2"></i>Participer au vote
+    <p class="cta-label">Vous n'avez pas encore voté ?</p>
+    <a href="{% url 'juin_miss_mister' %}" class="btn-vote">
+        <i class="fas fa-heart"></i>
+        Participer au vote
     </a>
 </div>
 
 {% endblock %}
 
+
 {% block extra_js %}
 <script>
 /* ── Données Django ── */
-const chartLabels   = {{ chart_labels|safe }};
-const chartData     = {{ chart_data|safe }};
-const schoolLabels  = {{ school_labels|safe }};
-const schoolData    = {{ school_data|safe }};
-const missCount     = {{ misses|length }};
-const misterCount   = {{ misters|length }};
+const chartLabels  = {{ chart_labels|safe }};
+const chartData    = {{ chart_data|safe }};
+const schoolLabels = {{ school_labels|safe }};
+const schoolData   = {{ school_data|safe }};
+const missCount    = {{ misses|length }};
+const misterCount  = {{ misters|length }};
 
 /* ── Palette ── */
-const ROSE   = '#E91E63';
-const PALETTE = ['#E91E63','#9C27B0','#5C6BC0','#0288D1','#00897B','#F4511E'];
+const ROSE    = '#E91E63';
+const PALETTE = ['#E91E63','#7B3FBE','#4A6FD4','#0B8FBF','#1B9E77','#E87C2A','#C62828'];
 
 /* ── Chart.js defaults ── */
-Chart.defaults.font.family = "'DM Sans', sans-serif";
-Chart.defaults.color = '#8a7080';
+Chart.defaults.font.family  = "'Outfit', sans-serif";
+Chart.defaults.font.size    = 12;
+Chart.defaults.color        = '#9a7585';
 
 /* ── Donut Établissements ── */
 new Chart(document.getElementById('schoolChart'), {
@@ -529,37 +780,61 @@ new Chart(document.getElementById('schoolChart'), {
         datasets: [{
             data: schoolData,
             backgroundColor: PALETTE,
-            borderWidth: 3,
+            borderWidth: 4,
             borderColor: '#fff',
-            hoverOffset: 8
+            hoverBorderColor: '#fff',
+            hoverOffset: 10
         }]
     },
     options: {
         cutout: '72%',
         responsive: true,
+        animation: { animateRotate: true, duration: 900 },
         plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } }
+            legend: {
+                position: 'bottom',
+                labels: { boxWidth: 11, padding: 14, borderRadius: 4 }
+            },
+            tooltip: {
+                backgroundColor: '#140810',
+                titleColor: '#fff',
+                bodyColor: ROSE,
+                cornerRadius: 10,
+                padding: 12
+            }
         }
     }
 });
 
 /* ── Pie Miss/Mister ── */
 new Chart(document.getElementById('typeChart'), {
-    type: 'pie',
+    type: 'doughnut',
     data: {
         labels: ['Miss', 'Mister'],
         datasets: [{
             data: [missCount, misterCount],
-            backgroundColor: [ROSE, '#1a0a10'],
-            borderWidth: 3,
+            backgroundColor: [ROSE, '#140810'],
+            borderWidth: 4,
             borderColor: '#fff',
-            hoverOffset: 6
+            hoverOffset: 8
         }]
     },
     options: {
+        cutout: '65%',
         responsive: true,
+        animation: { animateRotate: true, duration: 900 },
         plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } }
+            legend: {
+                position: 'bottom',
+                labels: { boxWidth: 11, padding: 14 }
+            },
+            tooltip: {
+                backgroundColor: '#140810',
+                titleColor: '#fff',
+                bodyColor: ROSE,
+                cornerRadius: 10,
+                padding: 12
+            }
         }
     }
 });
@@ -572,7 +847,7 @@ new Chart(document.getElementById('votesChart'), {
         datasets: [{
             label: 'Votes',
             data: chartData,
-            backgroundColor: 'rgba(233, 30, 99, .55)',
+            backgroundColor: 'rgba(233,30,99,.5)',
             borderColor: ROSE,
             borderWidth: 2,
             borderRadius: 8,
@@ -581,10 +856,11 @@ new Chart(document.getElementById('votesChart'), {
     },
     options: {
         responsive: true,
+        animation: { duration: 900 },
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: '#1a0a10',
+                backgroundColor: '#140810',
                 titleColor: '#fff',
                 bodyColor: ROSE,
                 cornerRadius: 10,
@@ -592,40 +868,56 @@ new Chart(document.getElementById('votesChart'), {
             }
         },
         scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(233,30,99,.06)' }, border: { display: false } },
+            y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(233,30,99,.05)' },
+                border: { display: false }
+            },
             x: { grid: { display: false } }
         }
     }
 });
 
-/* ── Scroll reveal ── */
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
 
-document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+/* ══════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════ */
+const srObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.classList.add('in');
+            srObserver.unobserve(e.target);
+        }
+    });
+}, { threshold: 0.08 });
 
-/* ── Counter animation ── */
-function animateCounter(el) {
-    const target = parseInt(el.dataset.target, 10);
-    const duration = 1200;
-    const step = target / (duration / 16);
-    let current = 0;
-    const timer = setInterval(() => {
-        current = Math.min(current + step, target);
-        el.textContent = Math.round(current).toLocaleString('fr-FR');
-        if (current >= target) clearInterval(timer);
+document.querySelectorAll('[data-sr]').forEach(el => srObserver.observe(el));
+
+
+/* ══════════════════════════════════════════
+   COMPTEURS ANIMÉS
+══════════════════════════════════════════ */
+function animCounter(el) {
+    const target = parseInt(el.dataset.target, 10) || 0;
+    if (target === 0) return;
+    const duration = 1100;
+    const increment = target / (duration / 16);
+    let cur = 0;
+    const t = setInterval(() => {
+        cur = Math.min(cur + increment, target);
+        el.textContent = Math.round(cur).toLocaleString('fr-FR');
+        if (cur >= target) clearInterval(t);
     }, 16);
 }
 
 const counterObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
         if (e.isIntersecting) {
-            animateCounter(e.target);
+            animCounter(e.target);
             counterObs.unobserve(e.target);
         }
     });
-}, { threshold: 0.5 });
+}, { threshold: 0.4 });
 
 document.querySelectorAll('.counter').forEach(el => counterObs.observe(el));
 </script>

@@ -6,39 +6,61 @@
 {% block extra_css %}
 <style>
     :root {
-        --rose: #E91E63;
-        --rose-pale: rgba(233, 30, 99, .05);
-        --rose-border: rgba(233, 30, 99, .2);
-        --blanc: #ffffff;
-        --text-dark: #1a0a10;
+        --royal-gold: #D4AF37;
+        --rose-royal: #E91E63;
+        --dark-bg: #0a0407;
+        --surface: #1a0a11;
+        --text-gold: #f3e5ab;
         --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
     }
 
+    body {
+        background-color: var(--dark-bg);
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+    }
+
     .register-hero {
-        background: radial-gradient(circle at 50% 0%, var(--rose-pale), transparent 70%), var(--blanc);
+        background: radial-gradient(circle at 50% 0%, #2d0a18 0%, var(--dark-bg) 100%);
         padding: 120px 0 60px;
         text-align: center;
+        position: relative;
+        overflow: hidden;
     }
+
+    .royal-decor-reg {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border: 1px solid rgba(212, 175, 55, 0.1);
+        border-radius: 50%;
+        top: -50px;
+        left: -50px;
+        animation: rotate-slow 20s linear infinite;
+    }
+
+    @keyframes rotate-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     .form-container {
         max-width: 800px;
         margin: 0 auto;
-        background: white;
+        background: var(--surface);
         padding: 60px;
         border-radius: 40px;
-        box-shadow: 0 40px 100px rgba(233, 30, 99, 0.1);
-        border: 1px solid var(--rose-border);
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(212, 175, 55, 0.2);
         margin-top: -30px;
         position: relative;
         z-index: 2;
     }
 
     .form-section-title {
-        font-weight: 800;
-        font-size: 1.2rem;
-        color: var(--rose);
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--royal-gold);
         text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
         margin-bottom: 30px;
         display: flex;
         align-items: center;
@@ -54,23 +76,25 @@
 
     .form-label {
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--text-gold);
         font-size: 0.9rem;
         margin-bottom: 10px;
     }
 
     .form-control {
-        border: 1px solid #eee;
+        border: 1px solid rgba(212, 175, 55, 0.1);
         padding: 15px 20px;
         border-radius: 15px;
-        background: #fcfcfc;
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
         transition: all 0.3s;
     }
 
     .form-control:focus {
-        border-color: var(--rose);
-        background: white;
-        box-shadow: 0 0 0 4px var(--rose-pale);
+        border-color: var(--royal-gold);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
     }
 
     .submit-btn {
@@ -129,6 +153,7 @@
 
 {% block content %}
 <section class="register-hero">
+    <div class="royal-decor-reg"></div>
     <div class="container">
         <span class="badge bg-rose-pale text-rose rounded-pill px-4 py-2 mb-3">J.U.IN 2026</span>
         <h1 class="display-4 fw-bold mb-3">Rejoignez l'Aventure</h1>

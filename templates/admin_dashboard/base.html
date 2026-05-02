@@ -539,6 +539,13 @@
                     <div>Équipes</div>
                 </a>
             </div>
+            <div class="menu-item">
+                <a href="{% url 'admin_juin_miss_mister_dashboard' %}"
+                    class="menu-link {% if 'miss_mister' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-crown" style="color: var(--primary-color);"></i>
+                    <div>Miss & Mister</div>
+                </a>
+            </div>
 
             <div class="menu-header">Club COM.S.AS</div>
             <div class="menu-item">
