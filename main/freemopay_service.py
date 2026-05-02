@@ -226,5 +226,47 @@ class FreemopayWebhookHandler:
 # Maintenance de la compatibilité avec l'ancien code si nécessaire
 class FreemopayService(FreemopayPaymentProcessor):
     def initiate_payment(self, amount, phone_number, description="Paiement", external_id=None):
-        # Cette méthode peut être gardée pour les dons ou sponsors
-        pass
+        """Initie un paiement général (Dons, Sponsors)"""
+        if not external_id:
+            import uuid
+            external_id = str(uuid.uuid4())
+            
+        try:
+            payment_data = {
+                "payer": phone_number.replace('+', '').replace(' ', ''),
+                "amount": str(int(amount)),
+                "externalId": external_id,
+                "description": description,
+                "callback": self._get_webhook_url()
+            }
+            
+            logger.info(f"[FREEMOPAY] Initiation paiement GÉNÉRAL: {external_id}")
+            
+            response = self.session.post(
+                f"{self.base_url}/api/v2/payment",
+                json=payment_data,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') in ['SUCCESS', 'CREATED', 'PAID']:
+                    return {
+                        'success': True,
+                        'reference': data.get('reference'),
+                        'message': data.get('message', 'Paiement initié'),
+                        'instructions': data.get('instructions', 'Veuillez valider sur votre téléphone.'),
+                        'status': data.get('status')
+                    }
+                else:
+                    return {'success': False, 'error': data.get('message', 'Échec initiation')}
+            else:
+                return {'success': False, 'error': f'Erreur HTTP {response.status_code}'}
+                
+        except Exception as e:
+            logger.error(f"[FREEMOPAY] Erreur initiate_payment: {e}")
+            return {'success': False, 'error': str(e)}
+
+    def _get_webhook_url(self):
+        """Retourne l'URL du webhook de production"""
+        return "https://comsas-uy1.com/juin/payment/webhook/"

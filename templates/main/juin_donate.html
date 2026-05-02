@@ -30,7 +30,7 @@
 
     .juin-page {
         --rose: #E91E63;
-        --orange: #FF9800;
+        --rose-dark: #C2185B;
         --night: #0b1120;
         --slate: #111827;
         --card-bg: rgba(17, 24, 39, 0.85);
@@ -141,7 +141,7 @@
     }
 
     .juin-grad {
-        background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
+        background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -173,7 +173,7 @@
         left: 0;
         right: 0;
         height: 2px;
-        background: linear-gradient(90deg, var(--rose), var(--orange));
+        background: linear-gradient(90deg, var(--rose), var(--rose-dark));
         opacity: 0;
         transition: opacity .3s;
     }
@@ -214,7 +214,7 @@
     .juni-progress-fill {
         height: 100%;
         border-radius: 10px;
-        background: linear-gradient(90deg, var(--rose), var(--orange));
+        background: linear-gradient(90deg, var(--rose), var(--rose-dark));
         animation: bar-grow 1.6s cubic-bezier(.34, 1.56, .64, 1) forwards;
     }
 
@@ -356,7 +356,7 @@
     .juin-btn {
         width: 100%;
         padding: 17px 24px;
-        background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
+        background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
         color: white;
         border: none;
         border-radius: 15px;
@@ -466,7 +466,7 @@
         left: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(90deg, var(--rose), var(--orange));
+        background: linear-gradient(90deg, var(--rose), var(--rose-dark));
     }
 
     .juin-donors h2 {
@@ -513,7 +513,7 @@
         left: 0;
         right: 0;
         height: 3px;
-        background: linear-gradient(90deg, var(--rose), var(--orange));
+        background: linear-gradient(90deg, var(--rose), var(--rose-dark));
         transform: scaleX(0);
         transform-origin: left;
         transition: transform .3s ease;
@@ -560,7 +560,7 @@
         font-family: var(--font-title);
         font-size: 1rem;
         font-weight: 800;
-        background: linear-gradient(135deg, var(--rose), var(--orange));
+        background: linear-gradient(135deg, var(--rose), var(--rose-dark));
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -601,7 +601,7 @@
     }
 
     .juin-cta-card {
-        background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
+        background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
         border-radius: 36px;
         padding: 64px;
         text-align: center;

@@ -636,7 +636,7 @@ class JobOfferForm(forms.ModelForm):
 class CandidateRegistrationForm(forms.ModelForm):
     class Meta:
         model = Candidate
-        fields = ['name', 'candidate_type', 'age', 'level', 'school', 'description', 'image', 'video_url']
+        fields = ['name', 'candidate_type', 'age', 'level', 'school', 'phone', 'description', 'image', 'video_url']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Décrivez votre parcours et vos motivations...'}),
             'candidate_type': forms.Select(attrs={'class': 'form-select'}),

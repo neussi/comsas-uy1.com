@@ -282,7 +282,7 @@ class CandidateForm(forms.ModelForm):
     """Formulaire pour les candidats"""
     class Meta:
         model = Candidate
-        fields = ['contest', 'name', 'description', 'image', 'video_url', 'status']
+        fields = ['contest', 'name', 'phone', 'description', 'image', 'video_url', 'status']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
         }
@@ -295,6 +295,7 @@ class CandidateForm(forms.ModelForm):
                 _('Détails du candidat'),
                 'contest',
                 'name',
+                'phone',
                 'description',
                 'image',
                 'video_url',

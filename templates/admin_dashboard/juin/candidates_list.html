@@ -22,6 +22,7 @@
                         <tr>
                             <th>Photo</th>
                             <th>Nom</th>
+                            <th>Téléphone</th>
                             <th>Type</th>
                             <th>École</th>
                             <th>Statut</th>
@@ -36,6 +37,7 @@
                                 {% if c.image %}<img src="{{ c.image.url }}" width="50" height="50" style="object-fit: cover;" class="rounded">{% else %}-{% endif %}
                             </td>
                             <td>{{ c.name }}</td>
+                            <td>{{ c.phone|default:"-" }}</td>
                             <td>{{ c.get_candidate_type_display }}</td>
                             <td>{{ c.school }}</td>
                             <td>

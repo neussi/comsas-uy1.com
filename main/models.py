@@ -619,6 +619,7 @@ class Candidate(models.Model):
     level = models.CharField(max_length=50, blank=True, verbose_name="Niveau d'étude")
     school = models.CharField(max_length=200, blank=True, verbose_name="Établissement")
     candidate_type = models.CharField(max_length=20, choices=[('miss', 'Miss'), ('mister', 'Mister')], null=True, blank=True, verbose_name="Type de candidat")
+    phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Téléphone")
     
     votes_count = models.IntegerField(default=0, verbose_name="Nombre de votes") # Denormalized for performance
     total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Revenus générés (FCFA)")

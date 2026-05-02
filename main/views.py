@@ -1288,7 +1288,6 @@ def juin_donate(request):
                 donation.external_id = external_id
                 donation.save()
                 
-                service = FreemopayService()
                 res = service.initiate_payment(
                     amount=donation.montant,
                     phone_number=donation.telephone,
@@ -1296,7 +1295,7 @@ def juin_donate(request):
                     external_id=external_id
                 )
                 
-                if res.get('success'):
+                if res and res.get('success'):
                     donation.freemopay_reference = res.get('reference')
                     donation.payment_status = 'initiated'
                     donation.save()
@@ -1306,8 +1305,10 @@ def juin_donate(request):
                         'donation': donation,
                         'instructions': res.get('instructions')
                     })
-                else:
+                elif res:
                     messages.error(request, f"Erreur FreemoPay: {res.get('error')}")
+                else:
+                    messages.error(request, "Erreur de connexion au service de paiement.")
                     donation.payment_status = 'failed'
                     donation.save()
                     return redirect('juin_donate')
@@ -1841,14 +1842,15 @@ def vote_complete(request, transaction_id):
     vote = get_object_or_404(Vote, transaction_id=transaction_id)
     return render(request, 'main/contests/vote_complete.html', {'vote': vote})
 
+
 # ============= MISS & MISTER J.U.IN 2026 =============
 
 def juin_miss_mister_contest(request):
     """Page principale du concours Miss & Mister J.U.IN 2026"""
-    # On cherche le concours spécifique J.U.IN
+    # Recherche spécifique pour J.U.IN
     contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
     if not contest:
-        contest = Contest.objects.filter(slug__icontains='miss-mister').first()
+        contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
     
     candidates = Candidate.objects.filter(contest=contest, status='approved').order_by('candidate_type', 'name')
     

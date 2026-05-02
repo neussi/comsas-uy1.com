@@ -908,6 +908,15 @@ class CandidateUpdateView(UpdateView):
 @method_decorator(custom_staff_member_required, name='dispatch')
 class CandidateDeleteView(DeleteView):
     model = Candidate
+    template_name = 'admin_dashboard/juin/confirm_delete.html'
+    
+    def get_success_url(self):
+        # Rediriger vers la liste des candidats du concours
+        return reverse_lazy('admin_juin_miss_mister_candidates')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Le candidat a été supprimé.')
+        return super().delete(request, *args, **kwargs)
     template_name = 'admin_dashboard/contests/candidate_confirm_delete.html'
     
     def get_success_url(self):
@@ -2006,7 +2015,7 @@ def admin_juin_candidates_list(request):
     # Recherche spécifique pour J.U.IN
     contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
     if not contest:
-        contest = Contest.objects.filter(slug__icontains='miss-mister').first()
+        contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
         
     candidates = Candidate.objects.filter(contest=contest).order_by('status', 'name') if contest else []
     
