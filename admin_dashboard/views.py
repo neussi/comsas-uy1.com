@@ -1980,9 +1980,10 @@ def admin_send_event_certificates(request, pk):
 @custom_staff_member_required
 def admin_juin_miss_mister_dashboard(request):
     """Tableau de bord financier et statistiques du concours Miss/Mister"""
-    contest = Contest.objects.filter(slug__icontains='miss-mister', is_active=True).first()
+    # Recherche stricte de l'édition J.U.IN
+    contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
     if not contest:
-        contest = Contest.objects.first()
+        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
         
     candidates = Candidate.objects.filter(contest=contest).order_by('-votes_count')
     total_votes = sum(c.votes_count for c in candidates)
@@ -2012,10 +2013,10 @@ def admin_juin_miss_mister_dashboard(request):
 @custom_staff_member_required
 def admin_juin_candidates_list(request):
     """Liste de tous les candidats avec actions d'administration"""
-    # Recherche spécifique pour J.U.IN
-    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    # Recherche stricte de l'édition J.U.IN
+    contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
     if not contest:
-        contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
+        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
         
     candidates = Candidate.objects.filter(contest=contest).order_by('status', 'name') if contest else []
     
@@ -2027,9 +2028,10 @@ def admin_juin_candidates_list(request):
 @custom_staff_member_required
 def admin_juin_votes_list(request):
     """Journal complet des votes et transactions"""
-    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    # Recherche stricte de l'édition J.U.IN
+    contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
     if not contest:
-        contest = Contest.objects.filter(slug__icontains='miss-mister').first()
+        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
         
     votes_queryset = Vote.objects.filter(candidate__contest=contest).order_by('-id') if contest else Vote.objects.none()
     

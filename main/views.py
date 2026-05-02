@@ -1288,6 +1288,7 @@ def juin_donate(request):
                 donation.external_id = external_id
                 donation.save()
                 
+                service = FreemopayService()
                 res = service.initiate_payment(
                     amount=donation.montant,
                     phone_number=donation.telephone,
@@ -1850,13 +1851,19 @@ def juin_miss_mister_contest(request):
     # Recherche spécifique pour J.U.IN
     contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
     if not contest:
+        # Fallback de secours sur le slug exact
         contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
     
-    candidates = Candidate.objects.filter(contest=contest, status='approved').order_by('candidate_type', 'name')
-    
-    # Séparer Miss et Mister
-    misses = [c for c in candidates if c.candidate_type == 'miss']
-    misters = [c for c in candidates if c.candidate_type == 'mister']
+    # Si toujours pas trouvé, on ne prend rien plutôt que de prendre le mauvais
+    if not contest:
+        candidates = []
+        misses = []
+        misters = []
+    else:
+        candidates = Candidate.objects.filter(contest=contest, status='approved').order_by('candidate_type', 'name')
+        # Séparer Miss et Mister
+        misses = [c for c in candidates if c.candidate_type == 'miss']
+        misters = [c for c in candidates if c.candidate_type == 'mister']
     
     context = {
         'contest': contest,
