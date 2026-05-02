@@ -613,6 +613,13 @@ class Candidate(models.Model):
     video_url = models.URLField(blank=True, null=True, verbose_name="Lien Vidéo (YouTube etc.)")
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='approved', verbose_name="Statut")
+    
+    # New fields for Miss/Mister
+    age = models.PositiveIntegerField(null=True, blank=True, verbose_name="Âge")
+    level = models.CharField(max_length=50, blank=True, verbose_name="Niveau d'étude")
+    school = models.CharField(max_length=200, blank=True, verbose_name="Établissement")
+    candidate_type = models.CharField(max_length=20, choices=[('miss', 'Miss'), ('mister', 'Mister')], null=True, blank=True, verbose_name="Type de candidat")
+    
     votes_count = models.IntegerField(default=0, verbose_name="Nombre de votes") # Denormalized for performance
     total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Revenus générés (FCFA)")
     
@@ -625,6 +632,17 @@ class Candidate(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.contest.title})"
+
+class CandidateImage(models.Model):
+    """Images supplémentaires pour la galerie d'un candidat"""
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name='gallery', verbose_name="Candidat")
+    image = models.ImageField(upload_to='candidates/gallery/', verbose_name="Image")
+    order = models.PositiveIntegerField(default=0, verbose_name="Ordre")
+    
+    class Meta:
+        verbose_name = "Image Galerie Candidat"
+        verbose_name_plural = "Images Galerie Candidat"
+        ordering = ['order']
 
 class Vote(models.Model):
     """Vote individuel ou multiple (payant)"""
@@ -643,6 +661,10 @@ class Vote(models.Model):
     voter_email = models.EmailField(verbose_name="Email Votant", default="", blank=True)
     voter_matricule = models.CharField(max_length=20, verbose_name="Matricule Votant", default="", blank=True)
     voter_phone = models.CharField(max_length=20, verbose_name="Téléphone Votant", default="")
+    operator = models.CharField(max_length=20, blank=True, null=True, verbose_name="Opérateur")
+    voter_name = models.CharField(max_length=200, blank=True, null=True, verbose_name="Nom du Votant")
+    voter_school = models.CharField(max_length=200, blank=True, null=True, verbose_name="Établissement du Votant")
+    is_anonymous = models.BooleanField(default=False, verbose_name="Vote Anonyme")
     
     # Payment info
     vote_count = models.IntegerField(default=1, verbose_name="Nombre de voix")

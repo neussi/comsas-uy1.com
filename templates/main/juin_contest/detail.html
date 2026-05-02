@@ -1,0 +1,508 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ candidate.name }} — MISS & MISTER J.U.IN 2026{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    .candidate-hero {
+        background: radial-gradient(circle at 10% 20%, var(--rose-pale), transparent 40%), var(--blanc);
+        padding: 120px 0 60px;
+        position: relative;
+    }
+
+    .profile-container {
+        background: var(--blanc);
+        border-radius: 40px;
+        box-shadow: 0 30px 100px rgba(233, 30, 99, 0.15);
+        border: 1px solid var(--rose-border);
+        overflow: hidden;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .profile-image-side {
+        flex: 1;
+        min-width: 400px;
+        position: relative;
+        height: 600px;
+    }
+
+    .profile-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-info-side {
+        flex: 1;
+        min-width: 400px;
+        padding: 60px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .candidate-type-label {
+        color: var(--rose);
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 3px;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .candidate-fullname {
+        font-weight: 900;
+        font-size: 3rem;
+        line-height: 1.1;
+        margin-bottom: 20px;
+        color: var(--text-dark);
+    }
+
+    .meta-item {
+        display: inline-flex;
+        align-items: center;
+        background: var(--rose-pale);
+        color: var(--rose);
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .bio-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text-muted);
+        margin: 30px 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-box {
+        text-align: center;
+        padding: 20px;
+        background: var(--rose-pale);
+        border-radius: 20px;
+        border: 1px solid var(--rose-border);
+    }
+
+    .stat-val {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--rose);
+        display: block;
+    }
+
+    .stat-lab {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+
+    /* Vote Form */
+    .vote-section {
+        background: var(--text-dark);
+        color: white;
+        padding: 50px;
+        border-radius: 30px;
+        margin-top: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .vote-section::after {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background: var(--rose);
+        filter: blur(100px);
+        opacity: 0.2;
+    }
+
+    .form-control-custom {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+    }
+
+    .form-control-custom:focus {
+        background: rgba(255,255,255,0.08);
+        border-color: var(--rose);
+        color: white;
+        box-shadow: none;
+    }
+
+    .vote-btn {
+        background: var(--gradient);
+        border: none;
+        color: white;
+        padding: 18px;
+        border-radius: 15px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        width: 100%;
+        margin-top: 10px;
+        transition: all 0.3s;
+    }
+
+    .vote-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px var(--rose-shadow);
+    }
+
+    .gallery-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 40px;
+    }
+
+    .gallery-item {
+        height: 200px;
+        border-radius: 15px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+
+    .gallery-item:hover img {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="candidate-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-5">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'juin_miss_mister' %}">Concours</a></li>
+                <li class="breadcrumb-item active">{{ candidate.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="profile-container" data-aos="fade-up">
+            <div class="profile-image-side">
+                {% if candidate.image %}
+                <img src="{{ candidate.image.url }}" alt="{{ candidate.name }}" class="profile-img">
+                {% else %}
+                <img src="https://via.placeholder.com/800x1000" alt="{{ candidate.name }}" class="profile-img">
+                {% endif %}
+            </div>
+            <div class="profile-info-side">
+                <span class="candidate-type-label">{{ candidate.get_candidate_type_display }} J.U.IN 2026</span>
+                <h1 class="candidate-fullname">{{ candidate.name }}</h1>
+                
+                <div class="meta-row">
+                    <span class="meta-item"><i class="fas fa-university me-2"></i> {{ candidate.school }}</span>
+                    {% if candidate.age %}<span class="meta-item"><i class="fas fa-birthday-cake me-2"></i> {{ candidate.age }} ans</span>{% endif %}
+                    {% if candidate.level %}<span class="meta-item"><i class="fas fa-graduation-cap me-2"></i> {{ candidate.level }}</span>{% endif %}
+                </div>
+
+                <p class="bio-text">
+                    {{ candidate.description|linebreaks }}
+                </p>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-val">{{ candidate.votes_count }}</span>
+                        <span class="stat-lab">Votes</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val">#{{ rank }}</span>
+                        <span class="stat-lab">Classement</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val">{{ percentage }}%</span>
+                        <span class="stat-lab">Part de voix</span>
+                    </div>
+                </div>
+
+                {% if candidate.gallery.all %}
+                <h5 class="fw-bold mb-3 mt-5"><i class="fas fa-images me-2 text-rose"></i> Galerie Photos</h5>
+                <div class="gallery-grid">
+                    {% for item in candidate.gallery.all %}
+                    <a href="{{ item.image.url }}" class="glightbox" data-gallery="candidate-gallery">
+                        <div class="gallery-item-wrap">
+                            <img src="{{ item.image.url }}" alt="Gallery image" class="gallery-thumb">
+                            <div class="gallery-overlay">
+                                <i class="fas fa-expand"></i>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mt-5" id="vote">
+            <div class="col-lg-7 mx-auto">
+                <div class="vote-card" data-aos="zoom-in">
+                    <div id="voteContent">
+                        <h3 class="text-center fw-bold mb-2">Voter pour {{ candidate.name }}</h3>
+                        <p class="text-center text-white-50 mb-4">Soutenez ce candidat via Mobile Money (100 FCFA / vote)</p>
+                        
+                        <form id="voteForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="candidate_id" value="{{ candidate.id }}">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-white-50 mb-2">Votre Nom (Optionnel)</label>
+                                    <input type="text" name="voter_name" class="form-control form-control-custom" placeholder="Ex: Jean Dupont">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-white-50 mb-2">Votre Établissement</label>
+                                    <input type="text" name="voter_school" class="form-control form-control-custom" placeholder="Ex: UY1, Polytechnique...">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-white-50 mb-2">Nombre de votes</label>
+                                    <input type="number" name="vote_count" id="vote_count" class="form-control form-control-custom" value="1" min="1" step="1">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="small text-white-50 mb-2">Montant total (FCFA)</label>
+                                    <input type="text" id="total_amount" class="form-control form-control-custom" value="100" readonly>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label class="small text-white-50 mb-2">Votre numéro Mobile Money (MTN/Orange)</label>
+                                    <input type="text" name="phone" class="form-control form-control-custom" placeholder="Ex: 6XXXXXXXX" required>
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" name="is_anonymous" id="is_anonymous">
+                                <label class="form-check-label small text-white-50" for="is_anonymous">
+                                    Voter anonymement
+                                </label>
+                            </div>
+
+                            <button type="submit" class="vote-btn" id="submitBtn">
+                                <i class="fas fa-paper-plane me-2"></i> CONFIRMER LE VOTE
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div id="loadingState" class="text-center py-5 d-none">
+                        <div class="payment-loader mb-4">
+                            <div class="spinner-border text-rose" role="status" style="width: 3rem; height: 3rem;"></div>
+                        </div>
+                        <h4 class="fw-bold mb-2">Traitement en cours...</h4>
+                        <p class="text-white-50">Veuillez valider la transaction sur votre téléphone via le prompt qui va apparaître.</p>
+                        <div class="mt-4">
+                            <small class="text-muted">En attente de la réponse de l'opérateur...</small>
+                        </div>
+                    </div>
+
+                    <!-- Success State -->
+                    <div id="successState" class="text-center py-5 d-none">
+                        <div class="success-icon-wrap mb-4">
+                            <i class="fas fa-check-circle fa-5x text-success"></i>
+                        </div>
+                        <h2 class="fw-bold mb-3">Merci pour votre vote !</h2>
+                        <p class="lead mb-4">Votre soutien a été enregistré avec succès pour {{ candidate.name }}.</p>
+                        
+                        <div class="share-box p-4 bg-white bg-opacity-10 rounded-4 mb-4">
+                            <p class="small text-white-50 mb-3">Partagez pour augmenter ses chances :</p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="https://wa.me/?text=Je viens de voter pour {{ candidate.name }} au concours Miss %26 Mister J.U.IN 2026 ! Soutenez-le ici : {{ request.build_absolute_uri }}" target="_blank" class="btn btn-success rounded-circle"><i class="fab fa-whatsapp"></i></a>
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary rounded-circle"><i class="fab fa-facebook-f"></i></a>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-outline-light rounded-pill px-4" onclick="window.location.reload()">Voter à nouveau</button>
+                    </div>
+                    
+                    <!-- Error State -->
+                    <div id="errorState" class="text-center py-5 d-none">
+                        <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
+                        <h4 class="fw-bold">Échec du paiement</h4>
+                        <p id="errorMessage" class="text-white-50"></p>
+                        <button class="btn btn-juin mt-3" onclick="resetForm()">Réessayer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Additional CSS for the enhanced UI -->
+<style>
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    .gallery-item-wrap {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        aspect-ratio: 1;
+        cursor: pointer;
+    }
+    .gallery-thumb {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    .gallery-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(233, 30, 99, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .gallery-item-wrap:hover .gallery-thumb { transform: scale(1.1); }
+    .gallery-item-wrap:hover .gallery-overlay { opacity: 1; }
+
+    .vote-card {
+        background: #1a0a10;
+        color: white;
+        padding: 60px 40px;
+        border-radius: 40px;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+        border: 1px solid rgba(233, 30, 99, 0.2);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+    function resetForm() {
+        document.getElementById('voteContent').classList.remove('d-none');
+        document.getElementById('loadingState').classList.add('d-none');
+        document.getElementById('errorState').classList.add('d-none');
+        document.getElementById('successState').classList.add('d-none');
+    }
+
+    const voteInput = document.getElementById('vote_count');
+    const amountInput = document.getElementById('total_amount');
+    
+    voteInput.addEventListener('input', function() {
+        amountInput.value = (this.value * 100) + ' FCFA';
+    });
+
+    document.getElementById('voteForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const voteContent = document.getElementById('voteContent');
+        const loading = document.getElementById('loadingState');
+        const errorDiv = document.getElementById('errorState');
+        const errorMsg = document.getElementById('errorMessage');
+        
+        voteContent.classList.add('d-none');
+        loading.classList.remove('d-none');
+        
+        fetch('{% url "contest_vote_initiate" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                pollStatus(data.transaction_id);
+            } else {
+                loading.classList.add('d-none');
+                errorDiv.classList.remove('d-none');
+                errorMsg.textContent = data.error || 'Erreur inconnue';
+            }
+        })
+        .catch(err => {
+            loading.classList.add('d-none');
+            errorDiv.classList.remove('d-none');
+            errorMsg.textContent = 'Une erreur réseau est survenue.';
+        });
+    });
+
+    function pollStatus(txId) {
+        const interval = setInterval(() => {
+            fetch(`/api/contests/vote/status/${txId}/`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    clearInterval(interval);
+                    showSuccess();
+                } else if (data.status === 'failed') {
+                    clearInterval(interval);
+                    document.getElementById('loadingState').classList.add('d-none');
+                    document.getElementById('errorState').classList.remove('d-none');
+                    document.getElementById('errorMessage').textContent = 'Le paiement a échoué.';
+                }
+            });
+        }, 3000);
+    }
+
+    function showSuccess() {
+        document.getElementById('loadingState').classList.add('d-none');
+        document.getElementById('successState').classList.remove('d-none');
+        
+        // Confetti!
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#E91E63', '#ffffff', '#FFD700']
+        });
+    }
+
+    // Initialize GLightbox
+    document.addEventListener('DOMContentLoaded', function() {
+        const lightbox = GLightbox({
+            selector: '.glightbox'
+        });
+    });
+</script>
+{% endblock %}

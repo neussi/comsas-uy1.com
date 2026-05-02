@@ -25,4 +25,4 @@ jobs:
           sleep 15
           docker-compose exec -T web python manage.py migrate --noinput
           docker-compose exec -T web python manage.py collectstatic --noinput
-          echo "✅ Déploiement forcé terminé avec succès"
+          echo "Déploiement forcé terminé avec succès"

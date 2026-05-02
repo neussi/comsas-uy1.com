@@ -137,6 +137,11 @@ urlpatterns = [
     path('alumni/opportunites/', views.job_board, name='job_board'),
     path('alumni/opportunites/ajouter/', views.job_offer_create, name='job_offer_create'),
     
+    # Miss & Mister J.U.IN 2026
+    path('juin/miss-mister/', views.juin_miss_mister_contest, name='juin_miss_mister'),
+    path('juin/miss-mister/candidat/<int:pk>/', views.juin_candidate_detail, name='juin_candidate_detail'),
+    path('juin/miss-mister/resultats/', views.juin_contest_results, name='juin_contest_results'),
+    
     # Portfolios
     path('portfolio/<slug:slug>/', views.member_portfolio, name='member_portfolio'),
 ]

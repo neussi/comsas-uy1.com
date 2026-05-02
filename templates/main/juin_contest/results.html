@@ -1,0 +1,632 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}RÉSULTATS — MISS & MISTER J.U.IN 2026{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    :root {
+        --rose:        #E91E63;
+        --rose-deep:   #c2185b;
+        --rose-pale:   rgba(233, 30, 99, .07);
+        --rose-border: rgba(233, 30, 99, .18);
+        --rose-glow:   rgba(233, 30, 99, .25);
+        --blanc:       #ffffff;
+        --bg:          #fdf6f9;
+        --text-dark:   #1a0a10;
+        --text-muted:  #8a7080;
+        --gold:        #F5C518;
+        --silver:      #B8C0CC;
+        --bronze:      #CD8B5A;
+        --gradient:    linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+        --card-shadow: 0 8px 40px rgba(233, 30, 99, .10);
+        --card-radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--bg);
+        color: var(--text-dark);
+    }
+
+    /* ── HERO ── */
+    .results-hero {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(160deg, #fff 0%, #fce4ec 60%, #fff 100%);
+        padding: 110px 0 70px;
+        text-align: center;
+    }
+
+    .results-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse 60% 50% at 20% 110%, rgba(233,30,99,.12) 0%, transparent 70%),
+            radial-gradient(ellipse 40% 40% at 80% -10%, rgba(233,30,99,.10) 0%, transparent 60%);
+        pointer-events: none;
+    }
+
+    /* Floating circles décor */
+    .hero-circle {
+        position: absolute;
+        border-radius: 50%;
+        opacity: .06;
+        background: var(--rose);
+        animation: float 8s ease-in-out infinite;
+    }
+    .hero-circle:nth-child(1) { width:220px; height:220px; top:-60px; left:-60px; animation-delay:0s; }
+    .hero-circle:nth-child(2) { width:140px; height:140px; bottom:-40px; right:-30px; animation-delay:-3s; }
+    .hero-circle:nth-child(3) { width:90px; height:90px; top:30%; left:8%; animation-delay:-5s; }
+
+    @keyframes float {
+        0%,100% { transform: translateY(0) scale(1); }
+        50%      { transform: translateY(-18px) scale(1.04); }
+    }
+
+    .live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(46,125,50,.1);
+        border: 1px solid rgba(46,125,50,.25);
+        color: #2e7d32;
+        padding: 6px 18px;
+        border-radius: 50px;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        margin-bottom: 22px;
+    }
+    .pulse {
+        width: 8px; height: 8px;
+        background: #43a047;
+        border-radius: 50%;
+        animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green {
+        0%   { box-shadow: 0 0 0 0 rgba(67,160,71,.5); }
+        70%  { box-shadow: 0 0 0 10px rgba(67,160,71,0); }
+        100% { box-shadow: 0 0 0 0 rgba(67,160,71,0); }
+    }
+
+    .hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.4rem, 5vw, 4rem);
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: .5rem;
+    }
+    .hero-title span { color: var(--rose); }
+
+    .hero-sub {
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        font-weight: 400;
+    }
+
+    /* ── STAT CHIPS ── */
+    .stat-chips {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 36px;
+    }
+    .stat-chip {
+        background: white;
+        border: 1px solid var(--rose-border);
+        border-radius: 50px;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 16px var(--rose-glow);
+        font-size: .9rem;
+    }
+    .stat-chip strong { color: var(--rose); font-size: 1.25rem; font-weight: 700; }
+    .stat-chip span   { color: var(--text-muted); }
+
+    /* ── SECTION ── */
+    .section-main { padding: 60px 0; }
+
+    /* ── CARD ── */
+    .card-box {
+        background: white;
+        border-radius: var(--card-radius);
+        padding: 36px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--rose-border);
+        height: 100%;
+    }
+
+    .card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .card-title i { color: var(--rose); }
+
+    /* ── PODIUM TOP 3 ── */
+    .podium {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+    .podium-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        max-width: 160px;
+    }
+    .podium-avatar {
+        width: 72px; height: 72px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid;
+        margin-bottom: 10px;
+        box-shadow: 0 6px 20px rgba(0,0,0,.12);
+    }
+    .podium-item:nth-child(1) .podium-avatar { border-color: var(--silver); }
+    .podium-item:nth-child(2) .podium-avatar { border-color: var(--gold); width: 90px; height: 90px; }
+    .podium-item:nth-child(3) .podium-avatar { border-color: var(--bronze); }
+
+    .podium-name { font-weight: 700; font-size: .8rem; text-align: center; margin-bottom: 4px; }
+    .podium-votes { font-size: .72rem; color: var(--rose); font-weight: 700; }
+
+    .podium-bar {
+        width: 100%;
+        border-radius: 12px 12px 0 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: white;
+        margin-top: 10px;
+    }
+    .podium-item:nth-child(1) .podium-bar { background: var(--silver); height: 90px; }
+    .podium-item:nth-child(2) .podium-bar { background: var(--gold);   height: 130px; }
+    .podium-item:nth-child(3) .podium-bar { background: var(--bronze); height: 70px; }
+
+    /* ── LEADERBOARD ── */
+    .lb-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+
+    .lb-row {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 3px 12px rgba(0,0,0,.04);
+        transition: transform .25s, box-shadow .25s;
+        border: 1px solid transparent;
+    }
+    .lb-row:hover {
+        transform: translateX(6px);
+        box-shadow: 0 6px 24px var(--rose-glow);
+        border-color: var(--rose-border);
+    }
+
+    .lb-td { padding: 16px 18px; vertical-align: middle; }
+    .lb-td:first-child { border-radius: 16px 0 0 16px; }
+    .lb-td:last-child  { border-radius: 0 16px 16px 0; }
+
+    .rank-badge {
+        width: 40px; height: 40px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 1rem;
+        background: var(--rose-pale);
+        color: var(--rose);
+    }
+
+    .thumb {
+        width: 52px; height: 52px;
+        border-radius: 12px;
+        object-fit: cover;
+        margin-right: 14px;
+        flex-shrink: 0;
+    }
+    .thumb-placeholder {
+        width: 52px; height: 52px;
+        border-radius: 12px;
+        background: var(--rose-pale);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--rose);
+        font-size: 1.3rem;
+        margin-right: 14px;
+        flex-shrink: 0;
+    }
+
+    .candidate-name { font-weight: 700; font-size: .95rem; }
+    .candidate-school { font-size: .75rem; color: var(--text-muted); }
+
+    .vote-count { font-weight: 800; color: var(--rose); font-size: 1rem; }
+    .vote-label { font-size: .7rem; color: var(--text-muted); font-weight: 500; }
+
+    .progress-wrap { width: 110px; }
+    .progress-track {
+        height: 6px;
+        border-radius: 6px;
+        background: #f0e6eb;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+    .progress-fill {
+        height: 100%;
+        background: var(--gradient);
+        border-radius: 6px;
+        transition: width .6s ease;
+    }
+
+    /* Counter animation */
+    .counter { display: inline-block; }
+
+    /* ── CHARTS ── */
+    canvas { max-width: 100%; }
+
+    .chart-divider {
+        border: none;
+        border-top: 1px solid var(--rose-border);
+        margin: 28px 0;
+    }
+
+    /* ── CTA ── */
+    .cta-section { padding: 60px 0; text-align: center; }
+
+    .btn-juin {
+        background: var(--gradient);
+        color: white;
+        border: none;
+        padding: 16px 48px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: .04em;
+        transition: transform .2s, box-shadow .2s;
+        box-shadow: 0 8px 28px var(--rose-glow);
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-juin:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 36px var(--rose-glow);
+        color: white;
+    }
+
+    /* ── ANIMATIONS ── */
+    [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+    [data-reveal].visible { opacity: 1; transform: none; }
+
+    @media (max-width: 768px) {
+        .card-box { padding: 24px 18px; }
+        .podium-item:nth-child(2) .podium-avatar { width: 74px; height: 74px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO ── -->
+<section class="results-hero">
+    <div class="hero-circle"></div>
+    <div class="hero-circle"></div>
+    <div class="hero-circle"></div>
+    <div class="container position-relative">
+        <div class="live-badge">
+            <div class="pulse"></div>
+            Actualisé en temps réel
+        </div>
+        <h1 class="hero-title">Statistiques <span>Live</span><br>Miss &amp; Mister J.U.IN 2026</h1>
+        <p class="hero-sub">Classement général en direct — 20ème édition · 1–5 juin 2026</p>
+
+        <!-- Chips résumé rapide -->
+        <div class="stat-chips">
+            <div class="stat-chip">
+                <strong>{{ total_votes }}</strong>
+                <span>votes enregistrés</span>
+            </div>
+            <div class="stat-chip">
+                <strong>{{ candidates|length }}</strong>
+                <span>candidats</span>
+            </div>
+            <div class="stat-chip">
+                <strong>{{ misses|length }}</strong>
+                <span>Miss</span>
+            </div>
+            <div class="stat-chip">
+                <strong>{{ misters|length }}</strong>
+                <span>Mister</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── MAIN ── -->
+<section class="section-main">
+    <div class="container">
+        <div class="row g-4 mb-4">
+
+            <!-- ── LEADERBOARD ── -->
+            <div class="col-lg-8" data-reveal>
+                <div class="card-box">
+
+                    <!-- PODIUM TOP 3 -->
+                    {% if candidates|length >= 3 %}
+                    <h5 class="card-title"><i class="fas fa-crown"></i> Podium</h5>
+                    <div class="podium">
+                        {# 2nd place #}
+                        <div class="podium-item">
+                            {% with c=candidates.1 %}
+                            {% if c.image %}
+                            <img src="{{ c.image.url }}" class="podium-avatar" alt="{{ c.name }}">
+                            {% else %}
+                            <div class="podium-avatar d-flex align-items-center justify-content-center" style="background:var(--rose-pale);color:var(--rose);font-size:1.6rem;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {% endif %}
+                            <div class="podium-name">{{ c.name }}</div>
+                            <div class="podium-votes">{{ c.votes_count }} votes</div>
+                            {% endwith %}
+                            <div class="podium-bar">2</div>
+                        </div>
+                        {# 1st place #}
+                        <div class="podium-item">
+                            {% with c=candidates.0 %}
+                            {% if c.image %}
+                            <img src="{{ c.image.url }}" class="podium-avatar" alt="{{ c.name }}">
+                            {% else %}
+                            <div class="podium-avatar d-flex align-items-center justify-content-center" style="background:var(--rose-pale);color:var(--rose);font-size:1.8rem;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {% endif %}
+                            <div class="podium-name">{{ c.name }}</div>
+                            <div class="podium-votes">{{ c.votes_count }} votes</div>
+                            {% endwith %}
+                            <div class="podium-bar">1</div>
+                        </div>
+                        {# 3rd place #}
+                        <div class="podium-item">
+                            {% with c=candidates.2 %}
+                            {% if c.image %}
+                            <img src="{{ c.image.url }}" class="podium-avatar" alt="{{ c.name }}">
+                            {% else %}
+                            <div class="podium-avatar d-flex align-items-center justify-content-center" style="background:var(--rose-pale);color:var(--rose);font-size:1.6rem;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {% endwith %}
+                            <div class="podium-name">{{ c.name }}</div>
+                            <div class="podium-votes">{{ c.votes_count }} votes</div>
+                            {% endwith %}
+                            <div class="podium-bar">3</div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- TABLE TOP 10 -->
+                    <h5 class="card-title"><i class="fas fa-trophy" style="color:var(--gold);"></i> Top 10 Général</h5>
+                    <div class="table-responsive">
+                        <table class="lb-table">
+                            <tbody>
+                                {# Calcul du max pour la barre de progression #}
+                                {% with max_votes=candidates.0.votes_count %}
+                                {% for candidate in candidates|slice:":10" %}
+                                <tr class="lb-row" style="animation-delay: {{ forloop.counter0 }}00ms;">
+                                    <td class="lb-td" style="width:60px;">
+                                        <div class="rank-badge
+                                            {% if forloop.counter == 1 %}style="background:#fff7d6;color:#b8860b;"{% endif %}
+                                        ">{{ forloop.counter }}</div>
+                                    </td>
+                                    <td class="lb-td">
+                                        <div class="d-flex align-items-center">
+                                            {% if candidate.image %}
+                                            <img src="{{ candidate.image.url }}" class="thumb" alt="{{ candidate.name }}">
+                                            {% else %}
+                                            <div class="thumb-placeholder"><i class="fas fa-user"></i></div>
+                                            {% endif %}
+                                            <div>
+                                                <div class="candidate-name">{{ candidate.name }}</div>
+                                                <div class="candidate-school">{{ candidate.school }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="lb-td text-end">
+                                        <div class="vote-count counter" data-target="{{ candidate.votes_count }}">{{ candidate.votes_count }}</div>
+                                        <div class="vote-label">votes</div>
+                                    </td>
+                                    <td class="lb-td" style="width:120px;">
+                                        <div class="progress-wrap">
+                                            <div class="progress-track">
+                                                {# Barre relative au 1er candidat (max réel) #}
+                                                {% if max_votes > 0 %}
+                                                <div class="progress-fill" style="width: {% widthratio candidate.votes_count max_votes 100 %}%;"></div>
+                                                {% else %}
+                                                <div class="progress-fill" style="width:0%;"></div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% endwith %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── CHARTS ── -->
+            <div class="col-lg-4" data-reveal style="transition-delay:.15s;">
+                <div class="card-box">
+                    <h5 class="card-title"><i class="fas fa-university"></i> Par Établissement</h5>
+                    <canvas id="schoolChart"></canvas>
+
+                    <hr class="chart-divider">
+
+                    <h5 class="card-title"><i class="fas fa-venus-mars"></i> Miss / Mister</h5>
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉVOLUTION -->
+        <div class="row" data-reveal style="transition-delay:.25s;">
+            <div class="col-12">
+                <div class="card-box">
+                    <h5 class="card-title"><i class="fas fa-chart-bar"></i> Évolution des Votes</h5>
+                    <canvas id="votesChart" style="max-height:380px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA ── -->
+<div class="cta-section">
+    <p class="text-muted mb-4" style="font-size:.9rem;">Vous n'avez pas encore voté ?</p>
+    <a href="{% url 'juin_miss_mister' %}" class="btn-juin">
+        <i class="fas fa-heart me-2"></i>Participer au vote
+    </a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* ── Données Django ── */
+const chartLabels   = {{ chart_labels|safe }};
+const chartData     = {{ chart_data|safe }};
+const schoolLabels  = {{ school_labels|safe }};
+const schoolData    = {{ school_data|safe }};
+const missCount     = {{ misses|length }};
+const misterCount   = {{ misters|length }};
+
+/* ── Palette ── */
+const ROSE   = '#E91E63';
+const PALETTE = ['#E91E63','#9C27B0','#5C6BC0','#0288D1','#00897B','#F4511E'];
+
+/* ── Chart.js defaults ── */
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.color = '#8a7080';
+
+/* ── Donut Établissements ── */
+new Chart(document.getElementById('schoolChart'), {
+    type: 'doughnut',
+    data: {
+        labels: schoolLabels,
+        datasets: [{
+            data: schoolData,
+            backgroundColor: PALETTE,
+            borderWidth: 3,
+            borderColor: '#fff',
+            hoverOffset: 8
+        }]
+    },
+    options: {
+        cutout: '72%',
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } }
+        }
+    }
+});
+
+/* ── Pie Miss/Mister ── */
+new Chart(document.getElementById('typeChart'), {
+    type: 'pie',
+    data: {
+        labels: ['Miss', 'Mister'],
+        datasets: [{
+            data: [missCount, misterCount],
+            backgroundColor: [ROSE, '#1a0a10'],
+            borderWidth: 3,
+            borderColor: '#fff',
+            hoverOffset: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } }
+        }
+    }
+});
+
+/* ── Bar Évolution ── */
+new Chart(document.getElementById('votesChart'), {
+    type: 'bar',
+    data: {
+        labels: chartLabels,
+        datasets: [{
+            label: 'Votes',
+            data: chartData,
+            backgroundColor: 'rgba(233, 30, 99, .55)',
+            borderColor: ROSE,
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#1a0a10',
+                titleColor: '#fff',
+                bodyColor: ROSE,
+                cornerRadius: 10,
+                padding: 12
+            }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(233,30,99,.06)' }, border: { display: false } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+/* ── Scroll reveal ── */
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+
+/* ── Counter animation ── */
+function animateCounter(el) {
+    const target = parseInt(el.dataset.target, 10);
+    const duration = 1200;
+    const step = target / (duration / 16);
+    let current = 0;
+    const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = Math.round(current).toLocaleString('fr-FR');
+        if (current >= target) clearInterval(timer);
+    }, 16);
+}
+
+const counterObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            animateCounter(e.target);
+            counterObs.unobserve(e.target);
+        }
+    });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.counter').forEach(el => counterObs.observe(el));
+</script>
+{% endblock %}

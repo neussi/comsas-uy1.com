@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}DEVENIR CANDIDAT — MISS & MISTER J.U.IN 2026{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-pale: rgba(233, 30, 99, .05);
+        --rose-border: rgba(233, 30, 99, .2);
+        --blanc: #ffffff;
+        --text-dark: #1a0a10;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    .register-hero {
+        background: radial-gradient(circle at 50% 0%, var(--rose-pale), transparent 70%), var(--blanc);
+        padding: 120px 0 60px;
+        text-align: center;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 60px;
+        border-radius: 40px;
+        box-shadow: 0 40px 100px rgba(233, 30, 99, 0.1);
+        border: 1px solid var(--rose-border);
+        margin-top: -30px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-section-title {
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--rose);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .form-section-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--rose-border);
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        border: 1px solid #eee;
+        padding: 15px 20px;
+        border-radius: 15px;
+        background: #fcfcfc;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: var(--rose);
+        background: white;
+        box-shadow: 0 0 0 4px var(--rose-pale);
+    }
+
+    .submit-btn {
+        background: var(--gradient);
+        border: none;
+        color: white;
+        padding: 20px 40px;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        width: 100%;
+        margin-top: 30px;
+        box-shadow: 0 15px 30px rgba(233, 30, 99, 0.3);
+        transition: all 0.3s;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(233, 30, 99, 0.4);
+    }
+
+    .type-card {
+        border: 2px solid #eee;
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        height: 100%;
+    }
+
+    .type-card:hover {
+        border-color: var(--rose-border);
+        background: var(--rose-pale);
+    }
+
+    .type-card.active {
+        border-color: var(--rose);
+        background: var(--rose-pale);
+    }
+
+    .type-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .floating-decor {
+        position: absolute;
+        z-index: 1;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="register-hero">
+    <div class="container">
+        <span class="badge bg-rose-pale text-rose rounded-pill px-4 py-2 mb-3">J.U.IN 2026</span>
+        <h1 class="display-4 fw-bold mb-3">Rejoignez l'Aventure</h1>
+        <p class="lead text-muted">Inscrivez-vous pour devenir la prochaine Miss ou le prochain Mister J.U.IN.</p>
+    </div>
+</section>
+
+<section class="pb-5">
+    <div class="container">
+        <div class="form-container" data-aos="fade-up">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-section-title">Type de Candidature</div>
+                <div class="row g-3 mb-5">
+                    <div class="col-6">
+                        <div class="type-card" id="card-miss" onclick="selectType('miss')">
+                            <span class="type-icon">👑</span>
+                            <span class="fw-bold">MISS</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="type-card" id="card-mister" onclick="selectType('mister')">
+                            <span class="type-icon">🎩</span>
+                            <span class="fw-bold">MISTER</span>
+                        </div>
+                    </div>
+                    <input type="hidden" name="candidate_type" id="candidate_type_input" required>
+                </div>
+
+                <div class="form-section-title">Informations Personnelles</div>
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label">Nom Complet</label>
+                        <input type="text" name="name" class="form-control" placeholder="Ex: Marie Louise Ngo" required>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Âge</label>
+                        <input type="number" name="age" class="form-control" placeholder="Ex: 21" required>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Établissement</label>
+                        <input type="text" name="school" class="form-control" placeholder="Ex: UY1, Faculté des Sciences" required>
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label">Niveau d'étude</label>
+                        <input type="text" name="level" class="form-control" placeholder="Ex: Licence 3 Informatique" required>
+                    </div>
+                </div>
+
+                <div class="form-section-title">Présentation</div>
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label">Ma Bio / Mes motivations</label>
+                        <textarea name="description" class="form-control" rows="5" placeholder="Décrivez-vous en quelques lignes..." required></textarea>
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label">Photo de profil principale</label>
+                        <input type="file" name="image" class="form-control" accept="image/*" required>
+                        <small class="text-muted mt-2 d-block">Utilisez une photo de haute qualité pour maximiser vos chances.</small>
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label">Lien Vidéo (Optionnel)</label>
+                        <input type="url" name="video_url" class="form-control" placeholder="Lien YouTube, TikTok ou Facebook...">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    SOUMETTRE MA CANDIDATURE <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% if messages %}
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    {% for message in messages %}
+    <div class="toast show align-items-center text-white bg-{{ message.tags }} border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+                {{ message }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function selectType(type) {
+        document.getElementById('candidate_type_input').value = type;
+        document.getElementById('card-miss').classList.remove('active');
+        document.getElementById('card-mister').classList.remove('active');
+        document.getElementById('card-' + type).classList.add('active');
+    }
+</script>
+{% endblock %}

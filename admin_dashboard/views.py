@@ -1963,3 +1963,65 @@ def admin_send_event_certificates(request, pk):
     event.save()
     messages.success(request, f"{count} attestations/badges envoyés pour '{event.title_fr}'.")
     return redirect('admin_event_registrations', pk=event.pk)
+
+# ============================================================
+# MISS & MISTER J.U.IN 2026 ADMIN
+# ============================================================
+
+@custom_staff_member_required
+def admin_juin_miss_mister_dashboard(request):
+    """Tableau de bord financier et statistiques du concours Miss/Mister"""
+    contest = Contest.objects.filter(slug__icontains='miss-mister', is_active=True).first()
+    if not contest:
+        contest = Contest.objects.first()
+        
+    candidates = Candidate.objects.filter(contest=contest).order_by('-votes_count')
+    total_votes = sum(c.votes_count for c in candidates)
+    total_revenue = sum(c.total_revenue for c in candidates)
+    
+    # Votes récents
+    recent_votes = Vote.objects.filter(contest=contest, status='completed').order_by('-completed_at')[:10]
+    
+    # Stats par jour (7 derniers jours)
+    from django.db.models.functions import TruncDate
+    daily_stats = Vote.objects.filter(contest=contest, status='completed', completed_at__gte=timezone.now() - timezone.timedelta(days=7)) \
+        .annotate(date=TruncDate('completed_at')) \
+        .values('date') \
+        .annotate(total=Sum('vote_count'), revenue=Sum('amount')) \
+        .order_by('date')
+        
+    context = {
+        'contest': contest,
+        'candidates': candidates,
+        'total_votes': total_votes,
+        'total_revenue': total_revenue,
+        'recent_votes': recent_votes,
+        'daily_stats': daily_stats,
+    }
+    return render(request, 'admin_dashboard/juin/miss_mister_dashboard.html', context)
+
+@custom_staff_member_required
+def admin_juin_candidates_list(request):
+    """Liste de tous les candidats avec actions d'administration"""
+    contest = Contest.objects.filter(slug__icontains='miss-mister', is_active=True).first()
+    candidates = Candidate.objects.filter(contest=contest).order_by('status', 'name')
+    
+    return render(request, 'admin_dashboard/juin/candidates_list.html', {
+        'candidates': candidates,
+        'contest': contest
+    })
+
+@custom_staff_member_required
+def admin_juin_votes_list(request):
+    """Journal complet des votes et transactions"""
+    contest = Contest.objects.filter(slug__icontains='miss-mister', is_active=True).first()
+    votes_queryset = Vote.objects.filter(contest=contest).order_by('-id')
+    
+    paginator = Paginator(votes_queryset, 50)
+    page_number = request.GET.get('page')
+    votes = paginator.get_page(page_number)
+    
+    return render(request, 'admin_dashboard/juin/votes_list.html', {
+        'votes': votes,
+        'contest': contest
+    })

@@ -178,6 +178,11 @@ urlpatterns = [
     path('juin/equipes/<int:pk>/edit/', views.juin_team_edit, name='admin_juin_team_edit'),
     path('juin/equipes/<int:pk>/delete/', views.juin_team_delete, name='admin_juin_team_delete'),
 
+    # Miss & Mister
+    path('juin/miss-mister/', views.admin_juin_miss_mister_dashboard, name='admin_juin_miss_mister'),
+    path('juin/miss-mister/candidats/', views.admin_juin_candidates_list, name='admin_juin_miss_mister_candidates'),
+    path('juin/miss-mister/votes/', views.admin_juin_votes_list, name='admin_juin_miss_mister_votes'),
+
     # ============= SOUMISSIONS DE PROJETS =============
     path('soumissions/', views.project_submissions_list, name='admin_project_submissions'),
     path('soumissions/<int:pk>/', views.project_submission_detail, name='admin_project_submission_detail'),

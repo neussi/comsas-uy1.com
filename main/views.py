@@ -1717,6 +1717,8 @@ def contest_candidate_register(request, contest_slug):
     
     if not contest.allow_public_candidates:
         messages.error(request, "Les inscriptions publiques ne sont pas ouvertes pour ce concours.")
+        if 'miss-mister' in contest.slug:
+            return redirect('juin_miss_mister')
         return redirect('contest_detail', slug=contest.slug)
 
     if request.method == 'POST':
@@ -1728,15 +1730,18 @@ def contest_candidate_register(request, contest_slug):
             candidate.status = 'pending'
             candidate.save()
             messages.success(request, "Votre candidature a été soumise avec succès ! Elle sera visible après validation par l'administration.")
+            if 'miss-mister' in contest.slug:
+                return redirect('juin_miss_mister')
             return redirect('contest_detail', slug=contest.slug)
     else:
         from .forms import CandidateRegistrationForm
         form = CandidateRegistrationForm()
-    
-    return render(request, 'main/contests/register.html', {
-        'form': form,
-        'contest': contest
-    })
+        
+    template_name = 'main/contests/candidate_register.html'
+    if 'miss-mister' in contest.slug:
+        template_name = 'main/juin_contest/register.html'
+        
+    return render(request, template_name, {'form': form, 'contest': contest})
 
 def juin_candidates_status(request, contest_slug):
     """Affichage des candidats retenus pour un concours"""
@@ -1774,10 +1779,19 @@ def contest_vote_initiate(request):
         amount = vote_count * 100
         transaction_id = f"VOTE-{uuid.uuid4().hex[:8].upper()}"
         
+        voter_name = request.POST.get('voter_name')
+        voter_school = request.POST.get('voter_school')
+        operator = request.POST.get('operator')
+        is_anonymous = request.POST.get('is_anonymous') == 'true'
+        
         vote = Vote.objects.create(
             contest=candidate.contest,
             candidate=candidate,
             voter_phone=phone,
+            operator=operator,
+            voter_name=voter_name,
+            voter_school=voter_school,
+            is_anonymous=is_anonymous,
             vote_count=vote_count,
             amount=amount,
             transaction_id=transaction_id,
@@ -1826,4 +1840,77 @@ def vote_complete(request, transaction_id):
     """Page de confirmation finale du vote (Succès ou Échec)"""
     vote = get_object_or_404(Vote, transaction_id=transaction_id)
     return render(request, 'main/contests/vote_complete.html', {'vote': vote})
+
+# ============= MISS & MISTER J.U.IN 2026 =============
+
+def juin_miss_mister_contest(request):
+    """Page principale du concours Miss & Mister J.U.IN 2026"""
+    # On cherche le concours spécifique
+    contest = Contest.objects.filter(slug__icontains='miss-mister', is_active=True).first()
+    if not contest:
+        # Fallback ou création automatique si nécessaire pour le dev
+        contest = Contest.objects.first()
+    
+    candidates = Candidate.objects.filter(contest=contest, status='approved').order_by('candidate_type', 'name')
+    
+    # Séparer Miss et Mister
+    misses = [c for c in candidates if c.candidate_type == 'miss']
+    misters = [c for c in candidates if c.candidate_type == 'mister']
+    
+    context = {
+        'contest': contest,
+        'misses': misses,
+        'misters': misters,
+        'candidates': candidates,
+    }
+    return render(request, 'main/juin_contest/list.html', context)
+
+def juin_candidate_detail(request, pk):
+    """Page de détail d'un candidat Miss/Mister"""
+    candidate = get_object_or_404(Candidate, pk=pk)
+    contest = candidate.contest
+    
+    # Stats simples
+    total_votes_contest = sum(c.votes_count for c in contest.candidates.all())
+    rank = Candidate.objects.filter(contest=contest, votes_count__gt=candidate.votes_count).count() + 1
+    
+    context = {
+        'candidate': candidate,
+        'contest': contest,
+        'rank': rank,
+        'total_votes_contest': total_votes_contest,
+        'percentage': round((candidate.votes_count / total_votes_contest * 100), 1) if total_votes_contest > 0 else 0
+    }
+    return render(request, 'main/juin_contest/detail.html', context)
+
+def juin_contest_results(request):
+    """Page des résultats en temps réel avec graphiques"""
+    contest = Contest.objects.filter(slug__icontains='miss-mister', is_active=True).first()
+    if not contest:
+        contest = Contest.objects.first()
+        
+    candidates = Candidate.objects.filter(contest=contest, status='approved').order_by('-votes_count')
+    
+    # Data for charts
+    labels = [c.name for c in candidates]
+    votes_data = [c.votes_count for c in candidates]
+    
+    # Results per school
+    school_results = {}
+    for c in candidates:
+        school = c.school or "Autre"
+        school_results[school] = school_results.get(school, 0) + c.votes_count
+    
+    school_labels = list(school_results.keys())
+    school_data = list(school_results.values())
+    
+    context = {
+        'contest': contest,
+        'candidates': candidates,
+        'chart_labels': json.dumps(labels),
+        'chart_data': json.dumps(votes_data),
+        'school_labels': json.dumps(school_labels),
+        'school_data': json.dumps(school_data),
+    }
+    return render(request, 'main/juin_contest/results.html', context)
 
