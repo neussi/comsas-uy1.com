@@ -43,15 +43,14 @@
 
     .form-container {
         max-width: 800px;
-        margin: 0 auto;
+        margin: 20px auto;
         background: var(--surface);
         padding: 60px;
         border-radius: 40px;
         box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
         border: 1px solid rgba(212, 175, 55, 0.2);
-        margin-top: -30px;
         position: relative;
-        z-index: 2;
+        z-index: 5;
     }
 
     .form-section-title {
@@ -117,23 +116,26 @@
     }
 
     .type-card {
-        border: 2px solid #eee;
+        border: 2px solid rgba(212, 175, 55, 0.3);
         border-radius: 20px;
-        padding: 20px;
+        padding: 30px 20px;
         text-align: center;
         cursor: pointer;
         transition: all 0.3s;
         height: 100%;
+        background: rgba(255, 255, 255, 0.03);
     }
 
     .type-card:hover {
-        border-color: var(--rose-border);
-        background: var(--rose-pale);
+        border-color: var(--royal-gold);
+        background: rgba(212, 175, 55, 0.1);
+        transform: translateY(-5px);
     }
 
     .type-card.active {
-        border-color: var(--rose);
-        background: var(--rose-pale);
+        border-color: var(--royal-gold);
+        background: rgba(212, 175, 55, 0.2);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
     }
 
     .type-icon {
@@ -156,8 +158,8 @@
     <div class="royal-decor-reg"></div>
     <div class="container">
         <span class="badge bg-rose-pale text-rose rounded-pill px-4 py-2 mb-3">J.U.IN 2026</span>
-        <h1 class="display-4 fw-bold mb-3">Rejoignez l'Aventure</h1>
-        <p class="lead text-muted">Inscrivez-vous pour devenir la prochaine Miss ou le prochain Mister J.U.IN.</p>
+        <h1 class="display-4 fw-bold mb-3 text-white">Rejoignez l'Aventure</h1>
+        <p class="lead text-white-50">Inscrivez-vous pour devenir la prochaine Miss ou le prochain Mister J.U.IN.</p>
     </div>
 </section>
 
@@ -213,7 +215,7 @@
                     <div class="col-md-12 mb-4">
                         <label class="form-label">Photo de profil principale</label>
                         <input type="file" name="image" class="form-control" accept="image/*" required>
-                        <small class="text-muted mt-2 d-block">Utilisez une photo de haute qualité pour maximiser vos chances.</small>
+                        <small class="text-white-50 mt-2 d-block opacity-75">Utilisez une photo de haute qualité pour maximiser vos chances.</small>
                     </div>
                     <div class="col-md-12 mb-4">
                         <label class="form-label">Lien Vidéo (Optionnel)</label>

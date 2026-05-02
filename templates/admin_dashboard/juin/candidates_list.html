@@ -7,9 +7,11 @@
 <div class="container-fluid py-4">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Candidats Miss & Mister</h1>
+        {% if contest %}
         <a href="{% url 'admin_candidate_create' contest.pk %}" class="btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-plus fa-sm text-white-50"></i> Ajouter un candidat
         </a>
+        {% endif %}
     </div>
 
     <div class="card shadow mb-4">

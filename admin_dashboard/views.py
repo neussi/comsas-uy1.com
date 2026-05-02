@@ -2003,8 +2003,12 @@ def admin_juin_miss_mister_dashboard(request):
 @custom_staff_member_required
 def admin_juin_candidates_list(request):
     """Liste de tous les candidats avec actions d'administration"""
-    contest = Contest.objects.filter(slug__icontains='miss-mister', is_active=True).first()
-    candidates = Candidate.objects.filter(contest=contest).order_by('status', 'name')
+    # Recherche spécifique pour J.U.IN
+    contest = Contest.objects.filter(slug__icontains='juin', slug__icontains='miss-mister').first()
+    if not contest:
+        contest = Contest.objects.filter(slug__icontains='miss-mister').first()
+        
+    candidates = Candidate.objects.filter(contest=contest).order_by('status', 'name') if contest else []
     
     return render(request, 'admin_dashboard/juin/candidates_list.html', {
         'candidates': candidates,
@@ -2014,8 +2018,11 @@ def admin_juin_candidates_list(request):
 @custom_staff_member_required
 def admin_juin_votes_list(request):
     """Journal complet des votes et transactions"""
-    contest = Contest.objects.filter(slug__icontains='miss-mister', is_active=True).first()
-    votes_queryset = Vote.objects.filter(contest=contest).order_by('-id')
+    contest = Contest.objects.filter(slug__icontains='juin', slug__icontains='miss-mister').first()
+    if not contest:
+        contest = Contest.objects.filter(slug__icontains='miss-mister').first()
+        
+    votes_queryset = Vote.objects.filter(candidate__contest=contest).order_by('-id') if contest else Vote.objects.none()
     
     paginator = Paginator(votes_queryset, 50)
     page_number = request.GET.get('page')

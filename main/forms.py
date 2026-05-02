@@ -421,7 +421,7 @@ class JUINDonationForm(forms.ModelForm):
         fields = ['nom_prenom', 'email', 'telephone', 'montant', 'type_paiement', 'message', 'is_anonymous']
         widgets = {
             'message': forms.TextInput(attrs={'placeholder': 'Un mot d\'encouragement pour les organisateurs…'}),
-            'montant': forms.NumberInput(attrs={'min': 500, 'step': 500, 'placeholder': 'Ex: 5000'}),
+            'montant': forms.NumberInput(attrs={'min': 100, 'step': 100, 'placeholder': 'Ex: 5000'}),
             'telephone': forms.TextInput(attrs={'placeholder': 'Ex: 6XXXXXXXX (sans le +237)'}),
         }
         labels = {
@@ -438,8 +438,8 @@ class JUINDonationForm(forms.ModelForm):
 
     def clean_montant(self):
         montant = self.cleaned_data.get('montant')
-        if montant and montant < 500:
-            raise forms.ValidationError("Le montant minimum est de 500 FCFA.")
+        if montant and montant < 100:
+            raise forms.ValidationError("Le montant minimum est de 100 FCFA.")
         return montant
 
     def clean_telephone(self):
