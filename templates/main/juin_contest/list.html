@@ -373,7 +373,9 @@
         <div class="cta-box" data-aos="fade-up">
             <h2 class="display-5 fw-bold mb-4 text-white">Inscrivez-vous dès maintenant</h2>
             <p class="lead text-white-50 opacity-75">Vous avez le charisme et l'élégance ? Tentez de devenir l'image de la 20ème édition.</p>
-            <a href="{% url 'juin_candidate_register' contest.slug %}" class="btn-register-royal">DEVENIR CANDIDAT</a>
+                {% if contest.slug %}
+                <a href="{% url 'juin_candidate_register' contest.slug %}" class="btn-register-royal">DEVENIR CANDIDAT</a>
+                {% endif %}
         </div>
     </div>
 </section>
