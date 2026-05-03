@@ -291,6 +291,11 @@
         .hero-stats { gap: 20px; }
         .tab-btn { padding: 8px 15px; font-size: 0.8rem; }
     }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 {% endblock %}
 
@@ -411,11 +416,6 @@
                 item.style.display = 'none';
             }
         });
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
     }
 </script>
 {% endblock %}

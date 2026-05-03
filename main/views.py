@@ -1743,9 +1743,12 @@ def contest_candidate_register(request, contest_slug):
         
     return render(request, template_name, {'form': form, 'contest': contest})
 
-def juin_miss_mister_register(request):
+def juin_miss_mister_register(request, contest_slug=None):
     """Vue dédiée à l'inscription Miss/Mister JUIN 2026"""
-    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    if contest_slug:
+        contest = get_object_or_404(Contest, slug=contest_slug)
+    else:
+        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
     if not contest:
         contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
     
@@ -1880,11 +1883,11 @@ def vote_complete(request, transaction_id):
 
 def juin_miss_mister_contest(request):
     """Page principale du concours Miss & Mister J.U.IN 2026"""
-    # Recherche spécifique pour J.U.IN
-    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    # Recherche spécifique par slug exact pour J.U.IN 2026
+    contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
     if not contest:
-        # Fallback de secours sur le slug exact
-        contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
+        # Fallback sur une recherche plus large si le slug a été modifié
+        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
     
     # Si toujours pas trouvé, on ne prend rien plutôt que de prendre le mauvais
     if not contest:
