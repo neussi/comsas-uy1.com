@@ -1719,7 +1719,7 @@ def contest_candidate_register(request, contest_slug):
     
     if not contest.allow_public_candidates:
         messages.error(request, "Les inscriptions publiques ne sont pas ouvertes pour ce concours.")
-        if 'miss-mister' in contest.slug:
+        if 'miss-mister' in contest.slug or 'juin' in contest.slug:
             return redirect('juin_miss_mister')
         return redirect('contest_detail', slug=contest.slug)
 
@@ -1732,14 +1732,14 @@ def contest_candidate_register(request, contest_slug):
             candidate.status = 'pending'
             candidate.save()
             messages.success(request, "Votre candidature a été soumise avec succès ! Elle sera visible après validation par l'administration.")
-            if 'miss-mister' in contest.slug:
+            if 'miss-mister' in contest.slug or 'juin' in contest.slug:
                 return redirect('juin_miss_mister')
             return redirect('contest_detail', slug=contest.slug)
     else:
         from .forms import CandidateRegistrationForm
         form = CandidateRegistrationForm()
         
-    template_name = 'main/juin_contest/register.html' if 'miss-mister' in contest.slug else 'main/contests/candidate_register.html'
+    template_name = 'main/juin_contest/register.html' if ('miss-mister' in contest.slug or 'miss-master' in contest.slug or 'juin' in contest.slug) else 'main/contests/candidate_register.html'
         
     return render(request, template_name, {'form': form, 'contest': contest})
 
