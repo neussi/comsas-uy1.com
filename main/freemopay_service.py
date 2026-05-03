@@ -55,8 +55,12 @@ class FreemopayPaymentProcessor:
     def process_vote_payment(self, vote_instance):
         """Traite le paiement pour un vote via Freemopay (DEPOSIT)"""
         try:
+            payer_phone = vote_instance.voter_phone.replace('+', '').replace(' ', '')
+            if not payer_phone.startswith('237') and len(payer_phone) == 9:
+                payer_phone = f"237{payer_phone}"
+                
             payment_data = {
-                "payer": vote_instance.voter_phone.replace('+', '').replace(' ', ''),
+                "payer": payer_phone,
                 "amount": str(int(vote_instance.amount)),
                 "externalId": str(vote_instance.transaction_id),
                 "description": f"Vote {vote_instance.candidate.name} - {vote_instance.vote_count} voix",
@@ -232,8 +236,12 @@ class FreemopayService(FreemopayPaymentProcessor):
             external_id = str(uuid.uuid4())
             
         try:
+            payer_phone = phone_number.replace('+', '').replace(' ', '')
+            if not payer_phone.startswith('237') and len(payer_phone) == 9:
+                payer_phone = f"237{payer_phone}"
+
             payment_data = {
-                "payer": phone_number.replace('+', '').replace(' ', ''),
+                "payer": payer_phone,
                 "amount": str(int(amount)),
                 "externalId": external_id,
                 "description": description,
@@ -269,4 +277,8 @@ class FreemopayService(FreemopayPaymentProcessor):
 
     def _get_webhook_url(self):
         """Retourne l'URL du webhook de production"""
-        return "https://comsas-uy1.com/juin/payment/webhook/"
+        return self._get_parent_webhook_url()
+
+    def _get_parent_webhook_url(self):
+        site_url = getattr(settings, 'SITE_URL', 'https://www.comsas-uy1.com')
+        return f"{site_url}/api/payments/webhook/freemopay/"
