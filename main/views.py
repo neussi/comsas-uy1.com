@@ -1739,11 +1739,43 @@ def contest_candidate_register(request, contest_slug):
         from .forms import CandidateRegistrationForm
         form = CandidateRegistrationForm()
         
-    template_name = 'main/contests/candidate_register.html'
-    if 'miss-mister' in contest.slug:
-        template_name = 'main/juin_contest/register.html'
+    template_name = 'main/juin_contest/register.html' if 'miss-mister' in contest.slug else 'main/contests/candidate_register.html'
         
     return render(request, template_name, {'form': form, 'contest': contest})
+
+def juin_miss_mister_register(request):
+    """Vue dédiée à l'inscription Miss/Mister JUIN 2026"""
+    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    if not contest:
+        contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
+    
+    if not contest:
+        messages.error(request, "Le concours Miss & Mister J.U.IN 2026 n'est pas encore configuré.")
+        return redirect('juin')
+
+    if not contest.is_active:
+        messages.warning(request, "Les inscriptions pour ce concours ne sont pas encore ouvertes.")
+        return redirect('juin_miss_mister')
+
+    if request.method == 'POST':
+        from .forms import CandidateRegistrationForm
+        form = CandidateRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            candidate = form.save(commit=False)
+            candidate.contest = contest
+            candidate.status = 'pending'
+            candidate.save()
+            messages.success(request, "Votre candidature a été soumise avec succès ! Elle sera visible après validation.")
+            return redirect('juin_miss_mister')
+    else:
+        from .forms import CandidateRegistrationForm
+        form = CandidateRegistrationForm()
+        
+    return render(request, 'main/juin_contest/register.html', {
+        'form': form, 
+        'contest': contest,
+        'title': "Inscription Miss & Mister"
+    })
 
 def juin_candidates_status(request, contest_slug):
     """Affichage des candidats retenus pour un concours"""

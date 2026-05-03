@@ -102,7 +102,7 @@ urlpatterns = [
     path('juin/soutenir/', views.juin_donate, name='juin_donate'),
     
     # Concours / Candidats
-    path('juin/concours/<slug:contest_slug>/postuler/', views.contest_candidate_register, name='juin_candidate_register'),
+    path('juin/concours/miss-mister/postuler/', views.juin_miss_mister_register, name='juin_candidate_register'),
     path('juin/concours/<slug:contest_slug>/candidats/', views.juin_candidates_status, name='juin_candidates'),
 
     # Membres

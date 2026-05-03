@@ -34,7 +34,8 @@
                         {% for c in candidates %}
                         <tr>
                             <td class="text-center">
-                                {% if c.image %}<img src="{{ c.image.url }}" width="50" height="50" style="object-fit: cover;" class="rounded">{% else %}-{% endif %}
+                                {% if c.image %}<img src="{{ c.image.url }}" width="50" height="50"
+                                    style="object-fit: cover;" class="rounded">{% else %}-{% endif %}
                             </td>
                             <td>{{ c.name }}</td>
                             <td>{{ c.phone|default:"-" }}</td>
@@ -51,8 +52,10 @@
                             </td>
                             <td>{{ c.votes_count }}</td>
                             <td>
-                                <a href="{% url 'admin_candidate_edit' c.pk %}" class="btn btn-sm btn-info" title="Modifier"><i class="fas fa-edit"></i></a>
-                                <a href="{% url 'admin_candidate_delete' c.pk %}" class="btn btn-sm btn-danger" title="Supprimer"><i class="fas fa-trash"></i></a>
+                                <a href="{% url 'admin_candidate_edit' c.pk %}" class="btn btn-sm btn-info"
+                                    title="Modifier"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'admin_candidate_delete' c.pk %}" class="btn btn-sm btn-danger"
+                                    title="Supprimer"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                         {% endfor %}

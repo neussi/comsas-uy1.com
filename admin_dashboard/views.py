@@ -2043,3 +2043,77 @@ def admin_juin_votes_list(request):
         'votes': votes,
         'contest': contest
     })
+
+@custom_staff_member_required
+def admin_juin_candidate_create(request):
+    """Ajouter un candidat Miss/Mister JUIN"""
+    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    if request.method == 'POST':
+        form = CandidateForm(request.POST, request.FILES)
+        if form.is_valid():
+            candidate = form.save(commit=False)
+            candidate.contest = contest
+            candidate.save()
+            messages.success(request, f"Candidat {candidate.name} ajouté.")
+            return redirect('admin_juin_miss_mister_candidates')
+    else:
+        form = CandidateForm(initial={'contest': contest})
+    
+    return render(request, 'admin_dashboard/contests/candidate_form.html', {
+        'form': form,
+        'title': "Ajouter un candidat Miss/Mister",
+        'contest': contest
+    })
+
+@custom_staff_member_required
+def admin_juin_candidate_edit(request, pk):
+    """Modifier un candidat Miss/Mister JUIN"""
+    candidate = get_object_or_404(Candidate, pk=pk)
+    if request.method == 'POST':
+        form = CandidateForm(request.POST, request.FILES, instance=candidate)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Candidat {candidate.name} mis à jour.")
+            return redirect('admin_juin_miss_mister_candidates')
+    else:
+        form = CandidateForm(instance=candidate)
+    
+    return render(request, 'admin_dashboard/contests/candidate_form.html', {
+        'form': form,
+        'title': f"Modifier {candidate.name}",
+        'contest': candidate.contest
+    })
+
+@custom_staff_member_required
+def admin_juin_candidate_delete(request, pk):
+    """Supprimer un candidat Miss/Mister JUIN"""
+    candidate = get_object_or_404(Candidate, pk=pk)
+    if request.method == 'POST':
+        candidate.delete()
+        messages.success(request, "Candidat supprimé.")
+        return redirect('admin_juin_miss_mister_candidates')
+    return render(request, 'admin_dashboard/juin/confirm_delete.html', {
+        'object': candidate, 
+        'cancel_url': 'admin_juin_miss_mister_candidates'
+    })
+
+@custom_staff_member_required
+def admin_juin_contest_toggle(request):
+    """Démarrer/Arrêter les inscriptions ou les votes du concours"""
+    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    if not contest:
+        messages.error(request, "Concours introuvable.")
+        return redirect('admin_juin_miss_mister')
+        
+    action = request.GET.get('action')
+    if action == 'toggle_active':
+        contest.is_active = not contest.is_active
+        status = "activé" if contest.is_active else "désactivé"
+        messages.success(request, f"Le concours est maintenant {status}.")
+    elif action == 'toggle_public':
+        contest.allow_public_candidates = not contest.allow_public_candidates
+        status = "ouvertes" if contest.allow_public_candidates else "fermées"
+        messages.success(request, f"Les inscriptions publiques sont maintenant {status}.")
+    
+    contest.save()
+    return redirect('admin_juin_miss_mister')

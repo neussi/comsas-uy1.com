@@ -4,7 +4,9 @@
 {% block title %}CONCOURS MISS & MISTER J.U.IN 2026{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;600;800&display=swap"
+    rel="stylesheet">
 <style>
     :root {
         --royal-gold: #D4AF37;
@@ -26,21 +28,20 @@
     /* ── ROYAL HERO ── */
     .hero-royal {
         position: relative;
-        height: 100vh;
-        min-height: 800px;
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
         overflow: hidden;
         background: radial-gradient(circle at center, #2d0a18 0%, var(--dark-bg) 100%);
+        padding: 100px 20px;
     }
 
-    /* Animated background elements */
     .royal-ornament {
         position: absolute;
-        width: 600px;
-        height: 600px;
+        width: min(90vw, 600px);
+        height: min(90vw, 600px);
         border: 1px solid rgba(212, 175, 55, 0.1);
         border-radius: 50%;
         animation: rotate-slow 30s linear infinite;
@@ -58,15 +59,15 @@
     @keyframes rotate-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes rotate-slow-rev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
 
-    /* SVG Crowns floating */
     .floating-crown {
         position: absolute;
-        width: 120px;
-        height: 120px;
+        width: min(15vw, 120px);
+        height: min(15vw, 120px);
         fill: var(--royal-gold);
         opacity: 0.15;
         animation: float-crown 10s ease-in-out infinite;
         filter: drop-shadow(0 0 20px var(--royal-gold));
+        pointer-events: none;
     }
 
     @keyframes float-crown {
@@ -79,15 +80,15 @@
         position: relative;
         z-index: 10;
         max-width: 900px;
-        padding: 0 20px;
+        width: 100%;
     }
 
     .pre-title {
         font-family: 'Cormorant Garamond', serif;
         font-style: italic;
-        font-size: 1.5rem;
+        font-size: clamp(1rem, 4vw, 1.5rem);
         color: var(--royal-gold);
-        letter-spacing: 5px;
+        letter-spacing: clamp(2px, 1vw, 5px);
         text-transform: uppercase;
         margin-bottom: 20px;
         display: block;
@@ -95,9 +96,9 @@
 
     .main-title {
         font-family: 'Cormorant Garamond', serif;
-        font-size: clamp(3rem, 10vw, 7rem);
+        font-size: clamp(2.5rem, 8vw, 7rem);
         font-weight: 700;
-        line-height: 0.9;
+        line-height: 1;
         margin-bottom: 30px;
         color: #fff;
         background: linear-gradient(to bottom, #fff 30%, var(--royal-gold) 100%);
@@ -109,12 +110,13 @@
     .hero-stats {
         display: flex;
         justify-content: center;
-        gap: 40px;
+        flex-wrap: wrap;
+        gap: clamp(20px, 5vw, 40px);
         margin-top: 50px;
     }
 
     .h-stat-item .val {
-        font-size: 3rem;
+        font-size: clamp(2rem, 5vw, 3rem);
         font-weight: 800;
         display: block;
         color: #fff;
@@ -122,22 +124,22 @@
     }
 
     .h-stat-item .lab {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 2px;
         color: var(--royal-gold);
     }
 
-    /* ── CANDIDATES SECTION ── */
     .section-candidates {
-        padding: 100px 0;
+        padding: clamp(50px, 10vw, 100px) 0;
         background: var(--dark-bg);
     }
 
     .royal-tabs {
         display: flex;
         justify-content: center;
-        gap: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
         margin-bottom: 60px;
     }
 
@@ -145,18 +147,19 @@
         background: transparent;
         border: 1px solid var(--royal-gold);
         color: var(--royal-gold);
-        padding: 15px 40px;
+        padding: 10px 25px;
         border-radius: 50px;
         font-weight: 700;
-        letter-spacing: 2px;
+        letter-spacing: 1px;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-size: 0.9rem;
     }
 
     .tab-btn.active {
         background: var(--royal-gold);
         color: var(--dark-bg);
         box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
-        transform: scale(1.1);
+        transform: scale(1.05);
     }
 
     .candidate-card-royal {
@@ -168,7 +171,7 @@
         border: 1px solid rgba(212, 175, 55, 0.1);
         transition: all 0.5s ease;
         cursor: pointer;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
     }
 
     .card-img-wrap {
@@ -194,58 +197,62 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        padding: 30px;
+        padding: 20px;
         z-index: 2;
     }
 
     .c-school {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         color: var(--royal-gold);
         text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 1px;
         margin-bottom: 5px;
     }
 
     .c-name {
         font-family: 'Cormorant Garamond', serif;
-        font-size: 1.8rem;
+        font-size: clamp(1.2rem, 3vw, 1.8rem);
         font-weight: 700;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
+        color: white;
     }
 
     .vote-badge {
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 15px;
+        right: 15px;
         background: var(--rose-royal);
         color: white;
-        padding: 5px 15px;
+        padding: 4px 12px;
         border-radius: 50px;
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         font-weight: 800;
         z-index: 3;
         box-shadow: 0 5px 15px rgba(233, 30, 99, 0.4);
     }
 
     .btn-vote-royal {
-        background: var(--grad-rose);
+        background: linear-gradient(135deg, var(--rose-deep), var(--rose-royal));
         border: none;
-        color: white;
-        padding: 12px 25px;
-        border-radius: 12px;
+        color: white !important;
+        padding: 10px 15px;
+        border-radius: 10px;
         font-weight: 700;
         width: 100%;
         transition: all 0.3s;
+        font-size: 0.8rem;
+        text-align: center;
+        display: block;
+        text-decoration: none;
     }
 
     .btn-vote-royal:hover {
-        transform: translateY(-5px);
+        transform: translateY(-3px);
         box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3);
     }
 
-    /* ── CTA ROYAL ── */
     .cta-royal {
-        padding: 120px 0;
+        padding: clamp(60px, 15vw, 120px) 20px;
         text-align: center;
         background: linear-gradient(to bottom, var(--dark-bg), #1a050d);
     }
@@ -253,32 +260,24 @@
     .cta-box {
         background: radial-gradient(circle at center, #2d0a18 0%, var(--surface) 100%);
         border: 1px solid var(--royal-gold);
-        padding: 80px 40px;
-        border-radius: 40px;
+        padding: clamp(40px, 8vw, 80px) 20px;
+        border-radius: 30px;
         position: relative;
         overflow: hidden;
-    }
-
-    .cta-box::before {
-        content: '👑';
-        position: absolute;
-        font-size: 20rem;
-        opacity: 0.03;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        max-width: 800px;
+        margin: 0 auto;
     }
 
     .btn-register-royal {
         background: var(--royal-gold);
-        color: var(--dark-bg);
-        padding: 20px 60px;
+        color: var(--dark-bg) !important;
+        padding: 15px 40px;
         border-radius: 50px;
         font-weight: 900;
-        font-size: 1.2rem;
+        font-size: clamp(1rem, 3vw, 1.2rem);
         text-decoration: none;
         display: inline-block;
-        margin-top: 30px;
+        margin-top: 20px;
         box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
         transition: all 0.3s;
     }
@@ -286,7 +285,11 @@
     .btn-register-royal:hover {
         transform: translateY(-5px) scale(1.05);
         box-shadow: 0 20px 50px rgba(212, 175, 55, 0.5);
-        color: var(--dark-bg);
+    }
+
+    @media (max-width: 576px) {
+        .hero-stats { gap: 20px; }
+        .tab-btn { padding: 8px 15px; font-size: 0.8rem; }
     }
 </style>
 {% endblock %}
@@ -296,20 +299,22 @@
     <div class="royal-ornament">
         <div class="ornament-inner"></div>
     </div>
-    
+
     <!-- Floating SVGs -->
     <svg class="floating-crown" style="top: 15%; left: 10%;" viewBox="0 0 24 24">
-        <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" />
+        <path
+            d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" />
     </svg>
     <svg class="floating-crown" style="bottom: 20%; right: 15%; animation-delay: -2s;" viewBox="0 0 24 24">
-        <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" />
+        <path
+            d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" />
     </svg>
 
     <div class="hero-content" data-aos="zoom-out">
         <span class="pre-title">L'Élection Royale</span>
         <h1 class="main-title">MISS & MISTER<br>J.U.IN 2026</h1>
         <p class="lead text-gold opacity-75 mt-4">Découvrez l'élégance et le charisme au cœur du Jubilé d'Émeraude.</p>
-        
+
         <div class="hero-stats">
             <div class="h-stat-item">
                 <span class="val">{{ total_votes }}</span>
@@ -326,7 +331,8 @@
         </div>
 
         <div class="mt-5">
-            <a href="#candidates" class="btn btn-outline-gold rounded-pill px-5 py-3 text-white border-gold">Explorer les Candidats <i class="fas fa-chevron-down ms-2"></i></a>
+            <a href="#candidates" class="btn btn-outline-gold rounded-pill px-5 py-3 text-white border-gold">Explorer
+                les Candidats <i class="fas fa-chevron-down ms-2"></i></a>
         </div>
     </div>
 </section>
@@ -335,7 +341,8 @@
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-4 fw-bold font-serif mb-3 text-white">Les Ambassadeurs</h2>
-            <p class="text-white-50 opacity-75">Faites votre choix parmi les visages qui représenteront l'informatique.</p>
+            <p class="text-white-50 opacity-75">Faites votre choix parmi les visages qui représenteront l'informatique.
+            </p>
         </div>
 
         <div class="royal-tabs">
@@ -347,7 +354,8 @@
         <div class="row g-4">
             {% for candidate in candidates %}
             <div class="col-lg-3 col-md-6 candidate-item" data-type="{{ candidate.candidate_type }}">
-                <div class="candidate-card-royal" onclick="window.location.href='{% url 'juin_candidate_detail' candidate.id %}'">
+                <div class="candidate-card-royal"
+                    onclick="window.location.href='{% url 'juin_candidate_detail' candidate.id %}'">
                     <span class="vote-badge">{{ candidate.votes_count }} VOTES</span>
                     <div class="card-img-wrap">
                         {% if candidate.image %}
@@ -359,7 +367,8 @@
                     <div class="card-overlay">
                         <span class="c-school">{{ candidate.school }}</span>
                         <h3 class="c-name">{{ candidate.name }}</h3>
-                        <a href="{% url 'juin_candidate_detail' candidate.id %}" class="btn-vote-royal text-center text-decoration-none">VOTER MAINTENANT</a>
+                        <a href="{% url 'juin_candidate_detail' candidate.id %}"
+                            class="btn-vote-royal text-center text-decoration-none">VOTER MAINTENANT</a>
                     </div>
                 </div>
             </div>
@@ -372,10 +381,11 @@
     <div class="container">
         <div class="cta-box" data-aos="fade-up">
             <h2 class="display-5 fw-bold mb-4 text-white">Inscrivez-vous dès maintenant</h2>
-            <p class="lead text-white-50 opacity-75">Vous avez le charisme et l'élégance ? Tentez de devenir l'image de la 20ème édition.</p>
-                {% if contest.slug %}
-                <a href="{% url 'juin_candidate_register' contest.slug %}" class="btn-register-royal">DEVENIR CANDIDAT</a>
-                {% endif %}
+            <p class="lead text-white-50 opacity-75">Vous avez le charisme et l'élégance ? Tentez de devenir l'image de
+                la 20ème édition.</p>
+            {% if contest.slug %}
+            <a href="{% url 'juin_candidate_register' contest.slug %}" class="btn-register-royal">DEVENIR CANDIDAT</a>
+            {% endif %}
         </div>
     </div>
 </section>
@@ -388,13 +398,13 @@
         // Toggle buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
-            if(btn.innerText.toLowerCase() === type) btn.classList.add('active');
-            if(type === 'all' && btn.innerText === 'Tous') btn.classList.add('active');
+            if (btn.innerText.toLowerCase() === type) btn.classList.add('active');
+            if (type === 'all' && btn.innerText === 'Tous') btn.classList.add('active');
         });
 
         // Filter items
         document.querySelectorAll('.candidate-item').forEach(item => {
-            if(type === 'all' || item.dataset.type === type) {
+            if (type === 'all' || item.dataset.type === type) {
                 item.style.display = 'block';
                 item.style.animation = 'fadeIn 0.5s ease forwards';
             } else {

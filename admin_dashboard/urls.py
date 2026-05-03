@@ -181,7 +181,11 @@ urlpatterns = [
     # Miss & Mister
     path('juin/miss-mister/', views.admin_juin_miss_mister_dashboard, name='admin_juin_miss_mister'),
     path('juin/miss-mister/candidats/', views.admin_juin_candidates_list, name='admin_juin_miss_mister_candidates'),
+    path('juin/miss-mister/candidats/add/', views.admin_juin_candidate_create, name='admin_juin_candidate_create'),
+    path('juin/miss-mister/candidats/<int:pk>/edit/', views.admin_juin_candidate_edit, name='admin_juin_candidate_edit'),
+    path('juin/miss-mister/candidats/<int:pk>/delete/', views.admin_juin_candidate_delete, name='admin_juin_candidate_delete'),
     path('juin/miss-mister/votes/', views.admin_juin_votes_list, name='admin_juin_miss_mister_votes'),
+    path('juin/miss-mister/toggle-contest/', views.admin_juin_contest_toggle, name='admin_juin_contest_toggle'),
 
     # ============= SOUMISSIONS DE PROJETS =============
     path('soumissions/', views.project_submissions_list, name='admin_project_submissions'),
