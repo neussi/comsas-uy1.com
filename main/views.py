@@ -2011,6 +2011,7 @@ def juin_miss_mister_contest(request):
         'misses': misses,
         'misters': misters,
         'candidates': candidates,
+        'school_choices': JUINEdition.SCHOOL_CHOICES,
         'total_votes': sum(c.votes_count for c in candidates) if candidates else 0
     }
     return render(request, 'main/juin_contest/list.html', context)

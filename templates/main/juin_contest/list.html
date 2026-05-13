@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}CONCOURS MISS & MISTER J.U.IN 2026{% endblock %}
+{% block title %}CONCOURS MISS & MISTER J.U.IN 2026 — INTER-ÉTABLISSEMENTS{% endblock %}
 
 {% block extra_css %}
 <link
@@ -14,6 +14,7 @@
         --rose-deep: #B5124A;
         --rose-royal: #E91E63;
         --dark-bg: #0a0407;
+        --surface: #15080d;
     }
 
     body {
@@ -24,9 +25,9 @@
 
     /* Hero Styling */
     .hero-royal {
-        padding: 140px 20px 100px;
+        padding: 160px 20px 120px;
         text-align: center;
-        background: radial-gradient(circle at center, #3d0f20 0%, var(--dark-bg) 100%);
+        background: radial-gradient(circle at center, #4d1229 0%, var(--dark-bg) 100%);
         position: relative;
         overflow: hidden;
     }
@@ -35,74 +36,101 @@
         content: '';
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50L0 0H100L50 50Z' fill='%23D4AF37' fill-opacity='0.02'/%3E%3C/svg%3E");
-        opacity: 0.5;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50L0 0H100L50 50Z' fill='%23D4AF37' fill-opacity='0.015'/%3E%3C/svg%3E");
+        opacity: 0.6;
     }
 
     .main-title {
         font-family: 'Cormorant Garamond', serif;
-        font-size: clamp(4rem, 12vw, 7.5rem);
+        font-size: clamp(4.5rem, 15vw, 8.5rem);
         font-weight: 700;
         margin-bottom: 30px;
-        background: linear-gradient(to bottom, #fff 30%, var(--royal-gold) 100%);
+        background: linear-gradient(to bottom, #fff 40%, var(--royal-gold) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        letter-spacing: -3px;
-        line-height: 0.85;
+        letter-spacing: -4px;
+        line-height: 0.8;
     }
 
-    .crown-svg {
-        width: 80px;
-        height: 80px;
+    .crown-svg-main {
+        width: 100px;
+        height: 100px;
         color: var(--royal-gold);
-        margin-bottom: 20px;
-        filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+        margin-bottom: 30px;
+        filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6));
     }
 
-    /* Registration Button */
     .btn-register-royal {
         background: linear-gradient(135deg, var(--royal-gold), var(--royal-gold-light));
         color: var(--dark-bg) !important;
-        padding: 20px 60px;
+        padding: 25px 80px;
         border-radius: 60px;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 4px;
+        letter-spacing: 5px;
         text-decoration: none;
         display: inline-block;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
-        font-size: 1.1rem;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 20px 50px rgba(212, 175, 55, 0.4);
+        font-size: 1.2rem;
         border: none;
     }
 
     .btn-register-royal:hover {
-        transform: translateY(-10px) scale(1.05);
-        box-shadow: 0 25px 60px rgba(212, 175, 55, 0.6);
+        transform: translateY(-12px) scale(1.05);
+        box-shadow: 0 30px 70px rgba(212, 175, 55, 0.7);
+    }
+
+    /* Section Concept */
+    .section-concept {
+        padding: 100px 0;
+        background: var(--surface);
+        border-top: 1px solid rgba(212, 175, 55, 0.1);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    }
+
+    .concept-card {
+        background: rgba(255,255,255,0.02);
+        padding: 40px;
+        border-radius: 30px;
+        border: 1px solid rgba(212, 175, 55, 0.1);
+        height: 100%;
+        transition: 0.3s;
+    }
+
+    .concept-card:hover {
+        border-color: var(--royal-gold);
+        background: rgba(255,255,255,0.05);
+    }
+
+    .concept-icon {
+        font-size: 2.5rem;
+        color: var(--royal-gold);
+        margin-bottom: 25px;
     }
 
     /* Grid & Cards */
     .candidate-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-        gap: 50px;
-        padding: 80px 0 150px;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 60px;
+        padding: 60px 0 150px;
     }
 
     .card-royal {
         position: relative;
         background: #000;
-        border-radius: 50px;
+        border-radius: 60px;
         overflow: hidden;
-        border: 1px solid rgba(212, 175, 55, 0.2);
-        transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
-        height: 680px;
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        transition: all 0.9s cubic-bezier(0.165, 0.84, 0.44, 1);
+        height: 720px;
     }
 
     .card-royal:hover {
-        transform: translateY(-30px);
+        transform: translateY(-35px);
         border-color: var(--royal-gold);
-        box-shadow: 0 50px 120px rgba(0,0,0,0.9), 0 0 40px rgba(212, 175, 55, 0.2);
+        box-shadow: 0 60px 140px rgba(0,0,0,0.9), 0 0 50px rgba(212, 175, 55, 0.25);
     }
 
     .card-image-wrap {
@@ -115,11 +143,11 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 1.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: transform 2s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
     .card-royal:hover .card-image {
-        transform: scale(1.15);
+        transform: scale(1.18);
     }
 
     .card-overlay {
@@ -127,42 +155,100 @@
         inset: 0;
         background: linear-gradient(to top, 
             rgba(0,0,0,1) 0%, 
-            rgba(0,0,0,0.9) 20%, 
-            rgba(0,0,0,0) 60%, 
-            rgba(0,0,0,0.5) 100%);
+            rgba(0,0,0,0.95) 15%, 
+            rgba(0,0,0,0) 50%, 
+            rgba(0,0,0,0.4) 100%);
         z-index: 2;
     }
 
     .card-content {
         position: absolute;
         bottom: 0; left: 0; right: 0;
-        padding: 50px;
+        padding: 60px 50px;
         z-index: 3;
         text-align: center;
     }
 
+    /* Floating Crown on Hover */
     .card-crown {
         position: absolute;
-        top: -30px;
+        top: -40px;
         right: 40px;
-        width: 70px;
-        height: 70px;
+        width: 80px;
+        height: 80px;
         color: var(--royal-gold);
         z-index: 10;
         opacity: 0;
-        transform: translateY(30px);
-        transition: 0.6s;
+        transform: translateY(40px) rotate(15deg);
+        transition: 0.7s;
     }
 
     .card-royal:hover .card-crown {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) rotate(0deg);
+    }
+
+    /* Filter Bar */
+    .filter-section {
+        background: rgba(255,255,255,0.02);
+        padding: 40px;
+        border-radius: 40px;
+        margin-top: -50px;
+        position: relative;
+        z-index: 10;
+        border: 1px solid rgba(212, 175, 55, 0.1);
+        backdrop-filter: blur(20px);
+    }
+
+    .filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .filter-btn {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        color: #fff;
+        padding: 15px 35px;
+        border-radius: 50px;
+        font-weight: 700;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.8rem;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+        background: var(--royal-gold);
+        color: var(--dark-bg);
+        border-color: var(--royal-gold);
+        transform: scale(1.05);
+    }
+
+    .school-select {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        color: #fff;
+        padding: 15px 30px;
+        border-radius: 50px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .school-select option {
+        background: var(--dark-bg);
+        color: #fff;
     }
 
     /* Badges */
     .badge-top {
         position: absolute;
-        top: 40px;
+        top: 50px;
         left: 0; right: 0;
         display: flex;
         justify-content: center;
@@ -171,9 +257,9 @@
     }
 
     .royal-pill {
-        padding: 12px 30px;
+        padding: 14px 35px;
         border-radius: 60px;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: 3px;
@@ -181,73 +267,69 @@
         border: 1px solid rgba(255,255,255,0.15);
     }
 
-    .pill-gold { background: rgba(212, 175, 55, 0.25); color: var(--royal-gold); border-color: var(--royal-gold); }
+    .pill-gold { background: rgba(212, 175, 55, 0.3); color: var(--royal-gold); border-color: var(--royal-gold); }
     .pill-rose { background: var(--rose-royal); color: #fff; border: none; box-shadow: 0 10px 30px rgba(233, 30, 99, 0.4); }
 
     .c-school {
         color: var(--royal-gold);
-        font-size: 1rem;
+        font-size: 1.1rem;
         text-transform: uppercase;
-        letter-spacing: 6px;
+        letter-spacing: 7px;
         font-weight: 800;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         display: block;
     }
 
     .c-name {
         font-family: 'Cormorant Garamond', serif;
-        font-size: 3.2rem;
+        font-size: 3.5rem;
         font-weight: 700;
         color: #fff;
-        margin-bottom: 35px;
-        line-height: 0.95;
-        text-shadow: 0 5px 20px rgba(0,0,0,0.8);
+        margin-bottom: 40px;
+        line-height: 0.9;
+        text-shadow: 0 10px 30px rgba(0,0,0,0.9);
     }
 
     .btn-vote {
         background: linear-gradient(135deg, var(--rose-deep), var(--rose-royal));
         color: white !important;
-        padding: 22px;
-        border-radius: 25px;
+        padding: 24px;
+        border-radius: 30px;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 4px;
+        letter-spacing: 5px;
         text-decoration: none;
         display: block;
-        transition: 0.4s;
-        box-shadow: 0 20px 40px rgba(233, 30, 99, 0.4);
+        transition: 0.5s;
+        box-shadow: 0 25px 50px rgba(233, 30, 99, 0.4);
     }
 
     .btn-vote:hover {
-        transform: scale(1.05);
-        box-shadow: 0 30px 60px rgba(233, 30, 99, 0.6);
+        transform: translateY(-5px);
+        box-shadow: 0 35px 70px rgba(233, 30, 99, 0.6);
     }
 
-    /* Tabs */
-    .royal-tabs {
-        display: flex;
-        justify-content: center;
-        gap: 25px;
-        margin-bottom: 80px;
+    /* Timeline Section */
+    .timeline-wrap {
+        padding: 120px 0;
     }
 
-    .tab-btn {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(212, 175, 55, 0.3);
-        color: #fff;
-        padding: 18px 50px;
-        border-radius: 60px;
-        font-weight: 800;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        transition: 0.4s;
+    .timeline-step {
+        text-align: center;
+        padding: 30px;
     }
 
-    .tab-btn.active {
+    .step-num {
+        width: 60px; height: 60px;
         background: var(--royal-gold);
         color: var(--dark-bg);
-        transform: scale(1.15);
-        box-shadow: 0 10px 40px rgba(212, 175, 55, 0.5);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-weight: 900;
+        font-size: 1.5rem;
     }
 
 </style>
@@ -263,36 +345,80 @@
 
 <section class="hero-royal">
     <div class="container" data-aos="zoom-out">
-        <svg class="crown-svg"><use xlink:href="#icon-crown"></use></svg>
+        <svg class="crown-svg-main"><use xlink:href="#icon-crown"></use></svg>
         <h1 class="main-title">MISS & MISTER<br>J.U.IN 2026</h1>
         
-        <p class="lead text-white-50 mt-4 mb-5 mx-auto" style="max-width: 700px; font-size: 1.3rem; letter-spacing: 1px;">
-            L'apogée de l'élégance et de l'intelligence pour la 20ème édition.
+        <p class="lead text-white-50 mt-4 mb-5 mx-auto" style="max-width: 800px; font-size: 1.5rem; letter-spacing: 1px;">
+            Une compétition prestigieuse réunissant les fleurons de <br>
+            <span class="text-gold fw-bold">l'Université de Yaoundé I, Polytechnique, Saint-Jean et SUP'PTIC.</span>
         </p>
 
         {% if edition.contest_registration_open or not edition %}
         <div data-aos="fade-up" data-aos-delay="200">
             <a href="{% url 'juin_candidate_register' %}" class="btn-register-royal">
-                S'INSCRIRE MAINTENANT
+                S'INSCRIRE POUR REPRÉSENTER MON ÉCOLE
             </a>
-            <p class="small text-gold mt-3 opacity-75" style="letter-spacing: 2px;">Ouvert à tous les étudiants de l'UY1</p>
+            <div class="mt-4 d-flex justify-content-center gap-4 opacity-50">
+                <span><i class="fas fa-check-circle me-1"></i> Preuve d'inscription requise</span>
+                <span><i class="fas fa-check-circle me-1"></i> Ouvert à tous les niveaux</span>
+            </div>
         </div>
         {% endif %}
     </div>
 </section>
 
+<!-- Concept Section -->
+<section class="section-concept">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4" data-aos="fade-up">
+                <div class="concept-card text-center">
+                    <i class="fas fa-university concept-icon"></i>
+                    <h4 class="text-gold mb-3">Inter-Établissement</h4>
+                    <p class="text-white-50">Pour la première fois, la J.U.IN s'ouvre à toutes les grandes écoles technologiques. Une Miss et un Master seront couronnés pour chaque établissement.</p>
+                </div>
+            </div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="concept-card text-center">
+                    <i class="fas fa-brain concept-icon"></i>
+                    <h4 class="text-gold mb-3">Beauté & Intelligence</h4>
+                    <p class="text-white-50">Au-delà du charisme, nous recherchons des ambassadeurs capables de porter des projets d'innovation et d'entrepreneuriat.</p>
+                </div>
+            </div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="concept-card text-center">
+                    <i class="fas fa-trophy concept-icon"></i>
+                    <h4 class="text-gold mb-3">Prix Exceptionnels</h4>
+                    <p class="text-white-50">Bourses d'études, stages en entreprises partenaires, équipements technologiques et le titre d'Ambassadeur J.U.IN 2026.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filters -->
 <div class="container">
-    <div class="royal-tabs" data-aos="fade-up">
-        <button class="tab-btn active" onclick="filterCandidates('all')">Tous les Candidats</button>
-        <button class="tab-btn" onclick="filterCandidates('miss')">Miss</button>
-        <button class="tab-btn" onclick="filterCandidates('mister')">Mister</button>
+    <div class="filter-section">
+        <div class="filter-group">
+            <button class="filter-btn active" onclick="filterType('all')">Tous</button>
+            <button class="filter-btn" onclick="filterType('miss')">Miss</button>
+            <button class="filter-btn" onclick="filterType('mister')">Mister</button>
+            
+            <span class="mx-3 d-none d-md-block opacity-25">|</span>
+            
+            <select class="school-select" id="schoolFilter" onchange="applyFilters()">
+                <option value="all">Toutes les Écoles</option>
+                {% for code, name in school_choices %}
+                <option value="{{ code }}">{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
 
     <div class="candidate-grid" id="candidatesGrid">
         {% for c in candidates %}
-        <div class="candidate-item" data-type="{{ c.candidate_type }}" data-aos="fade-up">
+        <div class="candidate-item" data-type="{{ c.candidate_type }}" data-school="{{ c.school }}" data-aos="fade-up">
             <div class="card-royal">
-                <!-- Floating Crown on Hover -->
                 <svg class="card-crown"><use xlink:href="#icon-crown"></use></svg>
 
                 <div class="badge-top">
@@ -308,28 +434,97 @@
                 </div>
 
                 <div class="card-content">
-                    <span class="c-school">{{ c.school }}</span>
+                    <span class="c-school">{{ c.get_school_display }}</span>
                     <h2 class="c-name">{{ c.name }}</h2>
-                    <a href="{% url 'juin_candidate_detail' c.id %}" class="btn-vote">Soutenir & Voter</a>
+                    <a href="{% url 'juin_candidate_detail' c.id %}" class="btn-vote">Soutenir ma Candidature</a>
                 </div>
             </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3 class="text-white-50">Aucun candidat n'est encore validé pour cette catégorie.</h3>
+            <p>Sois le premier à représenter ton établissement !</p>
         </div>
         {% endfor %}
     </div>
 </div>
+
+<!-- Timeline -->
+<section class="timeline-wrap">
+    <div class="container">
+        <h2 class="text-center main-title mb-5" style="font-size: 4rem;">Les Étapes</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="timeline-step">
+                    <div class="step-num">1</div>
+                    <h5 class="text-gold">Inscriptions</h5>
+                    <p class="small text-white-50">Dépôt des dossiers et validation des candidatures par le comité.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="timeline-step">
+                    <div class="step-num">2</div>
+                    <h5 class="text-gold">Votes Publics</h5>
+                    <p class="small text-white-50">Soutenez vos favoris via notre plateforme sécurisée.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="timeline-step">
+                    <div class="step-num">3</div>
+                    <h5 class="text-gold">Entraînements</h5>
+                    <p class="small text-white-50">Masterclasses de prise de parole, démarche et culture générale.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="timeline-step">
+                    <div class="step-num">4</div>
+                    <h5 class="text-gold">Grande Finale</h5>
+                    <p class="small text-white-50">Soirée de Gala à l'UY1 avec couronnement des ambassadeurs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Partners Section -->
+<section class="py-5" style="background: rgba(0,0,0,0.3);">
+    <div class="container text-center">
+        <h3 class="text-gold mb-5" style="letter-spacing: 5px; font-weight: 800;">ILS NOUS ACCOMPAGNENT</h3>
+        <div class="d-flex flex-wrap justify-content-center gap-5 opacity-50 grayscale hover-none">
+            <img src="{% static 'images/partners/uy1.png' %}" height="60" alt="UY1">
+            <img src="{% static 'images/partners/polytech.png' %}" height="60" alt="Polytech">
+            <img src="{% static 'images/partners/stjean.png' %}" height="60" alt="Saint Jean">
+            <img src="{% static 'images/partners/supptic.png' %}" height="60" alt="SUP'PTIC">
+        </div>
+    </div>
+</section>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    function filterCandidates(type) {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+    let currentType = 'all';
+
+    function filterType(type) {
+        currentType = type;
+        document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.classList.remove('active');
             if (btn.innerText.toLowerCase().includes(type)) btn.classList.add('active');
             if (type === 'all' && btn.innerText.includes('Tous')) btn.classList.add('active');
         });
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const school = document.getElementById('schoolFilter').value;
         document.querySelectorAll('.candidate-item').forEach(item => {
-            if (type === 'all' || item.dataset.type === type) {
+            const typeMatch = (currentType === 'all' || item.dataset.type === currentType);
+            const schoolMatch = (school === 'all' || item.dataset.school === school);
+            
+            if (typeMatch && schoolMatch) {
                 item.style.display = 'block';
+                item.style.opacity = '0';
+                setTimeout(() => { item.style.opacity = '1'; }, 10);
             } else {
                 item.style.display = 'none';
             }
