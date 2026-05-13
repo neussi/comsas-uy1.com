@@ -54,27 +54,73 @@
     }
 
     .profile-container {
-        background: rgba(26, 10, 17, 0.8);
-        backdrop-filter: blur(20px);
+        background: rgba(20, 10, 15, 0.95);
+        backdrop-filter: blur(30px);
         border-radius: 40px;
-        box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        box-shadow: 0 50px 120px rgba(0, 0, 0, 0.8), 0 0 30px rgba(233,30,99,0.1);
+        border: 1px solid rgba(212, 175, 55, 0.15);
         overflow: hidden;
         display: flex;
         flex-wrap: wrap;
+        margin-top: 40px;
     }
 
     .profile-image-side {
         flex: 1;
         min-width: 400px;
         position: relative;
-        height: 700px;
+        height: 800px;
+        overflow: hidden;
     }
 
-    .profile-img {
+    .image-slider-main {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+    }
+
+    .slide-item {
+        min-width: 100%;
+        height: 100%;
+    }
+
+    .slide-item img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    .slider-nav {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+        z-index: 5;
+    }
+
+    .nav-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .nav-dot.active {
+        background: var(--rose);
+        transform: scale(1.5);
+        box-shadow: 0 0 15px var(--rose);
+    }
+
+    .image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(10, 4, 7, 0.8) 0%, transparent 40%);
+        pointer-events: none;
     }
 
     .profile-info-side {
@@ -252,22 +298,53 @@
 
         <div class="profile-container" data-aos="fade-up">
             <div class="profile-image-side">
-                {% if candidate.image %}
-                <img src="{{ candidate.image.url }}" alt="{{ candidate.name }}" class="profile-img">
-                {% else %}
-                <img src="https://via.placeholder.com/800x1000" alt="{{ candidate.name }}" class="profile-img">
-                {% endif %}
-            </div>
-            <div class="profile-info-side">
-                <span class="candidate-type-label">{{ candidate.get_candidate_type_display }} J.U.IN 2026</span>
-                <h1 class="candidate-fullname">{{ candidate.name }}</h1>
+                <div class="image-slider-main" id="mainSlider">
+                    <div class="slide-item">
+                        {% if candidate.image %}
+                        <img src="{{ candidate.image.url }}" alt="{{ candidate.name }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/800x1200" alt="Placeholder">
+                        {% endif %}
+                    </div>
+                    {% if candidate.image2 %}
+                    <div class="slide-item">
+                        <img src="{{ candidate.image2.url }}" alt="{{ candidate.name }} 2">
+                    </div>
+                    {% endif %}
+                    {% if candidate.image3 %}
+                    <div class="slide-item">
+                        <img src="{{ candidate.image3.url }}" alt="{{ candidate.name }} 3">
+                    </div>
+                    {% endif %}
+                    {% if candidate.image4 %}
+                    <div class="slide-item">
+                        <img src="{{ candidate.image4.url }}" alt="{{ candidate.name }} 4">
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="image-overlay"></div>
 
-                <div class="meta-row">
+                <div class="slider-nav" id="sliderNav">
+                    <div class="nav-dot active" onclick="jumpTo(0)"></div>
+                    {% if candidate.image2 %}<div class="nav-dot" onclick="jumpTo(1)"></div>{% endif %}
+                    {% if candidate.image3 %}<div class="nav-dot" onclick="jumpTo(2)"></div>{% endif %}
+                    {% if candidate.image4 %}<div class="nav-dot" onclick="jumpTo(3)"></div>{% endif %}
+                </div>
+            </div>
+
+            <div class="profile-info-side">
+                <span class="candidate-type-label" data-aos="fade-left">{{ candidate.get_candidate_type_display }}</span>
+                <h1 class="candidate-fullname" data-aos="fade-left" data-aos-delay="100">{{ candidate.name }}</h1>
+                
+                <div class="d-flex flex-wrap gap-2 mb-4" data-aos="fade-left" data-aos-delay="200">
                     <span class="meta-item"><i class="fas fa-university me-2"></i> {{ candidate.school }}</span>
-                    {% if candidate.age %}<span class="meta-item"><i class="fas fa-birthday-cake me-2"></i> {{
-                        candidate.age }} ans</span>{% endif %}
-                    {% if candidate.level %}<span class="meta-item"><i class="fas fa-graduation-cap me-2"></i> {{
-                        candidate.level }}</span>{% endif %}
+                    {% if candidate.level %}
+                    <span class="meta-item"><i class="fas fa-graduation-cap me-2"></i> {{ candidate.level }}</span>
+                    {% endif %}
+                    {% if candidate.age %}
+                    <span class="meta-item"><i class="fas fa-birthday-cake me-2"></i> {{ candidate.age }} ans</span>
+                    {% endif %}
                 </div>
 
                 <p class="bio-text">
@@ -553,6 +630,18 @@
             spread: 70,
             origin: { y: 0.6 },
             colors: ['#E91E63', '#ffffff', '#FFD700']
+        });
+    }
+
+    // Slider logic
+    const slider = document.getElementById('mainSlider');
+    const dots = document.querySelectorAll('.nav-dot');
+
+    function jumpTo(idx) {
+        if (!slider) return;
+        slider.style.transform = `translateX(-${idx * 100}%)`;
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === idx);
         });
     }
 

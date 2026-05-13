@@ -164,91 +164,207 @@
 
     .candidate-card-royal {
         position: relative;
-        border-radius: 20px;
+        border-radius: 28px;
         overflow: hidden;
         aspect-ratio: 3/4;
         background: var(--surface);
-        border: 1px solid rgba(212, 175, 55, 0.1);
-        transition: all 0.5s ease;
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         cursor: pointer;
         margin-bottom: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
 
-    .card-img-wrap {
+    .candidate-card-royal:hover {
+        transform: translateY(-12px) scale(1.02);
+        border-color: rgba(212, 175, 55, 0.5);
+        box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 40px rgba(233,30,99,0.15);
+    }
+
+    /* Image slider on the card */
+    .card-img-slider {
         position: absolute;
         inset: 0;
-        transition: transform 0.8s ease;
+        display: flex;
+        transition: transform 0.7s cubic-bezier(0.77,0,0.175,1);
     }
 
-    .card-img-wrap img {
-        width: 100%;
+    .card-img-slide {
+        min-width: 100%;
         height: 100%;
         object-fit: cover;
+        flex-shrink: 0;
     }
 
-    .candidate-card-royal:hover .card-img-wrap {
-        transform: scale(1.1);
+    .candidate-card-royal:hover .card-img-slider {
+        transform: none; /* JS handles this */
     }
 
+    /* Gradient overlay */
     .card-overlay {
         position: absolute;
         inset: 0;
-        background: linear-gradient(to top, var(--dark-bg) 0%, transparent 60%);
+        background: linear-gradient(
+            to top,
+            rgba(10,4,7,0.98) 0%,
+            rgba(10,4,7,0.6) 45%,
+            transparent 100%
+        );
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        padding: 20px;
+        padding: 24px 20px 20px;
         z-index: 2;
+        transition: background 0.4s;
+    }
+
+    .candidate-card-royal:hover .card-overlay {
+        background: linear-gradient(
+            to top,
+            rgba(10,4,7,1) 0%,
+            rgba(10,4,7,0.75) 55%,
+            rgba(10,4,7,0.2) 100%
+        );
+    }
+
+    /* Top badge */
+    .vote-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(233, 30, 99, 0.9);
+        backdrop-filter: blur(8px);
+        color: white;
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        z-index: 3;
+        letter-spacing: 1px;
+        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 4px 15px rgba(233,30,99,0.4);
+    }
+
+    /* Type badge (Miss / Mister) */
+    .type-badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: rgba(212, 175, 55, 0.15);
+        backdrop-filter: blur(8px);
+        color: var(--royal-gold);
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        z-index: 3;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        border: 1px solid rgba(212,175,55,0.3);
+    }
+
+    /* Slide dots */
+    .slide-dots {
+        position: absolute;
+        bottom: 75px;
+        right: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        z-index: 4;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .candidate-card-royal:hover .slide-dots { opacity: 1; }
+
+    .slide-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.4);
+        transition: all 0.3s;
+    }
+
+    .slide-dot.active {
+        background: var(--rose-royal);
+        height: 18px;
+        border-radius: 3px;
     }
 
     .c-school {
-        font-size: 0.6rem;
+        font-size: 0.65rem;
         color: var(--royal-gold);
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 5px;
+        letter-spacing: 2px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
 
     .c-name {
         font-family: 'Cormorant Garamond', serif;
-        font-size: clamp(1.2rem, 3vw, 1.8rem);
+        font-size: clamp(1.3rem, 3vw, 1.9rem);
         font-weight: 700;
-        margin-bottom: 10px;
+        line-height: 1.1;
+        margin-bottom: 6px;
         color: white;
     }
 
-    .vote-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: var(--rose-royal);
-        color: white;
-        padding: 4px 12px;
+    .c-meta {
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.55);
+        margin-bottom: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .c-meta span {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.1);
         border-radius: 50px;
-        font-size: 0.6rem;
-        font-weight: 800;
-        z-index: 3;
-        box-shadow: 0 5px 15px rgba(233, 30, 99, 0.4);
+        padding: 2px 10px;
     }
 
     .btn-vote-royal {
         background: linear-gradient(135deg, var(--rose-deep), var(--rose-royal));
         border: none;
         color: white !important;
-        padding: 10px 15px;
-        border-radius: 10px;
-        font-weight: 700;
+        padding: 11px 15px;
+        border-radius: 12px;
+        font-weight: 800;
         width: 100%;
         transition: all 0.3s;
         font-size: 0.8rem;
         text-align: center;
         display: block;
         text-decoration: none;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        box-shadow: 0 6px 20px rgba(233,30,99,0.35);
     }
 
     .btn-vote-royal:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(233, 30, 99, 0.5);
+    }
+
+    /* Progress bar for votes */
+    .vote-progress {
+        height: 3px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 2px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+
+    .vote-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--rose-deep), var(--rose-royal));
+        border-radius: 2px;
+        transition: width 1s ease;
     }
 
     .cta-royal {
@@ -356,26 +472,63 @@
             <button class="tab-btn" onclick="filterCandidates('mister')">Mister</button>
         </div>
 
-        <div class="row g-4">
+    <div class="row g-4" id="candidatesGrid">
             {% for candidate in candidates %}
-            <div class="col-lg-3 col-md-6 candidate-item" data-type="{{ candidate.candidate_type }}">
-                <div class="candidate-card-royal"
-                    onclick="window.location.href='{% url 'juin_candidate_detail' candidate.id %}'">
-                    <span class="vote-badge">{{ candidate.votes_count }} VOTES</span>
-                    <div class="card-img-wrap">
+            <div class="col-lg-3 col-md-6 candidate-item" data-type="{{ candidate.candidate_type }}" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                <div class="candidate-card-royal" id="card-{{ candidate.id }}">
+
+                    <!-- Badges -->
+                    <span class="type-badge">{{ candidate.get_candidate_type_display }}</span>
+                    <span class="vote-badge">♥ {{ candidate.votes_count }}</span>
+
+                    <!-- Image Slider -->
+                    <div class="card-img-slider" id="slider-{{ candidate.id }}">
                         {% if candidate.image %}
-                        <img src="{{ candidate.image.url }}" alt="{{ candidate.name }}">
+                        <img src="{{ candidate.image.url }}" alt="{{ candidate.name }}" class="card-img-slide">
                         {% else %}
-                        <img src="https://via.placeholder.com/600x800" alt="Placeholder">
+                        <div class="card-img-slide" style="background:linear-gradient(135deg,#2d0a18,#1a0a11);"></div>
+                        {% endif %}
+                        {% if candidate.image2 %}
+                        <img src="{{ candidate.image2.url }}" alt="{{ candidate.name }} 2" class="card-img-slide">
+                        {% endif %}
+                        {% if candidate.image3 %}
+                        <img src="{{ candidate.image3.url }}" alt="{{ candidate.name }} 3" class="card-img-slide">
+                        {% endif %}
+                        {% if candidate.image4 %}
+                        <img src="{{ candidate.image4.url }}" alt="{{ candidate.name }} 4" class="card-img-slide">
                         {% endif %}
                     </div>
+
+                    <!-- Slide Dots -->
+                    <div class="slide-dots" id="dots-{{ candidate.id }}">
+                        <div class="slide-dot active"></div>
+                        {% if candidate.image2 %}<div class="slide-dot"></div>{% endif %}
+                        {% if candidate.image3 %}<div class="slide-dot"></div>{% endif %}
+                        {% if candidate.image4 %}<div class="slide-dot"></div>{% endif %}
+                    </div>
+
+                    <!-- Overlay Info -->
                     <div class="card-overlay">
-                        <span class="c-school">{{ candidate.school }}</span>
+                        <div class="c-school"><i class="fas fa-university"></i> {{ candidate.school }}</div>
                         <h3 class="c-name">{{ candidate.name }}</h3>
-                        <a href="{% url 'juin_candidate_detail' candidate.id %}"
-                            class="btn-vote-royal text-center text-decoration-none">VOTER MAINTENANT</a>
+                        <div class="c-meta">
+                            {% if candidate.age %}<span><i class="fas fa-birthday-cake"></i> {{ candidate.age }} ans</span>{% endif %}
+                            {% if candidate.level %}<span><i class="fas fa-graduation-cap"></i> {{ candidate.level }}</span>{% endif %}
+                            <span><i class="fas fa-heart"></i> {{ candidate.votes_count }} votes</span>
+                        </div>
+                        <div class="vote-progress">
+                            <div class="vote-progress-fill" style="width: {% if total_votes > 0 %}{% widthratio candidate.votes_count total_votes 100 %}{% else %}5{% endif %}%"></div>
+                        </div>
+                        <a href="{% url 'juin_candidate_detail' candidate.id %}" class="btn-vote-royal text-center text-decoration-none">
+                            <i class="fas fa-crown me-1"></i> VOTER MAINTENANT
+                        </a>
                     </div>
                 </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div style="color:rgba(255,255,255,0.3);font-size:4rem;"><i class="fas fa-crown"></i></div>
+                <p style="color:rgba(255,255,255,0.4);margin-top:20px;">Les candidats seront bientôt annoncés...</p>
             </div>
             {% endfor %}
         </div>
@@ -400,14 +553,11 @@
 {% block extra_js %}
 <script>
     function filterCandidates(type) {
-        // Toggle buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
             if (btn.innerText.toLowerCase() === type) btn.classList.add('active');
             if (type === 'all' && btn.innerText === 'Tous') btn.classList.add('active');
         });
-
-        // Filter items
         document.querySelectorAll('.candidate-item').forEach(item => {
             if (type === 'all' || item.dataset.type === type) {
                 item.style.display = 'block';
@@ -417,5 +567,37 @@
             }
         });
     }
+
+    // Auto-sliding images on hover
+    document.querySelectorAll('.candidate-card-royal').forEach(card => {
+        const cardId = card.id.replace('card-', '');
+        const slider = document.getElementById(`slider-${cardId}`);
+        const dotsContainer = document.getElementById(`dots-${cardId}`);
+        if (!slider) return;
+
+        const slides = slider.querySelectorAll('.card-img-slide');
+        if (slides.length <= 1) return;
+
+        let current = 0;
+        let timer = null;
+
+        function goTo(idx) {
+            current = (idx + slides.length) % slides.length;
+            slider.style.transform = `translateX(-${current * 100}%)`;
+            if (dotsContainer) {
+                dotsContainer.querySelectorAll('.slide-dot').forEach((d, i) => {
+                    d.classList.toggle('active', i === current);
+                });
+            }
+        }
+
+        card.addEventListener('mouseenter', () => {
+            timer = setInterval(() => goTo(current + 1), 1200);
+        });
+        card.addEventListener('mouseleave', () => {
+            clearInterval(timer);
+            goTo(0);
+        });
+    });
 </script>
 {% endblock %}
