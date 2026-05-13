@@ -23,8 +23,8 @@ class FreemopayPaymentProcessor:
     
     def __init__(self):
         # Configuration Freemopay Production
-        self.api_key = getattr(settings, 'FREEMOPAY_APP_KEY', '961bfd39-e0cd-4c02-9a99-23e46d74d265')
-        self.secret_key = getattr(settings, 'FREEMOPAY_SECRET_KEY', '3GNjRDgOe8vbqjIddpqE')
+        self.api_key = getattr(settings, 'FREEMOPAY_APP_KEY', '21306c41-ea48-4497-ad2b-2e3104a49401')
+        self.secret_key = getattr(settings, 'FREEMOPAY_SECRET_KEY', 'AKO4K8cBdSBLHdTNhQtl')
         self.base_url = "https://api-v2.freemopay.com"
         
         # Votre numéro personnel pour les retraits automatiques
