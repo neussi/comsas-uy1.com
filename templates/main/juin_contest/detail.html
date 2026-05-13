@@ -20,16 +20,13 @@
     }
 
     body {
-        background-color: #050204;
+        background-color: #0a0407;
         color: #fff;
-        background-image: 
-            radial-gradient(circle at 15% 50%, rgba(233, 30, 99, 0.08), transparent 25%),
-            radial-gradient(circle at 85% 30%, rgba(212, 175, 55, 0.08), transparent 25%);
-        background-attachment: fixed;
     }
 
     .candidate-hero {
-        padding: 140px 0 80px;
+        background: radial-gradient(circle at 50% 0%, #2d0a18 0%, #0a0407 100%);
+        padding: 120px 0 60px;
         position: relative;
         overflow: hidden;
     }
@@ -37,142 +34,94 @@
     /* Royal ornaments */
     .royal-decor {
         position: absolute;
-        width: 600px;
-        height: 600px;
-        border: 2px solid rgba(212, 175, 55, 0.05);
+        width: 400px;
+        height: 400px;
+        border: 1px solid rgba(212, 175, 55, 0.1);
         border-radius: 50%;
-        top: -150px;
-        right: -200px;
-        animation: rotate-slow 40s linear infinite;
-        z-index: 0;
+        top: -100px;
+        right: -100px;
+        animation: rotate-slow 30s linear infinite;
     }
 
-    .royal-decor::before {
-        content: '';
-        position: absolute;
-        inset: 40px;
-        border: 1px dashed rgba(233, 30, 99, 0.1);
-        border-radius: 50%;
-        animation: rotate-slow 20s linear infinite reverse;
-    }
+    @keyframes rotate-slow {
+        from {
+            transform: rotate(0deg);
+        }
 
-    @keyframes rotate-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        to {
+            transform: rotate(360deg);
+        }
+    }
 
     .profile-container {
-        background: rgba(20, 10, 15, 0.6);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border-radius: 32px;
-        box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(212, 175, 55, 0.15);
+        background: rgba(26, 10, 17, 0.8);
+        backdrop-filter: blur(20px);
+        border-radius: 40px;
+        box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(212, 175, 55, 0.2);
         overflow: hidden;
         display: flex;
         flex-wrap: wrap;
-        position: relative;
-        z-index: 2;
     }
 
     .profile-image-side {
         flex: 1;
-        min-width: 350px;
+        min-width: 400px;
         position: relative;
+        height: 700px;
     }
 
     .profile-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        min-height: 100%;
-        mask-image: linear-gradient(to right, black 80%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
     }
 
     .profile-info-side {
-        flex: 1.2;
+        flex: 1;
         min-width: 400px;
-        padding: 60px 50px;
+        padding: 60px;
         display: flex;
         flex-direction: column;
     }
 
     .candidate-type-label {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent);
         color: var(--royal-gold);
         text-transform: uppercase;
         font-weight: 800;
-        letter-spacing: 4px;
-        font-size: 0.85rem;
-        padding: 8px 16px;
-        border-radius: 100px;
-        margin-bottom: 20px;
-        width: fit-content;
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        letter-spacing: 5px;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        display: block;
     }
 
     .candidate-fullname {
-        font-family: 'Playfair Display', 'Cormorant Garamond', serif;
-        font-weight: 800;
-        font-size: clamp(3rem, 5vw, 4.5rem);
-        line-height: 1.1;
-        margin-bottom: 24px;
-        background: linear-gradient(135deg, #ffffff 0%, #ffd1e0 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0 10px 30px rgba(233, 30, 99, 0.2);
-    }
-
-    .meta-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-bottom: 35px;
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 700;
+        font-size: 4rem;
+        line-height: 1;
+        margin-bottom: 20px;
+        color: #fff;
     }
 
     .meta-item {
         display: inline-flex;
         align-items: center;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-        padding: 10px 20px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: all 0.3s;
-    }
-
-    .meta-item i {
+        background: var(--rose-pale);
         color: var(--rose);
-    }
-
-    .meta-item:hover {
-        background: rgba(233, 30, 99, 0.1);
-        border-color: rgba(233, 30, 99, 0.3);
-        transform: translateY(-2px);
-    }
-
-    .bio-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.5rem;
-        color: var(--royal-gold);
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 10px;
+        margin-bottom: 10px;
     }
 
     .bio-text {
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         line-height: 1.8;
-        color: #cbd5e1;
-        background: rgba(0, 0, 0, 0.2);
-        padding: 25px;
-        border-radius: 20px;
-        border-left: 3px solid var(--rose);
-        margin-bottom: 40px;
+        color: #eee;
+        margin: 30px 0;
     }
 
     .stats-grid {
@@ -184,151 +133,110 @@
 
     .stat-box {
         text-align: center;
-        padding: 25px 15px;
-        background: linear-gradient(135deg, rgba(233, 30, 99, 0.05) 0%, rgba(20, 10, 15, 0.5) 100%);
-        border-radius: 24px;
-        border: 1px solid rgba(233, 30, 99, 0.15);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        position: relative;
-        overflow: hidden;
+        padding: 20px;
+        background: var(--rose-pale);
+        border-radius: 20px;
+        border: 1px solid var(--rose-border);
     }
-
-    .stat-box::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 2px;
-        background: linear-gradient(90deg, transparent, var(--rose), transparent);
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-
-    .stat-box:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(233, 30, 99, 0.15);
-        border-color: rgba(233, 30, 99, 0.4);
-    }
-
-    .stat-box:hover::before { opacity: 1; }
 
     .stat-val {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
         font-weight: 900;
-        background: var(--gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: var(--rose);
         display: block;
-        line-height: 1;
-        margin-bottom: 8px;
-        font-family: 'Playfair Display', serif;
     }
 
     .stat-lab {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         text-transform: uppercase;
         font-weight: 700;
-        color: #94a3b8;
-        letter-spacing: 1px;
+        color: var(--text-gold);
+        opacity: 0.8;
     }
 
     /* Vote Form */
-    .vote-section-wrapper {
-        margin-top: 60px;
-        position: relative;
-    }
-
-    .vote-card {
-        background: rgba(20, 10, 15, 0.7);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+    .vote-section {
+        background: var(--text-dark);
         color: white;
-        padding: 60px 50px;
-        border-radius: 40px;
-        box-shadow: 0 40px 100px rgba(0,0,0,0.6);
-        border: 1px solid rgba(233, 30, 99, 0.25);
+        padding: 50px;
+        border-radius: 30px;
+        margin-top: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         position: relative;
         overflow: hidden;
     }
 
-    .vote-card::before {
+    .vote-section::after {
         content: '';
         position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle at center, rgba(233, 30, 99, 0.05) 0%, transparent 60%);
-        pointer-events: none;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background: var(--rose);
+        filter: blur(100px);
+        opacity: 0.2;
     }
 
     .form-control-custom {
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
         color: white;
-        padding: 16px 24px;
-        border-radius: 16px;
-        margin-bottom: 20px;
-        font-size: 1rem;
-        transition: all 0.3s;
+        padding: 15px 20px;
+        border-radius: 15px;
+        margin-bottom: 15px;
     }
 
     .form-control-custom:focus {
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(255, 255, 255, 0.08);
         border-color: var(--rose);
         color: white;
-        box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.15);
+        box-shadow: none;
     }
 
     .vote-btn {
-        background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+        background: var(--gradient);
         border: none;
         color: white;
-        padding: 20px;
-        border-radius: 16px;
+        padding: 18px;
+        border-radius: 15px;
         font-weight: 800;
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         width: 100%;
-        margin-top: 15px;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        box-shadow: 0 10px 30px rgba(233, 30, 99, 0.3);
+        margin-top: 10px;
+        transition: all 0.3s;
     }
 
     .vote-btn:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 20px 40px rgba(233, 30, 99, 0.5);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px var(--rose-shadow);
     }
 
-    /* Video Section */
-    .video-container {
+    .gallery-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
         margin-top: 40px;
-        border-radius: 24px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        position: relative;
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
-        height: 0;
     }
 
-    .video-container iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
+    .gallery-item {
+        height: 200px;
+        border-radius: 15px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .gallery-item img {
         width: 100%;
         height: 100%;
-        border: 0;
+        object-fit: cover;
+        transition: transform 0.3s;
     }
 
-    @media (max-width: 991px) {
-        .profile-img {
-            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-            height: 500px;
-        }
-        .profile-info-side {
-            padding: 40px 30px;
-        }
+    .gallery-item:hover img {
+        transform: scale(1.1);
     }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -351,30 +259,29 @@
                 {% endif %}
             </div>
             <div class="profile-info-side">
-                <div class="candidate-type-label">
-                    <i class="fas fa-crown"></i> {{ candidate.get_candidate_type_display }} J.U.IN 2026
-                </div>
+                <span class="candidate-type-label">{{ candidate.get_candidate_type_display }} J.U.IN 2026</span>
                 <h1 class="candidate-fullname">{{ candidate.name }}</h1>
-                
+
                 <div class="meta-row">
                     <span class="meta-item"><i class="fas fa-university me-2"></i> {{ candidate.school }}</span>
-                    {% if candidate.age %}<span class="meta-item"><i class="fas fa-birthday-cake me-2"></i> {{ candidate.age }} ans</span>{% endif %}
-                    {% if candidate.level %}<span class="meta-item"><i class="fas fa-graduation-cap me-2"></i> {{ candidate.level }}</span>{% endif %}
+                    {% if candidate.age %}<span class="meta-item"><i class="fas fa-birthday-cake me-2"></i> {{
+                        candidate.age }} ans</span>{% endif %}
+                    {% if candidate.level %}<span class="meta-item"><i class="fas fa-graduation-cap me-2"></i> {{
+                        candidate.level }}</span>{% endif %}
                 </div>
 
-                <div class="bio-text">
-                    <div class="bio-title"><i class="fas fa-quote-left me-2"></i> Biographie</div>
+                <p class="bio-text">
                     {{ candidate.description|linebreaks }}
-                </div>
+                </p>
 
                 <div class="stats-grid">
                     <div class="stat-box">
                         <span class="stat-val">{{ candidate.votes_count }}</span>
-                        <span class="stat-lab">Votes Validés</span>
+                        <span class="stat-lab">Votes</span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-val">#{{ rank }}</span>
-                        <span class="stat-lab">Classement Actuel</span>
+                        <span class="stat-lab">Classement</span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-val">{{ percentage }}%</span>
@@ -382,47 +289,19 @@
                     </div>
                 </div>
 
-                <!-- Video Section -->
-                {% if candidate.video_url %}
-                <h5 class="fw-bold mb-3 mt-4" style="font-family: 'Playfair Display', serif; color: var(--royal-gold);"><i class="fas fa-play-circle me-2"></i> Vidéo de présentation</h5>
-                <div class="video-container">
-                    {% if 'youtube.com' in candidate.video_url or 'youtu.be' in candidate.video_url %}
-                        <!-- Auto-convert youtube links to embed -->
-                        <iframe src="{{ candidate.video_url|replace:'watch?v=,embed/'|replace:'youtu.be/,youtube.com/embed/' }}" allowfullscreen></iframe>
-                    {% else %}
-                        <iframe src="{{ candidate.video_url }}" allowfullscreen></iframe>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                <!-- Gallery Section -->
-                {% if candidate.image2 or candidate.image3 or candidate.image4 %}
-                <h5 class="fw-bold mb-3 mt-5" style="font-family: 'Playfair Display', serif; color: var(--royal-gold);"><i class="fas fa-images me-2"></i> Galerie Photos</h5>
+                {% if candidate.gallery.all %}
+                <h5 class="fw-bold mb-3 mt-5"><i class="fas fa-images me-2 text-rose"></i> Galerie Photos</h5>
                 <div class="gallery-grid">
-                    {% if candidate.image2 %}
-                    <a href="{{ candidate.image2.url }}" class="glightbox" data-gallery="candidate-gallery">
+                    {% for item in candidate.gallery.all %}
+                    <a href="{{ item.image.url }}" class="glightbox" data-gallery="candidate-gallery">
                         <div class="gallery-item-wrap">
-                            <img src="{{ candidate.image2.url }}" alt="Gallery image 2" class="gallery-thumb">
-                            <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+                            <img src="{{ item.image.url }}" alt="Gallery image" class="gallery-thumb">
+                            <div class="gallery-overlay">
+                                <i class="fas fa-expand"></i>
+                            </div>
                         </div>
                     </a>
-                    {% endif %}
-                    {% if candidate.image3 %}
-                    <a href="{{ candidate.image3.url }}" class="glightbox" data-gallery="candidate-gallery">
-                        <div class="gallery-item-wrap">
-                            <img src="{{ candidate.image3.url }}" alt="Gallery image 3" class="gallery-thumb">
-                            <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
-                        </div>
-                    </a>
-                    {% endif %}
-                    {% if candidate.image4 %}
-                    <a href="{{ candidate.image4.url }}" class="glightbox" data-gallery="candidate-gallery">
-                        <div class="gallery-item-wrap">
-                            <img src="{{ candidate.image4.url }}" alt="Gallery image 4" class="gallery-thumb">
-                            <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
-                        </div>
-                    </a>
-                    {% endif %}
+                    {% endfor %}
                 </div>
                 {% endif %}
             </div>
@@ -433,38 +312,45 @@
                 <div class="vote-card" data-aos="zoom-in">
                     <div id="voteContent">
                         <h3 class="text-center fw-bold mb-2">Voter pour {{ candidate.name }}</h3>
-                        <p class="text-center text-white-50 mb-4">Soutenez ce candidat via Mobile Money (100 FCFA / vote)</p>
-                        
+                        <p class="text-center text-white-50 mb-4">Soutenez ce candidat via Mobile Money (100 FCFA /
+                            vote)</p>
+
                         <form id="voteForm">
                             {% csrf_token %}
                             <input type="hidden" name="candidate_id" value="{{ candidate.id }}">
-                            
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="small text-white-50 mb-2">Votre Nom (Optionnel)</label>
-                                    <input type="text" name="voter_name" class="form-control form-control-custom" placeholder="Ex: Jean Dupont">
+                                    <input type="text" name="voter_name" class="form-control form-control-custom"
+                                        placeholder="Ex: Jean Dupont">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="small text-white-50 mb-2">Votre Établissement</label>
-                                    <input type="text" name="voter_school" class="form-control form-control-custom" placeholder="Ex: UY1, Polytechnique...">
+                                    <input type="text" name="voter_school" class="form-control form-control-custom"
+                                        placeholder="Ex: UY1, Polytechnique...">
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="small text-white-50 mb-2">Nombre de votes</label>
-                                    <input type="number" name="vote_count" id="vote_count" class="form-control form-control-custom" value="1" min="1" step="1">
+                                    <input type="number" name="vote_count" id="vote_count"
+                                        class="form-control form-control-custom" value="1" min="1" step="1">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="small text-white-50 mb-2">Montant total (FCFA)</label>
-                                    <input type="text" id="total_amount" class="form-control form-control-custom" value="100" readonly>
+                                    <input type="text" id="total_amount" class="form-control form-control-custom"
+                                        value="100" readonly>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12 mb-3">
-                                    <label class="small text-white-50 mb-2">Votre numéro Mobile Money (MTN/Orange)</label>
-                                    <input type="text" name="phone" class="form-control form-control-custom" placeholder="Ex: 6XXXXXXXX" required>
+                                    <label class="small text-white-50 mb-2">Votre numéro Mobile Money
+                                        (MTN/Orange)</label>
+                                    <input type="text" name="phone" class="form-control form-control-custom"
+                                        placeholder="Ex: 6XXXXXXXX" required>
                                 </div>
                             </div>
 
@@ -484,10 +370,12 @@
                     <!-- Loading State -->
                     <div id="loadingState" class="text-center py-5 d-none">
                         <div class="payment-loader mb-4">
-                            <div class="spinner-border text-rose" role="status" style="width: 3rem; height: 3rem;"></div>
+                            <div class="spinner-border text-rose" role="status" style="width: 3rem; height: 3rem;">
+                            </div>
                         </div>
                         <h4 class="fw-bold mb-2">Traitement en cours...</h4>
-                        <p class="text-white-50">Veuillez valider la transaction sur votre téléphone via le prompt qui va apparaître.</p>
+                        <p class="text-white-50">Veuillez valider la transaction sur votre téléphone via le prompt qui
+                            va apparaître.</p>
                         <div class="mt-4">
                             <small class="text-muted">En attente de la réponse de l'opérateur...</small>
                         </div>
@@ -500,18 +388,23 @@
                         </div>
                         <h2 class="fw-bold mb-3">Merci pour votre vote !</h2>
                         <p class="lead mb-4">Votre soutien a été enregistré avec succès pour {{ candidate.name }}.</p>
-                        
+
                         <div class="share-box p-4 bg-white bg-opacity-10 rounded-4 mb-4">
                             <p class="small text-white-50 mb-3">Partagez pour augmenter ses chances :</p>
                             <div class="d-flex justify-content-center gap-3">
-                                <a href="https://wa.me/?text=Je viens de voter pour {{ candidate.name }} au concours Miss %26 Mister J.U.IN 2026 ! Soutenez-le ici : {{ request.build_absolute_uri }}" target="_blank" class="btn btn-success rounded-circle"><i class="fab fa-whatsapp"></i></a>
-                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary rounded-circle"><i class="fab fa-facebook-f"></i></a>
+                                <a href="https://wa.me/?text=Je viens de voter pour {{ candidate.name }} au concours Miss %26 Mister J.U.IN 2026 ! Soutenez-le ici : {{ request.build_absolute_uri }}"
+                                    target="_blank" class="btn btn-success rounded-circle"><i
+                                        class="fab fa-whatsapp"></i></a>
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                                    target="_blank" class="btn btn-primary rounded-circle"><i
+                                        class="fab fa-facebook-f"></i></a>
                             </div>
                         </div>
 
-                        <button class="btn btn-outline-light rounded-pill px-4" onclick="window.location.reload()">Voter à nouveau</button>
+                        <button class="btn btn-outline-light rounded-pill px-4" onclick="window.location.reload()">Voter
+                            à nouveau</button>
                     </div>
-                    
+
                     <!-- Error State -->
                     <div id="errorState" class="text-center py-5 d-none">
                         <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
@@ -532,6 +425,7 @@
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 15px;
     }
+
     .gallery-item-wrap {
         position: relative;
         border-radius: 15px;
@@ -539,12 +433,14 @@
         aspect-ratio: 1;
         cursor: pointer;
     }
+
     .gallery-thumb {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.5s;
     }
+
     .gallery-overlay {
         position: absolute;
         inset: 0;
@@ -557,16 +453,22 @@
         opacity: 0;
         transition: opacity 0.3s;
     }
-    .gallery-item-wrap:hover .gallery-thumb { transform: scale(1.1); }
-    .gallery-item-wrap:hover .gallery-overlay { opacity: 1; }
+
+    .gallery-item-wrap:hover .gallery-thumb {
+        transform: scale(1.1);
+    }
+
+    .gallery-item-wrap:hover .gallery-overlay {
+        opacity: 1;
+    }
 
     .vote-card {
-        background: transparent;
+        background: #1a0a10;
         color: white;
-        padding: 0;
-        border-radius: 0;
-        box-shadow: none;
-        border: none;
+        padding: 60px 40px;
+        border-radius: 40px;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(233, 30, 99, 0.2);
     }
 </style>
 
@@ -582,23 +484,23 @@
 
     const voteInput = document.getElementById('vote_count');
     const amountInput = document.getElementById('total_amount');
-    
-    voteInput.addEventListener('input', function() {
+
+    voteInput.addEventListener('input', function () {
         amountInput.value = (this.value * 100) + ' FCFA';
     });
 
-    document.getElementById('voteForm').addEventListener('submit', function(e) {
+    document.getElementById('voteForm').addEventListener('submit', function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this);
         const voteContent = document.getElementById('voteContent');
         const loading = document.getElementById('loadingState');
         const errorDiv = document.getElementById('errorState');
         const errorMsg = document.getElementById('errorMessage');
-        
+
         voteContent.classList.add('d-none');
         loading.classList.remove('d-none');
-        
+
         fetch('{% url "juin_vote_initiate" %}', {
             method: 'POST',
             body: formData,
@@ -606,45 +508,45 @@
                 'X-CSRFToken': '{{ csrf_token }}'
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                pollStatus(data.transaction_id);
-            } else {
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    pollStatus(data.transaction_id);
+                } else {
+                    loading.classList.add('d-none');
+                    errorDiv.classList.remove('d-none');
+                    errorMsg.textContent = data.error || 'Erreur inconnue';
+                }
+            })
+            .catch(err => {
                 loading.classList.add('d-none');
                 errorDiv.classList.remove('d-none');
-                errorMsg.textContent = data.error || 'Erreur inconnue';
-            }
-        })
-        .catch(err => {
-            loading.classList.add('d-none');
-            errorDiv.classList.remove('d-none');
-            errorMsg.textContent = 'Une erreur réseau est survenue.';
-        });
+                errorMsg.textContent = 'Une erreur réseau est survenue.';
+            });
     });
 
     function pollStatus(txId) {
         const interval = setInterval(() => {
             fetch(`/api/juin/vote/status/${txId}/`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'completed') {
-                    clearInterval(interval);
-                    showSuccess();
-                } else if (data.status === 'failed') {
-                    clearInterval(interval);
-                    document.getElementById('loadingState').classList.add('d-none');
-                    document.getElementById('errorState').classList.remove('d-none');
-                    document.getElementById('errorMessage').textContent = 'Le paiement a échoué.';
-                }
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'completed') {
+                        clearInterval(interval);
+                        showSuccess();
+                    } else if (data.status === 'failed') {
+                        clearInterval(interval);
+                        document.getElementById('loadingState').classList.add('d-none');
+                        document.getElementById('errorState').classList.remove('d-none');
+                        document.getElementById('errorMessage').textContent = 'Le paiement a échoué.';
+                    }
+                });
         }, 3000);
     }
 
     function showSuccess() {
         document.getElementById('loadingState').classList.add('d-none');
         document.getElementById('successState').classList.remove('d-none');
-        
+
         // Confetti!
         confetti({
             particleCount: 150,
@@ -655,7 +557,7 @@
     }
 
     // Initialize GLightbox
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const lightbox = GLightbox({
             selector: '.glightbox'
         });

@@ -408,7 +408,7 @@ CSRF_TRUSTED_ORIGINS = [
 # =============================================================================
 # FREEMOPAY — Paiements Mobile Money
 # =============================================================================
-FREEMOPAY_APP_KEY = os.environ.get('FREEMOPAY_APP_KEY', '21306c41-ea48-4497-ad2b-2e3104a49401')
-FREEMOPAY_SECRET_KEY = os.environ.get('FREEMOPAY_SECRET_KEY', 'AKO4K8cBdSBLHdTNhQtl')
+FREEMOPAY_APP_KEY = os.environ.get('FREEMOPAY_APP_KEY', 'YOUR_APP_KEY_HERE')
+FREEMOPAY_SECRET_KEY = os.environ.get('FREEMOPAY_SECRET_KEY', 'YOUR_SECRET_KEY_HERE')
 FREEMOPAY_BASE_URL = os.environ.get('FREEMOPAY_BASE_URL', 'https://api-v2.freemopay.com')
 

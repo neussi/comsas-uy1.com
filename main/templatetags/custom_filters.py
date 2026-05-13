@@ -237,6 +237,18 @@ def replace_spaces(value, replacement="_"):
         return value
 
 @register.filter
+def replace(value, arg):
+    """
+    Remplace une sous-chaîne par une autre.
+    Usage: {{ value|replace:"ancien,nouveau" }}
+    """
+    try:
+        old, new = arg.split(',')
+        return str(value).replace(old, new)
+    except (ValueError, AttributeError, TypeError):
+        return value
+
+@register.filter
 def split_string(value, delimiter):
     """Divise une chaîne selon un délimiteur"""
     try:
