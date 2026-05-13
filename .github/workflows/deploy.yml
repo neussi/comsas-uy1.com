@@ -15,15 +15,26 @@ jobs:
         username: ${{ secrets.SSH_USERNAME || 'root' }}
         password: ${{ secrets.SSH_PASSWORD || 'propenta2025' }}
         port: 22
+        envs: FREEMOPAY_APP_KEY,FREEMOPAY_SECRET_KEY
         script: |
           cd /root/system-sh/comsas-uy1.com
           git fetch origin main
           git reset --hard origin/main
-          git clean -fd
-          # Injecter les secrets Freemopay dans le .env de production
-          grep -v "FREEMOPAY_" .env > .env.tmp && mv .env.tmp .env || true
+          # Recréer le .env avec toutes les variables nécessaires
+          cat > .env << 'ENVEOF'
+          DB_NAME=comsas_db
+          DB_USER=comsas_user
+          DB_PASSWORD=comsas_password
+          DB_HOST=db
+          DB_PORT=5432
+          DJANGO_SECRET_KEY=comsas_prod_secret_2026_juin
+          DEBUG=False
+          ALLOWED_HOSTS=comsas-uy1.com,www.comsas-uy1.com,167.86.88.92
+          ENVEOF
           echo "FREEMOPAY_APP_KEY=${{ secrets.FREEMOPAY_APP_KEY }}" >> .env
           echo "FREEMOPAY_SECRET_KEY=${{ secrets.FREEMOPAY_SECRET_KEY }}" >> .env
+          echo "--- .env injecté ---"
+          cat .env | grep -v PASSWORD | grep -v SECRET
           docker-compose build --no-cache
           docker-compose up -d
           sleep 15
