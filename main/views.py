@@ -4,6 +4,8 @@ import json
 import uuid
 import logging
 from django.contrib import messages
+
+logger = logging.getLogger(__name__)
 from django.core.paginator import Paginator
 from django.http import JsonResponse, FileResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
@@ -1375,26 +1377,28 @@ def juin_payment_status_check(request, external_id):
     
     # Toujours re-vérifier depuis Freemopay si le paiement est en cours ou si on a une référence
     if donation.payment_status in ('initiated', 'processing') and donation.freemopay_reference:
-        from .freemopay_service import FreemopayService
-        service = FreemopayService()
-        check = service.check_payment_status(donation.freemopay_reference)
-        logger.info(f"[PAYMENT_STATUS] {external_id} => {check}")
-        if check.get('success'):
-            raw_status = check.get('status', '').upper()
-            raw_data = check.get('data', {})
-            reason = raw_data.get('reason', '')
-            if raw_status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
-                donation.is_confirmed = True
-                donation.payment_status = 'completed'
-                donation.save()
-            elif raw_status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED', 'CANCELLED'):
-                donation.payment_status = 'failed'
-                donation.save()
-                return JsonResponse({
-                    'status': 'failed',
-                    'is_confirmed': False,
-                    'reason': reason or 'Paiement échoué. Vérifiez votre solde ou réessayez.'
-                })
+        try:
+            from .freemopay_service import FreemopayService
+            service = FreemopayService()
+            check = service.check_payment_status(donation.freemopay_reference)
+            if check.get('success'):
+                raw_status = check.get('status', '').upper()
+                raw_data = check.get('data') or {}
+                reason = raw_data.get('reason', '')
+                if raw_status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
+                    donation.is_confirmed = True
+                    donation.payment_status = 'completed'
+                    donation.save()
+                elif raw_status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED', 'CANCELLED'):
+                    donation.payment_status = 'failed'
+                    donation.save()
+                    return JsonResponse({
+                        'status': 'failed',
+                        'is_confirmed': False,
+                        'reason': reason or 'Paiement échoué. Vérifiez votre solde ou réessayez.'
+                    })
+        except Exception as e:
+            logger.error(f"[PAYMENT_STATUS] Erreur vérification: {e}")
                 
     return JsonResponse({
         'status': donation.payment_status,
