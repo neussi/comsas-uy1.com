@@ -5,7 +5,7 @@ from .models import (
     Contact, SiteSettings, SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote, Archive, ArchiveComment,
     JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
-    JUINActivity, JUINDonation, JUINSponsor, JUINTeam,
+    JUINActivity, JUINDonation, JUINSponsor, JUINTeam, JUINCandidate, JUINVote,
     ProjectSubmission, ClubCommission, ClubCommissionApplication,
     AcademicResource, JobOffer
 )
@@ -352,10 +352,32 @@ approve_commission_application.short_description = "✅ Approuver, créer membre
 
 # --- ADMIN CLASSES ---
 
+@admin.register(JUINEdition)
+class JUINEditionAdmin(admin.ModelAdmin):
+    list_display = ('edition_number', 'theme', 'start_date', 'is_active', 'applications_open', 'contest_registration_open')
+    list_filter = ('is_active', 'applications_open', 'contest_registration_open')
+    list_editable = ('is_active', 'applications_open', 'contest_registration_open')
+    search_fields = ('theme', 'location')
+
+@admin.register(JUINCompetition)
+class JUINCompetitionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'comp_type', 'is_open', 'max_teams', 'edition')
+    list_filter = ('comp_type', 'is_open', 'edition')
+    list_editable = ('is_open', 'max_teams')
+    search_fields = ('name', 'description')
+    prepopulated_fields = {'slug': ('name',)}
+
+@admin.register(JUINSponsor)
+class JUINSponsorAdmin(admin.ModelAdmin):
+    list_display = ('company_name', 'tier', 'edition', 'statut', 'is_featured')
+    list_filter = ('tier', 'edition', 'statut', 'is_featured')
+    list_editable = ('statut', 'is_featured')
+    search_fields = ('company_name', 'description', 'contact_name')
+
 @admin.register(JUINTeam)
 class JUINTeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'competition', 'captain_name', 'members_count', 'statut')
-    list_filter = ('competition__edition', 'competition', 'statut')
+    list_display = ('name', 'competition', 'school', 'captain_name', 'statut')
+    list_filter = ('competition__edition', 'competition', 'school', 'statut')
     search_fields = ('name', 'captain_name', 'captain_email')
     list_editable = ('statut',)
     actions = ['approve_teams']
@@ -364,6 +386,51 @@ class JUINTeamAdmin(admin.ModelAdmin):
         count = queryset.update(statut='approved')
         self.message_user(request, f"{count} équipes ont été approuvées.")
     approve_teams.short_description = "Marquer les équipes sélectionnées comme approuvées"
+
+@admin.register(JUINCandidate)
+class JUINCandidateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'candidate_type', 'school', 'status', 'votes_count', 'total_revenue', 'edition')
+    list_filter = ('status', 'candidate_type', 'school', 'edition')
+    list_editable = ('status',)
+    search_fields = ('name', 'email', 'phone')
+    actions = ['approve_candidates', 'reject_candidates']
+
+    def approve_candidates(self, request, queryset):
+        queryset.update(status='approved')
+        self.message_user(request, "Candidats approuvés.")
+    approve_candidates.short_description = "✅ Approuver les candidats"
+
+    def reject_candidates(self, request, queryset):
+        queryset.update(status='rejected')
+        self.message_user(request, "Candidats rejetés.")
+    reject_candidates.short_description = "❌ Rejeter les candidats"
+
+@admin.register(JUINVote)
+class JUINVoteAdmin(admin.ModelAdmin):
+    list_display = ('transaction_id', 'candidate', 'vote_count', 'amount', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('transaction_id', 'voter_phone', 'voter_email')
+    readonly_fields = ('created_at',)
+
+@admin.register(JUINActivity)
+class JUINActivityAdmin(admin.ModelAdmin):
+    list_display = ('title', 'activity_type', 'date_activity', 'edition')
+    list_filter = ('activity_type', 'edition')
+    search_fields = ('title', 'description', 'speaker')
+
+@admin.register(JUINCommissionApplication)
+class JUINCommissionApplicationAdmin(admin.ModelAdmin):
+    list_display = ('nom_prenom', 'email', 'commission', 'statut', 'date_postulation')
+    list_filter = ('statut', 'commission', 'commission__edition')
+    search_fields = ('nom_prenom', 'email', 'telephone')
+    list_editable = ('statut',)
+
+@admin.register(JUINDonation)
+class JUINDonationAdmin(admin.ModelAdmin):
+    list_display = ('nom_prenom', 'montant', 'type_paiement', 'is_confirmed', 'date_don')
+    list_filter = ('is_confirmed', 'type_paiement', 'edition')
+    search_fields = ('nom_prenom', 'email', 'telephone')
+
 
 
 @admin.register(AcademicResource)

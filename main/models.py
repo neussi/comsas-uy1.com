@@ -941,16 +941,17 @@ class ArchiveComment(models.Model):
 # J.U.IN 2026 — JOURNÉES UNIVERSITAIRES DE L'INFORMATIQUE
 # =============================================================================
 
+SCHOOL_CHOICES = [
+    ('UY1', 'Université de Yaoundé I — Faculté des Sciences'),
+    ('ENSPY', 'École Nationale Supérieure Polytechnique de Yaoundé'),
+    ('STJEAN', 'Institut Saint-Jean'),
+    ('SUPPTIC', "SUP'PTIC"),
+    ('EBOLOWA', "Université d'Ebolowa"),
+    ('OTHER', 'Autre'),
+]
+
 class JUINEdition(models.Model):
     """Édition du J.U.IN"""
-    SCHOOL_CHOICES = [
-        ('UY1', 'Université de Yaoundé I — Faculté des Sciences'),
-        ('ENSPY', 'École Nationale Supérieure Polytechnique de Yaoundé'),
-        ('STJEAN', 'Institut Saint-Jean'),
-        ('SUPPTIC', "SUP'PTIC"),
-        ('IAI', 'IAI-Cameroun'),
-        ('OTHER', 'Autre'),
-    ]
 
     edition_number = models.PositiveIntegerField(verbose_name="Numéro d'édition", default=20)
     title = models.CharField(max_length=300, verbose_name="Titre de l'édition")
@@ -1047,11 +1048,13 @@ class JUINCommissionApplication(models.Model):
         ('ICT-L1', 'ICT-L1'), ('ICT-L2', 'ICT-L2'), ('ICT-L3', 'ICT-L3'),
         ('M1', 'Master 1'), ('M2', 'Master 2'), ('PhD', 'Doctorat'), ('OTHER', 'Autre'),
     ]
+    
     SCHOOL_CHOICES = [
         ('UY1-INFO', 'UY1 — Département Informatique (COM.S.AS)'),
         ('ENSPY', 'ENSPY — École Nationale Supérieure Polytechnique'),
         ('STJEAN', 'Institut Saint-Jean'),
         ('SUPPTIC', "SUP'PTIC"),
+        ('EBOLOWA', "Université d'Ebolowa"),
         ('OTHER', 'Autre établissement'),
     ]
 
@@ -1181,6 +1184,7 @@ class JUINTeam(models.Model):
     
     project_title = models.CharField(max_length=200, blank=True, verbose_name="Titre du projet (si informatique)")
     project_description = models.TextField(blank=True, verbose_name="Description du projet / Composition équipe")
+    school = models.CharField(max_length=50, choices=SCHOOL_CHOICES, default='UY1', verbose_name="Établissement")
     
     logo = models.ImageField(upload_to='juin/teams/', blank=True, null=True, verbose_name="Logo ou Photo d'équipe")
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='pending', verbose_name="Statut")
@@ -1261,7 +1265,7 @@ class JUINCandidate(models.Model):
     candidate_type = models.CharField(max_length=20, choices=CANDIDATE_TYPES, verbose_name="Type de candidat")
     age = models.PositiveIntegerField(verbose_name="Âge")
     level = models.CharField(max_length=50, verbose_name="Niveau d'étude")
-    school = models.CharField(max_length=50, choices=JUINEdition.SCHOOL_CHOICES, verbose_name="Établissement")
+    school = models.CharField(max_length=50, choices=SCHOOL_CHOICES, verbose_name="Établissement")
     phone = models.CharField(max_length=20, verbose_name="Téléphone (WhatsApp)")
     email = models.EmailField(verbose_name="Email", blank=True, null=True)
     description = models.TextField(verbose_name="Biographie / Motivations")

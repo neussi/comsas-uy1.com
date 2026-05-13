@@ -2006,12 +2006,13 @@ def juin_miss_mister_contest(request):
         misses = [c for c in candidates if c.candidate_type == 'miss']
         misters = [c for c in candidates if c.candidate_type == 'mister']
     
+    from .models import SCHOOL_CHOICES
     context = {
         'edition': edition,
         'misses': misses,
         'misters': misters,
         'candidates': candidates,
-        'school_choices': JUINEdition.SCHOOL_CHOICES,
+        'school_choices': SCHOOL_CHOICES,
         'total_votes': sum(c.votes_count for c in candidates) if candidates else 0
     }
     return render(request, 'main/juin_contest/list.html', context)

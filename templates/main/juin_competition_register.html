@@ -1,678 +1,366 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Inscription — {{ competition.name }} | J.U.IN 2026{% endblock %}
+{% block title %}Inscription {{ competition.name }} — J.U.IN 2026{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
 <style>
     :root {
-        --rose: #E91E63;
-        --rose-light: #f06292;
-        --rose-dark: #c2185b;
-        --rose-pale: rgba(233, 30, 99, .08);
-        --rose-border: rgba(233, 30, 99, .2);
-        --rose-shadow: rgba(233, 30, 99, .15);
-        --blanc: #ffffff;
-        --blanc-off: #fdf5f8;
-        --text-dark: #1a0a10;
-        --text-muted: #8a6070;
-        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
-        --gradient-dark: linear-gradient(135deg, #2d0617 0%, #1a0a10 100%);
-    }
-
-    *,
-    *::before,
-    *::after {
-        box-sizing: border-box;
+        --royal-gold: #D4AF37;
+        --royal-gold-light: #F9E29C;
+        --dark-bg: #050102;
+        --surface: #100407;
+        --rose-royal: #E91E63;
+        --glass: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(212, 175, 55, 0.2);
     }
 
     body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background: var(--blanc-off);
-        color: var(--text-dark);
+        background-color: var(--dark-bg);
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
     }
 
-    /* ── Page wrapper ── */
     .compete-page {
         min-height: 100vh;
+        padding: 100px 0;
+        background: radial-gradient(circle at top right, #1a050a, var(--dark-bg));
         position: relative;
-        overflow: hidden;
-        padding: 60px 0 80px;
     }
 
     .compete-page::before {
         content: '';
-        position: fixed;
-        top: -20%;
-        right: -10%;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(circle, rgba(233, 30, 99, .06) 0%, transparent 70%);
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l2 28h28l-22 18 8 26-24-16-24 16 8-26-22-18h28l2-28z' fill='%23D4AF37' fill-opacity='0.02'/%3E%3C/svg%3E");
         pointer-events: none;
-        z-index: 0;
     }
 
-    .compete-page::after {
-        content: '';
-        position: fixed;
-        bottom: -10%;
-        left: -10%;
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(circle, rgba(233, 30, 99, .04) 0%, transparent 70%);
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    /* ── Breadcrumb ── */
     .back-link {
+        color: var(--royal-gold);
+        text-decoration: none;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        color: var(--text-muted);
-        text-decoration: none;
-        font-size: .82rem;
+        gap: 10px;
         font-weight: 600;
-        transition: color .2s;
-        margin-bottom: 32px;
+        margin-bottom: 30px;
+        transition: 0.3s;
     }
 
     .back-link:hover {
-        color: var(--rose);
+        transform: translateX(-5px);
+        color: var(--royal-gold-light);
     }
 
-    .back-link i {
-        width: 28px;
-        height: 28px;
-        background: var(--rose-pale);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: .7rem;
-        color: var(--rose);
-        transition: background .2s;
-    }
-
-    .back-link:hover i {
-        background: var(--rose);
-        color: white;
-    }
-
-    /* ── Main card ── */
-    .compete-card {
-        background: var(--blanc);
-        border-radius: 32px;
+    .glass-card-main {
+        background: rgba(18, 5, 9, 0.8);
+        backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: 40px;
         overflow: hidden;
-        box-shadow:
-            0 4px 6px rgba(0, 0, 0, .02),
-            0 20px 60px rgba(233, 30, 99, .1),
-            0 1px 0 rgba(255, 255, 255, .8) inset;
-        border: 1px solid rgba(233, 30, 99, .08);
-        position: relative;
-        z-index: 1;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.6);
     }
 
-    /* ── Left panel ── */
-    .left-panel {
-        background: var(--gradient-dark);
-        padding: 48px 40px;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        overflow: hidden;
-        min-height: 500px;
+    /* Left Info Panel */
+    .info-panel {
+        background: linear-gradient(to bottom, rgba(212, 175, 55, 0.05), transparent);
+        padding: 60px 40px;
+        border-right: 1px solid var(--glass-border);
+        height: 100%;
     }
 
-    .left-panel::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: var(--gradient);
-    }
-
-    .left-panel::after {
-        content: '';
-        position: absolute;
-        bottom: -60px;
-        right: -60px;
-        width: 240px;
-        height: 240px;
-        background: radial-gradient(circle, rgba(233, 30, 99, .15) 0%, transparent 70%);
-        pointer-events: none;
-    }
-
-    .comp-type-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(233, 30, 99, .2);
-        border: 1px solid rgba(233, 30, 99, .35);
-        color: var(--rose-light);
-        padding: 5px 14px;
+    .comp-badge {
+        display: inline-block;
+        padding: 6px 15px;
+        background: rgba(233, 30, 99, 0.1);
+        border: 1px solid var(--rose-royal);
+        color: var(--rose-royal);
         border-radius: 50px;
-        font-size: .72rem;
-        font-weight: 700;
-        letter-spacing: 1.2px;
-        text-transform: uppercase;
-        margin-bottom: 20px;
-    }
-
-    .left-panel h1 {
-        font-size: 1.9rem;
-        font-weight: 900;
-        color: white;
-        line-height: 1.2;
-        margin-bottom: 16px;
-    }
-
-    .left-panel p {
-        color: rgba(255, 255, 255, .45);
-        font-size: .88rem;
-        line-height: 1.7;
-        margin-bottom: 32px;
-    }
-
-    /* ── Info rows ── */
-    .info-row {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 16px;
-    }
-
-    .info-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, .07);
-        border: 1px solid rgba(255, 255, 255, .1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        color: var(--rose-light);
-        font-size: .9rem;
-    }
-
-    .info-label {
-        font-size: .68rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: rgba(255, 255, 255, .35);
-        margin-bottom: 2px;
-    }
-
-    .info-value {
-        font-size: .9rem;
-        font-weight: 600;
-        color: rgba(255, 255, 255, .8);
-    }
-
-    /* ── Note box ── */
-    .note-box {
-        background: rgba(255, 255, 255, .04);
-        border: 1px solid rgba(255, 255, 255, .08);
-        border-radius: 16px;
-        padding: 18px 20px;
-        margin-top: auto;
-    }
-
-    .note-box h6 {
-        font-size: .78rem;
-        font-weight: 700;
-        color: rgba(255, 255, 255, .7);
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .note-box h6 i {
-        color: var(--rose-light);
-    }
-
-    .note-box p {
-        font-size: .75rem;
-        color: rgba(255, 255, 255, .35);
-        margin: 0;
-        line-height: 1.6;
-    }
-
-    /* ── Deco icon ── */
-    .deco-icon {
-        position: absolute;
-        bottom: 80px;
-        right: -20px;
-        font-size: 8rem;
-        opacity: .04;
-        color: white;
-        pointer-events: none;
-    }
-
-    /* ── Right panel ── */
-    .right-panel {
-        padding: 48px 44px;
-        background: var(--blanc);
-    }
-
-    .right-panel h2 {
-        font-size: 1.7rem;
-        font-weight: 900;
-        color: var(--text-dark);
-        margin-bottom: 6px;
-    }
-
-    .right-panel>p {
-        color: var(--text-muted);
-        font-size: .88rem;
-        margin-bottom: 36px;
-    }
-
-    /* ── Section headers ── */
-    .form-section-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: .72rem;
+        font-size: 0.7rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 2px;
-        color: var(--rose);
         margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid var(--rose-border);
     }
 
-    .form-section-title i {
-        width: 28px;
-        height: 28px;
-        background: var(--rose-pale);
-        border-radius: 8px;
+    .info-panel h1 {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.5rem;
+        color: var(--royal-gold);
+        margin-bottom: 20px;
+        line-height: 1.1;
+    }
+
+    .info-panel p {
+        color: rgba(255,255,255,0.5);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 40px;
+    }
+
+    .info-item {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: .75rem;
-        flex-shrink: 0;
+        gap: 15px;
+        margin-bottom: 25px;
     }
 
-    /* ── Form controls ── */
-    .form-label {
-        font-size: .78rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 6px;
-        display: block;
-    }
-
-    .form-control,
-    .form-select,
-    textarea.form-control {
-        border: 1.5px solid rgba(233, 30, 99, .15);
+    .info-icon {
+        width: 45px;
+        height: 45px;
+        background: var(--glass);
         border-radius: 12px;
-        padding: 11px 15px;
-        font-size: .88rem;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        color: var(--text-dark);
-        background: var(--blanc-off);
-        transition: border-color .25s, box-shadow .25s, background .25s;
-        width: 100%;
-    }
-
-    .form-control:focus,
-    .form-select:focus,
-    textarea.form-control:focus {
-        border-color: var(--rose);
-        background: var(--blanc);
-        box-shadow: 0 0 0 4px rgba(233, 30, 99, .1);
-        outline: none;
-    }
-
-    .form-control::placeholder,
-    textarea.form-control::placeholder {
-        color: rgba(138, 96, 112, .4);
-    }
-
-    textarea.form-control {
-        resize: vertical;
-        min-height: 100px;
-    }
-
-    .form-text {
-        font-size: .72rem;
-        color: var(--text-muted);
-        margin-top: 5px;
-    }
-
-    /* ── File input ── */
-    input[type="file"].form-control {
-        padding: 9px 12px;
-        cursor: pointer;
-    }
-
-    input[type="file"].form-control::-webkit-file-upload-button {
-        background: var(--rose-pale);
-        border: 1px solid var(--rose-border);
-        color: var(--rose);
-        border-radius: 8px;
-        padding: 4px 12px;
-        font-size: .75rem;
-        font-weight: 700;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        cursor: pointer;
-        margin-right: 10px;
-        transition: background .2s;
-    }
-
-    input[type="file"].form-control::-webkit-file-upload-button:hover {
-        background: var(--rose);
-        color: white;
-        border-color: var(--rose);
-    }
-
-    /* ── Error ── */
-    .field-error {
-        font-size: .75rem;
-        color: #e91e63;
-        margin-top: 5px;
         display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .field-error::before {
-        content: '!';
-        width: 14px;
-        height: 14px;
-        background: rgba(233, 30, 99, .12);
-        border-radius: 50%;
-        display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: .6rem;
-        font-weight: 900;
-        flex-shrink: 0;
+        color: var(--royal-gold);
+        border: 1px solid rgba(212, 175, 55, 0.2);
     }
 
-    /* ── Submit button ── */
-    .btn-submit {
-        background: var(--gradient);
-        color: white;
-        font-weight: 700;
-        font-size: 1rem;
-        border: none;
-        border-radius: 50px;
-        padding: 14px 48px;
-        box-shadow: 0 8px 24px rgba(233, 30, 99, .35);
-        transition: transform .2s, box-shadow .2s, opacity .2s;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
+    .info-text h6 {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.3);
+        margin: 0;
+        letter-spacing: 1.5px;
     }
 
-    .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(233, 30, 99, .45);
-        opacity: .95;
-        color: white;
+    .info-text span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #fff;
     }
 
-    .btn-submit:active {
-        transform: translateY(0);
+    /* Right Form Panel */
+    .form-panel {
+        padding: 60px;
     }
 
-    /* ── Alert non-field errors ── */
-    .alert-field {
-        background: rgba(233, 30, 99, .08);
-        border: 1px solid rgba(233, 30, 99, .25);
-        color: var(--rose-dark);
-        border-radius: 14px;
-        padding: 14px 18px;
-        font-size: .85rem;
+    .section-title {
         display: flex;
-        align-items: flex-start;
-        gap: 10px;
+        align-items: center;
+        gap: 12px;
+        color: var(--royal-gold);
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
-    /* ── Divider ── */
-    .form-divider {
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--rose-border), transparent);
-        margin: 28px 0;
+    .form-label {
+        color: var(--royal-gold-light);
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
     }
 
-    /* ── Responsive ── */
+    .form-control, .form-select {
+        background: var(--glass) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #fff !important;
+        border-radius: 15px !important;
+        padding: 12px 18px !important;
+        font-size: 0.9rem !important;
+        transition: 0.3s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--royal-gold) !important;
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.1) !important;
+        background: rgba(255,255,255,0.06) !important;
+    }
+
+    .btn-royal-submit {
+        background: linear-gradient(135deg, var(--royal-gold), var(--royal-gold-light));
+        color: var(--dark-bg) !important;
+        padding: 18px 40px;
+        border-radius: 100px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border: none;
+        width: 100%;
+        margin-top: 30px;
+        transition: 0.3s;
+        box-shadow: 0 15px 30px rgba(212, 175, 55, 0.2);
+    }
+
+    .btn-royal-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+    }
+
+    .field-error {
+        color: #ff4757;
+        font-size: 0.75rem;
+        margin-top: 5px;
+        font-weight: 600;
+    }
+
     @media (max-width: 991px) {
-        .left-panel {
-            min-height: unset;
-            padding: 36px 28px;
-        }
-
-        .right-panel {
-            padding: 36px 28px;
-        }
-
-        .deco-icon {
-            display: none;
-        }
-    }
-
-    @media (max-width: 575px) {
-        .compete-page {
-            padding: 32px 0 60px;
-        }
-
-        .left-panel,
-        .right-panel {
-            padding: 28px 20px;
-        }
-
-        .btn-submit {
-            width: 100%;
-            justify-content: center;
-        }
+        .info-panel { border-right: none; border-bottom: 1px solid var(--glass-border); padding: 40px; }
+        .form-panel { padding: 40px 25px; }
+        .compete-page { padding: 60px 0; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="compete-page">
-    <div class="container position-relative" style="z-index:1;">
-
-        <!-- Retour -->
+    <div class="container">
+        
         <a href="{% url 'juin' %}#competitions" class="back-link">
-            <i class="fas fa-arrow-left"></i>
-            Retour aux compétitions
+            <i class="fas fa-arrow-left"></i> Retour aux compétitions
         </a>
 
-        <div class="compete-card">
+        <div class="glass-card-main" data-aos="fade-up">
             <div class="row g-0">
-
-                <!-- ══ LEFT PANEL ══ -->
+                
+                <!-- Left Info Section -->
                 <div class="col-lg-4">
-                    <div class="left-panel">
+                    <div class="info-panel">
+                        <div class="comp-badge">
+                            {% if competition.comp_type == 'sport' %}<i class="fas fa-futbol me-1"></i>
+                            {% elif competition.comp_type == 'gaming' %}<i class="fas fa-gamepad me-1"></i>
+                            {% else %}<i class="fas fa-laptop-code me-1"></i>{% endif %}
+                            {{ competition.get_comp_type_display }}
+                        </div>
+                        
+                        <h1>{{ competition.name }}</h1>
+                        <p>{{ competition.description }}</p>
 
-                        <div>
-                            <div class="comp-type-badge">
-                                {% if competition.comp_type == 'sport' %}<i class="fas fa-futbol"></i>
-                                {% elif competition.comp_type == 'gaming' %}<i class="fas fa-gamepad"></i>
-                                {% else %}<i class="fas fa-laptop-code"></i>{% endif %}
-                                {{ competition.get_comp_type_display }}
-                            </div>
-
-                            <h1>{{ competition.name }}</h1>
-                            <p>{{ competition.description }}</p>
-
-                            <div class="info-row">
-                                <div class="info-icon"><i class="fas fa-users"></i></div>
-                                <div>
-                                    <div class="info-label">Max Équipes</div>
-                                    <div class="info-value">{{ competition.max_teams }} équipes</div>
-                                </div>
-                            </div>
-
-                            {% if competition.start_date %}
-                            <div class="info-row">
-                                <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
-                                <div>
-                                    <div class="info-label">Début estimé</div>
-                                    <div class="info-value">{{ competition.start_date|date:"d F Y — H:i" }}</div>
-                                </div>
-                            </div>
-                            {% endif %}
-
-                            <div class="info-row">
-                                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                                <div>
-                                    <div class="info-label">Lieu</div>
-                                    <div class="info-value">Campus UY1 — Yaoundé</div>
-                                </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-users"></i></div>
+                            <div class="info-text">
+                                <h6>Capacité Max</h6>
+                                <span>{{ competition.max_teams }} équipes</span>
                             </div>
                         </div>
 
-                        <!-- Deco -->
-                        <i
-                            class="deco-icon fas {% if competition.comp_type == 'sport' %}fa-futbol{% elif competition.comp_type == 'gaming' %}fa-gamepad{% else %}fa-laptop-code{% endif %}"></i>
+                        {% if competition.start_date %}
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
+                            <div class="info-text">
+                                <h6>Lancement</h6>
+                                <span>{{ competition.start_date|date:"d F Y — H:i" }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
 
-                        <!-- Note -->
-                        <div class="note-box">
-                            <h6><i class="fas fa-shield-alt"></i>Validation requise</h6>
-                            <p>Toutes les inscriptions sont soumises à validation par le comité d'organisation.
-                                Assurez-vous que les informations du capitaine sont correctes.</p>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="info-text">
+                                <h6>Lieu</h6>
+                                <span>Campus UY1 — Yaoundé</span>
+                            </div>
                         </div>
 
+                        <div class="mt-5 p-4 rounded-4" style="background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.1);">
+                            <h6 class="small text-gold fw-bold text-uppercase mb-2"><i class="fas fa-info-circle me-1"></i> Validation</h6>
+                            <p class="small mb-0 opacity-50">L'inscription sera validée après examen par le comité technique. Assurez-vous que les contacts du capitaine sont opérationnels.</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ══ RIGHT PANEL ══ -->
+                <!-- Right Form Section -->
                 <div class="col-lg-8">
-                    <div class="right-panel">
-
-                        <h2>Formulaire d'Inscription</h2>
-                        <p>Complétez avec soin les détails de votre équipe ou candidature individuelle.</p>
-
+                    <div class="form-panel">
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
 
-                            <!-- Section 1 : L'Équipe -->
-                            <div class="form-section-title">
-                                <i class="fas fa-flag"></i>
-                                L'Équipe
+                            <!-- L'Équipe -->
+                            <div class="section-title">
+                                <i class="fas fa-flag"></i> L'Équipe / Le Projet
                             </div>
 
-                            <div class="row g-3 mb-4">
+                            <div class="row g-4 mb-5">
                                 <div class="col-md-7">
-                                    <label class="form-label">Nom de l'équipe / Candidat *</label>
+                                    <label class="form-label">Nom de l'équipe / Projet *</label>
                                     {{ form.name }}
-                                    {% if form.name.errors %}
-                                    <div class="field-error">{{ form.name.errors.0 }}</div>
-                                    {% endif %}
+                                    {% if form.name.errors %}<div class="field-error">{{ form.name.errors.0 }}</div>{% endif %}
                                 </div>
                                 <div class="col-md-5">
-                                    <label class="form-label">Nombre de membres *</label>
+                                    <label class="form-label">Taille de l'équipe *</label>
                                     {{ form.members_count }}
-                                    {% if form.members_count.errors %}
-                                    <div class="field-error">{{ form.members_count.errors.0 }}</div>
-                                    {% endif %}
+                                    {% if form.members_count.errors %}<div class="field-error">{{ form.members_count.errors.0 }}</div>{% endif %}
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">Liste des membres <span
-                                            style="color:var(--text-muted);font-weight:400;">— un par
-                                            ligne</span></label>
+                                    <label class="form-label">Établissement *</label>
+                                    {{ form.school }}
+                                    {% if form.school.errors %}<div class="field-error">{{ form.school.errors.0 }}</div>{% endif %}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Liste des membres (Noms & Prénoms)</label>
                                     {{ form.members_list }}
-                                    <div class="form-text"><i class="fas fa-info-circle me-1"></i>Notez un membre par
-                                        ligne : Nom Prénom — Établissement</div>
+                                    <div class="small opacity-40 mt-2">Un membre par ligne svp.</div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Logo / Image (Obligatoire) *</label>
+                                    {{ form.logo }}
+                                    {% if form.logo.errors %}<div class="field-error">{{ form.logo.errors.0 }}</div>{% endif %}
                                 </div>
                             </div>
 
-                            <div class="form-divider"></div>
-
-                            <!-- Section 2 : Le Capitaine -->
-                            <div class="form-section-title">
-                                <i class="fas fa-user-tie"></i>
-                                Le Capitaine
+                            <!-- Le Capitaine -->
+                            <div class="section-title">
+                                <i class="fas fa-user-shield"></i> Le Capitaine
                             </div>
 
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-12">
-                                    <label class="form-label">Nom complet *</label>
+                            <div class="row g-4 mb-5">
+                                <div class="col-12">
+                                    <label class="form-label">Nom Complet *</label>
                                     {{ form.captain_name }}
-                                    {% if form.captain_name.errors %}
-                                    <div class="field-error">{{ form.captain_name.errors.0 }}</div>
-                                    {% endif %}
+                                    {% if form.captain_name.errors %}<div class="field-error">{{ form.captain_name.errors.0 }}</div>{% endif %}
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Adresse e-mail *</label>
-                                    {{ form.captain_email }}
-                                    {% if form.captain_email.errors %}
-                                    <div class="field-error">{{ form.captain_email.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">WhatsApp *</label>
+                                    <label class="form-label">WhatsApp / Téléphone *</label>
                                     {{ form.captain_phone }}
-                                    {% if form.captain_phone.errors %}
-                                    <div class="field-error">{{ form.captain_phone.errors.0 }}</div>
-                                    {% endif %}
+                                    {% if form.captain_phone.errors %}<div class="field-error">{{ form.captain_phone.errors.0 }}</div>{% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email *</label>
+                                    {{ form.captain_email }}
+                                    {% if form.captain_email.errors %}<div class="field-error">{{ form.captain_email.errors.0 }}</div>{% endif %}
                                 </div>
                             </div>
 
-                            <div class="form-divider"></div>
-
-                            <!-- Section 3 : Projet / Détails -->
-                            <div class="form-section-title">
-                                <i class="fas fa-lightbulb"></i>
-                                {% if competition.comp_type == 'sport' %}Détails{% else %}Projet{% endif %}
+                            <!-- Détails Techniques -->
+                            <div class="section-title">
+                                <i class="fas fa-lightbulb"></i> {{ form.project_title.label|default:"Détails" }}
                             </div>
 
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-{% if competition.comp_type == 'sport' %}12{% else %}6{% endif %}">
+                            <div class="row g-4">
+                                <div class="col-12">
                                     <label class="form-label">{{ form.project_title.label }}</label>
                                     {{ form.project_title }}
+                                    <div class="small opacity-40 mt-1">{{ form.project_title.help_text }}</div>
                                 </div>
-                                {% if competition.comp_type != 'sport' %}
-                                <div class="col-md-6">
-                                    <label class="form-label">Logo de l'équipe / Projet <span
-                                            style="color:var(--text-muted);font-weight:400;">— optionnel</span></label>
-                                    {{ form.logo }}
-                                </div>
-                                {% endif %}
                                 <div class="col-12">
                                     <label class="form-label">{{ form.project_description.label }}</label>
                                     {{ form.project_description }}
                                 </div>
                             </div>
 
-                            <!-- Non-field errors -->
                             {% if form.non_field_errors %}
-                            <div class="alert-field mb-4">
-                                <i class="fas fa-exclamation-circle mt-1" style="color:var(--rose);flex-shrink:0;"></i>
-                                <span>{{ form.non_field_errors.0 }}</span>
+                            <div class="alert alert-danger mt-4 rounded-4 bg-danger text-white border-0">
+                                {{ form.non_field_errors.0 }}
                             </div>
                             {% endif %}
 
-                            <!-- Submit -->
-                            <div class="d-flex justify-content-end pt-2">
-                                <button type="submit" class="btn-submit">
-                                    <i class="fas fa-paper-plane"></i>
-                                    Valider l'inscription
-                                </button>
-                            </div>
+                            <button type="submit" class="btn-royal-submit">
+                                Envoyer l'Inscription <i class="fas fa-paper-plane ms-2"></i>
+                            </button>
 
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
-
     </div>
 </div>
 {% endblock %}

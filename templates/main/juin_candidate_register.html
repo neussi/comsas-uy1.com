@@ -1,127 +1,197 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Candidature Individuelle — {{ contest.title }} | J.U.IN 2026{% endblock %}
+{% block title %}Candidature MISS & MISTER J.U.IN 2026{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
 <style>
     :root {
-        --rose: #E91E63;
-        --rose-pale: rgba(233, 30, 99, 0.05);
-        --rose-border: rgba(233, 30, 99, 0.15);
-        --dark: #121212;
+        --royal-gold: #D4AF37;
+        --royal-gold-light: #F9E29C;
+        --dark-bg: #050102;
+        --surface: #100407;
+        --rose-royal: #E91E63;
+        --glass: rgba(255, 255, 255, 0.03);
     }
 
-    .apply-page {
+    body {
+        background-color: var(--dark-bg);
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .register-page {
         min-height: 100vh;
-        padding: 80px 0;
-        background: #fdf2f8;
-    }
-
-    .apply-card {
-        background: white;
-        border-radius: 30px;
-        box-shadow: 0 15px 40px rgba(233, 30, 99, 0.1);
-        overflow: hidden;
-        border: 1px solid var(--rose-border);
-    }
-
-    .apply-header {
-        background: var(--dark);
-        color: white;
-        padding: 40px;
-        text-align: center;
+        padding: 100px 0;
+        background: radial-gradient(circle at top right, #1a050a, var(--dark-bg));
         position: relative;
+        overflow: hidden;
     }
 
-    .apply-header::after {
+    .register-page::before {
         content: '';
         position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--rose), #f06292);
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l2 28h28l-22 18 8 26-24-16-24 16 8-26-22-18h28l2-28z' fill='%23D4AF37' fill-opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
     }
 
-    .apply-body {
-        padding: 50px;
+    .glass-form-card {
+        background: rgba(18, 5, 9, 0.8);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 40px;
+        overflow: hidden;
+        box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+    }
+
+    .form-header {
+        padding: 60px 40px 40px;
+        text-align: center;
+        background: linear-gradient(to bottom, rgba(212, 175, 55, 0.1), transparent);
+    }
+
+    .form-header h1 {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 3rem;
+        color: var(--royal-gold);
+        margin-bottom: 10px;
+    }
+
+    .form-body {
+        padding: 0 60px 60px;
     }
 
     .form-label {
-        font-weight: 700;
-        color: #333;
-        margin-bottom: 8px;
+        color: var(--royal-gold-light);
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        margin-bottom: 10px;
     }
 
-    .form-control {
-        border-radius: 12px;
-        padding: 12px 18px;
-        border: 2px solid #f1f5f9;
+    .form-control, .form-select {
+        background: var(--glass) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #fff !important;
+        border-radius: 15px !important;
+        padding: 15px 20px !important;
         transition: all 0.3s;
     }
 
-    .form-control:focus {
-        border-color: var(--rose);
-        box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.1);
+    .form-control:focus, .form-select:focus {
+        border-color: var(--royal-gold) !important;
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.1) !important;
+        background: rgba(255,255,255,0.05) !important;
     }
 
-    .btn-submit {
-        background: var(--rose);
-        color: white;
-        padding: 15px 40px;
-        border-radius: 50px;
-        font-weight: 700;
+    .btn-royal-submit {
+        background: linear-gradient(135deg, var(--royal-gold), var(--royal-gold-light));
+        color: var(--dark-bg) !important;
+        padding: 20px;
+        border-radius: 100px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
         border: none;
         width: 100%;
-        margin-top: 20px;
-        box-shadow: 0 10px 20px rgba(233, 30, 99, 0.2);
+        margin-top: 30px;
+        transition: 0.3s;
+        box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
     }
 
-    .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 30px rgba(233, 30, 99, 0.3);
-        opacity: 0.9;
+    .btn-royal-submit:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 60px rgba(212, 175, 55, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .form-header { padding: 40px 20px; }
+        .form-body { padding: 0 25px 40px; }
+        .form-header h1 { font-size: 2.2rem; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="apply-page">
+<div class="register-page">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-7">
-                <div class="apply-card">
-                    <div class="apply-header">
-                        <h1 class="h3 fw-bold mb-2">🚀 Candidature Individuelle</h1>
-                        <p class="text-white-50 mb-0">Concours : <strong>{{ contest.title }}</strong></p>
+            <div class="col-lg-8" data-aos="zoom-in">
+                <div class="glass-form-card">
+                    <div class="form-header">
+                        <div class="mb-3">
+                            <i class="fas fa-crown fa-3x text-gold"></i>
+                        </div>
+                        <h1>POSTULER</h1>
+                        <p class="text-white-50">Devenez l'ambassadeur de votre établissement au J.U.IN 2026</p>
                     </div>
-                    <div class="apply-body">
+
+                    <div class="form-body">
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
+                            
+                            {% if form.errors %}
+                            <div class="alert alert-danger bg-danger text-white border-0 rounded-4 mb-4">
+                                <i class="fas fa-exclamation-circle me-2"></i> Veuillez corriger les erreurs ci-dessous.
+                            </div>
+                            {% endif %}
+
                             <div class="row g-4">
-                                <div class="col-12">
-                                    <label class="form-label">Nom du candidat / Projet</label>
+                                <div class="col-md-6">
+                                    <label class="form-label">Nom Complet *</label>
                                     {{ form.name }}
                                 </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Catégorie *</label>
+                                    {{ form.candidate_type }}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label">Établissement *</label>
+                                    {{ form.school }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Niveau d'étude *</label>
+                                    {{ form.level }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label">Âge *</label>
+                                    {{ form.age }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Téléphone *</label>
+                                    {{ form.phone }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Email *</label>
+                                    {{ form.email }}
+                                </div>
+
                                 <div class="col-12">
-                                    <label class="form-label">Photo Portrait / Image du Projet</label>
+                                    <label class="form-label">Portrait Officiel *</label>
                                     {{ form.image }}
-                                    <small class="text-muted">Une image de haute qualité pour votre profil de
-                                        candidat.</small>
+                                    <div class="small text-white-50 mt-1">Image de haute qualité (fond neutre recommandé)</div>
                                 </div>
+
                                 <div class="col-12">
-                                    <label class="form-label">Lien Vidéo (Optionnel)</label>
+                                    <label class="form-label">Lien Vidéo de Présentation (Optionnel)</label>
                                     {{ form.video_url }}
-                                    <small class="text-muted">YouTube, Vimeo, etc. pour présenter votre talent ou
-                                        projet.</small>
+                                    <div class="small text-white-50 mt-1">YouTube, TikTok ou Google Drive (lien public)</div>
                                 </div>
+
                                 <div class="col-12">
-                                    <label class="form-label">Bio / Description du Projet</label>
+                                    <label class="form-label">Ma Motivation / Bio *</label>
                                     {{ form.description }}
                                 </div>
                             </div>
-                            <button type="submit" class="btn-submit">Soumettre ma candidature</button>
+
+                            <button type="submit" class="btn-royal-submit">
+                                Envoyer ma Candidature <i class="fas fa-paper-plane ms-2"></i>
+                            </button>
                         </form>
                     </div>
                 </div>

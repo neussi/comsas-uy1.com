@@ -502,7 +502,7 @@ class JUINTeamRegistrationForm(forms.ModelForm):
     class Meta:
         model = JUINTeam
         fields = [
-            'name', 'captain_name', 'captain_phone', 'captain_email',
+            'name', 'school', 'captain_name', 'captain_phone', 'captain_email',
             'members_count', 'members_list', 'project_title', 'project_description', 'logo'
         ]
         widgets = {
@@ -520,17 +520,30 @@ class JUINTeamRegistrationForm(forms.ModelForm):
                 field.widget.attrs.update({'class': 'form-control'})
                 
         self.fields['logo'].required = True
-        
+
         if competition:
+            name_lower = competition.name.lower()
             if competition.comp_type == 'sport':
                 self.fields['project_title'].label = "Nom du Club / Quartier (Optionnel)"
                 self.fields['project_description'].label = "Commentaire additionnel"
                 self.fields['project_description'].widget.attrs['placeholder'] = "Infos sur les couleurs de l'équipe, etc."
                 self.fields['project_title'].required = False
                 self.fields['project_description'].required = False
-            elif competition.comp_type == 'computer':
-                self.fields['project_title'].required = True
-                self.fields['project_description'].required = True
+            elif competition.comp_type == 'computer' or competition.comp_type == 'gaming':
+                if 'hackathon' in name_lower or 'cyber' in name_lower:
+                    self.fields['project_title'].label = "Titre du projet (Sujet imposé)"
+                    self.fields['project_title'].widget.attrs['placeholder'] = "Sera attribué par les organisateurs"
+                    self.fields['project_title'].required = False
+                    self.fields['project_description'].label = "Description équipe / Compétences"
+                    self.fields['project_description'].widget.attrs['placeholder'] = "Décrivez les forces de votre équipe..."
+                elif 'pitch' in name_lower or 'speech' in name_lower or 'spich' in name_lower:
+                    self.fields['project_title'].label = "Titre de votre Projet / Innovation"
+                    self.fields['project_title'].required = True
+                    self.fields['project_description'].label = "Description détaillée du Projet"
+                    self.fields['project_description'].required = True
+                else:
+                    self.fields['project_title'].required = False
+                    self.fields['project_description'].required = False
             else:
                 self.fields['project_title'].required = False
                 self.fields['project_description'].required = False

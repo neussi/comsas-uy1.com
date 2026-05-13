@@ -733,7 +733,7 @@ class JUINTeamForm(forms.ModelForm):
     class Meta:
         model = JUINTeam
         fields = [
-            'competition', 'name', 'captain_name', 'captain_phone', 'captain_email',
+            'competition', 'name', 'school', 'captain_name', 'captain_phone', 'captain_email',
             'members_count', 'members_list', 'project_title', 'project_description',
             'logo', 'statut'
         ]
@@ -749,7 +749,10 @@ class JUINTeamForm(forms.ModelForm):
             Fieldset(
                 _('Équipe et Compétition'),
                 'competition',
-                'name',
+                Row(
+                    Column('name', css_class='form-group col-md-6 mb-3'),
+                    Column('school', css_class='form-group col-md-6 mb-3'),
+                ),
                 Row(
                     Column('captain_name', css_class='form-group col-md-4 mb-3'),
                     Column('captain_phone', css_class='form-group col-md-4 mb-3'),
