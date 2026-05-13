@@ -1125,7 +1125,8 @@ class JUINActivity(models.Model):
 class JUINCompetition(models.Model):
     """Compétition spécifique au J.U.IN (Informatique ou Sport)"""
     COMP_TYPES = [
-        ('computer', '💻 Informatique (Hackathon, Pitch, Cyber...)'),
+        ('hackathon', '💻 Hackathon 24H (Projet imposé)'),
+        ('pitch', '💡 Concours Pitch Innovation (Projet libre)'),
         ('sport', '⚽ Sportive (Football, Basketball, Handball...)'),
         ('gaming', '🎮 E-Sport / Gaming'),
         ('other', 'Autre'),
