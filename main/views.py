@@ -2023,12 +2023,21 @@ def juin_candidate_detail(request, pk):
     total_votes_contest = sum(c.votes_count for c in all_candidates)
     rank = all_candidates.filter(votes_count__gt=candidate.votes_count).count() + 1
     
+    # Traitement vidéo YouTube
+    embed_video_url = None
+    if candidate.video_url:
+        if 'youtube.com/watch?v=' in candidate.video_url:
+            embed_video_url = candidate.video_url.replace('watch?v=', 'embed/')
+        elif 'youtu.be/' in candidate.video_url:
+            embed_video_url = candidate.video_url.replace('youtu.be/', 'youtube.com/embed/')
+
     context = {
         'candidate': candidate,
         'edition': edition,
         'rank': rank,
         'total_votes_contest': total_votes_contest,
-        'percentage': round((candidate.votes_count / total_votes_contest * 100), 1) if total_votes_contest > 0 else 0
+        'percentage': round((candidate.votes_count / total_votes_contest * 100), 1) if total_votes_contest > 0 else 0,
+        'embed_video_url': embed_video_url
     }
     return render(request, 'main/juin_contest/detail.html', context)
 

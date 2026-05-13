@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ candidate.name }} — Candidat J.U.IN 2026{% endblock %}
+{% block title %}{{ candidate.name }} — MISS & MISTER J.U.IN 2026{% endblock %}
 
 {% block extra_css %}
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -9,7 +9,7 @@
     :root {
         --royal-gold: #D4AF37;
         --dark-bg: #0a0407;
-        --surface: rgba(26, 10, 11, 0.95);
+        --surface: #15060b;
         --rose-royal: #E91E63;
     }
 
@@ -19,255 +19,388 @@
         font-family: 'Outfit', sans-serif;
     }
 
-    .detail-container {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
+    .page-wrapper {
+        padding: 80px 0;
+        background: radial-gradient(circle at 0% 0%, #2d0a18 0%, var(--dark-bg) 50%);
     }
 
-    .royal-split {
-        display: flex;
-        flex-wrap: wrap;
-        min-height: 100vh;
+    .candidate-header {
+        margin-bottom: 60px;
     }
 
-    .image-side {
-        flex: 1.2;
-        min-width: 50%;
-        position: relative;
-        height: 100vh;
-        overflow: hidden;
-        background: #000;
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 60px;
     }
 
     @media (max-width: 992px) {
-        .image-side { height: 60vh; width: 100%; flex: none; }
-        .royal-split { flex-direction: column; }
+        .main-grid { grid-template-columns: 1fr; }
     }
 
-    .main-slider {
-        display: flex;
+    /* Left Side: Visuals */
+    .visuals-column {
+        position: relative;
+    }
+
+    .hero-image-card {
+        border-radius: 40px;
+        overflow: hidden;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+        background: #000;
+        aspect-ratio: 4/5;
+    }
+
+    .hero-image-card img {
         width: 100%;
-        height: 100%;
-        transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
-    }
-
-    .slide-img {
-        min-width: 100%;
         height: 100%;
         object-fit: cover;
     }
 
-    .slider-nav {
-        position: absolute;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
+    .thumbnails-strip {
         display: flex;
-        gap: 15px;
-        z-index: 10;
+        gap: 20px;
+        margin-top: 30px;
+        justify-content: center;
     }
 
-    .nav-dot {
-        width: 12px;
-        height: 12px;
-        border: 2px solid #fff;
-        border-radius: 50%;
+    .thumb-btn {
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 2px solid transparent;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: 0.3s;
+        opacity: 0.5;
     }
 
-    .nav-dot.active {
-        background: var(--royal-gold);
+    .thumb-btn.active {
         border-color: var(--royal-gold);
-        transform: scale(1.3);
+        opacity: 1;
+        transform: scale(1.1);
     }
 
-    .info-side {
-        flex: 0.8;
-        padding: 80px 60px;
-        background: var(--dark-bg);
-        position: relative;
-        overflow-y: auto;
+    .thumb-btn img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    @media (max-width: 768px) {
-        .info-side { padding: 40px 20px; }
+    /* Right Side: Content */
+    .content-column {
+        padding: 20px 0;
     }
 
-    .cand-type {
-        font-size: 0.9rem;
+    .cand-type-label {
+        font-size: 1rem;
         text-transform: uppercase;
-        letter-spacing: 5px;
+        letter-spacing: 8px;
         color: var(--royal-gold);
-        font-weight: 700;
+        font-weight: 800;
         margin-bottom: 20px;
         display: block;
     }
 
-    .cand-name {
+    .cand-main-name {
         font-family: 'Cormorant Garamond', serif;
-        font-size: clamp(3rem, 6vw, 5rem);
-        font-weight: 700;
+        font-size: clamp(3.5rem, 8vw, 5.5rem);
         line-height: 0.9;
-        margin-bottom: 30px;
+        margin-bottom: 35px;
+        font-weight: 700;
         background: linear-gradient(to right, #fff, var(--royal-gold));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
-    .meta-grid {
+    .stats-glass {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 20px;
         margin-bottom: 40px;
     }
 
-    .meta-box {
-        background: rgba(255,255,255,0.05);
-        padding: 20px;
-        border-radius: 20px;
-        border: 1px solid rgba(212,175,55,0.1);
+    .glass-item {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        padding: 25px 15px;
+        border-radius: 25px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .meta-lab {
-        font-size: 0.7rem;
-        text-transform: uppercase;
+    .glass-val {
+        font-size: 1.8rem;
+        font-weight: 900;
         color: var(--royal-gold);
-        letter-spacing: 2px;
         display: block;
-        margin-bottom: 5px;
     }
 
-    .meta-val {
-        font-size: 1.1rem;
-        font-weight: 700;
+    .glass-lab {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.4);
+        letter-spacing: 2px;
     }
 
-    .bio-section {
-        margin-bottom: 50px;
-        line-height: 1.8;
-        font-size: 1.1rem;
-        opacity: 0.8;
-    }
-
-    .vote-card {
-        background: rgba(233, 30, 99, 0.05);
-        border: 1px solid rgba(233, 30, 99, 0.2);
-        padding: 40px;
+    .info-table {
+        background: rgba(255, 255, 255, 0.02);
         border-radius: 30px;
-        position: relative;
+        padding: 40px;
+        margin-bottom: 50px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
     }
 
-    .btn-vote-now {
-        background: linear-gradient(135deg, var(--rose-deep), var(--rose-royal));
-        color: white !important;
-        width: 100%;
-        padding: 20px;
-        border-radius: 20px;
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-key { color: var(--royal-gold); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; }
+    .info-val { font-weight: 600; font-size: 1.1rem; }
+
+    .story-card {
+        margin-bottom: 60px;
+    }
+
+    .story-title {
+        font-size: 1.3rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 3px;
-        display: block;
-        text-align: center;
-        text-decoration: none;
-        box-shadow: 0 15px 40px rgba(233, 30, 99, 0.3);
-        transition: all 0.3s;
+        letter-spacing: 4px;
+        color: var(--royal-gold);
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
     }
 
-    .btn-vote-now:hover {
-        transform: scale(1.02);
-        box-shadow: 0 20px 50px rgba(233, 30, 99, 0.5);
+    .story-title::after { content: ''; height: 2px; background: var(--royal-gold); flex-grow: 1; opacity: 0.3; }
+
+    .story-text {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 300;
     }
+
+    .video-section-royal {
+        margin-bottom: 60px;
+    }
+
+    .video-frame-wrapper {
+        border-radius: 35px;
+        overflow: hidden;
+        aspect-ratio: 16/9;
+        background: #000;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    /* Vote Form */
+    .vote-box-royal {
+        background: linear-gradient(135deg, #2d0a18 0%, #15060b 100%);
+        padding: 50px;
+        border-radius: 40px;
+        border: 1px solid var(--rose-royal);
+        box-shadow: 0 30px 60px rgba(233, 30, 99, 0.2);
+    }
+
+    .form-group-royal {
+        margin-bottom: 25px;
+    }
+
+    .form-label-royal {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--rose-royal);
+        font-weight: 800;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .input-royal {
+        background: rgba(0,0,0,0.4);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 20px 25px;
+        color: #fff;
+        width: 100%;
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .input-royal:focus {
+        border-color: var(--rose-royal);
+        outline: none;
+        background: rgba(0,0,0,0.6);
+        box-shadow: 0 0 20px rgba(233, 30, 99, 0.2);
+    }
+
+    .btn-submit-vote {
+        background: linear-gradient(135deg, var(--rose-deep), var(--rose-royal));
+        color: #fff;
+        border: none;
+        width: 100%;
+        padding: 22px;
+        border-radius: 25px;
+        font-weight: 900;
+        font-size: 1.3rem;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 20px 40px rgba(233, 30, 99, 0.4);
+    }
+
+    .btn-submit-vote:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 30px 60px rgba(233, 30, 99, 0.6);
+    }
+
+    .payment-notice {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 30px;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.4);
+    }
+
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="detail-container">
-    <div class="royal-split">
-        <!-- Images -->
-        <div class="image-side">
-            <div class="main-slider" id="mainSlider">
-                <img src="{{ candidate.image.url }}" class="slide-img" alt="{{ candidate.name }}">
-                {% if candidate.image2 %}<img src="{{ candidate.image2.url }}" class="slide-img" alt="{{ candidate.name }} 2">{% endif %}
-                {% if candidate.image3 %}<img src="{{ candidate.image3.url }}" class="slide-img" alt="{{ candidate.name }} 3">{% endif %}
-                {% if candidate.image4 %}<img src="{{ candidate.image4.url }}" class="slide-img" alt="{{ candidate.name }} 4">{% endif %}
-            </div>
-            
-            <div class="slider-nav">
-                <div class="nav-dot active" onclick="slideTo(0)"></div>
-                {% if candidate.image2 %}<div class="nav-dot" onclick="slideTo(1)"></div>{% endif %}
-                {% if candidate.image3 %}<div class="nav-dot" onclick="slideTo(2)"></div>{% endif %}
-                {% if candidate.image4 %}<div class="nav-dot" onclick="slideTo(3)"></div>{% endif %}
-            </div>
+<div class="page-wrapper">
+    <div class="container">
+        
+        <div class="candidate-header">
+            <a href="{% url 'juin_miss_mister' %}" class="btn btn-link text-white-50 p-0 text-decoration-none mb-4 d-inline-flex align-items-center">
+                <i class="fas fa-arrow-left me-3"></i> Retour au concours
+            </a>
         </div>
 
-        <!-- Info -->
-        <div class="info-side">
-            <a href="{% url 'juin_miss_mister' %}" class="btn btn-link text-white-50 p-0 mb-4 text-decoration-none">
-                <i class="fas fa-arrow-left me-2"></i> Retour au concours
-            </a>
-
-            <span class="cand-type">{{ candidate.get_candidate_type_display }}</span>
-            <h1 class="cand-name">{{ candidate.name }}</h1>
-
-            <div class="meta-grid">
-                <div class="meta-box">
-                    <span class="meta-lab">Établissement</span>
-                    <span class="meta-val">{{ candidate.school }}</span>
+        <div class="main-grid">
+            
+            <!-- Left Side -->
+            <div class="visuals-column" data-aos="fade-right">
+                <div class="hero-image-card">
+                    <img src="{{ candidate.image.url }}" id="mainHeroImg" alt="{{ candidate.name }}">
                 </div>
-                <div class="meta-box">
-                    <span class="meta-lab">Niveau</span>
-                    <span class="meta-val">{{ candidate.level }}</span>
-                </div>
-                <div class="meta-box">
-                    <span class="meta-lab">Âge</span>
-                    <span class="meta-val">{{ candidate.age }} ans</span>
-                </div>
-                <div class="meta-box">
-                    <span class="meta-lab">Votes</span>
-                    <span class="meta-val">{{ candidate.votes_count }}</span>
-                </div>
-            </div>
-
-            <div class="bio-section">
-                <h3 class="h5 text-white mb-3" style="letter-spacing: 2px;">SON HISTOIRE</h3>
-                <p>{{ candidate.description|linebreaks }}</p>
-            </div>
-
-            <div class="vote-card">
-                <h2 class="h4 mb-4 text-center">Soutenez {{ candidate.name }}</h2>
-                {% if edition.contest_voting_active %}
-                <form id="voteForm" action="{% url 'juin_vote_initiate' %}" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="candidate_id" value="{{ candidate.id }}">
-                    
-                    <div class="mb-4">
-                        <label class="small text-white-50 mb-2">Nombre de votes (100 FCFA / vote)</label>
-                        <div class="input-group">
-                            <button type="button" class="btn btn-outline-light" onclick="changeVotes(-1)">-</button>
-                            <input type="number" name="vote_count" id="voteCount" class="form-control bg-transparent text-white text-center border-white-50" value="10" min="1">
-                            <button type="button" class="btn btn-outline-light" onclick="changeVotes(1)">+</button>
-                        </div>
+                
+                <div class="thumbnails-strip">
+                    <div class="thumb-btn active" onclick="updateHero(this, '{{ candidate.image.url }}')">
+                        <img src="{{ candidate.image.url }}" alt="1">
                     </div>
-
-                    <div class="mb-4">
-                        <label class="small text-white-50 mb-2">Votre numéro Mobile Money</label>
-                        <input type="tel" name="phone" class="form-control bg-transparent text-white border-white-50 p-3" placeholder="6xxxxxxxx" required>
+                    {% if candidate.image2 %}
+                    <div class="thumb-btn" onclick="updateHero(this, '{{ candidate.image2.url }}')">
+                        <img src="{{ candidate.image2.url }}" alt="2">
                     </div>
+                    {% endif %}
+                    {% if candidate.image3 %}
+                    <div class="thumb-btn" onclick="updateHero(this, '{{ candidate.image3.url }}')">
+                        <img src="{{ candidate.image3.url }}" alt="3">
+                    </div>
+                    {% endif %}
+                    {% if candidate.image4 %}
+                    <div class="thumb-btn" onclick="updateHero(this, '{{ candidate.image4.url }}')">
+                        <img src="{{ candidate.image4.url }}" alt="4">
+                    </div>
+                    {% endif %}
+                </div>
 
-                    <button type="submit" class="btn-vote-now">CONFIRMER MON VOTE</button>
-                    
-                    <p class="small text-center text-white-50 mt-4">
-                        Total à payer : <span id="totalPrice" class="text-white fw-bold">1000 FCFA</span>
-                    </p>
-                </form>
-                {% else %}
-                <div class="text-center py-4">
-                    <div class="alert alert-dark rounded-pill">Les votes sont actuellement clos.</div>
+                {% if embed_video_url %}
+                <div class="video-section-royal mt-5">
+                    <h3 class="story-title">Présentation Vidéo</h3>
+                    <div class="video-frame-wrapper">
+                        <iframe width="100%" height="100%" src="{{ embed_video_url }}" frameborder="0" allowfullscreen></iframe>
+                    </div>
                 </div>
                 {% endif %}
             </div>
+
+            <!-- Right Side -->
+            <div class="content-column" data-aos="fade-left">
+                <span class="cand-type-label">{{ candidate.get_candidate_type_display }}</span>
+                <h1 class="cand-main-name">{{ candidate.name }}</h1>
+
+                <div class="stats-glass">
+                    <div class="glass-item">
+                        <span class="glass-val">{{ candidate.votes_count }}</span>
+                        <span class="glass-lab">Voix</span>
+                    </div>
+                    <div class="glass-item">
+                        <span class="glass-val">#{{ rank }}</span>
+                        <span class="glass-lab">Rang</span>
+                    </div>
+                    <div class="glass-item">
+                        <span class="glass-val">{{ percentage }}%</span>
+                        <span class="glass-lab">Impact</span>
+                    </div>
+                </div>
+
+                <div class="info-table">
+                    <div class="info-row">
+                        <span class="info-key">Établissement</span>
+                        <span class="info-val">{{ candidate.school }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">Niveau</span>
+                        <span class="info-val">{{ candidate.level }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">Âge</span>
+                        <span class="info-val">{{ candidate.age }} Ans</span>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <h3 class="story-title">Son Histoire</h3>
+                    <div class="story-text">
+                        {{ candidate.description|linebreaks }}
+                    </div>
+                </div>
+
+                <div class="vote-box-royal" id="voteForm">
+                    <h3 class="story-title mb-5" style="color: var(--rose-royal); border-color: var(--rose-royal);">Soutenir {{ candidate.name }}</h3>
+                    
+                    {% if edition.contest_voting_active %}
+                    <form action="{% url 'juin_vote_initiate' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="candidate_id" value="{{ candidate.id }}">
+                        
+                        <div class="form-group-royal">
+                            <label class="form-label-royal">Nombre de voix (100 FCFA / voix)</label>
+                            <input type="number" name="vote_count" class="input-royal" value="10" min="1" id="voteCount">
+                        </div>
+
+                        <div class="form-group-royal">
+                            <label class="form-label-royal">Numéro Mobile Money (OM / MoMo)</label>
+                            <input type="tel" name="phone" class="input-royal" placeholder="6xxxxxxxx" required>
+                        </div>
+
+                        <button type="submit" class="btn-submit-vote">Confirmer mon Vote</button>
+                    </form>
+                    
+                    <div class="payment-notice">
+                        <i class="fas fa-shield-alt"></i>
+                        Paiement sécurisé via Freemopay
+                    </div>
+                    {% else %}
+                    <div class="alert alert-dark rounded-pill py-3 text-center border-0" style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.5);">
+                        Les votes sont actuellement clos.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -275,27 +408,15 @@
 
 {% block extra_js %}
 <script>
-    function slideTo(idx) {
-        const slider = document.getElementById('mainSlider');
-        slider.style.transform = `translateX(-${idx * 100}%)`;
-        document.querySelectorAll('.nav-dot').forEach((dot, i) => {
-            dot.classList.toggle('active', i === idx);
-        });
+    function updateHero(el, src) {
+        document.getElementById('mainHeroImg').src = src;
+        document.querySelectorAll('.thumb-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
     }
 
-    function changeVotes(delta) {
-        const input = document.getElementById('voteCount');
-        let val = parseInt(input.value) + delta;
-        if (val < 1) val = 1;
-        input.value = val;
-        updateTotal();
-    }
-
-    function updateTotal() {
-        const input = document.getElementById('voteCount');
-        document.getElementById('totalPrice').innerText = (input.value * 100) + ' FCFA';
-    }
-
-    document.getElementById('voteCount').addEventListener('input', updateTotal);
+    // Animation au défilement pour le formulaire de vote
+    document.querySelector('.btn-submit-vote')?.addEventListener('click', function() {
+        this.innerHTML = '<i class="fas fa-spinner fa-spin me-3"></i> Traitement...';
+    });
 </script>
 {% endblock %}
