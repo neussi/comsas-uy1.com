@@ -8,7 +8,47 @@
     <div class="row mb-4">
         <div class="col-12">
             <h2 class="h3 mb-0 text-gray-800">Gestion Miss & Mister J.U.IN 2026</h2>
-            <p class="text-muted">Tableau de bord financier et statistiques en temps réel.</p>
+            <p class="text-muted">Contrôlez le cycle de vie de la compétition en temps réel.</p>
+        </div>
+    </div>
+
+    <!-- Competition Controls -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow border-0 p-3 text-center">
+                <h6 class="text-xs font-weight-bold text-primary text-uppercase mb-3">Inscriptions</h6>
+                {% if edition.contest_registration_open %}
+                <span class="badge badge-success mb-3 p-2">OUVERTES</span>
+                <a href="{% url 'admin_juin_contest_toggle' %}?action=toggle_registration" class="btn btn-sm btn-danger rounded-pill">Fermer les Inscriptions</a>
+                {% else %}
+                <span class="badge badge-secondary mb-3 p-2">FERMÉES</span>
+                <a href="{% url 'admin_juin_contest_toggle' %}?action=toggle_registration" class="btn btn-sm btn-success rounded-pill">Ouvrir les Inscriptions</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow border-0 p-3 text-center">
+                <h6 class="text-xs font-weight-bold text-primary text-uppercase mb-3">Votes Mobile Money</h6>
+                {% if edition.contest_voting_active %}
+                <span class="badge badge-success mb-3 p-2">ACTIFS</span>
+                <a href="{% url 'admin_juin_contest_toggle' %}?action=toggle_voting" class="btn btn-sm btn-danger rounded-pill">Suspendre les Votes</a>
+                {% else %}
+                <span class="badge badge-secondary mb-3 p-2">SUSPENDUS</span>
+                <a href="{% url 'admin_juin_contest_toggle' %}?action=toggle_voting" class="btn btn-sm btn-success rounded-pill">Lancer les Votes</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow border-0 p-3 text-center">
+                <h6 class="text-xs font-weight-bold text-primary text-uppercase mb-3">Publication Résultats</h6>
+                {% if edition.contest_results_published %}
+                <span class="badge badge-success mb-3 p-2">PUBLIÉS</span>
+                <a href="{% url 'admin_juin_contest_toggle' %}?action=toggle_results" class="btn btn-sm btn-danger rounded-pill">Masquer les Résultats</a>
+                {% else %}
+                <span class="badge badge-secondary mb-3 p-2">MASQUÉS</span>
+                <a href="{% url 'admin_juin_contest_toggle' %}?action=toggle_results" class="btn btn-sm btn-success rounded-pill">Publier les Résultats</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 

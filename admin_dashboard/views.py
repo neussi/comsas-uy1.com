@@ -2099,10 +2099,18 @@ def admin_juin_contest_toggle(request):
         return redirect('admin_juin_miss_mister')
         
     action = request.GET.get('action')
-    if action == 'toggle_public':
-        edition.applications_open = not edition.applications_open
-        status = "ouvertes" if edition.applications_open else "fermées"
-        messages.success(request, f"Les inscriptions publiques sont maintenant {status}.")
+    if action == 'toggle_registration':
+        edition.contest_registration_open = not edition.contest_registration_open
+        status = "OUVERTES" if edition.contest_registration_open else "FERMÉES"
+        messages.success(request, f"Les inscriptions Miss & Mister sont maintenant {status}.")
+    elif action == 'toggle_voting':
+        edition.contest_voting_active = not edition.contest_voting_active
+        status = "ACTIFS" if edition.contest_voting_active else "SUSPENDUS"
+        messages.success(request, f"Les votes sont maintenant {status}.")
+    elif action == 'toggle_results':
+        edition.contest_results_published = not edition.contest_results_published
+        status = "PUBLIÉS" if edition.contest_results_published else "MASQUÉS"
+        messages.success(request, f"Les résultats sont maintenant {status}.")
     
     edition.save()
     return redirect('admin_juin_miss_mister')
