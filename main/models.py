@@ -965,6 +965,12 @@ class JUINEdition(models.Model):
     donations_open = models.BooleanField(default=True, verbose_name="Dons ouverts")
     president_name = models.CharField(max_length=200, default="MFENJOU ANAS CHERIF", verbose_name="Président du comité")
     president_contact = models.CharField(max_length=50, blank=True, verbose_name="Contact président")
+    
+    # Miss & Mister Contest Controls
+    contest_registration_open = models.BooleanField(default=True, verbose_name="Inscriptions Miss/Mister ouvertes")
+    contest_voting_active = models.BooleanField(default=True, verbose_name="Votes Miss/Mister actifs")
+    contest_results_published = models.BooleanField(default=False, verbose_name="Publier les résultats finaux")
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

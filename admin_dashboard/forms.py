@@ -500,6 +500,7 @@ class JUINEditionForm(forms.ModelForm):
             'edition_number', 'title', 'theme', 'slogan', 'description',
             'start_date', 'end_date', 'location', 'cover_image',
             'is_active', 'applications_open', 'donations_open',
+            'contest_registration_open', 'contest_voting_active', 'contest_results_published',
             'president_name', 'president_contact'
         ]
         widgets = {
@@ -541,6 +542,14 @@ class JUINEditionForm(forms.ModelForm):
                 Row(
                     Column('president_name', css_class='form-group col-md-6 mb-3'),
                     Column('president_contact', css_class='form-group col-md-6 mb-3'),
+                ),
+            ),
+            Fieldset(
+                _('Contrôles Concours Miss/Mister'),
+                Row(
+                    Column('contest_registration_open', css_class='form-group col-md-4 mb-3'),
+                    Column('contest_voting_active', css_class='form-group col-md-4 mb-3'),
+                    Column('contest_results_published', css_class='form-group col-md-4 mb-3'),
                 ),
             ),
             Submit('submit', _('Enregistrer l\'édition'), css_class='btn btn-primary btn-lg w-100')

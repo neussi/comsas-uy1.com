@@ -1780,6 +1780,10 @@ def juin_miss_mister_register(request, contest_slug=None):
         messages.error(request, "Aucune édition active du J.U.IN pour le moment.")
         return redirect('juin')
 
+    if not edition.contest_registration_open:
+        messages.warning(request, "Les inscriptions pour Miss & Mister J.U.IN 2026 sont désormais closes.")
+        return redirect('juin_miss_mister')
+
     if request.method == 'POST':
         from .forms import JUINCandidateRegistrationForm
         form = JUINCandidateRegistrationForm(request.POST, request.FILES)
@@ -1910,6 +1914,10 @@ def juin_vote_initiate(request):
             return JsonResponse({'success': False, 'error': 'Données invalides'}, status=400)
             
         candidate = get_object_or_404(JUINCandidate, id=candidate_id)
+        
+        # Vérification si les votes sont ouverts
+        if not candidate.edition.contest_voting_active:
+            return JsonResponse({'success': False, 'error': 'Les votes sont actuellement clos pour ce concours.'}, status=403)
         amount = vote_count * 100
         import uuid
         transaction_id = f"JUINVOTE-{uuid.uuid4().hex[:8].upper()}"
@@ -2027,11 +2035,22 @@ def juin_candidate_detail(request, pk):
 def juin_contest_results(request):
     """Page des résultats en temps réel avec graphiques"""
     edition = JUINEdition.objects.filter(is_active=True).first()
-    candidates = JUINCandidate.objects.filter(edition=edition, status='approved').order_by('-votes_count') if edition else []
+    if not edition:
+        return redirect('index')
+        
+    if not edition.contest_results_published:
+        return render(request, 'main/juin_contest/results_soon.html', {'edition': edition})
+        
+    candidates = JUINCandidate.objects.filter(edition=edition, status='approved').order_by('-votes_count')
+    total_votes = sum(c.votes_count for c in candidates)
+    
+    # Rankings per type
+    misses = candidates.filter(candidate_type='miss')
+    misters = candidates.filter(candidate_type='mister')
     
     # Data for charts
-    labels = [c.name for c in candidates]
-    votes_data = [c.votes_count for c in candidates]
+    labels = [c.name for c in candidates[:10]] # Top 10 for chart
+    votes_data = [c.votes_count for c in candidates[:10]]
     
     # Results per school
     school_results = {}
@@ -2042,9 +2061,13 @@ def juin_contest_results(request):
     school_labels = list(school_results.keys())
     school_data = list(school_results.values())
     
+    import json
     context = {
-        'contest': contest,
+        'edition': edition,
         'candidates': candidates,
+        'misses': misses,
+        'misters': misters,
+        'total_votes': total_votes,
         'chart_labels': json.dumps(labels),
         'chart_data': json.dumps(votes_data),
         'school_labels': json.dumps(school_labels),
