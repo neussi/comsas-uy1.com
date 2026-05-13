@@ -1124,7 +1124,63 @@ Innovation, compétitions et networking au cœur de l'UY1.{% endblock %}
                     <div class="p-4 flex-grow-1 d-flex flex-column">
                         <span class="activity-pill mb-2">
                             {% if activity.activity_type == 'conference' %}🎤 Conférence
-                            {% elif activity.activity_type == 'hackathon' %}⚡ Hackathon           {% if competitions %}
+                            {% elif activity.activity_type == 'hackathon' %}⚡ Hackathon
+                            {% elif activity.activity_type == 'atelier' %}🛠 Atelier
+                            {% elif activity.activity_type == 'pitch' %}🏆 Pitch
+                            {% elif activity.activity_type == 'gala' %}✨ Gala
+                            {% else %}📌 {{ activity.get_activity_type_display }}
+                            {% endif %}
+                        </span>
+                        <h6 class="fw-bold mb-1" style="color:var(--text-dark);">{{ activity.title }}</h6>
+                        <div class="small mb-2" style="color:var(--text-muted);">
+                            <i class="fas fa-clock me-1" style="color:var(--rose);"></i>{{ activity.date_activity|date:"D d M Y — H:i" }}
+                            {% if activity.location %}<br><i class="fas fa-map-pin me-1"></i>{{ activity.location }}{% endif %}
+                            {% if activity.speaker %}<br><i class="fas fa-user me-1"></i>{{ activity.speaker }}{% endif %}
+                        </div>
+                        <p class="small flex-grow-1" style="color:var(--text-muted);">{{ activity.description|truncatechars:120 }}</p>
+                        {% if activity.gallery_album %}
+                        <a href="{% url 'gallery_detail' activity.gallery_album.pk %}"
+                            class="btn btn-sm btn-outline-juin rounded-pill align-self-start">
+                            <i class="fas fa-images me-1"></i>Galerie
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                style="width:80px;height:80px;background:var(--rose-pale);">
+                <i class="fas fa-calendar-plus fa-2x" style="color:var(--rose);"></i>
+            </div>
+            <h5 class="fw-bold mb-2" style="color:var(--text-dark);">Programme à venir</h5>
+            <p style="color:var(--text-muted);">Le programme détaillé sera publié prochainement.<br>Suivez-nous sur les
+                réseaux sociaux !</p>
+        </div>
+        {% endif %}
+
+        <div class="text-center mt-5">
+            <a href="{% url 'juin_activities' %}" class="btn btn-outline-juin rounded-pill px-5">
+                <i class="fas fa-list me-2"></i>Voir tout l'agenda
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     7b. COMPÉTITIONS
+══════════════════════════════════════════ -->
+<section class="py-5 section-alt" id="competitions">
+    <div class="container py-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <div class="section-badge"><i class="fas fa-trophy"></i>Challenge &amp; Fun</div>
+            <h2 class="display-5 fw-bold">Nos <span class="text-gradient">Compétitions</span></h2>
+            <p style="color:var(--text-muted);">Inscrivez votre équipe et montrez votre talent !</p>
+        </div>
+
+        {% if competitions %}
         <!-- 💻 INFORMATIQUE : HACKATHONS -->
         <div class="mb-5">
             <h4 class="fw-bold mb-4" style="color:var(--text-dark); border-left: 5px solid var(--rose); padding-left: 15px;">
