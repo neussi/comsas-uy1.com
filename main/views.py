@@ -1994,6 +1994,8 @@ def juin_vote_complete(request, transaction_id):
 def juin_miss_mister_contest(request):
     """Page principale du concours Miss & Mister J.U.IN 2026"""
     edition = JUINEdition.objects.filter(is_active=True).first()
+    if not edition:
+        edition = JUINEdition.objects.order_by('-edition_number').first()
     
     if not edition:
         candidates = []

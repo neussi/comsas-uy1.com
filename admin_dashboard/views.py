@@ -1983,6 +1983,8 @@ from main.models import JUINCandidate, JUINVote
 def admin_juin_miss_mister_dashboard(request):
     """Tableau de bord financier et statistiques du concours Miss/Mister"""
     edition = JUINEdition.objects.filter(is_active=True).first()
+    if not edition:
+        edition = JUINEdition.objects.order_by('-edition_number').first()
         
     candidates = JUINCandidate.objects.filter(edition=edition).order_by('-votes_count') if edition else []
     total_votes = sum(c.votes_count for c in candidates)
@@ -2095,7 +2097,10 @@ def admin_juin_contest_toggle(request):
     """Démarrer/Arrêter les inscriptions ou les votes du concours JUIN"""
     edition = JUINEdition.objects.filter(is_active=True).first()
     if not edition:
-        messages.error(request, "Édition introuvable.")
+        edition = JUINEdition.objects.order_by('-edition_number').first()
+        
+    if not edition:
+        messages.error(request, "Aucune édition J.U.IN n'est configurée.")
         return redirect('admin_juin_miss_mister')
         
     action = request.GET.get('action')
