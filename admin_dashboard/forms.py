@@ -768,7 +768,7 @@ class JUINCandidateForm(forms.ModelForm):
     """Formulaire admin pour les candidats JUIN"""
     class Meta:
         model = JUINCandidate
-        fields = ['edition', 'name', 'candidate_type', 'age', 'level', 'school', 'phone', 'email', 'description', 'image', 'video_url', 'status']
+        fields = ['edition', 'name', 'candidate_type', 'age', 'level', 'school', 'phone', 'email', 'description', 'image', 'image2', 'image3', 'image4', 'video_url', 'status']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
         }
@@ -793,6 +793,11 @@ class JUINCandidateForm(forms.ModelForm):
                 ),
                 'description',
                 'image',
+                Row(
+                    Column('image2', css_class='form-group col-md-4 mb-3'),
+                    Column('image3', css_class='form-group col-md-4 mb-3'),
+                    Column('image4', css_class='form-group col-md-4 mb-3'),
+                ),
                 'video_url',
                 'status',
             ),

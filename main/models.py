@@ -1259,6 +1259,9 @@ class JUINCandidate(models.Model):
     email = models.EmailField(verbose_name="Email", blank=True, null=True)
     description = models.TextField(verbose_name="Biographie / Motivations")
     image = models.ImageField(upload_to='juin/candidates/', verbose_name="Photo Principale")
+    image2 = models.ImageField(upload_to='juin/candidates/gallery/', blank=True, null=True, verbose_name="Photo 2 (Galerie)")
+    image3 = models.ImageField(upload_to='juin/candidates/gallery/', blank=True, null=True, verbose_name="Photo 3 (Galerie)")
+    image4 = models.ImageField(upload_to='juin/candidates/gallery/', blank=True, null=True, verbose_name="Photo 4 (Galerie)")
     video_url = models.URLField(blank=True, null=True, verbose_name="Lien Vidéo Présentation")
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Statut")

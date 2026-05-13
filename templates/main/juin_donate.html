@@ -14,12 +14,12 @@
 ══════════════════════════════════════════ */
     /* RESET COMPLET pour cette page spécifique */
     body {
-        background: var(--night) !important;
+        background: #ffffff !important;
         margin: 0 !important;
     }
 
     main {
-        background: var(--night) !important;
+        background: #ffffff !important;
     }
 
     /* On cache le footer pour un effet "full-screen app" */
@@ -31,16 +31,16 @@
     .juin-page {
         --rose: #E91E63;
         --rose-dark: #C2185B;
-        --night: #0b1120;
-        --slate: #111827;
-        --card-bg: rgba(17, 24, 39, 0.85);
-        --border: rgba(255, 255, 255, 0.08);
-        --muted: rgba(255, 255, 255, 0.45);
+        --night: #ffffff;
+        --slate: #fdf5f8;
+        --card-bg: rgba(255, 255, 255, 0.85);
+        --border: rgba(233, 30, 99, 0.15);
+        --muted: #8a6070;
         --font-title: 'Syne', sans-serif;
         --font-body: 'Plus Jakarta Sans', sans-serif;
 
         font-family: var(--font-body);
-        color: white !important;
+        color: #1a0a10 !important;
         background: var(--night);
     }
 
@@ -136,7 +136,7 @@
         font-weight: 800;
         line-height: 1.08;
         letter-spacing: -1px;
-        color: white;
+        color: #1a0a10;
         margin-bottom: 22px;
     }
 
@@ -157,7 +157,7 @@
 
     /* STAT PILLS */
     .juni-stat {
-        background: rgba(255, 255, 255, 0.04);
+        background: #fdf5f8;
         border: 1px solid var(--border);
         border-radius: 22px;
         padding: 26px 24px;
@@ -237,9 +237,9 @@
         padding: 42px;
         border: 1px solid var(--border);
         box-shadow:
-            0 32px 64px -16px rgba(0, 0, 0, 0.55),
-            0 0 0 1px rgba(255, 255, 255, 0.03),
-            0 0 90px -30px rgba(233, 30, 99, 0.4);
+            0 32px 64px -16px rgba(233, 30, 99, 0.15),
+            0 0 0 1px rgba(233, 30, 99, 0.05),
+            0 0 90px -30px rgba(233, 30, 99, 0.1);
     }
 
     /* Steps */
@@ -280,7 +280,7 @@
     .juin-step-l {
         font-size: 0.82rem;
         font-weight: 600;
-        color: white;
+        color: #1a0a10;
     }
 
     .juin-chevron {
@@ -310,10 +310,10 @@
     .juin-field input,
     .juin-field select {
         width: 100%;
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.10) !important;
+        background: rgba(233, 30, 99, 0.03) !important;
+        border: 1px solid rgba(233, 30, 99, 0.15) !important;
         border-radius: 15px !important;
-        color: white !important;
+        color: #1a0a10 !important;
         padding: 22px 18px 10px !important;
         font-size: 0.94rem;
         font-weight: 500;
@@ -326,7 +326,7 @@
     }
 
     .juin-field input::placeholder {
-        color: rgba(255, 255, 255, 0);
+        color: rgba(233, 30, 99, 0);
     }
 
     .juin-field input:focus,
@@ -348,8 +348,8 @@
     }
 
     .juin-field select option {
-        background: #111827;
-        color: white;
+        background: #ffffff;
+        color: #1a0a10;
     }
 
     /* Bouton */
@@ -447,8 +447,8 @@
         gap: 5px;
         font-size: 0.72rem;
         font-weight: 600;
-        color: rgba(255, 255, 255, .5);
-        border-left: 1px solid rgba(255, 255, 255, .15);
+        color: rgba(26, 10, 16, .5);
+        border-left: 1px solid rgba(26, 10, 16, .15);
         padding-left: 14px;
     }
 
@@ -629,7 +629,7 @@
     }
 
     .juin-cta-card p {
-        color: rgba(255, 255, 255, 0.82);
+        color: rgba(255, 255, 255, 0.9);
         font-size: 1rem;
         margin-bottom: 34px;
     }
@@ -719,7 +719,7 @@
                         </h1>
                         <p class="juin-lead">
                             Chaque don est un catalyseur pour l'innovation.
-                            Aidez-nous à faire du <strong style="color:white;">J.U.IN 2026</strong>
+                            Aidez-nous à faire du <strong style="color:#1a0a10;">J.U.IN 2026</strong>
                             une expérience transformative pour toute une génération d'ingénieurs.
                         </p>
                     </div>
@@ -737,13 +737,13 @@
                         <div class="col-md-6">
                             <div class="juni-stat">
                                 <div class="juni-stat-lbl">Donateurs</div>
-                                <div class="juni-stat-val" style="color:white;">
+                                <div class="juni-stat-val" style="color:#1a0a10;">
                                     {{ donations.count }}
                                     <span
-                                        style="font-size:1rem;opacity:.38;font-family:'Plus Jakarta Sans',sans-serif;">profils</span>
+                                        style="font-size:1rem;opacity:.5;font-family:'Plus Jakarta Sans',sans-serif;">profils</span>
                                 </div>
                                 <p
-                                    style="font-size:0.78rem;color:rgba(255,255,255,0.38);margin-top:10px;margin-bottom:0;">
+                                    style="font-size:0.78rem;color:rgba(26,10,16,0.6);margin-top:10px;margin-bottom:0;">
                                     <i class="fas fa-users me-1"></i>Communauté engagée
                                 </p>
                             </div>
@@ -757,7 +757,7 @@
 
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h3
-                                style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;margin:0;color:white;">
+                                style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;margin:0;color:#1a0a10;">
                                 Soutenir le J.U.IN
                             </h3>
                             <div class="juin-live">

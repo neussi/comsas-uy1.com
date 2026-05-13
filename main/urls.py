@@ -115,7 +115,7 @@ urlpatterns = [
     
     # FreemoPay Webhooks & Async checks
     path('api/payments/webhook/freemopay/', views.juin_freemopay_webhook, name='juin_freemopay_webhook'),
-    path('api/payments/status/<uuid:external_id>/', views.juin_payment_status_check, name='juin_payment_status'),
+    path('api/payments/status/<str:external_id>/', views.juin_payment_status_check, name='juin_payment_status'),
     path('api/vote/initiate/', views.contest_vote_initiate, name='contest_vote_initiate'),
     path('api/vote/status/<str:transaction_id>/', views.vote_status_check, name='vote_status_check'),
     path('api/juin/vote/initiate/', views.juin_vote_initiate, name='juin_vote_initiate'),
