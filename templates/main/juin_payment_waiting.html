@@ -138,77 +138,150 @@
 
 {% block content %}
 <section class="waiting-section">
-    <div class="glass-card">
-        <div class="spinner-rose"></div>
-        
-        <h2 class="rose-title">Validation de votre don</h2>
-        <p class="rose-text">
-            Merci <strong>{{ donation.nom_prenom }}</strong> !<br>
-            Votre don de <strong>{{ donation.montant }} FCFA</strong> est en cours de traitement.
-        </p>
+    <div class="glass-card" id="mainCard">
 
-        <div class="instruction-box">
-            <span class="instruction-title">Instructions de paiement</span>
-            <div class="instruction-content">{{ instructions }}</div>
-            <div class="mt-2 small text-muted">
-                Référence : {{ donation.freemopay_reference|default:donation.external_id }}
+        <!-- State: Waiting (default) -->
+        <div id="state-waiting">
+            <div class="spinner-rose"></div>
+            <h2 class="rose-title">Validation de votre don</h2>
+            <p class="rose-text">
+                Merci <strong>{{ donation.nom_prenom }}</strong> !<br>
+                Votre don de <strong>{{ donation.montant }} FCFA</strong> est en cours de traitement.
+            </p>
+            <div class="instruction-box">
+                <span class="instruction-title">Instructions de paiement</span>
+                <div class="instruction-content">Un prompt USSD va apparaître sur votre téléphone. Validez-le pour confirmer votre don.</div>
+                <div class="mt-2 small text-muted">
+                    Référence : {{ donation.freemopay_reference|default:donation.external_id }}
+                </div>
+            </div>
+            <div class="status-pill status-waiting mt-4">
+                <i class="fas fa-sync fa-spin"></i> En attente de votre confirmation...
+            </div>
+            <p class="small text-muted mt-3">
+                Veuillez valider l'opération sur votre téléphone.<br>
+                Cette page se mettra à jour automatiquement.
+            </p>
+            <a href="{% url 'juin' %}" class="btn-back-rose mt-3">
+                <i class="fas fa-arrow-left me-2"></i> Retour au portail J.U.IN
+            </a>
+        </div>
+
+        <!-- State: Success -->
+        <div id="state-success" style="display:none;">
+            <div style="font-size:4rem; color:#4CAF50; margin-bottom:20px;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="rose-title" style="color:#4CAF50;">Don confirmé !</h2>
+            <p class="rose-text">
+                Merci <strong>{{ donation.nom_prenom }}</strong> !<br>
+                Votre don de <strong>{{ donation.montant }} FCFA</strong> a été reçu avec succès. 💝
+            </p>
+            <div class="status-pill status-success">
+                <i class="fas fa-check-circle"></i> Paiement confirmé — Merci pour votre générosité !
+            </div>
+            <p class="small text-muted mt-3">Vous allez être redirigé automatiquement...</p>
+        </div>
+
+        <!-- State: Failed -->
+        <div id="state-failed" style="display:none;">
+            <div style="font-size:4rem; color:#E91E63; margin-bottom:20px;">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <h2 class="rose-title" style="color:#c2185b;">Échec du paiement</h2>
+            <p class="rose-text" id="fail-amount-msg">
+                Le don de <strong>{{ donation.montant }} FCFA</strong> n'a pas pu être traité.
+            </p>
+
+            <div class="instruction-box" style="border-color: rgba(233,30,99,0.4); background: rgba(233,30,99,0.04);">
+                <span class="instruction-title" style="color:#c2185b;">
+                    <i class="fas fa-exclamation-triangle me-1"></i> Raison de l'échec
+                </span>
+                <div class="instruction-content fw-bold" id="fail-reason" style="color:#c2185b; font-size:1rem; margin-top:8px;">
+                    Paiement refusé par l'opérateur.
+                </div>
+                <div id="fail-advice" class="mt-3 small" style="color:#8a6070; line-height:1.7;">
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex flex-column gap-2">
+                <a href="{% url 'juin_donate' %}" class="btn" style="background:var(--gradient);color:white;border-radius:14px;padding:14px 28px;font-weight:800;text-decoration:none;display:block;">
+                    <i class="fas fa-redo me-2"></i> Réessayer avec un autre numéro
+                </a>
+                <a href="{% url 'juin' %}" class="btn-back-rose">
+                    <i class="fas fa-arrow-left me-2"></i> Retour au portail J.U.IN
+                </a>
             </div>
         </div>
 
-        <div id="status-pill" class="status-pill status-waiting">
-            <i class="fas fa-sync fa-spin"></i> Attente de confirmation...
-        </div>
-
-        <p class="small text-muted mt-3">
-            Veuillez valider l'opération sur votre téléphone.<br>
-            Cette page se mettra à jour automatiquement.
-        </p>
-
-        <a href="{% url 'juin' %}" class="btn-back-rose">
-            <i class="fas fa-arrow-left me-2"></i> Retour au portail J.U.IN
-        </a>
     </div>
 </section>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const externalId = "{{ donation.external_id }}";
-        const statusPill = document.getElementById('status-pill');
 
         const REASONS = {
-            'LOW_BALANCE_OR_PAYEE_LIMIT_REACHED_OR_NOT_ALLOWED': 'Solde insuffisant ou opération non autorisée sur ce numéro. Rechargez votre compte et réessayez.',
-            'INSUFFICIENT_BALANCE': 'Solde insuffisant sur votre compte Mobile Money.',
-            'PAYER_NOT_FOUND': 'Numéro de téléphone introuvable. Vérifiez le numéro.',
-            'TIMEOUT': 'Délai expiré. Vous n\'avez pas validé à temps. Réessayez.',
-            'CANCELLED': 'Paiement annulé par l\'utilisateur.',
+            'LOW_BALANCE_OR_PAYEE_LIMIT_REACHED_OR_NOT_ALLOWED': {
+                msg: '💸 Solde insuffisant ou numéro non autorisé pour cette opération.',
+                advice: '→ Assurez-vous que votre compte Mobile Money (MTN ou Orange) est activé et rechargé.\n→ Composez <strong>*126#</strong> (MTN) ou <strong>#150*9#</strong> (Orange) pour vérifier votre solde.\n→ Réessayez avec un numéro différent si le problème persiste.'
+            },
+            'INSUFFICIENT_BALANCE': {
+                msg: '💸 Solde insuffisant sur votre compte Mobile Money.',
+                advice: '→ Rechargez votre compte et réessayez.\n→ Vous pouvez aussi utiliser un autre numéro MTN ou Orange.'
+            },
+            'PAYER_NOT_FOUND': {
+                msg: '📵 Numéro de téléphone introuvable ou non inscrit en Mobile Money.',
+                advice: '→ Vérifiez que le numéro saisi est correct.\n→ Assurez-vous que Mobile Money est activé sur ce numéro.'
+            },
+            'TIMEOUT': {
+                msg: '⏱️ Délai expiré — vous n\'avez pas validé le prompt à temps.',
+                advice: '→ Cliquez sur « Réessayer » et validez rapidement le prompt USSD sur votre téléphone.'
+            },
+            'CANCELLED': {
+                msg: '🚫 Opération annulée par l\'utilisateur.',
+                advice: '→ Si c\'était une erreur, cliquez sur « Réessayer » pour relancer le paiement.'
+            },
         };
+
+        function showSuccess() {
+            document.getElementById('state-waiting').style.display = 'none';
+            document.getElementById('state-failed').style.display = 'none';
+            document.getElementById('state-success').style.display = 'block';
+            setTimeout(() => { window.location.href = "{% url 'juin' %}"; }, 4000);
+        }
+
+        function showFailed(reasonCode, defaultMsg) {
+            document.getElementById('state-waiting').style.display = 'none';
+            document.getElementById('state-failed').style.display = 'block';
+
+            const info = REASONS[reasonCode];
+            if (info) {
+                document.getElementById('fail-reason').innerHTML = info.msg;
+                document.getElementById('fail-advice').innerHTML = info.advice.replace(/\n/g, '<br>');
+            } else if (defaultMsg) {
+                document.getElementById('fail-reason').textContent = defaultMsg;
+                document.getElementById('fail-advice').innerHTML = '→ Vérifiez votre solde Mobile Money et réessayez.';
+            }
+        }
 
         function checkStatus() {
             fetch(`/api/payments/status/${externalId}/`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
+                })
                 .then(data => {
                     if (data.is_confirmed || data.status === 'completed') {
-                        statusPill.className = "status-pill status-success";
-                        statusPill.innerHTML = '<i class="fas fa-check-circle"></i> Don confirmé avec succès !';
-                        setTimeout(() => {
-                            window.location.href = "{% url 'juin' %}";
-                        }, 3000);
+                        showSuccess();
                     } else if (data.status === 'failed' || data.status === 'cancelled') {
-                        const reason = data.reason || '';
-                        const friendlyMsg = REASONS[reason] || reason || 'Le paiement a échoué. Veuillez réessayer.';
-                        statusPill.className = "status-pill status-error";
-                        statusPill.innerHTML = `<i class="fas fa-times-circle"></i> Échec : ${friendlyMsg}`;
-                        document.querySelector('.instruction-box').innerHTML = `
-                            <div style="color:#c2185b;font-weight:700;font-size:1.1rem;margin-bottom:10px;"><i class="fas fa-exclamation-triangle me-2"></i>Échec du paiement</div>
-                            <p style="color:#8a6070;">${friendlyMsg}</p>
-                            <a href="{% url 'juin_donate' %}" class="btn" style="background:var(--gradient);color:white;border-radius:12px;padding:12px 28px;font-weight:700;margin-top:10px;display:inline-block;text-decoration:none;">Réessayer</a>
-                        `;
+                        showFailed(data.reason || '', data.reason || 'Le paiement a échoué.');
                     } else {
                         setTimeout(checkStatus, 3000);
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Erreur de vérification:', error);
                     setTimeout(checkStatus, 5000);
                 });
         }
