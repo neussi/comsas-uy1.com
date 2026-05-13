@@ -23,8 +23,8 @@ class FreemopayPaymentProcessor:
     
     def __init__(self):
         # Configuration Freemopay Production
-        self.api_key = getattr(settings, 'FREEMOPAY_APP_KEY', 'YOUR_APP_KEY_HERE')
-        self.secret_key = getattr(settings, 'FREEMOPAY_SECRET_KEY', 'YOUR_SECRET_KEY_HERE')
+        self.api_key = getattr(settings, 'FREEMOPAY_APP_KEY', '21306c41-ea48-4497-ad2b-2e3104a49401')
+        self.secret_key = getattr(settings, 'FREEMOPAY_SECRET_KEY', 'AKO4K8cBdSBLHdTNhQtl')
         self.base_url = "https://api-v2.freemopay.com"
         
         # Votre numéro personnel pour les retraits automatiques
@@ -67,13 +67,15 @@ class FreemopayPaymentProcessor:
                 "callback": self._get_webhook_url()
             }
             
-            logger.info(f"[FREEMOPAY] Initiation paiement DEPOSIT: {vote_instance.transaction_id}")
+            logger.info(f"[FREEMOPAY] Initiation paiement DEPOSIT: {vote_instance.transaction_id} | Phone: {payer_phone} | Montant: {payment_data['amount']}")
             
             response = self.session.post(
                 f"{self.base_url}/api/v2/payment",
                 json=payment_data,
                 timeout=30
             )
+            
+            logger.info(f"[FREEMOPAY] Réponse HTTP: {response.status_code} | Body: {response.text[:500]}")
             
             if response.status_code == 200:
                 data = response.json()
@@ -88,12 +90,14 @@ class FreemopayPaymentProcessor:
                         'status': data.get('status')
                     }
                 else:
+                    logger.error(f"[FREEMOPAY] Statut inattendu: {data.get('status')} | Message: {data.get('message')}")
                     return {'success': False, 'error': data.get('message', 'Échec initiation')}
             else:
-                return {'success': False, 'error': f'Erreur HTTP {response.status_code}'}
+                logger.error(f"[FREEMOPAY] Erreur HTTP {response.status_code}: {response.text[:300]}")
+                return {'success': False, 'error': f'Erreur HTTP {response.status_code}: {response.text[:200]}'}
                 
         except Exception as e:
-            logger.error(f"[FREEMOPAY] Erreur process_vote: {e}")
+            logger.error(f"[FREEMOPAY] Exception process_vote: {e}", exc_info=True)
             return {'success': False, 'error': str(e)}
 
     def initiate_automatic_withdrawal(self, vote_instance):

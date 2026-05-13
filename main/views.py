@@ -1936,7 +1936,12 @@ def juin_vote_initiate(request):
         else:
             vote.status = 'failed'
             vote.save()
-            return JsonResponse({'success': False, 'error': result.get('error')})
+            logger.error(f"[JUIN_VOTE] Paiement échoué pour {transaction_id}: {result.get('error')}")
+            return JsonResponse({
+                'success': False,
+                'error': result.get('error', 'Erreur de paiement inconnue'),
+                'transaction_id': transaction_id
+            })
             
     return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
 
