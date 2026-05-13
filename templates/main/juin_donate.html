@@ -301,7 +301,8 @@
         left: 18px;
         font-size: 0.78rem;
         font-weight: 500;
-        color: #8a6070; /* Changed from white-ish to visible muted color */
+        color: #8a6070;
+        /* Changed from white-ish to visible muted color */
         pointer-events: none;
         transition: all .22s ease;
         z-index: 2;
@@ -326,7 +327,8 @@
     }
 
     .juin-field input::placeholder {
-        color: rgba(233, 30, 99, 0.4); /* Make placeholders visible */
+        color: rgba(233, 30, 99, 0.4);
+        /* Make placeholders visible */
     }
 
     .juin-field input:focus,
@@ -742,8 +744,7 @@
                                     <span
                                         style="font-size:1rem;opacity:.5;font-family:'Plus Jakarta Sans',sans-serif;">profils</span>
                                 </div>
-                                <p
-                                    style="font-size:0.78rem;color:rgba(26,10,16,0.6);margin-top:10px;margin-bottom:0;">
+                                <p style="font-size:0.78rem;color:rgba(26,10,16,0.6);margin-top:10px;margin-bottom:0;">
                                     <i class="fas fa-users me-1"></i>Communauté engagée
                                 </p>
                             </div>
@@ -790,9 +791,10 @@
                                 <div class="col-12">
                                     <div class="juin-field">
                                         <input type="text" name="{{ donate_form.nom_prenom.html_name }}"
-                                            id="{{ donate_form.nom_prenom.id_for_label }}" placeholder="Ex: Patrice Neussi"
+                                            id="{{ donate_form.nom_prenom.id_for_label }}"
+                                            placeholder="Ex: Patrice Neussi"
                                             value="{{ donate_form.nom_prenom.value|default:'' }}">
-                                        <label for="{{ donate_form.nom_prenom.id_for_label }}">Nom complet ou
+                                        <label for="">Nom complet ou
                                             Entreprise</label>
                                     </div>
                                 </div>
@@ -802,7 +804,7 @@
                                         <input type="number" name="{{ donate_form.montant.html_name }}"
                                             id="{{ donate_form.montant.id_for_label }}" placeholder="Ex: 5000"
                                             value="{{ donate_form.montant.value|default:'' }}">
-                                        <label for="{{ donate_form.montant.id_for_label }}">Montant (FCFA)</label>
+                                        <label for="">Montant (FCFA)</label>
                                     </div>
                                 </div>
 
@@ -811,7 +813,7 @@
                                         <input type="text" name="{{ donate_form.telephone.html_name }}"
                                             id="{{ donate_form.telephone.id_for_label }}" placeholder="Ex: 650970526"
                                             value="{{ donate_form.telephone.value|default:'' }}">
-                                        <label for="{{ donate_form.telephone.id_for_label }}">Numéro MoMo / OM</label>
+                                        <label for="">Numéro MoMo / OM</label>
                                     </div>
                                 </div>
 
@@ -820,7 +822,8 @@
                                         <select name="{{ donate_form.type_paiement.html_name }}"
                                             id="{{ donate_form.type_paiement.id_for_label }}">
                                             {% for val, lbl in donate_form.type_paiement.field.choices %}
-                                            <option value="{{ val }}" {% if donate_form.type_paiement.value == val %}selected{% endif %}>
+                                            <option value="{{ val }}" {% if donate_form.type_paiement.value==val
+                                                %}selected{% endif %}>
                                                 {{ lbl }}
                                             </option>
                                             {% endfor %}

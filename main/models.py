@@ -948,6 +948,7 @@ class JUINEdition(models.Model):
         ('ENSPY', 'École Nationale Supérieure Polytechnique de Yaoundé'),
         ('STJEAN', 'Institut Saint-Jean'),
         ('SUPPTIC', "SUP'PTIC"),
+        ('IAI', 'IAI-Cameroun'),
         ('OTHER', 'Autre'),
     ]
 
