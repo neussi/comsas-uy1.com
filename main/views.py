@@ -1373,19 +1373,28 @@ def juin_payment_status_check(request, external_id):
     """Vérifier le statut du paiement (AJAX polling)"""
     donation = get_object_or_404(JUINDonation, external_id=external_id)
     
-    if donation.payment_status == 'initiated' and donation.freemopay_reference:
+    # Toujours re-vérifier depuis Freemopay si le paiement est en cours ou si on a une référence
+    if donation.payment_status in ('initiated', 'processing') and donation.freemopay_reference:
         from .freemopay_service import FreemopayService
         service = FreemopayService()
         check = service.check_payment_status(donation.freemopay_reference)
+        logger.info(f"[PAYMENT_STATUS] {external_id} => {check}")
         if check.get('success'):
-            status = check.get('status')
-            if status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
+            raw_status = check.get('status', '').upper()
+            raw_data = check.get('data', {})
+            reason = raw_data.get('reason', '')
+            if raw_status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
                 donation.is_confirmed = True
                 donation.payment_status = 'completed'
                 donation.save()
-            elif status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED'):
+            elif raw_status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED', 'CANCELLED'):
                 donation.payment_status = 'failed'
                 donation.save()
+                return JsonResponse({
+                    'status': 'failed',
+                    'is_confirmed': False,
+                    'reason': reason or 'Paiement échoué. Vérifiez votre solde ou réessayez.'
+                })
                 
     return JsonResponse({
         'status': donation.payment_status,
