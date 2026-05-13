@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}MISS & MISTER J.U.IN 2026 — LE CHOC DES 5 ÉCOLES{% endblock %}
+{% block title %}MISS & MISTER J.U.IN 2026 — L'ÉLITE TECHNOLOGIQUE{% endblock %}
 
 {% block extra_css %}
 <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;600;800&family=Syne:wght@800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,700&family=Outfit:wght@300;400;600;900&family=Syne:wght@800&display=swap"
     rel="stylesheet">
 <style>
     :root {
@@ -13,9 +13,10 @@
         --royal-gold-light: #F9E29C;
         --rose-deep: #B5124A;
         --rose-royal: #E91E63;
-        --dark-bg: #070204;
-        --surface: #120509;
-        --glass: rgba(255, 255, 255, 0.03);
+        --dark-bg: #050102;
+        --surface: #100407;
+        --glass-white: rgba(255, 255, 255, 0.05);
+        --glass-gold: rgba(212, 175, 55, 0.1);
     }
 
     body {
@@ -25,375 +26,414 @@
         overflow-x: hidden;
     }
 
-    /* Cinematic Hero */
-    .hero-royal {
+    /* Cinematic Animated Background */
+    .page-wrapper {
+        background: 
+            radial-gradient(circle at 10% 10%, rgba(181, 18, 74, 0.1) 0%, transparent 40%),
+            radial-gradient(circle at 90% 90%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+            linear-gradient(to bottom, var(--dark-bg), #0f0508);
         min-height: 100vh;
+    }
+
+    /* Hero Section - The WOW Factor */
+    .hero-royal {
+        min-height: 90vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        text-align: center;
-        padding: 100px 20px;
-        background: 
-            radial-gradient(circle at 20% 30%, rgba(181, 18, 74, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-            var(--dark-bg);
         position: relative;
+        padding: 120px 20px;
+        text-align: center;
+    }
+
+    .hero-decor {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l2 28h28l-22 18 8 26-24-16-24 16 8-26-22-18h28l2-28z' fill='%23D4AF37' fill-opacity='0.03'/%3E%3C/svg%3E");
+        z-index: 1;
     }
 
     .hero-content {
-        max-width: 1100px;
+        position: relative;
         z-index: 10;
+        max-width: 1000px;
     }
 
-    .inter-eco-tag {
-        font-family: 'Syne', sans-serif;
-        font-size: clamp(0.8rem, 3vw, 1.2rem);
+    .inter-eco-badge {
+        display: inline-block;
+        padding: 10px 30px;
+        background: var(--glass-gold);
+        border: 1px solid var(--royal-gold);
+        border-radius: 50px;
         color: var(--royal-gold);
-        letter-spacing: 8px;
+        font-weight: 900;
+        letter-spacing: 5px;
         text-transform: uppercase;
-        margin-bottom: 20px;
-        display: block;
-        font-weight: 800;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 1s forwards;
+        font-size: 0.8rem;
+        margin-bottom: 30px;
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
     }
 
     .main-title {
         font-family: 'Cormorant Garamond', serif;
-        font-size: clamp(3.5rem, 15vw, 9rem);
+        font-size: clamp(4rem, 12vw, 8.5rem);
         font-weight: 700;
-        line-height: 0.85;
+        line-height: 0.9;
         margin-bottom: 40px;
-        background: linear-gradient(to bottom, #fff 40%, var(--royal-gold) 100%);
+        color: #fff;
+        background: linear-gradient(to bottom, #fff 20%, var(--royal-gold) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
-        animation: scaleIn 1.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        text-transform: uppercase;
+        letter-spacing: -2px;
     }
 
-    .eco-grid {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        flex-wrap: wrap;
-        margin-bottom: 60px;
-        opacity: 0.7;
+    .main-title span {
+        display: block;
+        font-size: 0.4em;
+        letter-spacing: 15px;
+        color: var(--royal-gold);
+        -webkit-text-fill-color: var(--royal-gold);
+        margin-top: 10px;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 300;
     }
 
-    .eco-badge {
-        padding: 8px 20px;
-        background: var(--glass);
-        border: 1px solid rgba(212, 175, 55, 0.2);
-        border-radius: 50px;
-        font-size: 0.7rem;
-        font-weight: 800;
-        letter-spacing: 1px;
-    }
-
-    /* CTA Button - Ultra Responsive */
-    .btn-register-xl {
+    .btn-royal-cta {
         background: linear-gradient(135deg, var(--royal-gold), var(--royal-gold-light));
         color: var(--dark-bg) !important;
-        padding: clamp(18px, 4vw, 28px) clamp(40px, 8vw, 80px);
+        padding: 25px 60px;
         border-radius: 100px;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 5px;
+        letter-spacing: 3px;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 15px;
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        box-shadow: 0 20px 60px rgba(212, 175, 55, 0.4);
-        font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+        font-size: 1.1rem;
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
         border: none;
+    }
+
+    .btn-royal-cta:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(212, 175, 55, 0.5);
+    }
+
+    /* Schools Bar */
+    .schools-bar {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 60px;
+    }
+
+    .school-tag {
+        padding: 5px 15px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 5px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: rgba(255,255,255,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: 0.3s;
+    }
+
+    .school-tag:hover {
+        color: var(--royal-gold);
+        border-color: var(--royal-gold);
+        background: var(--glass-gold);
+    }
+
+    /* Filter Bar - Redesigned */
+    .filter-container {
+        max-width: 1200px;
+        margin: -60px auto 60px;
+        padding: 0 20px;
+        position: relative;
+        z-index: 100;
+    }
+
+    .glass-filter {
+        background: rgba(18, 5, 9, 0.8);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 30px;
+        padding: 30px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .filter-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.5rem;
+        color: #fff;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+
+    .btn-group-royal {
+        display: flex;
+        background: rgba(255,255,255,0.03);
+        padding: 5px;
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        color: rgba(255,255,255,0.5);
+        padding: 10px 25px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .tab-btn.active {
+        background: var(--royal-gold);
+        color: var(--dark-bg);
+    }
+
+    .select-royal {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        color: #fff;
+        padding: 12px 25px;
+        border-radius: 15px;
+        font-weight: 600;
+        outline: none;
         cursor: pointer;
     }
 
-    .btn-register-xl:hover {
-        transform: translateY(-15px) scale(1.05);
-        box-shadow: 0 40px 100px rgba(212, 175, 55, 0.7);
+    /* Candidate Cards */
+    .candidates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 40px;
+        padding-bottom: 100px;
     }
 
-    /* Candidate Section */
-    .section-candidates {
-        padding: 100px 0;
-        background: var(--dark-bg);
-    }
-
-    .filter-wrap {
-        background: var(--glass);
-        backdrop-filter: blur(30px);
-        padding: 30px;
-        border-radius: 40px;
-        border: 1px solid rgba(255,255,255,0.05);
-        margin-top: -80px;
-        position: relative;
-        z-index: 100;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-    }
-
-    /* Cards */
-    .candidate-card {
-        background: var(--surface);
-        border-radius: 40px;
+    .royal-card {
+        height: 550px;
+        border-radius: 30px;
         overflow: hidden;
+        position: relative;
         border: 1px solid rgba(255,255,255,0.05);
-        transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-        position: relative;
-        height: 600px;
-        margin-bottom: 30px;
+        background: var(--surface);
+        transition: 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
-    .candidate-card:hover {
-        transform: translateY(-20px);
+    .royal-card:hover {
+        transform: translateY(-15px);
         border-color: var(--royal-gold);
-        box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.8);
     }
 
-    .card-img-container {
-        height: 100%;
-        width: 100%;
-        position: relative;
+    .card-img-box {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
     }
 
-    .card-img {
+    .card-img-box img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 1.5s;
+        transition: 1s;
     }
 
-    .candidate-card:hover .card-img {
-        transform: scale(1.1);
+    .royal-card:hover img { transform: scale(1.1); }
+
+    .card-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.8) 20%, transparent 60%);
+        z-index: 2;
     }
 
     .card-info {
         position: absolute;
         bottom: 0; left: 0; right: 0;
-        padding: 40px;
-        background: linear-gradient(to top, #000 0%, transparent 100%);
+        padding: 30px;
+        z-index: 3;
         text-align: center;
-        z-index: 5;
     }
 
-    .c-name {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
-
-    .c-school {
+    .card-school {
         color: var(--royal-gold);
-        font-size: 0.8rem;
-        letter-spacing: 4px;
+        font-size: 0.75rem;
         text-transform: uppercase;
+        letter-spacing: 4px;
         font-weight: 800;
-        margin-bottom: 25px;
+        margin-bottom: 10px;
         display: block;
     }
 
-    .vote-pill {
+    .card-name {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .btn-vote-royal {
         display: inline-block;
-        padding: 12px 35px;
+        width: 100%;
+        padding: 15px;
         background: linear-gradient(135deg, var(--rose-deep), var(--rose-royal));
-        color: white !important;
-        border-radius: 50px;
+        color: #fff !important;
+        border-radius: 12px;
         text-decoration: none;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: 2px;
-        font-size: 0.8rem;
         transition: 0.3s;
     }
 
-    .vote-pill:hover {
-        transform: scale(1.1);
-        box-shadow: 0 10px 30px rgba(233, 30, 99, 0.5);
+    .btn-vote-royal:hover { transform: scale(1.05); }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 100px 20px;
+        background: rgba(255,255,255,0.02);
+        border-radius: 40px;
+        border: 1px dashed rgba(212, 175, 55, 0.2);
     }
 
-    /* Mobile Adaptations */
-    @media (max-width: 768px) {
-        .hero-royal { padding-top: 80px; }
-        .main-title { letter-spacing: -1px; }
-        .filter-wrap { padding: 20px; border-radius: 30px; }
-        .candidate-card { height: 500px; }
-        .c-name { font-size: 2rem; }
-    }
-
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(40px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes scaleIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    /* Fixed Mobile Register Button */
-    .mobile-register-bar {
+    /* Fixed Mobile CTA */
+    .mobile-cta {
         position: fixed;
-        bottom: 20px;
-        left: 20px;
-        right: 20px;
-        z-index: 9999;
+        bottom: 20px; left: 20px; right: 20px;
+        z-index: 1000;
         display: none;
     }
 
     @media (max-width: 991px) {
-        .mobile-register-bar { display: block; }
-    }
-
-    .btn-mobile-reg {
-        background: var(--royal-gold);
-        color: var(--dark-bg) !important;
-        width: 100%;
-        padding: 18px;
-        border-radius: 50px;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        .mobile-cta { display: block; }
+        .hero-royal { min-height: 80vh; }
+        .main-title { font-size: 3.5rem; }
+        .glass-filter { padding: 20px; justify-content: center; }
     }
 
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- SVG Crown Icon -->
-<svg style="display: none;">
-    <symbol id="icon-crown" viewBox="0 0 24 24">
-        <path fill="currentColor" d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V18H19V19Z"/>
-    </symbol>
-</svg>
+<div class="page-wrapper">
+    <!-- SVG Crown -->
+    <svg style="display: none;">
+        <symbol id="crown-icon" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V18H19V19Z"/>
+        </symbol>
+    </svg>
 
-<section class="hero-royal">
-    <div class="hero-content">
-        <span class="inter-eco-tag">LE CHOC DES 5 GRANDES ÉCOLES</span>
-        <h1 class="main-title">MISS & MISTER<br>J.U.IN 2026</h1>
-        
-        <div class="eco-grid" data-aos="fade-up">
-            <span class="eco-badge">UY1</span>
-            <span class="eco-badge">ENSPY</span>
-            <span class="eco-badge">SAINT-JEAN</span>
-            <span class="eco-badge">SUP'PTIC</span>
-            <span class="eco-badge">IAI-CAMEROUN</span>
-        </div>
+    <section class="hero-royal">
+        <div class="hero-decor"></div>
+        <div class="hero-content" data-aos="fade-up">
+            <div class="inter-eco-badge">5 Grandes Écoles Tech • J.U.IN 2026</div>
+            <h1 class="main-title">
+                MISS & MISTER
+                <span>ÉDITION PRESTIGE</span>
+            </h1>
+            
+            <p class="lead text-white-50 mb-5 mx-auto" style="max-width: 700px; font-size: 1.2rem;">
+                Le couronnement de l'excellence technologique et du charisme inter-universitaire.
+            </p>
 
-        {% if edition.contest_registration_open or not edition %}
-        <div data-aos="fade-up" data-aos-delay="300">
-            <a href="{% url 'juin_candidate_register' %}" class="btn-register-xl">
-                <svg width="24" height="24"><use xlink:href="#icon-crown"></use></svg>
-                REPRÉSENTER MON ÉCOLE
+            {% if edition.contest_registration_open or not edition %}
+            <a href="{% url 'juin_candidate_register' %}" class="btn-royal-cta">
+                <svg width="24" height="24"><use xlink:href="#crown-icon"></use></svg>
+                Inscris-toi maintenant
             </a>
-            <p class="mt-4 text-white-50 small" style="letter-spacing: 2px;">INSCRIPTIONS OUVERTES JUSQU'AU 30 MAI</p>
-        </div>
-        {% endif %}
-    </div>
-</section>
+            {% endif %}
 
-<!-- Mobile Fixed Bar -->
-{% if edition.contest_registration_open or not edition %}
-<div class="mobile-register-bar">
-    <a href="{% url 'juin_candidate_register' %}" class="btn-mobile-reg">
-        <i class="fas fa-edit"></i> S'INSCRIRE MAINTENANT
-    </a>
-</div>
-{% endif %}
-
-<div class="container section-candidates">
-    <div class="filter-wrap">
-        <div class="row align-items-center g-3">
-            <div class="col-lg-4 text-center text-lg-start">
-                <h4 class="mb-0 fw-800 text-gold" style="letter-spacing: 2px;">LES CANDIDATS</h4>
+            <div class="schools-bar">
+                <span class="school-tag">UY1</span>
+                <span class="school-tag">POLYTECH</span>
+                <span class="school-tag">SAINT-JEAN</span>
+                <span class="school-tag">SUP'PTIC</span>
+                <span class="school-tag">IAI-CAMEROUN</span>
             </div>
-            <div class="col-lg-8">
-                <div class="d-flex flex-wrap justify-content-center justify-content-lg-end gap-2">
-                    <button class="tab-btn filter-btn active" onclick="filterType('all')">Tous</button>
-                    <button class="tab-btn filter-btn" onclick="filterType('miss')">Miss</button>
-                    <button class="tab-btn filter-btn" onclick="filterType('mister')">Mister</button>
-                    <select class="school-select ms-lg-3" id="schoolFilter" onchange="applyFilters()">
-                        <option value="all">Toutes les Écoles</option>
-                        {% for code, name in school_choices %}
-                        <option value="{{ code }}">{{ name }}</option>
-                        {% endfor %}
-                    </select>
+        </div>
+    </section>
+
+    <!-- Mobile CTA -->
+    {% if edition.contest_registration_open or not edition %}
+    <div class="mobile-cta">
+        <a href="{% url 'juin_candidate_register' %}" class="btn-royal-cta w-100 justify-content-center py-3">
+            <i class="fas fa-edit me-2"></i> Postuler maintenant
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="filter-container">
+        <div class="glass-filter" data-aos="fade-up">
+            <h2 class="filter-title">CANDIDATS</h2>
+            
+            <div class="d-flex flex-wrap gap-3">
+                <div class="btn-group-royal">
+                    <button class="tab-btn active" onclick="filterType('all')">Tous</button>
+                    <button class="tab-btn" onclick="filterType('miss')">Miss</button>
+                    <button class="tab-btn" onclick="filterType('mister')">Mister</button>
                 </div>
+                
+                <select class="select-royal" id="schoolFilter" onchange="applyFilters()">
+                    <option value="all">Toutes les Écoles</option>
+                    {% for code, name in school_choices %}
+                    <option value="{{ code }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
     </div>
 
-    <div class="candidate-grid mt-5" id="candidatesGrid">
-        {% for c in candidates %}
-        <div class="candidate-item" data-type="{{ c.candidate_type }}" data-school="{{ c.school }}" data-aos="fade-up">
-            <div class="candidate-card">
-                <div class="card-img-container">
-                    {% if c.image %}
-                    <img src="{{ c.image.url }}" class="card-img" alt="{{ c.name }}">
-                    {% endif %}
+    <div class="container pb-5">
+        <div class="candidates-grid" id="candidatesGrid">
+            {% for c in candidates %}
+            <div class="candidate-item" data-type="{{ c.candidate_type }}" data-school="{{ c.school }}" data-aos="zoom-in">
+                <div class="royal-card">
+                    <div class="card-img-box">
+                        {% if c.image %}
+                        <img src="{{ c.image.url }}" alt="{{ c.name }}">
+                        {% endif %}
+                        <div class="card-overlay"></div>
+                    </div>
                     <div class="card-info">
-                        <span class="c-school">{{ c.get_school_display }}</span>
-                        <h3 class="c-name">{{ c.name }}</h3>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-gold text-dark fw-bold px-3 py-2 rounded-pill">{{ c.votes_count }} VOTES</span>
-                            <a href="{% url 'juin_candidate_detail' c.id %}" class="vote-pill">Soutenir</a>
+                        <span class="card-school">{{ c.get_school_display }}</span>
+                        <h3 class="card-name">{{ c.name }}</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="small text-white-50"><i class="fas fa-heart text-rose me-1"></i> {{ c.votes_count }} Votes</span>
+                            <span class="badge border border-gold text-gold">{{ c.get_candidate_type_display }}</span>
                         </div>
+                        <a href="{% url 'juin_candidate_detail' c.id %}" class="btn-vote-royal">Soutenir</a>
                     </div>
                 </div>
             </div>
+            {% empty %}
+            <div class="col-12" data-aos="fade-up">
+                <div class="empty-state">
+                    <i class="fas fa-crown fa-4x text-gold mb-4 opacity-20"></i>
+                    <h3 class="text-white-50">Les candidatures sont en cours de validation.</h3>
+                    <p class="mb-4">Tu peux encore t'inscrire pour devenir le premier visage de ton école !</p>
+                    <a href="{% url 'juin_candidate_register' %}" class="btn btn-outline-gold px-5 rounded-pill">Je m'inscris</a>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <i class="fas fa-users fa-3x text-white-50 mb-4"></i>
-            <h3 class="text-white-50">Aucun candidat n'a encore été validé.</h3>
-            <p>Devenez le premier visage de votre école !</p>
-        </div>
-        {% endfor %}
     </div>
 </div>
-
-<!-- Why Join Section -->
-<section class="py-5" style="background: rgba(255,255,255,0.02);">
-    <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-12">
-                <h2 class="main-title" style="font-size: 3.5rem;">Pourquoi Participer ?</h2>
-            </div>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="text-center p-4">
-                    <i class="fas fa-crown fa-3x text-gold mb-4"></i>
-                    <h4 class="text-gold">Prestige</h4>
-                    <p class="text-white-50">Devenez l'ambassadeur technologique de votre établissement pour l'année 2026.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="text-center p-4">
-                    <i class="fas fa-network-wired fa-3x text-gold mb-4"></i>
-                    <h4 class="text-gold">Networking</h4>
-                    <p class="text-white-50">Rencontrez les leaders de l'industrie tech et développez votre réseau professionnel.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="text-center p-4">
-                    <i class="fas fa-gift fa-3x text-gold mb-4"></i>
-                    <h4 class="text-gold">Lots</h4>
-                    <p class="text-white-50">Bourses d'études, PC portables haut de gamme et stages garantis chez nos partenaires.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 {% endblock %}
 
 {% block extra_js %}
@@ -402,7 +442,7 @@
 
     function filterType(type) {
         currentType = type;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
             if (btn.innerText.toLowerCase().includes(type)) btn.classList.add('active');
             if (type === 'all' && btn.innerText.includes('Tous')) btn.classList.add('active');
@@ -412,18 +452,14 @@
 
     function applyFilters() {
         const school = document.getElementById('schoolFilter').value;
-        const grid = document.getElementById('candidatesGrid');
-        
         document.querySelectorAll('.candidate-item').forEach(item => {
             const typeMatch = (currentType === 'all' || item.dataset.type === currentType);
             const schoolMatch = (school === 'all' || item.dataset.school === school);
             
             if (typeMatch && schoolMatch) {
                 item.style.display = 'block';
-                item.animate([
-                    { opacity: 0, transform: 'scale(0.95)' },
-                    { opacity: 1, transform: 'scale(1)' }
-                ], { duration: 400, fill: 'forwards' });
+                item.style.opacity = '0';
+                setTimeout(() => { item.style.opacity = '1'; }, 10);
             } else {
                 item.style.display = 'none';
             }
