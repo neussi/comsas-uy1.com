@@ -165,7 +165,12 @@
                 
                 {% if form.errors %}
                 <div class="alert alert-danger" style="border-radius: 15px;">
-                    <i class="fas fa-exclamation-triangle me-2"></i> Veuillez corriger les erreurs ci-dessous.
+                    <i class="fas fa-exclamation-triangle me-2"></i> Veuillez corriger les erreurs ci-dessous:
+                    <ul class="mb-0 mt-2">
+                    {% for field, errors in form.errors.items %}
+                        <li><strong>{{ field|title }}:</strong> {{ errors|join:", " }}</li>
+                    {% endfor %}
+                    </ul>
                 </div>
                 {% endif %}
 
