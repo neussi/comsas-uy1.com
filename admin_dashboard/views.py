@@ -2052,7 +2052,7 @@ def admin_juin_candidate_create(request):
     else:
         form = JUINCandidateForm(initial={'edition': edition})
     
-    return render(request, 'admin_dashboard/contests/candidate_form.html', {
+    return render(request, 'admin_dashboard/juin/candidate_form.html', {
         'form': form,
         'title': "Ajouter un candidat Miss/Mister",
         'edition': edition
@@ -2071,7 +2071,7 @@ def admin_juin_candidate_edit(request, pk):
     else:
         form = JUINCandidateForm(instance=candidate)
     
-    return render(request, 'admin_dashboard/contests/candidate_form.html', {
+    return render(request, 'admin_dashboard/juin/candidate_form.html', {
         'form': form,
         'title': f"Modifier {candidate.name}",
         'edition': candidate.edition

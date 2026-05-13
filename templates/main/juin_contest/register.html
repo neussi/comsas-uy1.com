@@ -163,6 +163,13 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 
+                {% if form.errors %}
+                <div class="alert alert-danger" style="border-radius: 15px;">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Veuillez corriger les erreurs ci-dessous.
+                </div>
+                {% endif %}
+
+                
                 <div class="form-section-title">Type de Candidature</div>
                 <div class="row g-3 mb-5">
                     <div class="col-6">
@@ -196,7 +203,8 @@
                     </div>
                     <div class="col-md-6 mb-4">
                         <label class="form-label">Établissement</label>
-                        <input type="text" name="school" class="form-control" placeholder="Ex: UY1, Faculté des Sciences" required>
+                        {{ form.school }}
+                        {% if form.school.errors %}<div class="text-danger small mt-1">{{ form.school.errors }}</div>{% endif %}
                     </div>
                     <div class="col-md-6 mb-4">
                         <label class="form-label">Niveau d'étude</label>
