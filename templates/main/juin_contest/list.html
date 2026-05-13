@@ -24,42 +24,78 @@
     }
 
     .hero-royal {
-        padding: 100px 20px;
+        padding: 120px 20px 80px;
         text-align: center;
         background: radial-gradient(circle at center, #3d0f20 0%, var(--dark-bg) 100%);
+        position: relative;
+    }
+
+    .hero-royal::before {
+        content: '\f521'; /* Crown icon fontawesome */
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        position: absolute;
+        top: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 3rem;
+        color: var(--royal-gold);
+        opacity: 0.2;
     }
 
     .main-title {
         font-family: 'Cormorant Garamond', serif;
-        font-size: clamp(3rem, 10vw, 6rem);
+        font-size: clamp(3.5rem, 10vw, 6.5rem);
         font-weight: 700;
         margin-bottom: 20px;
         background: linear-gradient(to bottom, #fff 20%, var(--royal-gold) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        letter-spacing: -2px;
     }
 
     .candidate-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 40px;
-        padding-bottom: 100px;
+        padding-bottom: 120px;
     }
 
     .card-royal {
         position: relative;
         background: #11050a;
-        border-radius: 40px;
+        border-radius: 45px;
         overflow: hidden;
-        border: 1px solid rgba(212, 175, 55, 0.1);
-        transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-        height: 600px; /* Large cards as requested */
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+        height: 650px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .card-royal::after {
+        content: '\f521';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        position: absolute;
+        top: -15px;
+        right: 30px;
+        font-size: 2.5rem;
+        color: var(--royal-gold);
+        z-index: 10;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: 0.5s;
+    }
+
+    .card-royal:hover::after {
+        opacity: 1;
+        transform: translateY(0);
     }
 
     .card-royal:hover {
-        transform: translateY(-20px) scale(1.02);
+        transform: translateY(-25px) scale(1.02);
         border-color: var(--royal-gold);
-        box-shadow: 0 40px 80px rgba(0,0,0,0.9);
+        box-shadow: 0 40px 100px rgba(0,0,0,0.9), 0 0 30px rgba(212, 175, 55, 0.2);
     }
 
     .img-wrapper {
@@ -72,11 +108,11 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: transform 1.5s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
     .card-royal:hover .candidate-img {
-        transform: scale(1.1);
+        transform: scale(1.15);
     }
 
     .overlay-vignette {
@@ -84,9 +120,9 @@
         inset: 0;
         background: linear-gradient(to top, 
             rgba(10, 4, 7, 1) 0%, 
-            rgba(10, 4, 7, 0.8) 20%, 
-            rgba(10, 4, 7, 0) 50%, 
-            rgba(10, 4, 7, 0.4) 100%);
+            rgba(10, 4, 7, 0.9) 25%, 
+            rgba(10, 4, 7, 0) 60%, 
+            rgba(10, 4, 7, 0.5) 100%);
         z-index: 2;
     }
 
@@ -95,109 +131,161 @@
         bottom: 0;
         left: 0;
         right: 0;
-        padding: 40px;
+        padding: 45px;
         z-index: 3;
         text-align: center;
     }
 
     .top-badges {
         position: absolute;
-        top: 30px;
+        top: 35px;
         left: 0;
         right: 0;
         display: flex;
         justify-content: center;
-        gap: 10px;
+        gap: 12px;
         z-index: 3;
     }
 
     .badge-royal {
-        padding: 8px 20px;
+        padding: 10px 25px;
         border-radius: 50px;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 2px;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(15px);
         border: 1px solid rgba(255,255,255,0.1);
     }
 
     .badge-type { background: rgba(212, 175, 55, 0.2); color: var(--royal-gold); border-color: rgba(212, 175, 55, 0.3); }
-    .badge-votes { background: var(--rose-royal); color: #fff; border: none; box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3); }
+    .badge-votes { background: linear-gradient(135deg, var(--rose-deep), var(--rose-royal)); color: #fff; border: none; box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3); }
 
     .c-school {
         color: var(--royal-gold);
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         text-transform: uppercase;
-        letter-spacing: 4px;
-        margin-bottom: 10px;
+        letter-spacing: 5px;
+        margin-bottom: 12px;
         display: block;
-        font-weight: 700;
+        font-weight: 800;
     }
 
     .c-name {
         font-family: 'Cormorant Garamond', serif;
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 700;
         color: #fff;
-        margin-bottom: 25px;
+        margin-bottom: 30px;
         line-height: 1;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        text-shadow: 0 4px 15px rgba(0,0,0,0.6);
     }
 
     .btn-action {
         background: linear-gradient(135deg, var(--rose-deep), var(--rose-royal));
         color: white !important;
-        padding: 18px 40px;
-        border-radius: 20px;
+        padding: 22px 40px;
+        border-radius: 25px;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 3px;
+        letter-spacing: 4px;
         text-decoration: none;
         display: inline-block;
-        transition: all 0.3s;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         width: 100%;
         box-shadow: 0 15px 35px rgba(233, 30, 99, 0.4);
     }
 
     .btn-action:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 50px rgba(233, 30, 99, 0.6);
+        transform: translateY(-8px);
+        box-shadow: 0 25px 55px rgba(233, 30, 99, 0.7);
     }
 
     .royal-tabs {
         display: flex;
         justify-content: center;
         gap: 20px;
-        margin-bottom: 60px;
+        margin-bottom: 70px;
     }
 
     .tab-btn {
-        background: rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.03);
         border: 1px solid rgba(212, 175, 55, 0.2);
         color: #fff;
-        padding: 12px 35px;
+        padding: 15px 40px;
         border-radius: 50px;
-        font-weight: 700;
+        font-weight: 800;
         cursor: pointer;
-        transition: all 0.3s;
-        letter-spacing: 1px;
+        transition: all 0.4s;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-size: 0.8rem;
     }
 
     .tab-btn.active {
         background: var(--royal-gold);
         color: var(--dark-bg);
         border-color: var(--royal-gold);
-        box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        transform: scale(1.1);
     }
+
+    /* Floating Register Button */
+    .register-banner {
+        background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+        padding: 20px;
+        margin-bottom: 50px;
+        border-radius: 20px;
+        border: 1px solid rgba(212, 175, 55, 0.1);
+    }
+
+    .btn-register-main {
+        background: var(--royal-gold);
+        color: var(--dark-bg) !important;
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.3s;
+        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-register-main:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
+    }
+
+    /* Crown Ornaments */
+    .crown-ornament {
+        color: var(--royal-gold);
+        margin: 0 15px;
+        font-size: 1.5rem;
+    }
+
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="hero-royal">
     <div class="container" data-aos="zoom-out">
+        <div class="d-flex align-items-center justify-content-center mb-4">
+            <i class="fas fa-crown crown-ornament"></i>
+            <span class="text-uppercase tracking-widest text-gold fw-bold" style="letter-spacing: 8px;">Edition Prestige</span>
+            <i class="fas fa-crown crown-ornament"></i>
+        </div>
         <h1 class="main-title">MISS & MISTER<br>J.U.IN 2026</h1>
-        <p class="lead text-white-50 mt-4 mx-auto" style="max-width: 600px;">L'élégance, le charisme et l'excellence au cœur de la 20ème édition.</p>
+        <p class="lead text-white-50 mt-4 mx-auto" style="max-width: 600px; font-size: 1.2rem;">L'excellence académique alliée au charisme exceptionnel.</p>
+        
+        {% if edition.contest_registration_open %}
+        <div class="mt-5" data-aos="fade-up">
+            <a href="{% url 'juin_miss_mister_register' %}" class="btn-register-main">
+                <i class="fas fa-edit me-2"></i> S'inscrire au Concours
+            </a>
+        </div>
+        {% endif %}
     </div>
 </section>
 
@@ -213,8 +301,8 @@
         <div class="candidate-item" data-type="{{ c.candidate_type }}" data-aos="fade-up">
             <div class="card-royal">
                 <div class="top-badges">
-                    <span class="badge-royal badge-type">{{ c.get_candidate_type_display }}</span>
-                    <span class="badge-royal badge-votes">{{ c.votes_count }} VOTES</span>
+                    <span class="badge-royal badge-type"><i class="fas fa-award me-2"></i>{{ c.get_candidate_type_display }}</span>
+                    <span class="badge-royal badge-votes"><i class="fas fa-heart me-2"></i>{{ c.votes_count }} VOTES</span>
                 </div>
                 
                 <div class="img-wrapper">
