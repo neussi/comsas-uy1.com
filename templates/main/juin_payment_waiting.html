@@ -4,20 +4,22 @@
 {% block title %}Validation du Don Royal - J.U.IN 2026{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
     :root {
-        --royal-gold: #D4AF37;
-        --rose-deep: #B5124A;
-        --rose-royal: #E91E63;
-        --dark-bg: #0a0407;
-        --surface: #1a0a11;
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
     }
 
     body {
-        background-color: var(--dark-bg);
-        color: #fff;
-        font-family: 'Outfit', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     .waiting-section {
@@ -26,68 +28,56 @@
         align-items: center;
         justify-content: center;
         padding: 100px 20px;
-        background: radial-gradient(circle at center, #2d0a18 0%, var(--dark-bg) 100%);
     }
 
-    .royal-card {
-        background: var(--surface);
-        border: 1px solid var(--royal-gold);
-        border-radius: 30px;
+    .glass-card {
+        background: var(--blanc);
+        border: 1px solid rgba(233, 30, 99, 0.1);
+        border-radius: 24px;
         padding: clamp(30px, 8vw, 60px);
         max-width: 600px;
         width: 100%;
         text-align: center;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(212, 175, 55, 0.1);
+        box-shadow: 0 20px 50px rgba(233, 30, 99, 0.1);
         position: relative;
-        overflow: hidden;
     }
 
-    .royal-card::before {
-        content: '👑';
-        position: absolute;
-        top: -20px;
-        right: -20px;
-        font-size: 5rem;
-        opacity: 0.05;
-        transform: rotate(15deg);
-    }
-
-    .spinner-royal {
+    .spinner-rose {
         width: 80px;
         height: 80px;
-        border: 3px solid rgba(212, 175, 55, 0.1);
-        border-top: 3px solid var(--royal-gold);
+        border: 3px solid rgba(233, 30, 99, 0.1);
+        border-top: 3px solid var(--rose);
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin: 0 auto 30px;
-        box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
     }
 
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    .royal-title {
-        font-family: 'Cormorant Garamond', serif;
+    .rose-title {
+        font-weight: 800;
         font-size: clamp(1.8rem, 5vw, 2.5rem);
-        color: var(--royal-gold);
+        color: var(--text-dark);
         margin-bottom: 20px;
     }
 
-    .royal-text {
-        color: rgba(255,255,255,0.8);
+    .rose-text {
+        color: var(--text-dark);
+        opacity: 0.8;
         line-height: 1.6;
         margin-bottom: 30px;
     }
 
     .instruction-box {
-        background: rgba(212, 175, 55, 0.05);
-        border: 1px dashed var(--royal-gold);
+        background: var(--blanc-off);
+        border: 1px dashed rgba(233, 30, 99, 0.3);
         padding: 25px;
         border-radius: 20px;
         margin-bottom: 30px;
     }
 
     .instruction-title {
-        color: var(--royal-gold);
+        color: var(--rose);
         text-transform: uppercase;
         font-size: 0.8rem;
         letter-spacing: 2px;
@@ -99,6 +89,7 @@
     .instruction-content {
         font-weight: 600;
         font-size: 1.1rem;
+        color: var(--text-dark);
     }
 
     .status-pill {
@@ -114,25 +105,22 @@
     }
 
     .status-waiting {
-        background: rgba(212, 175, 55, 0.1);
-        color: var(--royal-gold);
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        background: rgba(233, 30, 99, 0.1);
+        color: var(--rose);
     }
 
     .status-success {
         background: rgba(34, 197, 94, 0.1);
-        color: #4ade80;
-        border: 1px solid rgba(34, 197, 94, 0.2);
+        color: #16a34a;
     }
 
     .status-error {
-        background: rgba(233, 30, 99, 0.1);
-        color: var(--rose-royal);
-        border: 1px solid rgba(233, 30, 99, 0.2);
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
     }
 
-    .btn-back-royal {
-        color: var(--royal-gold);
+    .btn-back-rose {
+        color: var(--rose);
         text-decoration: none;
         font-weight: 600;
         font-size: 0.9rem;
@@ -141,8 +129,8 @@
         margin-top: 20px;
     }
 
-    .btn-back-royal:hover {
-        color: #fff;
+    .btn-back-rose:hover {
+        color: var(--rose-dark);
         transform: translateX(-5px);
     }
 </style>
@@ -150,19 +138,19 @@
 
 {% block content %}
 <section class="waiting-section">
-    <div class="royal-card">
-        <div class="spinner-royal"></div>
+    <div class="glass-card">
+        <div class="spinner-rose"></div>
         
-        <h2 class="royal-title">Validation de votre don</h2>
-        <p class="royal-text">
+        <h2 class="rose-title">Validation de votre don</h2>
+        <p class="rose-text">
             Merci <strong>{{ donation.nom_prenom }}</strong> !<br>
-            Votre don de <strong class="text-white">{{ donation.montant }} FCFA</strong> est en cours de traitement.
+            Votre don de <strong>{{ donation.montant }} FCFA</strong> est en cours de traitement.
         </p>
 
         <div class="instruction-box">
             <span class="instruction-title">Instructions de paiement</span>
             <div class="instruction-content">{{ instructions }}</div>
-            <div class="mt-2 small opacity-50">
+            <div class="mt-2 small text-muted">
                 Référence : {{ donation.freemopay_reference|default:donation.external_id }}
             </div>
         </div>
@@ -171,12 +159,12 @@
             <i class="fas fa-sync fa-spin"></i> Attente de confirmation...
         </div>
 
-        <p class="small opacity-50 mt-3">
+        <p class="small text-muted mt-3">
             Veuillez valider l'opération sur votre téléphone.<br>
             Cette page se mettra à jour automatiquement.
         </p>
 
-        <a href="{% url 'juin' %}" class="btn-back-royal">
+        <a href="{% url 'juin' %}" class="btn-back-rose">
             <i class="fas fa-arrow-left me-2"></i> Retour au portail J.U.IN
         </a>
     </div>

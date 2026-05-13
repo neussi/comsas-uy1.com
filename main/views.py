@@ -1284,7 +1284,7 @@ def juin_donate(request):
             # Si paiement Mobile Money, on initie FreemoPay
             if donation.type_paiement in ('mtn', 'orange'):
                 import uuid
-                external_id = str(uuid.uuid4())
+                external_id = f"JUINDON-{uuid.uuid4()}"
                 donation.external_id = external_id
                 donation.save()
                 
@@ -1372,6 +1372,21 @@ def juin_payment_webhook(request):
 def juin_payment_status_check(request, external_id):
     """Vérifier le statut du paiement (AJAX polling)"""
     donation = get_object_or_404(JUINDonation, external_id=external_id)
+    
+    if donation.payment_status == 'initiated' and donation.freemopay_reference:
+        from .freemopay_service import FreemopayService
+        service = FreemopayService()
+        check = service.check_payment_status(donation.freemopay_reference)
+        if check.get('success'):
+            status = check.get('status')
+            if status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
+                donation.is_confirmed = True
+                donation.payment_status = 'completed'
+                donation.save()
+            elif status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED'):
+                donation.payment_status = 'failed'
+                donation.save()
+                
     return JsonResponse({
         'status': donation.payment_status,
         'is_confirmed': donation.is_confirmed

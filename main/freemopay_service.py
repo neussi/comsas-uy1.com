@@ -208,26 +208,41 @@ class FreemopayWebhookHandler:
             if not external_id:
                 return {'success': False, 'error': 'No externalId'}
 
-            # Dépôt (Vote)
+            # Dépôt (Vote ou Don)
             if transaction_type == 'DEPOSIT':
                 try:
                     if external_id.startswith('JUINVOTE'):
                         from .models import JUINVote
                         vote = JUINVote.objects.get(transaction_id=external_id)
+                        if status == 'SUCCESS':
+                            processor = FreemopayPaymentProcessor()
+                            processor.confirm_payment(vote)
+                        elif status == 'FAILED':
+                            vote.status = 'failed'
+                            vote.save()
+                        return {'success': True}
+                    elif external_id.startswith('JUINDON'):
+                        from .models import JUINDonation
+                        donation = JUINDonation.objects.get(external_id=external_id)
+                        if status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
+                            donation.is_confirmed = True
+                            donation.payment_status = 'completed'
+                            donation.save()
+                        elif status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED'):
+                            donation.payment_status = 'failed'
+                            donation.save()
+                        return {'success': True}
                     else:
                         vote = Vote.objects.get(transaction_id=external_id)
-                    
-                    if status == 'SUCCESS':
-                        processor = FreemopayPaymentProcessor()
-                        processor.confirm_payment(vote)
-                    elif status == 'FAILED':
-                        vote.status = 'failed'
-                        vote.save()
-                    return {'success': True}
-                except (Vote.DoesNotExist, Exception) as e:
-                    return {'success': False, 'error': f'Vote non trouvé ou erreur: {str(e)}'}
-            
-            return {'success': True}
+                        if status == 'SUCCESS':
+                            processor = FreemopayPaymentProcessor()
+                            processor.confirm_payment(vote)
+                        elif status == 'FAILED':
+                            vote.status = 'failed'
+                            vote.save()
+                        return {'success': True}
+                except Exception as e:
+                    return {'success': False, 'error': f'Objet non trouvé ou erreur: {str(e)}'}
         except Exception as e:
             logger.error(f"[FREEMOPAY WEBHOOK] Error: {e}")
             return {'success': False, 'error': str(e)}
@@ -278,6 +293,23 @@ class FreemopayService(FreemopayPaymentProcessor):
                 
         except Exception as e:
             logger.error(f"[FREEMOPAY] Erreur initiate_payment: {e}")
+            return {'success': False, 'error': str(e)}
+
+    def check_payment_status(self, reference):
+        try:
+            response = self.session.get(
+                f"{self.base_url}/api/v2/payment/{reference}",
+                timeout=30
+            )
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    'success': True,
+                    'status': data.get('status', 'PENDING'),
+                    'data': data
+                }
+            return {'success': False, 'error': f'HTTP {response.status_code}'}
+        except Exception as e:
             return {'success': False, 'error': str(e)}
 
     def _get_webhook_url(self):
