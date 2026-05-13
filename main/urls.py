@@ -102,8 +102,8 @@ urlpatterns = [
     path('juin/soutenir/', views.juin_donate, name='juin_donate'),
     
     # Concours / Candidats
-    path('juin/concours/<slug:contest_slug>/postuler/', views.juin_miss_mister_register, name='juin_candidate_register'),
-    path('juin/concours/<slug:contest_slug>/candidats/', views.juin_candidates_status, name='juin_candidates'),
+    path('juin/concours/postuler/', views.juin_miss_mister_register, name='juin_candidate_register'),
+    path('juin/concours/candidats/', views.juin_candidates_status, name='juin_candidates'),
 
     # Membres
     path('membres/', views.members_list, name='members_list'),
@@ -118,6 +118,9 @@ urlpatterns = [
     path('api/payments/status/<uuid:external_id>/', views.juin_payment_status_check, name='juin_payment_status'),
     path('api/vote/initiate/', views.contest_vote_initiate, name='contest_vote_initiate'),
     path('api/vote/status/<str:transaction_id>/', views.vote_status_check, name='vote_status_check'),
+    path('api/juin/vote/initiate/', views.juin_vote_initiate, name='juin_vote_initiate'),
+    path('api/juin/vote/status/<str:transaction_id>/', views.juin_vote_status_check, name='juin_vote_status_check'),
+    path('juin/concours/vote/merci/<str:transaction_id>/', views.juin_vote_complete, name='juin_vote_complete'),
     path('concours/vote/merci/<str:transaction_id>/', views.vote_complete, name='vote_complete'),
 
     # ============= NOUVELLES FONCTIONNALITÉS 2026 =============

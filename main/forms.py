@@ -646,3 +646,22 @@ class CandidateRegistrationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'form-control'})
+
+from .models import JUINCandidate
+
+class JUINCandidateRegistrationForm(forms.ModelForm):
+    class Meta:
+        model = JUINCandidate
+        fields = ['name', 'candidate_type', 'age', 'level', 'school', 'phone', 'email', 'description', 'image', 'video_url']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Décrivez votre parcours et vos motivations...'}),
+            'candidate_type': forms.Select(attrs={'class': 'form-select'}),
+            'school': forms.Select(attrs={'class': 'form-select'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name not in ('candidate_type', 'school'):
+                field.widget.attrs.update({'class': 'form-control'})
+

@@ -1743,50 +1743,42 @@ def contest_candidate_register(request, contest_slug):
         
     return render(request, template_name, {'form': form, 'contest': contest})
 
+from .models import JUINCandidate, JUINVote
+
 def juin_miss_mister_register(request, contest_slug=None):
     """Vue dédiée à l'inscription Miss/Mister JUIN 2026"""
-    if contest_slug:
-        contest = get_object_or_404(Contest, slug=contest_slug)
-    else:
-        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
-    if not contest:
-        contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
-    
-    if not contest:
-        messages.error(request, "Le concours Miss & Mister J.U.IN 2026 n'est pas encore configuré.")
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if not edition:
+        messages.error(request, "Aucune édition active du J.U.IN pour le moment.")
         return redirect('juin')
 
-    if not contest.is_active:
-        messages.warning(request, "Les inscriptions pour ce concours ne sont pas encore ouvertes.")
-        return redirect('juin_miss_mister')
-
     if request.method == 'POST':
-        from .forms import CandidateRegistrationForm
-        form = CandidateRegistrationForm(request.POST, request.FILES)
+        from .forms import JUINCandidateRegistrationForm
+        form = JUINCandidateRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             candidate = form.save(commit=False)
-            candidate.contest = contest
+            candidate.edition = edition
             candidate.status = 'pending'
             candidate.save()
             messages.success(request, "Votre candidature a été soumise avec succès ! Elle sera visible après validation.")
             return redirect('juin_miss_mister')
     else:
-        from .forms import CandidateRegistrationForm
-        form = CandidateRegistrationForm()
+        from .forms import JUINCandidateRegistrationForm
+        form = JUINCandidateRegistrationForm()
         
     return render(request, 'main/juin_contest/register.html', {
         'form': form, 
-        'contest': contest,
+        'edition': edition,
         'title': "Inscription Miss & Mister"
     })
 
-def juin_candidates_status(request, contest_slug):
-    """Affichage des candidats retenus pour un concours"""
-    contest = get_object_or_404(Contest, slug=contest_slug)
-    candidates = Candidate.objects.filter(contest=contest, status='approved').order_by('name')
+def juin_candidates_status(request, contest_slug=None):
+    """Affichage des candidats retenus pour un concours JUIN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    candidates = JUINCandidate.objects.filter(edition=edition, status='approved').order_by('name') if edition else []
     
     return render(request, 'main/juin_candidates.html', {
-        'contest': contest,
+        'edition': edition,
         'candidates': candidates
     })
 
@@ -1879,47 +1871,120 @@ def vote_complete(request, transaction_id):
     return render(request, 'main/contests/vote_complete.html', {'vote': vote})
 
 
+def juin_vote_initiate(request):
+    """Initier un vote payant JUIN (100 FCFA/voix)"""
+    if request.method == 'POST':
+        candidate_id = request.POST.get('candidate_id')
+        vote_count = int(request.POST.get('vote_count', 1))
+        phone = request.POST.get('phone')
+        
+        if not candidate_id or not phone or vote_count < 1:
+            return JsonResponse({'success': False, 'error': 'Données invalides'}, status=400)
+            
+        candidate = get_object_or_404(JUINCandidate, id=candidate_id)
+        amount = vote_count * 100
+        import uuid
+        transaction_id = f"JUINVOTE-{uuid.uuid4().hex[:8].upper()}"
+        
+        voter_name = request.POST.get('voter_name')
+        voter_school = request.POST.get('voter_school')
+        operator = request.POST.get('operator')
+        is_anonymous = request.POST.get('is_anonymous') == 'true'
+        
+        vote = JUINVote.objects.create(
+            edition=candidate.edition,
+            candidate=candidate,
+            voter_phone=phone,
+            operator=operator,
+            voter_name=voter_name,
+            voter_school=voter_school,
+            is_anonymous=is_anonymous,
+            vote_count=vote_count,
+            amount=amount,
+            transaction_id=transaction_id,
+            status='pending',
+            ip_address=request.META.get('REMOTE_ADDR'),
+            user_agent=request.META.get('HTTP_USER_AGENT')
+        )
+        
+        from .freemopay_service import FreemopayPaymentProcessor
+        processor = FreemopayPaymentProcessor()
+        result = processor.process_vote_payment(vote)
+        
+        if result.get('success'):
+            return JsonResponse({
+                'success': True,
+                'transaction_id': transaction_id,
+                'amount': amount,
+                'message': result.get('message')
+            })
+        else:
+            vote.status = 'failed'
+            vote.save()
+            return JsonResponse({'success': False, 'error': result.get('error')})
+            
+    return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
+
+def juin_vote_status_check(request, transaction_id):
+    """Vérifier le statut d'un vote JUIN (polling)"""
+    vote = get_object_or_404(JUINVote, transaction_id=transaction_id)
+    
+    if vote.status == 'processing':
+        from .freemopay_service import FreemopayPaymentProcessor
+        processor = FreemopayPaymentProcessor()
+        check = processor.verify_payment_status(vote)
+        if check.get('success') and check.get('status') == 'completed':
+            processor.confirm_payment(vote)
+            
+    return JsonResponse({
+        'status': vote.status,
+        'is_confirmed': vote.status == 'completed',
+        'candidate_name': vote.candidate.name,
+        'vote_count': vote.vote_count
+    })
+
+def juin_vote_complete(request, transaction_id):
+    """Page de confirmation finale du vote JUIN"""
+    vote = get_object_or_404(JUINVote, transaction_id=transaction_id)
+    return render(request, 'main/contests/vote_complete.html', {'vote': vote})
+
 # ============= MISS & MISTER J.U.IN 2026 =============
 
 def juin_miss_mister_contest(request):
     """Page principale du concours Miss & Mister J.U.IN 2026"""
-    # Recherche spécifique par slug exact pour J.U.IN 2026
-    contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
-    if not contest:
-        # Fallback sur une recherche plus large si le slug a été modifié
-        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    edition = JUINEdition.objects.filter(is_active=True).first()
     
-    # Si toujours pas trouvé, on ne prend rien plutôt que de prendre le mauvais
-    if not contest:
+    if not edition:
         candidates = []
         misses = []
         misters = []
     else:
-        candidates = Candidate.objects.filter(contest=contest, status='approved').order_by('candidate_type', 'name')
-        # Séparer Miss et Mister
+        candidates = JUINCandidate.objects.filter(edition=edition, status='approved').order_by('candidate_type', 'name')
         misses = [c for c in candidates if c.candidate_type == 'miss']
         misters = [c for c in candidates if c.candidate_type == 'mister']
     
     context = {
-        'contest': contest,
+        'edition': edition,
         'misses': misses,
         'misters': misters,
         'candidates': candidates,
+        'total_votes': sum(c.votes_count for c in candidates) if candidates else 0
     }
     return render(request, 'main/juin_contest/list.html', context)
 
 def juin_candidate_detail(request, pk):
     """Page de détail d'un candidat Miss/Mister"""
-    candidate = get_object_or_404(Candidate, pk=pk)
-    contest = candidate.contest
+    candidate = get_object_or_404(JUINCandidate, pk=pk)
+    edition = candidate.edition
     
     # Stats simples
-    total_votes_contest = sum(c.votes_count for c in contest.candidates.all())
-    rank = Candidate.objects.filter(contest=contest, votes_count__gt=candidate.votes_count).count() + 1
+    all_candidates = JUINCandidate.objects.filter(edition=edition, status='approved')
+    total_votes_contest = sum(c.votes_count for c in all_candidates)
+    rank = all_candidates.filter(votes_count__gt=candidate.votes_count).count() + 1
     
     context = {
         'candidate': candidate,
-        'contest': contest,
+        'edition': edition,
         'rank': rank,
         'total_votes_contest': total_votes_contest,
         'percentage': round((candidate.votes_count / total_votes_contest * 100), 1) if total_votes_contest > 0 else 0
@@ -1928,11 +1993,8 @@ def juin_candidate_detail(request, pk):
 
 def juin_contest_results(request):
     """Page des résultats en temps réel avec graphiques"""
-    contest = Contest.objects.filter(slug__icontains='miss-mister', is_active=True).first()
-    if not contest:
-        contest = Contest.objects.first()
-        
-    candidates = Candidate.objects.filter(contest=contest, status='approved').order_by('-votes_count')
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    candidates = JUINCandidate.objects.filter(edition=edition, status='approved').order_by('-votes_count') if edition else []
     
     # Data for charts
     labels = [c.name for c in candidates]
@@ -1941,7 +2003,7 @@ def juin_contest_results(request):
     # Results per school
     school_results = {}
     for c in candidates:
-        school = c.school or "Autre"
+        school = c.get_school_display() or "Autre"
         school_results[school] = school_results.get(school, 0) + c.votes_count
     
     school_labels = list(school_results.keys())

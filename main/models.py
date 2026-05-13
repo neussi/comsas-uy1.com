@@ -1237,6 +1237,88 @@ class JUINDonation(models.Model):
         return "Donateur Anonyme" if self.is_anonymous else self.nom_prenom
 
 
+class JUINCandidate(models.Model):
+    """Candidat(e) au concours Miss & Mister J.U.IN 2026"""
+    STATUS_CHOICES = [
+        ('pending', '⏳ En attente'),
+        ('approved', '✅ Approuvé'),
+        ('rejected', '❌ Rejeté'),
+    ]
+    CANDIDATE_TYPES = [
+        ('miss', 'Miss'),
+        ('mister', 'Mister'),
+    ]
+
+    edition = models.ForeignKey('JUINEdition', on_delete=models.CASCADE, related_name='candidates', verbose_name="Édition")
+    name = models.CharField(max_length=200, verbose_name="Nom complet")
+    candidate_type = models.CharField(max_length=20, choices=CANDIDATE_TYPES, verbose_name="Type de candidat")
+    age = models.PositiveIntegerField(verbose_name="Âge")
+    level = models.CharField(max_length=50, verbose_name="Niveau d'étude")
+    school = models.CharField(max_length=50, choices=JUINEdition.SCHOOL_CHOICES, verbose_name="Établissement")
+    phone = models.CharField(max_length=20, verbose_name="Téléphone (WhatsApp)")
+    email = models.EmailField(verbose_name="Email", blank=True, null=True)
+    description = models.TextField(verbose_name="Biographie / Motivations")
+    image = models.ImageField(upload_to='juin/candidates/', verbose_name="Photo Principale")
+    video_url = models.URLField(blank=True, null=True, verbose_name="Lien Vidéo Présentation")
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Statut")
+    
+    votes_count = models.IntegerField(default=0, verbose_name="Nombre de votes")
+    total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Revenus générés (FCFA)")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Candidat(e) Miss/Mister J.U.IN"
+        verbose_name_plural = "Candidats Miss/Mister J.U.IN"
+        ordering = ['-votes_count', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.get_candidate_type_display()})"
+
+
+class JUINVote(models.Model):
+    """Vote pour le concours Miss & Mister J.U.IN"""
+    VOTE_STATUS = [
+        ('pending', 'En attente'),
+        ('processing', 'En cours'),
+        ('completed', 'Confirmé ✅'),
+        ('failed', 'Échoué ❌'),
+        ('cancelled', 'Annulé'),
+    ]
+
+    edition = models.ForeignKey('JUINEdition', on_delete=models.CASCADE, verbose_name="Édition")
+    candidate = models.ForeignKey(JUINCandidate, on_delete=models.CASCADE, related_name='votes', verbose_name="Candidat")
+    
+    voter_name = models.CharField(max_length=200, blank=True, null=True, verbose_name="Nom du Votant")
+    voter_phone = models.CharField(max_length=20, verbose_name="Téléphone Votant")
+    voter_school = models.CharField(max_length=200, blank=True, null=True, verbose_name="Établissement du Votant")
+    operator = models.CharField(max_length=20, blank=True, null=True, verbose_name="Opérateur")
+    is_anonymous = models.BooleanField(default=False, verbose_name="Vote Anonyme")
+    
+    vote_count = models.IntegerField(default=1, verbose_name="Nombre de voix")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Montant payé (FCFA)")
+    
+    transaction_id = models.CharField(max_length=100, unique=True, null=True, blank=True, verbose_name="ID Transaction")
+    payment_reference = models.CharField(max_length=100, blank=True, null=True, verbose_name="Référence Paiement")
+    withdrawal_reference = models.CharField(max_length=100, blank=True, null=True, verbose_name="Référence Retrait")
+    status = models.CharField(max_length=20, choices=VOTE_STATUS, default='pending', verbose_name="Statut")
+    
+    ip_address = models.GenericIPAddressField(verbose_name="Adresse IP", null=True, blank=True)
+    user_agent = models.TextField(blank=True, null=True, verbose_name="User Agent")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(blank=True, null=True, verbose_name="Date de confirmation")
+
+    class Meta:
+        verbose_name = "Vote Miss/Mister J.U.IN"
+        verbose_name_plural = "Votes Miss/Mister J.U.IN"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Vote pour {self.candidate.name} par {self.voter_phone}"
+
+
 class JUINSponsor(models.Model):
     """Sponsors et partenaires du J.U.IN 2026"""
     TIER_CHOICES = [

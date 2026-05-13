@@ -489,7 +489,7 @@ class ArchiveForm(forms.ModelForm):
 
 from main.models import (
     JUINEdition, JUINCommission, JUINCommissionApplication, 
-    JUINActivity, JUINCompetition, JUINTeam, JUINDonation, JUINSponsor
+    JUINActivity, JUINCompetition, JUINTeam, JUINDonation, JUINSponsor, JUINCandidate
 )
 
 class JUINEditionForm(forms.ModelForm):
@@ -762,4 +762,39 @@ class JUINTeamForm(forms.ModelForm):
                 'statut',
             ),
             Submit('submit', _('Enregistrer l\'équipe'), css_class='btn btn-primary btn-lg w-100')
+        )
+
+class JUINCandidateForm(forms.ModelForm):
+    """Formulaire admin pour les candidats JUIN"""
+    class Meta:
+        model = JUINCandidate
+        fields = ['edition', 'name', 'candidate_type', 'age', 'level', 'school', 'phone', 'email', 'description', 'image', 'video_url', 'status']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                _('Détails du candidat'),
+                'edition',
+                'name',
+                Row(
+                    Column('candidate_type', css_class='form-group col-md-4 mb-3'),
+                    Column('age', css_class='form-group col-md-4 mb-3'),
+                    Column('level', css_class='form-group col-md-4 mb-3'),
+                ),
+                Row(
+                    Column('school', css_class='form-group col-md-4 mb-3'),
+                    Column('phone', css_class='form-group col-md-4 mb-3'),
+                    Column('email', css_class='form-group col-md-4 mb-3'),
+                ),
+                'description',
+                'image',
+                'video_url',
+                'status',
+            ),
+            Submit('submit', _('Enregistrer le candidat'), css_class='btn btn-primary btn-lg w-100')
         )

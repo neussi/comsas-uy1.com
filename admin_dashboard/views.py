@@ -1977,31 +1977,30 @@ def admin_send_event_certificates(request, pk):
 # MISS & MISTER J.U.IN 2026 ADMIN
 # ============================================================
 
+from main.models import JUINCandidate, JUINVote
+
 @custom_staff_member_required
 def admin_juin_miss_mister_dashboard(request):
     """Tableau de bord financier et statistiques du concours Miss/Mister"""
-    # Recherche stricte de l'édition J.U.IN
-    contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
-    if not contest:
-        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    edition = JUINEdition.objects.filter(is_active=True).first()
         
-    candidates = Candidate.objects.filter(contest=contest).order_by('-votes_count')
+    candidates = JUINCandidate.objects.filter(edition=edition).order_by('-votes_count') if edition else []
     total_votes = sum(c.votes_count for c in candidates)
     total_revenue = sum(c.total_revenue for c in candidates)
     
     # Votes récents
-    recent_votes = Vote.objects.filter(contest=contest, status='completed').order_by('-completed_at')[:10]
+    recent_votes = JUINVote.objects.filter(edition=edition, status='completed').order_by('-completed_at')[:10] if edition else []
     
     # Stats par jour (7 derniers jours)
     from django.db.models.functions import TruncDate
-    daily_stats = Vote.objects.filter(contest=contest, status='completed', completed_at__gte=timezone.now() - timezone.timedelta(days=7)) \
+    daily_stats = JUINVote.objects.filter(edition=edition, status='completed', completed_at__gte=timezone.now() - timezone.timedelta(days=7)) \
         .annotate(date=TruncDate('completed_at')) \
         .values('date') \
         .annotate(total=Sum('vote_count'), revenue=Sum('amount')) \
-        .order_by('date')
+        .order_by('date') if edition else []
         
     context = {
-        'contest': contest,
+        'edition': edition,
         'candidates': candidates,
         'total_votes': total_votes,
         'total_revenue': total_revenue,
@@ -2013,27 +2012,19 @@ def admin_juin_miss_mister_dashboard(request):
 @custom_staff_member_required
 def admin_juin_candidates_list(request):
     """Liste de tous les candidats avec actions d'administration"""
-    # Recherche stricte de l'édition J.U.IN
-    contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
-    if not contest:
-        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
-        
-    candidates = Candidate.objects.filter(contest=contest).order_by('status', 'name') if contest else []
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    candidates = JUINCandidate.objects.filter(edition=edition).order_by('status', 'name') if edition else []
     
     return render(request, 'admin_dashboard/juin/candidates_list.html', {
         'candidates': candidates,
-        'contest': contest
+        'edition': edition
     })
 
 @custom_staff_member_required
 def admin_juin_votes_list(request):
     """Journal complet des votes et transactions"""
-    # Recherche stricte de l'édition J.U.IN
-    contest = Contest.objects.filter(slug='juin-miss-mister-2026').first()
-    if not contest:
-        contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
-        
-    votes_queryset = Vote.objects.filter(candidate__contest=contest).order_by('-id') if contest else Vote.objects.none()
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    votes_queryset = JUINVote.objects.filter(edition=edition).order_by('-id') if edition else JUINVote.objects.none()
     
     paginator = Paginator(votes_queryset, 50)
     page_number = request.GET.get('page')
@@ -2041,53 +2032,55 @@ def admin_juin_votes_list(request):
     
     return render(request, 'admin_dashboard/juin/votes_list.html', {
         'votes': votes,
-        'contest': contest
+        'edition': edition
     })
+
+from .forms import JUINCandidateForm
 
 @custom_staff_member_required
 def admin_juin_candidate_create(request):
     """Ajouter un candidat Miss/Mister JUIN"""
-    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
+    edition = JUINEdition.objects.filter(is_active=True).first()
     if request.method == 'POST':
-        form = CandidateForm(request.POST, request.FILES)
+        form = JUINCandidateForm(request.POST, request.FILES)
         if form.is_valid():
             candidate = form.save(commit=False)
-            candidate.contest = contest
+            candidate.edition = edition
             candidate.save()
             messages.success(request, f"Candidat {candidate.name} ajouté.")
             return redirect('admin_juin_miss_mister_candidates')
     else:
-        form = CandidateForm(initial={'contest': contest})
+        form = JUINCandidateForm(initial={'edition': edition})
     
     return render(request, 'admin_dashboard/contests/candidate_form.html', {
         'form': form,
         'title': "Ajouter un candidat Miss/Mister",
-        'contest': contest
+        'edition': edition
     })
 
 @custom_staff_member_required
 def admin_juin_candidate_edit(request, pk):
     """Modifier un candidat Miss/Mister JUIN"""
-    candidate = get_object_or_404(Candidate, pk=pk)
+    candidate = get_object_or_404(JUINCandidate, pk=pk)
     if request.method == 'POST':
-        form = CandidateForm(request.POST, request.FILES, instance=candidate)
+        form = JUINCandidateForm(request.POST, request.FILES, instance=candidate)
         if form.is_valid():
             form.save()
             messages.success(request, f"Candidat {candidate.name} mis à jour.")
             return redirect('admin_juin_miss_mister_candidates')
     else:
-        form = CandidateForm(instance=candidate)
+        form = JUINCandidateForm(instance=candidate)
     
     return render(request, 'admin_dashboard/contests/candidate_form.html', {
         'form': form,
         'title': f"Modifier {candidate.name}",
-        'contest': candidate.contest
+        'edition': candidate.edition
     })
 
 @custom_staff_member_required
 def admin_juin_candidate_delete(request, pk):
     """Supprimer un candidat Miss/Mister JUIN"""
-    candidate = get_object_or_404(Candidate, pk=pk)
+    candidate = get_object_or_404(JUINCandidate, pk=pk)
     if request.method == 'POST':
         candidate.delete()
         messages.success(request, "Candidat supprimé.")
@@ -2099,21 +2092,17 @@ def admin_juin_candidate_delete(request, pk):
 
 @custom_staff_member_required
 def admin_juin_contest_toggle(request):
-    """Démarrer/Arrêter les inscriptions ou les votes du concours"""
-    contest = Contest.objects.filter(slug__icontains='juin').filter(slug__icontains='miss-mister').first()
-    if not contest:
-        messages.error(request, "Concours introuvable.")
+    """Démarrer/Arrêter les inscriptions ou les votes du concours JUIN"""
+    edition = JUINEdition.objects.filter(is_active=True).first()
+    if not edition:
+        messages.error(request, "Édition introuvable.")
         return redirect('admin_juin_miss_mister')
         
     action = request.GET.get('action')
-    if action == 'toggle_active':
-        contest.is_active = not contest.is_active
-        status = "activé" if contest.is_active else "désactivé"
-        messages.success(request, f"Le concours est maintenant {status}.")
-    elif action == 'toggle_public':
-        contest.allow_public_candidates = not contest.allow_public_candidates
-        status = "ouvertes" if contest.allow_public_candidates else "fermées"
+    if action == 'toggle_public':
+        edition.applications_open = not edition.applications_open
+        status = "ouvertes" if edition.applications_open else "fermées"
         messages.success(request, f"Les inscriptions publiques sont maintenant {status}.")
     
-    contest.save()
+    edition.save()
     return redirect('admin_juin_miss_mister')

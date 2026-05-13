@@ -211,7 +211,12 @@ class FreemopayWebhookHandler:
             # Dépôt (Vote)
             if transaction_type == 'DEPOSIT':
                 try:
-                    vote = Vote.objects.get(transaction_id=external_id)
+                    if external_id.startswith('JUINVOTE'):
+                        from .models import JUINVote
+                        vote = JUINVote.objects.get(transaction_id=external_id)
+                    else:
+                        vote = Vote.objects.get(transaction_id=external_id)
+                    
                     if status == 'SUCCESS':
                         processor = FreemopayPaymentProcessor()
                         processor.confirm_payment(vote)
@@ -219,8 +224,8 @@ class FreemopayWebhookHandler:
                         vote.status = 'failed'
                         vote.save()
                     return {'success': True}
-                except Vote.DoesNotExist:
-                    return {'success': False, 'error': 'Vote not found'}
+                except (Vote.DoesNotExist, Exception) as e:
+                    return {'success': False, 'error': f'Vote non trouvé ou erreur: {str(e)}'}
             
             return {'success': True}
         except Exception as e:

@@ -468,7 +468,7 @@
         voteContent.classList.add('d-none');
         loading.classList.remove('d-none');
         
-        fetch('{% url "contest_vote_initiate" %}', {
+        fetch('{% url "juin_vote_initiate" %}', {
             method: 'POST',
             body: formData,
             headers: {
