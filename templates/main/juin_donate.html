@@ -822,8 +822,7 @@
                                         <select name="{{ donate_form.type_paiement.html_name }}"
                                             id="{{ donate_form.type_paiement.id_for_label }}">
                                             {% for val, lbl in donate_form.type_paiement.field.choices %}
-                                            <option value="{{ val }}" {% if donate_form.type_paiement.value==val
-                                                %}selected{% endif %}>
+                                            <option value="{{ val }}" {% if donate_form.type_paiement.value == val %}selected{% endif %}>
                                                 {{ lbl }}
                                             </option>
                                             {% endfor %}
