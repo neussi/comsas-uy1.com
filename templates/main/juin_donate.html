@@ -297,12 +297,13 @@
 
     .juin-field label {
         position: absolute;
-        top: 18px;
+        top: 8px;
         left: 18px;
-        font-size: 0.78rem;
-        font-weight: 500;
+        font-size: 0.62rem;
+        font-weight: 800;
         color: #8a6070;
-        /* Changed from white-ish to visible muted color */
+        text-transform: uppercase;
+        letter-spacing: .5px;
         pointer-events: none;
         transition: all .22s ease;
         z-index: 2;
@@ -339,14 +340,8 @@
     }
 
     .juin-field input:focus~label,
-    .juin-field input:not(:placeholder-shown)~label,
     .juin-field select:focus~label {
-        top: 8px;
-        font-size: 0.62rem;
         color: var(--rose);
-        font-weight: 800;
-        letter-spacing: .5px;
-        text-transform: uppercase;
     }
 
     .juin-field select option {
