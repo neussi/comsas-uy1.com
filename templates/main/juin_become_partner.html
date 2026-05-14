@@ -384,6 +384,13 @@ body {
                     </div>
                     {% endfor %}
 
+                    {% if form.errors %}
+                    <div class="alert alert-danger mb-4">
+                        <strong>Erreur de validation :</strong> Veuillez vérifier les champs ci-dessous.
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
                     <form method="post" enctype="multipart/form-data" novalidate>
                         {% csrf_token %}
 
@@ -394,15 +401,20 @@ body {
                         <div class="row g-3">
                             <div class="col-md-6">
                                 {{ form.company_name|as_crispy_field }}
+                                {% if form.company_name.errors %}<div class="text-danger small mt-1">{{ form.company_name.errors|join:', ' }}</div>{% endif %}
                             </div>
                             <div class="col-md-6">
                                 {{ form.tier|as_crispy_field }}
+                                {% if form.tier.errors %}<div class="text-danger small mt-1">{{ form.tier.errors|join:', ' }}</div>{% endif %}
                             </div>
                             <div class="col-md-6">
                                 {{ form.website|as_crispy_field }}
+                                {% if form.website.errors %}<div class="text-danger small mt-1">{{ form.website.errors|join:', ' }}</div>{% endif %}
                             </div>
                             <div class="col-md-6">
                                 {{ form.logo|as_crispy_field }}
+                                {% if form.logo.errors %}<div class="text-danger small mt-1">{{ form.logo.errors|join:', ' }}</div>{% endif %}
+                                <small style="color:rgba(255,255,255,.3);font-size:.73rem;">Optionnel — format PNG, JPG (max 5 MB)</small>
                             </div>
                         </div>
 
@@ -413,9 +425,11 @@ body {
                         <div class="row g-3">
                             <div class="col-12">
                                 {{ form.contact_name|as_crispy_field }}
+                                {% if form.contact_name.errors %}<div class="text-danger small mt-1">{{ form.contact_name.errors|join:', ' }}</div>{% endif %}
                             </div>
                             <div class="col-md-6">
                                 {{ form.contact_email|as_crispy_field }}
+                                {% if form.contact_email.errors %}<div class="text-danger small mt-1">{{ form.contact_email.errors|join:', ' }}</div>{% endif %}
                             </div>
                             <div class="col-md-6">
                                 {{ form.contact_phone|as_crispy_field }}

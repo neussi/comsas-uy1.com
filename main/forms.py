@@ -482,7 +482,8 @@ class JUINSponsorRequestForm(forms.ModelForm):
             else:
                 field.widget.attrs.update({'class': 'form-control'})
                 
-        self.fields['logo'].required = True
+        # Logo optionnel — l'admin peut l'ajouter via le dashboard
+        self.fields['logo'].required = False
 
     def clean_logo(self):
         logo = self.cleaned_data.get('logo')
