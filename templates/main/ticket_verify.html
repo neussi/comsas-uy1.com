@@ -79,7 +79,20 @@
 
                 <div class="verification-card shadow-lg animate__animated animate__fadeInUp">
                     <div class="card-body p-4 p-md-5">
-                        {% if not registration %}
+                        {% if valid == False %}
+                        <div class="status-badge status-error mb-4 animate__animated animate__shakeX">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="fw-bold text-danger mb-2">Document Invalide</h3>
+                            <p class="text-muted mb-4">L'identifiant fourni ne correspond à aucun enregistrement valide
+                                dans notre base de données.</p>
+                            <div class="alert alert-warning border-0 rounded-4 text-start">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Attention : Ce document pourrait être une contrefaçon.
+                            </div>
+                        </div>
+                        {% elif not registration %}
                         <div class="text-center mb-4">
                             <div class="status-badge bg-info bg-opacity-10 text-info mx-auto mb-4">
                                 <i class="fas fa-search"></i>
@@ -146,19 +159,6 @@
                             <div class="d-flex align-items-center justify-content-center text-muted small">
                                 <i class="fas fa-shield-alt me-2 text-primary"></i>
                                 <span>Ce document a été généré officiellement par le club COMSAS.</span>
-                            </div>
-                        </div>
-                        {% else %}
-                        <div class="status-badge status-error mb-4">
-                            <i class="fas fa-times"></i>
-                        </div>
-                        <div class="text-center">
-                            <h3 class="fw-bold text-danger mb-2">Document Invalide</h3>
-                            <p class="text-muted mb-4">L'identifiant fourni ne correspond à aucun enregistrement valide
-                                dans notre base de données.</p>
-                            <div class="alert alert-warning border-0 rounded-4">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                Attention : Ce document pourrait être une contrefaçon.
                             </div>
                         </div>
                         {% endif %}

@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.core.mail import send_mail, EmailMessage
+from django.template.loader import render_to_string
 from django.conf import settings
 from .models import (
     Member, Project, Event, EventRegistration, 
@@ -439,13 +440,19 @@ def verify_ticket(request, uuid=None):
     Vérifie l'authenticité d'un ticket ou d'une attestation via son UUID.
     """
     registration = None
+    valid = None
     if uuid:
-        registration = get_object_or_404(EventRegistration, uuid=uuid)
+        try:
+            registration = EventRegistration.objects.get(uuid=uuid)
+            valid = True
+        except Exception:
+            valid = False
     
     return render(request, 'main/ticket_verify.html', {
         'registration': registration,
         'event': registration.event if registration else None,
-        'uuid': uuid
+        'uuid': uuid,
+        'valid': valid
     })
 
 def event_registration_success(request, uuid):
@@ -975,15 +982,6 @@ def download_ticket(request, uuid):
         except:
             raise Http404("Ticket introuvable")
 
-def verify_ticket(request, uuid):
-    """Vérifier la validité d'un ticket via QR Code"""
-    try:
-        registration = EventRegistration.objects.get(uuid=uuid)
-        context = {'registration': registration, 'valid': True}
-    except EventRegistration.DoesNotExist:
-        context = {'valid': False}
-    
-    return render(request, 'main/ticket_verify.html', context)
 
 def archives_list(request):
     """Page des archives (PV, documents)"""

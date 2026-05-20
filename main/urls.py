@@ -60,6 +60,7 @@ urlpatterns = [
     # ============= SYSTÈME DE VOTE (CONCOURS) =============
     path('concours/', views.contest_list, name='contest_list'),
     path('concours/<slug:slug>/', views.contest_detail, name='contest_detail'),
+    path('concours/<slug:contest_slug>/postuler/', views.contest_candidate_register, name='contest_candidate_register'),
     path('concours/<slug:contest_slug>/vote/<int:candidate_id>/', views.vote_candidate, name='vote_candidate'),
 
     # ============= NOUVELLES FONCTIONNALITÉS =============
