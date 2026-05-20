@@ -130,56 +130,9 @@ class EventForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Fieldset(
-                _('Informations Générales'),
-                Row(
-                    Column('title_fr', css_class='form-group col-md-6 mb-3'),
-                    Column('title_en', css_class='form-group col-md-6 mb-3'),
-                ),
-                'description_fr',
-                'description_en',
-                'image',
-                Row(
-                    Column('date_event', css_class='form-group col-md-6 mb-3'),
-                    Column('registration_deadline', css_class='form-group col-md-6 mb-3'),
-                ),
-                Row(
-                    Column('location', css_class='form-group col-md-6 mb-3'),
-                    Column('max_participants', css_class='form-group col-md-6 mb-3'),
-                ),
-                Row(
-                    Column('is_featured', css_class='form-group col-md-6 mb-3'),
-                    Column('is_active', css_class='form-group col-md-6 mb-3'),
-                ),
-            ),
-            Fieldset(
-                _('Configuration des Attestations'),
-                'certificate_enabled',
-                'certificate_title',
-                'certificate_main_text',
-                'certificate_description',
-                Row(
-                    Column('certificate_president_name', css_class='form-group col-md-6 mb-3'),
-                    Column('certificate_president_title', css_class='form-group col-md-6 mb-3'),
-                ),
-                'president_signature',
-            ),
-            Fieldset(
-                _('Partenaires'),
-                Row(
-                    Column('partner_logo_1', css_class='form-group col-md-4 mb-3'),
-                    Column('partner_logo_2', css_class='form-group col-md-4 mb-3'),
-                    Column('partner_logo_3', css_class='form-group col-md-4 mb-3'),
-                ),
-            ),
-            Fieldset(
-                _('Badges'),
-                'badge_enabled',
-            ),
-            Submit('submit', _('Enregistrer'), css_class='btn btn-primary btn-lg w-100')
-        )
+        # Ces champs ont des valeurs par défaut dans le modèle — ne pas les bloquer
+        self.fields['certificate_president_name'].required = False
+        self.fields['certificate_president_title'].required = False
 
 class NewsForm(forms.ModelForm):
     """Formulaire pour les actualités"""

@@ -177,13 +177,107 @@
                         </div>
                     </div>
 
+                    <!-- ====== SECTION ATTESTATIONS ====== -->
+                    <hr class="my-4">
+                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-certificate me-2"></i>Configuration des Attestations</h6>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ form.certificate_enabled }}
+                                <label class="form-check-label" for="{{ form.certificate_enabled.id_for_label }}">
+                                    Activer les attestations
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ form.badge_enabled }}
+                                <label class="form-check-label" for="{{ form.badge_enabled.id_for_label }}">
+                                    Activer les badges
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Titre de l'attestation</label>
+                        {{ form.certificate_title }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Texte principal de l'attestation</label>
+                        {{ form.certificate_main_text }}
+                        <small class="text-muted">Laissez vide pour utiliser le texte par défaut.</small>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nom du Président / Signataire</label>
+                            {{ form.certificate_president_name }}
+                            <small class="text-muted">Défaut : "Président COMS.A.S"</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Titre du Président / Signataire</label>
+                            {{ form.certificate_president_title }}
+                            <small class="text-muted">Défaut : "Président du COMS.A.S"</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Signature / Cachet du Président</label>
+                        {{ form.president_signature }}
+                        {% if object and object.president_signature %}
+                        <div class="mt-2">
+                            <small class="text-muted">Signature actuelle :</small><br>
+                            <img src="{{ object.president_signature.url }}" class="img-thumbnail" style="max-height:80px;">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- ====== LOGOS PARTENAIRES ====== -->
+                    <hr class="my-4">
+                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-handshake me-2"></i>Logos Partenaires (pour les Attestations)</h6>
+                    <p class="text-muted small mb-3">Ces logos apparaîtront sur les attestations et badges. Vous pouvez en mettre jusqu'à 3.</p>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Logo Partenaire 1</label>
+                            {{ form.partner_logo_1 }}
+                            {% if object and object.partner_logo_1 %}
+                            <div class="mt-2">
+                                <img src="{{ object.partner_logo_1.url }}" class="img-thumbnail" style="max-height:60px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Logo Partenaire 2</label>
+                            {{ form.partner_logo_2 }}
+                            {% if object and object.partner_logo_2 %}
+                            <div class="mt-2">
+                                <img src="{{ object.partner_logo_2.url }}" class="img-thumbnail" style="max-height:60px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Logo Partenaire 3</label>
+                            {{ form.partner_logo_3 }}
+                            {% if object and object.partner_logo_3 %}
+                            <div class="mt-2">
+                                <img src="{{ object.partner_logo_3.url }}" class="img-thumbnail" style="max-height:60px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
                     <!-- Boutons -->
+                    <hr class="my-4">
                     <div class="d-flex justify-content-between">
                         <a href="{% url 'admin_events_list' %}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-1"></i>
                             Retour
                         </a>
-                        <button type="submit" class="btn btn-primary" id="event-submit-btn">
+                        <button type="submit" class="btn btn-primary px-5" id="event-submit-btn">
                             <i class="fas fa-save me-1"></i>
                             {% if object %}Modifier{% else %}Créer{% endif %} l'événement
                         </button>
