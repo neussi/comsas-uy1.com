@@ -130,9 +130,16 @@ class EventForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Ces champs ont des valeurs par défaut dans le modèle — ne pas les bloquer
-        self.fields['certificate_president_name'].required = False
-        self.fields['certificate_president_title'].required = False
+        # Tous les champs optionnels — valeurs par défaut du modèle s'appliquent
+        optional_fields = [
+            'certificate_title', 'certificate_main_text', 'certificate_description',
+            'certificate_president_name', 'certificate_president_title',
+            'president_signature', 'partner_logo_1', 'partner_logo_2', 'partner_logo_3',
+            'image', 'max_participants',
+        ]
+        for f in optional_fields:
+            if f in self.fields:
+                self.fields[f].required = False
 
 class NewsForm(forms.ModelForm):
     """Formulaire pour les actualités"""
