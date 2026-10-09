@@ -119,24 +119,45 @@
         <h5 class="mb-0 fw-bold text-dark">Liste des Membres <span
                 class="badge bg-light text-primary rounded-pill ms-2">{{ members_page.paginator.count }}</span></h5>
     </div>
-    <div class="card-body p-0">
-        {% if members_page.object_list %}
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 text-nowrap">
-                <thead class="bg-light text-uppercase text-muted small">
-                    <tr>
-                        <th class="ps-4 border-0">Membre</th>
-                        <th class="border-0">Statut</th>
-                        <th class="border-0">Promotion/Niveau</th>
-                        <th class="border-0">Type</th>
-                        <th class="border-0">Inscription</th>
-                        <th class="border-0 text-end pe-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for member in members_page.object_list %}
-                    <tr>
-                        <td class="ps-4">
+
+    <!-- Formulaire de suppression en masse -->
+    <form id="bulkMembersForm" method="post" action="{% url 'admin_members_bulk_delete' %}">
+        {% csrf_token %}
+
+        <div id="bulkMembersBar" class="alert alert-dark d-flex justify-content-between align-items-center py-2 px-3 mx-4 mb-3 rounded-3 shadow-sm" style="display: none !important;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-check-square text-primary"></i>
+                <span class="fw-semibold small"><span id="selectedMembersCount">0</span> membre(s) sélectionné(s)</span>
+            </div>
+            <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold" onclick="return confirm('Attention : confirmez-vous la suppression en masse des membres sélectionnés ? Cette opération est irréversible.');">
+                <i class="fas fa-trash-alt me-1"></i>Supprimer la sélection
+            </button>
+        </div>
+
+        <div class="card-body p-0">
+            {% if members_page.object_list %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="bg-light text-uppercase text-muted small">
+                        <tr>
+                            <th style="width: 40px;" class="ps-4 border-0">
+                                <input type="checkbox" id="selectAllMembers" class="form-check-input cursor-pointer" onchange="toggleSelectAllMembers(this)">
+                            </th>
+                            <th class="border-0">Membre</th>
+                            <th class="border-0">Statut</th>
+                            <th class="border-0">Promotion/Niveau</th>
+                            <th class="border-0">Type</th>
+                            <th class="border-0">Inscription</th>
+                            <th class="border-0 text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in members_page.object_list %}
+                        <tr>
+                            <td class="ps-4">
+                                <input type="checkbox" name="selected_ids" value="{{ member.pk }}" class="form-check-input member-checkbox cursor-pointer" onchange="updateMembersSelection()">
+                            </td>
+                            <td>
                             <div class="d-flex align-items-center">
                                 {% if member.photo %}
                                 <img src="{{ member.photo.url }}" alt="{{ member.nom_prenom }}"
@@ -255,11 +276,32 @@
         </div>
         {% endif %}
     </div>
+    </form>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+    function toggleSelectAllMembers(master) {
+        document.querySelectorAll('.member-checkbox').forEach(cb => cb.checked = master.checked);
+        updateMembersSelection();
+    }
+
+    function updateMembersSelection() {
+        const checked = document.querySelectorAll('.member-checkbox:checked');
+        const bar = document.getElementById('bulkMembersBar');
+        const countSpan = document.getElementById('selectedMembersCount');
+        const master = document.getElementById('selectAllMembers');
+
+        if (checked.length > 0) {
+            bar.style.setProperty('display', 'flex', 'important');
+            countSpan.textContent = checked.length;
+        } else {
+            bar.style.setProperty('display', 'none', 'important');
+            if (master) master.checked = false;
+        }
+    }
+
     $(document).ready(function () {
         let searchTimeout;
         $('#search').on('input', function () {

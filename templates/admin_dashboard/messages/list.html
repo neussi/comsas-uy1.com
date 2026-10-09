@@ -97,23 +97,44 @@
             <input type="text" class="form-control bg-light border-0" placeholder="Rechercher un message...">
         </div>
     </div>
-    <div class="card-body p-0">
-        {% if messages_page.object_list %}
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light text-uppercase text-muted small">
-                    <tr>
-                        <th class="ps-4 border-0" style="width: 50px;">Statut</th>
-                        <th class="border-0" style="width: 200px;">Expéditeur</th>
-                        <th class="border-0">Sujet & Message</th>
-                        <th class="border-0 text-end pe-4" style="width: 150px;">Date</th>
-                        <th class="border-0 text-end pe-4" style="width: 150px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for message in messages_page.object_list %}
-                    <tr class="{% if not message.is_read %}bg-warning bg-opacity-10{% endif %}">
-                        <td class="ps-4">
+
+    <!-- Formulaire de suppression en masse -->
+    <form id="bulkMessagesForm" method="post" action="{% url 'admin_messages_bulk_delete' %}">
+        {% csrf_token %}
+
+        <div id="bulkMessagesBar" class="alert alert-dark d-flex justify-content-between align-items-center py-2 px-3 mx-4 mb-3 rounded-3 shadow-sm" style="display: none !important;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-check-square text-primary"></i>
+                <span class="fw-semibold small"><span id="selectedMessagesCount">0</span> message(s) sélectionné(s)</span>
+            </div>
+            <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold" onclick="return confirm('Confirmez-vous la suppression en masse des messages sélectionnés ?');">
+                <i class="fas fa-trash-alt me-1"></i>Supprimer la sélection
+            </button>
+        </div>
+
+        <div class="card-body p-0">
+            {% if messages_page.object_list %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-uppercase text-muted small">
+                        <tr>
+                            <th style="width: 40px;" class="ps-4 border-0">
+                                <input type="checkbox" id="selectAllMessages" class="form-check-input cursor-pointer" onchange="toggleSelectAllMessages(this)">
+                            </th>
+                            <th class="border-0" style="width: 50px;">Statut</th>
+                            <th class="border-0" style="width: 200px;">Expéditeur</th>
+                            <th class="border-0">Sujet & Message</th>
+                            <th class="border-0 text-end pe-4" style="width: 150px;">Date</th>
+                            <th class="border-0 text-end pe-4" style="width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for message in messages_page.object_list %}
+                        <tr class="{% if not message.is_read %}bg-warning bg-opacity-10{% endif %}">
+                            <td class="ps-4">
+                                <input type="checkbox" name="selected_ids" value="{{ message.pk }}" class="form-check-input message-checkbox cursor-pointer" onchange="updateMessagesSelection()">
+                            </td>
+                            <td>
                             {% if message.is_read %}
                             <div class="text-muted"><i class="far fa-envelope-open"></i></div>
                             {% else %}
@@ -212,6 +233,7 @@
         </div>
         {% endif %}
     </div>
+    </form>
 </div>
 {% endblock %}
 
@@ -237,6 +259,26 @@
     function markAllAsRead() {
         if (confirm('Marquer tous les messages comme lus ?')) {
             alert('Fonctionnalité à implémenter avec AJAX');
+        }
+    }
+
+    function toggleSelectAllMessages(master) {
+        document.querySelectorAll('.message-checkbox').forEach(cb => cb.checked = master.checked);
+        updateMessagesSelection();
+    }
+
+    function updateMessagesSelection() {
+        const checked = document.querySelectorAll('.message-checkbox:checked');
+        const bar = document.getElementById('bulkMessagesBar');
+        const countSpan = document.getElementById('selectedMessagesCount');
+        const master = document.getElementById('selectAllMessages');
+
+        if (checked.length > 0) {
+            bar.style.setProperty('display', 'flex', 'important');
+            countSpan.textContent = checked.length;
+        } else {
+            bar.style.setProperty('display', 'none', 'important');
+            if (master) master.checked = false;
         }
     }
 </script>

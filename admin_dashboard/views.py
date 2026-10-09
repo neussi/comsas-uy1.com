@@ -235,6 +235,18 @@ class MemberDeleteView(DeleteView):
         messages.success(self.request, 'Le membre a été supprimé avec succès.')
         return super().form_valid(form)
 
+@custom_staff_member_required
+def members_bulk_delete(request):
+    """Suppression en masse de membres"""
+    if request.method == 'POST':
+        ids = request.POST.getlist('selected_ids') or request.POST.getlist('selected_members') or request.POST.getlist('ids')
+        if not ids:
+            messages.warning(request, "Aucun membre sélectionné pour la suppression.")
+        else:
+            deleted_count, _ = Member.objects.filter(id__in=ids).delete()
+            messages.success(request, f"{deleted_count} membre(s) supprimé(s) avec succès.")
+    return redirect('admin_members_list')
+
 # ============= GESTION DES PROJETS =============
 
 @custom_staff_member_required
@@ -298,6 +310,18 @@ class ProjectDeleteView(DeleteView):
         messages.success(self.request, 'Le projet a été supprimé avec succès.')
         return super().form_valid(form)
 
+@custom_staff_member_required
+def projects_bulk_delete(request):
+    """Suppression en masse de projets"""
+    if request.method == 'POST':
+        ids = request.POST.getlist('selected_ids') or request.POST.getlist('ids')
+        if not ids:
+            messages.warning(request, "Aucun projet sélectionné.")
+        else:
+            deleted_count, _ = Project.objects.filter(id__in=ids).delete()
+            messages.success(request, f"{deleted_count} projet(s) supprimé(s) avec succès.")
+    return redirect('admin_projects_list')
+
 # ============= GESTION DES ÉVÉNEMENTS =============
 
 @custom_staff_member_required
@@ -347,6 +371,18 @@ class EventDeleteView(DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'L\'événement a été supprimé avec succès.')
         return super().form_valid(form)
+
+@custom_staff_member_required
+def events_bulk_delete(request):
+    """Suppression en masse d'événements"""
+    if request.method == 'POST':
+        ids = request.POST.getlist('selected_ids') or request.POST.getlist('ids')
+        if not ids:
+            messages.warning(request, "Aucun événement sélectionné.")
+        else:
+            deleted_count, _ = Event.objects.filter(id__in=ids).delete()
+            messages.success(request, f"{deleted_count} événement(s) supprimé(s) avec succès.")
+    return redirect('admin_events_list')
 
 @custom_staff_member_required
 def event_registrations(request, pk):
@@ -454,6 +490,18 @@ class NewsDeleteView(DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'L\'actualité a été supprimée avec succès.')
         return super().form_valid(form)
+
+@custom_staff_member_required
+def news_bulk_delete(request):
+    """Suppression en masse des actualités"""
+    if request.method == 'POST':
+        ids = request.POST.getlist('selected_ids') or request.POST.getlist('ids')
+        if not ids:
+            messages.warning(request, "Aucune actualité sélectionnée.")
+        else:
+            deleted_count, _ = News.objects.filter(id__in=ids).delete()
+            messages.success(request, f"{deleted_count} actualité(s) supprimée(s) avec succès.")
+    return redirect('admin_news_list')
 
 # ============= GESTION DE LA GALERIE =============
 
@@ -571,6 +619,18 @@ def message_delete(request, pk):
     
     context = {'message': message}
     return render(request, 'admin_dashboard/messages/confirm_delete.html', context)
+
+@custom_staff_member_required
+def messages_bulk_delete(request):
+    """Suppression en masse des messages"""
+    if request.method == 'POST':
+        ids = request.POST.getlist('selected_ids') or request.POST.getlist('ids')
+        if not ids:
+            messages.warning(request, "Aucun message sélectionné.")
+        else:
+            deleted_count, _ = Contact.objects.filter(id__in=ids).delete()
+            messages.success(request, f"{deleted_count} message(s) supprimé(s) avec succès.")
+    return redirect('admin_messages_list')
 
 # ============= PARAMÈTRES DU SITE =============
 
@@ -1841,6 +1901,55 @@ def club_commission_delete(request, pk):
         messages.success(request, 'Commission supprimée.')
         return redirect('admin_club_commissions')
     return render(request, 'admin_dashboard/commissions/confirm_delete.html', {'object': commission})
+
+
+@custom_staff_member_required
+def club_commission_clear_members(request, pk):
+    """Vider et supprimer tous les membres et candidatures d'une commission"""
+    commission = get_object_or_404(ClubCommission, pk=pk)
+    if request.method == 'POST':
+        deleted_count, _ = ClubCommissionApplication.objects.filter(commission=commission).delete()
+        commission.supervisor_name = ''
+        commission.director_name = ''
+        commission.deputy_director_name = ''
+        commission.rapporteur_name = ''
+        commission.save()
+        messages.success(request, f'Tous les membres et candidatures ({deleted_count}) de la commission "{commission.name}" ont été supprimés avec succès.')
+    
+    next_url = request.POST.get('next') or request.GET.get('next')
+    if next_url:
+        return redirect(next_url)
+    return redirect('admin_club_commissions')
+
+
+@custom_staff_member_required
+def club_commissions_bulk_delete(request):
+    """Suppression en masse de commissions"""
+    if request.method == 'POST':
+        ids = request.POST.getlist('selected_ids') or request.POST.getlist('ids')
+        if not ids:
+            messages.warning(request, "Aucune commission sélectionnée.")
+        else:
+            deleted_count, _ = ClubCommission.objects.filter(id__in=ids).delete()
+            messages.success(request, f"{deleted_count} commission(s) supprimée(s) avec succès.")
+    return redirect('admin_club_commissions')
+
+
+@custom_staff_member_required
+def club_applications_bulk_delete(request):
+    """Suppression en masse de candidatures / membres de commissions"""
+    if request.method == 'POST':
+        ids = request.POST.getlist('selected_ids') or request.POST.getlist('ids')
+        if not ids:
+            messages.warning(request, "Aucune candidature sélectionnée.")
+        else:
+            deleted_count, _ = ClubCommissionApplication.objects.filter(id__in=ids).delete()
+            messages.success(request, f"{deleted_count} candidature(s) de commission supprimée(s) avec succès.")
+    
+    next_url = request.POST.get('next') or request.GET.get('next')
+    if next_url:
+        return redirect(next_url)
+    return redirect('admin_club_applications')
 
 
 # ============================================================

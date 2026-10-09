@@ -42,6 +42,7 @@ urlpatterns = [
     path('members/<int:pk>/approve/', views.member_approve, name='admin_member_approve'),
     path('members/<int:pk>/reject/', views.member_reject, name='admin_member_reject'),
     path('members/<int:pk>/download-card/', views.member_download_card, name='admin_member_download_card'),
+    path('members/bulk-delete/', views.members_bulk_delete, name='admin_members_bulk_delete'),
     
     # ============= GESTION DES PROJETS =============
     path('projects/', views.projects_list, name='admin_projects_list'),
@@ -49,12 +50,14 @@ urlpatterns = [
     path('projects/<int:pk>/', views.project_detail, name='admin_project_detail'),
     path('projects/<int:pk>/edit/', views.ProjectUpdateView.as_view(), name='admin_project_edit'),
     path('projects/<int:pk>/delete/', views.ProjectDeleteView.as_view(), name='admin_project_delete'),
+    path('projects/bulk-delete/', views.projects_bulk_delete, name='admin_projects_bulk_delete'),
     
     # ============= GESTION DES ÉVÉNEMENTS =============
     path('events/', views.events_list, name='admin_events_list'),
     path('events/create/', views.EventCreateView.as_view(), name='admin_event_create'),
     path('events/<int:pk>/edit/', views.EventUpdateView.as_view(), name='admin_event_edit'),
     path('events/<int:pk>/delete/', views.EventDeleteView.as_view(), name='admin_event_delete'),
+    path('events/bulk-delete/', views.events_bulk_delete, name='admin_events_bulk_delete'),
     path('events/<int:pk>/reservations/', views.event_registrations, name='admin_event_registrations'),
     path('registrations/<int:pk>/delete/', views.delete_registration, name='admin_delete_registration'),
     path('events/<int:pk>/registrations/export/', views.event_registrations_export_excel, name='admin_export_registrations'),
@@ -66,6 +69,7 @@ urlpatterns = [
     path('news/create/', views.NewsCreateView.as_view(), name='admin_news_create'),
     path('news/<int:pk>/edit/', views.NewsUpdateView.as_view(), name='admin_news_edit'),
     path('news/<int:pk>/delete/', views.NewsDeleteView.as_view(), name='admin_news_delete'),
+    path('news/bulk-delete/', views.news_bulk_delete, name='admin_news_bulk_delete'),
     
     # ============= GESTION DE LA GALERIE =============
     path('gallery/', views.gallery_list, name='admin_gallery_list'),
@@ -78,6 +82,7 @@ urlpatterns = [
     path('messages/<int:pk>/', views.message_detail, name='admin_message_detail'),
     path('messages/<int:pk>/reply/', views.mark_message_replied, name='admin_mark_message_replied'),
     path('messages/<int:pk>/delete/', views.message_delete, name='admin_message_delete'),
+    path('messages/bulk-delete/', views.messages_bulk_delete, name='admin_messages_bulk_delete'),
     
     # ============= GESTION DU PARRAINAGE =============
     path('sponsorship/', views.sponsorship_home, name='admin_sponsorship_home'),
@@ -195,11 +200,14 @@ urlpatterns = [
     # ============= COMMISSIONS DU CLUB =============
     path('commissions/', views.club_commissions_list, name='admin_club_commissions'),
     path('commissions/add/', views.club_commission_create, name='admin_club_commission_create'),
+    path('commissions/bulk-delete/', views.club_commissions_bulk_delete, name='admin_club_commissions_bulk_delete'),
     path('commissions/<int:pk>/edit/', views.club_commission_edit, name='admin_club_commission_edit'),
     path('commissions/<int:pk>/delete/', views.club_commission_delete, name='admin_club_commission_delete'),
+    path('commissions/<int:pk>/clear-members/', views.club_commission_clear_members, name='admin_club_commission_clear_members'),
 
     # ============= CANDIDATURES COMMISSIONS CLUB =============
     path('commissions/candidatures/', views.club_applications_list, name='admin_club_applications'),
+    path('commissions/candidatures/bulk-delete/', views.club_applications_bulk_delete, name='admin_club_applications_bulk_delete'),
     path('commissions/candidatures/<int:pk>/', views.club_application_detail, name='admin_club_application_detail'),
     path('commissions/candidatures/<int:pk>/delete/', views.club_application_delete, name='admin_club_application_delete'),
 ]

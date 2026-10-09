@@ -56,25 +56,46 @@
         <h5 class="mb-0 fw-bold text-dark">Liste des Projets <span
                 class="badge bg-light text-primary rounded-pill ms-2">{{ projects_page.paginator.count }}</span></h5>
     </div>
-    <div class="card-body p-0">
-        {% if projects_page.object_list %}
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 text-nowrap">
-                <thead class="bg-light text-uppercase text-muted small">
-                    <tr>
-                        <th class="ps-4 border-0">Projet</th>
-                        <th class="border-0">Statut</th>
-                        <th class="border-0">Budget & Financement</th>
-                        <th class="border-0">Progression</th>
-                        <th class="border-0">Calendrier</th>
-                        <th class="border-0 text-end pe-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for project in projects_page.object_list %}
-                    <tr>
-                        <td class="ps-4">
-                            <div class="d-flex align-items-center">
+
+    <!-- Formulaire de suppression en masse -->
+    <form id="bulkProjectsForm" method="post" action="{% url 'admin_projects_bulk_delete' %}">
+        {% csrf_token %}
+
+        <div id="bulkProjectsBar" class="alert alert-dark d-flex justify-content-between align-items-center py-2 px-3 mx-4 mb-3 rounded-3 shadow-sm" style="display: none !important;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-check-square text-primary"></i>
+                <span class="fw-semibold small"><span id="selectedProjectsCount">0</span> projet(s) sélectionné(s)</span>
+            </div>
+            <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold" onclick="return confirm('Confirmez-vous la suppression en masse des projets sélectionnés ?');">
+                <i class="fas fa-trash-alt me-1"></i>Supprimer la sélection
+            </button>
+        </div>
+
+        <div class="card-body p-0">
+            {% if projects_page.object_list %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="bg-light text-uppercase text-muted small">
+                        <tr>
+                            <th style="width: 40px;" class="ps-4 border-0">
+                                <input type="checkbox" id="selectAllProjects" class="form-check-input cursor-pointer" onchange="toggleSelectAllProjects(this)">
+                            </th>
+                            <th class="border-0">Projet</th>
+                            <th class="border-0">Statut</th>
+                            <th class="border-0">Budget & Financement</th>
+                            <th class="border-0">Progression</th>
+                            <th class="border-0">Calendrier</th>
+                            <th class="border-0 text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects_page.object_list %}
+                        <tr>
+                            <td class="ps-4">
+                                <input type="checkbox" name="selected_ids" value="{{ project.pk }}" class="form-check-input project-checkbox cursor-pointer" onchange="updateProjectsSelection()">
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
                                 {% if project.image %}
                                 <img src="{{ project.image.url }}" alt="{{ project.title}}"
                                     class="rounded-3 shadow-sm me-3" width="60" height="60" style="object-fit: cover;">
@@ -226,5 +247,30 @@
         </div>
         {% endif %}
     </div>
+    </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleSelectAllProjects(master) {
+        document.querySelectorAll('.project-checkbox').forEach(cb => cb.checked = master.checked);
+        updateProjectsSelection();
+    }
+
+    function updateProjectsSelection() {
+        const checked = document.querySelectorAll('.project-checkbox:checked');
+        const bar = document.getElementById('bulkProjectsBar');
+        const countSpan = document.getElementById('selectedProjectsCount');
+        const master = document.getElementById('selectAllProjects');
+
+        if (checked.length > 0) {
+            bar.style.setProperty('display', 'flex', 'important');
+            countSpan.textContent = checked.length;
+        } else {
+            bar.style.setProperty('display', 'none', 'important');
+            if (master) master.checked = false;
+        }
+    }
+</script>
 {% endblock %}

@@ -5,70 +5,144 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 fw-bold"><i class="fas fa-sitemap text-primary me-2"></i>Commissions du Club COM.S.AS</h1>
-        <div class="d-flex gap-2">
-            <a href="{% url 'admin_club_commission_create' %}" class="btn btn-success btn-sm">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 class="h3 fw-bold mb-1"><i class="fas fa-sitemap text-primary me-2"></i>Commissions du Club COM.S.AS</h1>
+            <p class="text-muted small mb-0">Supervisez l'organisation interne, les candidatures et la composition de chaque commission.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'admin_club_commission_create' %}" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm">
                 <i class="fas fa-plus me-1"></i>Ajouter une commission
             </a>
-            <a href="{% url 'admin_club_applications' %}" class="btn btn-primary btn-sm">
-                <i class="fas fa-users me-1"></i>Voir les candidatures
+            <a href="{% url 'admin_club_applications' %}" class="btn btn-primary btn-sm rounded-pill px-3 fw-bold shadow-sm">
+                <i class="fas fa-users me-1"></i>Toutes les candidatures
             </a>
         </div>
     </div>
 
-    <div class="row g-4">
-        {% for commission in commissions %}
-        <div class="col-md-6 col-xl-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="me-3 fs-4 text-primary d-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
-                            <i class="{{ commission.icon|default:'fas fa-users-cog' }}"></i>
+    <!-- Barre d'action en masse pour les commissions -->
+    <form id="bulkCommissionsForm" method="post" action="{% url 'admin_club_commissions_bulk_delete' %}">
+        {% csrf_token %}
+        <div id="bulkCommissionsBar" class="alert alert-dark d-flex justify-content-between align-items-center py-2 px-3 rounded-3 shadow-sm mb-4" style="display: none !important;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-check-square text-primary"></i>
+                <span class="fw-semibold small"><span id="selectedCommissionsCount">0</span> commission(s) sélectionnée(s)</span>
+            </div>
+            <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold" onclick="return confirm('Attention : supprimer ces commissions supprimera également leurs candidatures associées. Confirmer ?');">
+                <i class="fas fa-trash-alt me-1"></i>Supprimer la sélection
+            </button>
+        </div>
+
+        <div class="row g-4">
+            {% for commission in commissions %}
+            <div class="col-md-6 col-xl-4">
+                <div class="card border-0 shadow-sm h-100 position-relative">
+                    <!-- Checkbox de sélection en masse -->
+                    <div class="position-absolute top-0 end-0 p-3" style="z-index: 2;">
+                        <input type="checkbox" name="selected_ids" value="{{ commission.pk }}" class="form-check-input commission-checkbox cursor-pointer" title="Sélectionner pour suppression groupée" onchange="updateCommissionSelection()">
+                    </div>
+
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3 fs-4 text-primary d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" style="width: 48px; height: 48px;">
+                                <i class="{{ commission.icon|default:'fas fa-users-cog' }}"></i>
+                            </div>
+                            <div class="pe-4">
+                                <h5 class="fw-bold mb-0 text-dark">{{ commission.name }}</h5>
+                                <small class="text-muted">{{ commission.slug }}</small>
+                            </div>
                         </div>
-                        <div>
-                            <h5 class="fw-bold mb-0">{{ commission.name }}</h5>
-                            <small class="text-muted">{{ commission.slug }}</small>
+                        {% if commission.description %}
+                        <p class="small text-muted mb-2">{{ commission.description|truncatechars:100 }}</p>
+                        {% endif %}
+                        {% if commission.role %}
+                        <p class="small text-secondary mb-3"><strong class="text-dark">Rôle :</strong> {{ commission.role|truncatechars:80 }}</p>
+                        {% endif %}
+                        <div class="d-flex gap-2 mt-3 flex-wrap">
+                            <span class="badge bg-secondary rounded-pill px-2 py-1">{{ commission.app_count }} candidature(s)</span>
+                            <span class="badge bg-warning text-dark rounded-pill px-2 py-1">{{ commission.pending_count }} en attente</span>
+                            <span class="badge bg-success rounded-pill px-2 py-1">{{ commission.approved_count }} membre(s) validé(s)</span>
                         </div>
                     </div>
-                    {% if commission.description %}
-                    <p class="small text-muted mb-2">{{ commission.description|truncatechars:100 }}</p>
-                    {% endif %}
-                    {% if commission.role %}
-                    <p class="small text-secondary mb-3"><strong class="text-dark">Role :</strong> {{ commission.role|truncatechars:80 }}</p>
-                    {% endif %}
-                    <div class="d-flex gap-2 mt-3 flex-wrap">
-                        <span class="badge bg-secondary">{{ commission.app_count }} candidature(s)</span>
-                        <span class="badge bg-warning text-dark">{{ commission.pending_count }} en attente</span>
-                        <span class="badge bg-success">{{ commission.approved_count }} approuve(s)</span>
+
+                    <div class="card-footer bg-light bg-opacity-50 border-top-0 d-flex flex-wrap gap-1 p-3">
+                        <a href="{% url 'admin_club_applications' %}?commission={{ commission.pk }}"
+                            class="btn btn-sm btn-outline-primary flex-fill rounded-pill" title="Voir les candidatures et membres">
+                            <i class="fas fa-users me-1"></i>Membres ({{ commission.approved_count }})
+                        </a>
+
+                        <!-- Bouton dédié pour supprimer / vider tous les membres d'une commission -->
+                        <button type="button" class="btn btn-sm btn-outline-warning text-dark rounded-pill px-2"
+                            title="Vider tous les membres de cette commission"
+                            onclick="confirmClearMembers('{{ commission.pk }}', '{{ commission.name|escapejs }}', '{{ commission.approved_count|add:commission.pending_count }}')">
+                            <i class="fas fa-user-slash me-1"></i>Vider membres
+                        </button>
+
+                        <a href="{% url 'admin_club_commission_edit' commission.pk %}"
+                            class="btn btn-sm btn-outline-secondary rounded-circle" style="width: 31px; height: 31px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="Modifier la commission">
+                            <i class="fas fa-pen"></i>
+                        </a>
+
+                        <button type="button" class="btn btn-sm btn-outline-danger rounded-circle" style="width: 31px; height: 31px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                            title="Supprimer la commission"
+                            onclick="confirmDeleteCommission('{{ commission.pk }}', '{{ commission.name|escapejs }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
-                </div>
-                <div class="card-footer bg-transparent border-top-0 d-flex gap-2">
-                    <a href="{% url 'admin_club_applications' %}?commission={{ commission.pk }}"
-                        class="btn btn-sm btn-outline-primary flex-fill">
-                        <i class="fas fa-eye me-1"></i>Candidatures
-                    </a>
-                    <a href="{% url 'admin_club_commission_edit' commission.pk %}"
-                        class="btn btn-sm btn-outline-secondary" title="Modifier">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <form method="post" action="{% url 'admin_club_commission_delete' commission.pk %}"
-                        onsubmit="return confirm('Supprimer cette commission ?');" class="d-inline">
-                        {% csrf_token %}
-                        <button class="btn btn-sm btn-outline-danger" title="Supprimer"><i class="fas fa-trash"></i></button>
-                    </form>
                 </div>
             </div>
+            {% empty %}
+            <div class="col-12 text-center text-muted py-5">
+                <div class="mb-3"><i class="fas fa-sitemap fa-3x text-muted opacity-50"></i></div>
+                <h5 class="fw-bold">Aucune commission créée</h5>
+                <p class="small">Créez votre première commission pour organiser les activités du club.</p>
+                <a href="{% url 'admin_club_commission_create' %}" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold">
+                    <i class="fas fa-plus me-1"></i>Créer la première commission
+                </a>
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="col-12 text-center text-muted py-5">
-            <div class="mb-3"><i class="fas fa-sitemap fa-3x text-muted opacity-50"></i></div>
-            <p>Aucune commission créée pour l'instant.</p>
-            <a href="{% url 'admin_club_commission_create' %}" class="btn btn-primary btn-sm">
-                <i class="fas fa-plus me-1"></i>Créer la première commission
-            </a>
-        </div>
-        {% endfor %}
-    </div>
+    </form>
 </div>
+
+<!-- Formulaire masqué pour vider les membres d'une commission -->
+<form id="clearMembersForm" method="post" action="" style="display: none;">
+    {% csrf_token %}
+</form>
+
+<!-- Formulaire masqué pour supprimer une commission -->
+<form id="deleteCommissionForm" method="post" action="" style="display: none;">
+    {% csrf_token %}
+</form>
+
+<script>
+    function updateCommissionSelection() {
+        const checked = document.querySelectorAll('.commission-checkbox:checked');
+        const bar = document.getElementById('bulkCommissionsBar');
+        const countSpan = document.getElementById('selectedCommissionsCount');
+        
+        if (checked.length > 0) {
+            bar.style.setProperty('display', 'flex', 'important');
+            countSpan.textContent = checked.length;
+        } else {
+            bar.style.setProperty('display', 'none', 'important');
+        }
+    }
+
+    function confirmClearMembers(pk, name, memberCount) {
+        if (confirm('Voulez-vous vraiment VIDER TOUS LES MEMBRES ET CANDIDATURES de la commission "' + name + '" ?\n\nCette action supprimera les ' + memberCount + ' membre(s) et candidatures enregistrés pour cette commission.')) {
+            const form = document.getElementById('clearMembersForm');
+            form.action = '/admin-dashboard/commissions/' + pk + '/clear-members/';
+            form.submit();
+        }
+    }
+
+    function confirmDeleteCommission(pk, name) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer définitivement la commission "' + name + '" ainsi que toutes ses candidatures ?')) {
+            const form = document.getElementById('deleteCommissionForm');
+            form.action = '/admin-dashboard/commissions/' + pk + '/delete/';
+            form.submit();
+        }
+    }
+</script>
 {% endblock %}
