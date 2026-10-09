@@ -17,38 +17,47 @@ tech, etudiant informatique{% endblock %}
     <div id="particles-js" class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 0; opacity: 0.4;"></div>
 
     <div class="container position-relative z-2">
-        <div class="row align-items-center flex-column-reverse flex-lg-row">
-            <div class="col-lg-7 mt-5 mt-lg-0 text-center text-lg-start" data-aos="fade-right">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-center text-lg-start" data-aos="fade-right">
                 <div class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-light rounded-pill border">
                     <span class="text-primary fw-bold small text-uppercase ls-1">
                         Computer Science Association · University of Yaoundé I (UY1) · Since 2004
                     </span>
                 </div>
 
-                <h1 class="display-3 fw-bolder mb-4 text-dark lh-sm">
+                <h1 class="display-3 fw-bolder mb-3 text-dark lh-sm">
                     Rejoignez l'élite du <br>
                     <span class="text-primary typing-effect"
                         data-words='["Code.", "Design.", "Réseau.", "I.A.", "Numérique."]'></span>
                     <span class="cursor">|</span>
                 </h1>
 
-                <p class="lead text-muted mb-5 mx-auto mx-lg-0" style="max-width: 600px;">
+                <!-- Boutons d'action clés (très visibles immédiatement sur mobile et desktop) -->
+                <div class="hero-actions-wrap d-flex flex-row flex-wrap gap-2 gap-sm-3 justify-content-center justify-content-lg-start my-4">
+                    <a href="{% url 'member_registration' %}"
+                        class="btn btn-primary btn-lg rounded-pill px-4 px-sm-5 shadow-sm hover-lift fw-bold flex-grow-1 flex-sm-grow-0 d-flex align-items-center justify-content-center gap-2"
+                        style="min-height: 48px;">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Devenir Membre</span>
+                    </a>
+                    <a href="{% url 'donations' %}"
+                        class="btn btn-lg rounded-pill px-4 px-sm-5 shadow-sm hover-lift fw-bold text-white flex-grow-1 flex-sm-grow-0 d-flex align-items-center justify-content-center gap-2"
+                        style="background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%); border: none; min-height: 48px;">
+                        <i class="fas fa-heart"></i>
+                        <span>Faire un Don</span>
+                    </a>
+                    <a href="{% url 'projects' %}" class="btn btn-outline-dark btn-lg rounded-pill px-4 hover-lift fw-semibold d-none d-md-inline-flex align-items-center gap-2">
+                        <i class="fas fa-code"></i>
+                        <span>Nos Projets</span>
+                    </a>
+                </div>
+
+                <p class="lead text-muted mb-4 mx-auto mx-lg-0" style="max-width: 600px; font-size: 1.05rem;">
                     Le <strong>COM.S.AS</strong> est l’Association des étudiants en informatique
                     (Informatique Fondamentale et ICT4D) de la Faculté des Sciences de l’Université de Yaoundé I.
                     Depuis plus de 20 ans, nous accompagnons les étudiants en les aidant à surmonter leurs difficultés
-                    académiques,
-                    en partageant des connaissances, en travaillant sur des projets communs et en organisant des
-                    activités
-                    au sein du département. Notre mission est également de créer des passerelles entre les étudiants
-                    et les professionnels afin de faciliter leur intégration dans le monde professionnel.
+                    académiques, en partageant des connaissances et en organisant des activités au sein du département.
                 </p>
-
-                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
-                    <a href="{% url 'member_registration' %}"
-                        class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm hover-lift">Devenir Membre</a>
-                    <a href="{% url 'projects' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5 hover-lift">Nos
-                        Projets</a>
-                </div>
 
                 <div class="row mt-5 pt-4 border-top g-4 justify-content-center justify-content-lg-start">
                     <div class="col-auto text-center text-lg-start px-4 border-end">
