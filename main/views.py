@@ -14,6 +14,7 @@ from django.utils.translation import gettext as _
 from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.urls import reverse
 from .models import (
     Member, Project, Event, EventRegistration, 
     News, Gallery, GalleryAlbum, Contact, SiteSettings,
@@ -21,7 +22,8 @@ from .models import (
     Contest, Candidate, Vote, Archive, ArchiveComment,
     JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
     JUINActivity, JUINDonation, JUINSponsor, JUINTeam,
-    ClubCommission, ClubCommissionApplication, ProjectSubmission, Donation
+    ClubCommission, ClubCommissionApplication, ProjectSubmission, Donation,
+    RequestDocument
 )
 from .forms import (
     MemberRegistrationForm, EventRegistrationForm, 
@@ -69,6 +71,10 @@ def home(request):
     # Edition JUIN actuelle
     juin_edition = JUINEdition.objects.filter(is_active=True).first()
     
+    # Modèles de requêtes pour la page d'accueil
+    featured_request_docs = RequestDocument.objects.all().order_by('-downloads_count', '-created_at')[:5]
+    total_request_docs = RequestDocument.objects.count()
+
     context = {
         'site_settings': site_settings,
         'featured_events': featured_events,
@@ -80,9 +86,10 @@ def home(request):
         'completed_projects': completed_projects,
         'juin_edition': juin_edition,
         'active_contests': active_contests,
+        'featured_request_docs': featured_request_docs,
+        'total_request_docs': total_request_docs,
     }
 
-    
     return render(request, 'main/home.html', context)
 
 def about(request):
@@ -2236,4 +2243,105 @@ def juin_contest_results(request):
         'school_data': json.dumps(school_data),
     }
     return render(request, 'main/juin_contest/results.html', context)
+
+
+# =============================================================================
+# API RECHERCHE DOCUMENTS & CHATBOT MULTI-CANAL
+# =============================================================================
+
+def api_document_search(request):
+    """API de recherche instantanée pour modèles de requêtes et archives"""
+    query = request.GET.get('q', '').strip()
+    results = []
+
+    if query:
+        docs = RequestDocument.objects.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        ).order_by('-downloads_count')[:10]
+        
+        for d in docs:
+            results.append({
+                'id': d.id,
+                'title': d.title,
+                'description': d.description or '',
+                'doc_type': d.doc_type,
+                'category': 'Modèle de Requête',
+                'downloads_count': d.downloads_count,
+                'download_url': reverse('download_document', kwargs={'pk': d.id}),
+                'preview_url': d.file.url if d.file else '',
+                'is_pdf': d.doc_type == 'pdf' or (bool(d.file) and d.file.name.lower().endswith('.pdf')),
+            })
+            
+        archives = Archive.objects.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        ).order_by('-downloads_count')[:5]
+        
+        for a in archives:
+            results.append({
+                'id': a.id,
+                'title': a.title,
+                'description': a.description or f"Archive {a.academic_year} · {a.level}",
+                'doc_type': 'pdf' if (a.file and a.file.name.lower().endswith('.pdf')) else 'archive',
+                'category': f"Archive ({a.get_category_display()})",
+                'downloads_count': a.downloads_count,
+                'download_url': reverse('archive_download', kwargs={'slug': a.slug}) if a.slug else (a.file.url if a.file else '#'),
+                'preview_url': a.file.url if a.file else '',
+                'is_pdf': bool(a.file) and a.file.name.lower().endswith('.pdf'),
+            })
+    else:
+        docs = RequestDocument.objects.all().order_by('-downloads_count', '-created_at')[:6]
+        for d in docs:
+            results.append({
+                'id': d.id,
+                'title': d.title,
+                'description': d.description or '',
+                'doc_type': d.doc_type,
+                'category': 'Modèle de Requête',
+                'downloads_count': d.downloads_count,
+                'download_url': reverse('download_document', kwargs={'pk': d.id}),
+                'preview_url': d.file.url if d.file else '',
+                'is_pdf': d.doc_type == 'pdf' or (bool(d.file) and d.file.name.lower().endswith('.pdf')),
+            })
+
+    return JsonResponse({'status': 'success', 'count': len(results), 'results': results})
+
+
+@csrf_exempt
+def api_chatbot_message(request):
+    """Enregistre un message reçu depuis le widget Chatbot du site"""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Méthode non autorisée'}, status=405)
+    
+    try:
+        data = json.loads(request.body) if request.body else request.POST
+        name = data.get('nom_prenom', '').strip() or 'Étudiant Visiteur'
+        email = data.get('email', '').strip() or 'chatbot@comsas-uy1.com'
+        phone = data.get('telephone', '').strip()
+        user_message = data.get('message', '').strip()
+        topic = data.get('topic', '').strip()
+
+        if not user_message:
+            return JsonResponse({'status': 'error', 'message': 'Le message ne peut pas être vide.'}, status=400)
+
+        subject = f"[Chatbot] {topic or user_message[:40]}"
+
+        contact_obj = Contact.objects.create(
+            nom_prenom=name,
+            email=email,
+            telephone=phone,
+            sujet=subject,
+            message=user_message,
+            is_read=False,
+            is_replied=False,
+        )
+
+        return JsonResponse({
+            'status': 'success',
+            'message_id': contact_obj.id,
+            'reply': "Votre message a été transmis à l'équipe du COMS.A.S. Un administrateur vous répondra dans les plus brefs délais."
+        })
+    except Exception as e:
+        logger.error(f"Erreur API Chatbot: {e}")
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
 

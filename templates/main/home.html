@@ -131,6 +131,109 @@ tech, etudiant informatique{% endblock %}
     </div>
 </section>
 
+<!-- ═══════════════════════════════════════════
+     RECHERCHE ET MODÈLES DE REQUÊTES (POST-HERO)
+═══════════════════════════════════════════ -->
+<section class="py-5 bg-light position-relative border-bottom" id="documentsSection">
+    <div class="container position-relative z-1">
+        <!-- En-tête et barre de recherche rapide -->
+        <div class="row justify-content-center text-center mb-4" data-aos="fade-up">
+            <div class="col-lg-8">
+                <div class="d-inline-flex align-items-center mb-2 px-3 py-1 bg-white rounded-pill border shadow-xs">
+                    <span class="text-primary fw-bold small text-uppercase ls-1">
+                        <i class="fas fa-file-signature me-2"></i>Espace Académique & Documents
+                    </span>
+                </div>
+                <h2 class="display-6 fw-bold mb-3 text-dark">
+                    Rechercher un <span class="text-primary">Document ou Modèle de Requête</span>
+                </h2>
+                <p class="text-muted mb-4">
+                    Trouvez instantanément vos requêtes officielles (rectification de note, demande de relevé, stage, absence...) prêtes à remplir et signer.
+                </p>
+
+                <!-- Barre de recherche rapide -->
+                <div class="card border-0 shadow-sm rounded-pill p-2 bg-white mx-auto position-relative" style="max-width: 680px;">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 ps-3 text-primary">
+                            <i class="fas fa-search fa-lg"></i>
+                        </span>
+                        <input type="text" id="homeDocSearchInput" class="form-control border-0 bg-transparent fs-6 py-2" placeholder="Tapez le nom de votre requête (ex: note, stage, relevé, absence...)" autocomplete="off">
+                        <button class="btn btn-primary rounded-pill px-4 fw-bold hover-lift" type="button" onclick="performHomeDocSearch()">
+                            Rechercher
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Résultats instantanés en direct -->
+                <div id="homeDocSearchResults" class="mt-3 text-start mx-auto d-none" style="max-width: 680px;">
+                    <div class="card border-0 shadow-lg rounded-4 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <small class="fw-bold text-muted text-uppercase">Résultats trouvés</small>
+                            <button type="button" class="btn-close btn-sm" onclick="closeHomeDocSearchResults()"></button>
+                        </div>
+                        <div id="homeDocSearchResultsList" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section des quelques modèles de requête (4 ou 5 sur une seule ligne) -->
+        <div class="mt-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-dark mb-0">
+                    <i class="fas fa-layer-group text-primary me-2"></i>Modèles de Requêtes Fréquents
+                </h5>
+                <a href="{% url 'request_documents' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
+                    Voir tous les modèles ({{ total_request_docs|default:'5' }}) <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+                {% for doc in featured_request_docs %}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift p-3 bg-white d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex align-items-start justify-content-between mb-2">
+                                <div class="rounded-3 p-2 d-flex align-items-center justify-content-center {% if doc.doc_type == 'word' %}bg-primary bg-opacity-10 text-primary{% else %}bg-danger bg-opacity-10 text-danger{% endif %}" style="width: 44px; height: 44px;">
+                                    {% if doc.doc_type == 'word' %}
+                                    <i class="fas fa-file-word fa-lg"></i>
+                                    {% else %}
+                                    <i class="fas fa-file-pdf fa-lg"></i>
+                                    {% endif %}
+                                </div>
+                                <span class="badge bg-light text-muted border rounded-pill small" title="Téléchargements">
+                                    <i class="fas fa-download me-1"></i>{{ doc.downloads_count }}
+                                </span>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.92rem; line-height: 1.3;">
+                                {{ doc.title }}
+                            </h6>
+                            <p class="text-muted small mb-3" style="font-size: 0.78rem; line-height: 1.4;">
+                                {{ doc.description|truncatewords:10 }}
+                            </p>
+                        </div>
+                        <div class="d-flex flex-column gap-1 mt-2">
+                            <a href="{% url 'download_document' doc.pk %}" class="btn btn-primary btn-sm rounded-pill w-100 fw-bold d-flex align-items-center justify-content-center gap-1">
+                                <i class="fas fa-download"></i> Télécharger
+                            </a>
+                            {% if doc.file and doc.doc_type == 'pdf' or doc.file.name|lower|slice:'-4:' == '.pdf' %}
+                            <a href="{{ doc.file.url }}" target="_blank" rel="noopener" class="btn btn-light btn-sm rounded-pill w-100 text-muted fw-semibold">
+                                <i class="fas fa-eye"></i> Aperçu
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-4">
+                    <p class="text-muted mb-0">Aucun modèle de requête disponible pour le moment.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Innovation CTA -->
 <section class="py-5 bg-light border-bottom">
     <div class="container text-center">
@@ -866,6 +969,65 @@ tech, etudiant informatique{% endblock %}
             }
             setInterval(updateCountdown, 1000);
             updateCountdown();
+        }
+
+        // Recherche instantanée de documents sur la page d'accueil
+        const homeDocInput = document.getElementById('homeDocSearchInput');
+        const homeDocResults = document.getElementById('homeDocSearchResults');
+        const homeDocList = document.getElementById('homeDocSearchResultsList');
+
+        window.performHomeDocSearch = function() {
+            const query = homeDocInput ? homeDocInput.value.trim() : '';
+            if (!query) {
+                if (homeDocResults) homeDocResults.classList.add('d-none');
+                return;
+            }
+            fetch(`/api/documents/search/?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.results && data.results.length > 0) {
+                        homeDocList.innerHTML = data.results.map(doc => `
+                            <div class="d-flex align-items-center justify-content-between p-2 rounded-3 bg-light border">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-3 p-2 d-flex align-items-center justify-content-center ${doc.doc_type === 'word' ? 'bg-primary text-primary' : 'bg-danger text-danger'} bg-opacity-10" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                        <i class="fas ${doc.doc_type === 'word' ? 'fa-file-word' : 'fa-file-pdf'}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark small">${doc.title}</div>
+                                        <div class="text-muted" style="font-size: 0.72rem;">${doc.category || 'Document'} · ${doc.downloads_count} téléchargement(s)</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    ${doc.preview_url ? `<a href="${doc.preview_url}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1" style="font-size: 0.75rem;"><i class="fas fa-eye me-1"></i>Aperçu</a>` : ''}
+                                    <a href="${doc.download_url}" class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-bold" style="font-size: 0.75rem;"><i class="fas fa-download me-1"></i>Télécharger</a>
+                                </div>
+                            </div>
+                        `).join('');
+                        homeDocResults.classList.remove('d-none');
+                    } else {
+                        homeDocList.innerHTML = `<div class="text-center py-3 text-muted small"><i class="fas fa-info-circle me-1"></i>Aucun document correspondant à "${query}".</div>`;
+                        homeDocResults.classList.remove('d-none');
+                    }
+                })
+                .catch(err => console.error('Erreur recherche doc:', err));
+        };
+
+        window.closeHomeDocSearchResults = function() {
+            if (homeDocResults) homeDocResults.classList.add('d-none');
+        };
+
+        if (homeDocInput) {
+            let debounceTimer;
+            homeDocInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(performHomeDocSearch, 250);
+            });
+            homeDocInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performHomeDocSearch();
+                }
+            });
         }
     });
 </script>

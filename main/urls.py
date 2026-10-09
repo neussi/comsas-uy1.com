@@ -67,9 +67,11 @@ urlpatterns = [
     path('concours/<slug:contest_slug>/vote/<int:candidate_id>/', views.vote_candidate, name='vote_candidate'),
 
     # ============= NOUVELLES FONCTIONNALITÉS =============
-    # Modèles de requêtes
+    # Modèles de requêtes & Recherche API
     path('documents/', views.request_documents, name='request_documents'),
     path('documents/download/<int:pk>/', views.download_document, name='download_document'),
+    path('api/documents/search/', views.api_document_search, name='api_document_search'),
+    path('api/chatbot/message/', views.api_chatbot_message, name='api_chatbot_message'),
     
     # Archives (PV, Documents)
     path('archives/', views.archives_list, name='archives'),
