@@ -81,7 +81,7 @@
             --shadow-md: 0 4px 16px rgba(233, 30, 99, .12);
             --shadow-lg: 0 10px 30px rgba(233, 30, 99, .18);
             /* Responsive spacing */
-            --navbar-height-mobile: 64px;
+            --navbar-height-mobile: 104px;
             --navbar-height-desktop: 72px;
         }
 
@@ -1333,7 +1333,7 @@
         }
 
         /* ════════════════════════════════════════
-           BARRE RECHERCHE MOBILE NAVBAR (UNE SEULE LIGNE & CENTRÉE)
+           BARRE RECHERCHE MOBILE NAVBAR (LOGO & 3 TIRETS SUR LA MÊME LIGNE, RECHERCHE EN DESSOUS)
         ════════════════════════════════════════ */
         @media (max-width: 991.98px) {
             #mainNavbar .container {
@@ -1341,46 +1341,46 @@
                 flex-wrap: wrap !important;
                 align-items: center !important;
                 justify-content: space-between !important;
-                padding: 8px 12px !important;
-                gap: 4px !important;
+                padding: 10px 14px 8px 14px !important;
             }
             #mainNavbar .navbar-brand {
                 order: 1 !important;
                 flex: 0 0 auto !important;
-                margin-right: 0 !important;
-                gap: 6px !important;
+                margin-right: auto !important;
+                gap: 8px !important;
             }
             #mainNavbar .brand-logo-wrap {
-                width: 32px !important;
-                height: 32px !important;
+                width: 38px !important;
+                height: 38px !important;
             }
             #mainNavbar .brand-name {
-                font-size: 0.90rem !important;
+                font-size: 1.05rem !important;
             }
             #mainNavbar .brand-sub {
-                font-size: 0.50rem !important;
+                font-size: 0.55rem !important;
+            }
+            #mainNavbar .navbar-toggler {
+                order: 2 !important;
+                flex: 0 0 auto !important;
+                padding: 6px 10px !important;
+                border-radius: 10px !important;
+                border: 1.5px solid var(--rose-border) !important;
+                margin-left: auto !important;
             }
             #mainNavbar .mobile-nav-search-wrap {
-                order: 2 !important;
-                flex: 1 1 auto !important;
-                min-width: 90px !important;
-                max-width: calc(100% - 170px) !important;
-                margin: 0 auto !important;
-                padding: 0 4px !important;
+                order: 3 !important;
+                flex: 0 0 100% !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-top: 8px !important;
+                margin-bottom: 2px !important;
+                padding: 0 !important;
             }
             #mainNavbar .mobile-nav-search-wrap .input-group {
                 border-radius: 999px !important;
                 background: #f8fafc !important;
                 border: 1px solid rgba(233, 30, 99, 0.25) !important;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-            }
-            #mainNavbar .navbar-toggler {
-                order: 3 !important;
-                flex: 0 0 auto !important;
-                padding: 5px 8px !important;
-                border-radius: 10px !important;
-                border: 1.5px solid var(--rose-border) !important;
-                margin-left: 0 !important;
             }
             #mainNavbar #navbarNav {
                 order: 4 !important;
@@ -1498,8 +1498,14 @@
                 </div>
             </a>
 
-            <!-- Espace Recherche Documents & Requêtes sur Mobile (Entre Logo et Menu) -->
-            <div class="d-flex d-lg-none align-items-center flex-grow-1 mx-2 position-relative mobile-nav-search-wrap">
+            <!-- Toggler mobile (les 3 tirets sur la même ligne que le logo) -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Ouvrir le menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Espace Recherche Documents & Requêtes sur Mobile (EN DESSOUS) -->
+            <div class="d-flex d-lg-none align-items-center w-100 position-relative mobile-nav-search-wrap">
                 <div class="input-group input-group-sm rounded-pill bg-light border w-100 overflow-hidden shadow-none">
                     <span class="input-group-text bg-transparent border-0 pe-1 text-primary" style="font-size:0.75rem;"><i class="fas fa-search"></i></span>
                     <input type="text" id="mobileNavbarSearchInput" class="form-control form-control-sm bg-transparent border-0 ps-1 py-1 text-dark" placeholder="Requête / Doc..." autocomplete="off" style="font-size: 0.78rem;">
@@ -1513,12 +1519,6 @@
                     <div id="mobileNavbarSearchList" class="d-flex flex-column gap-2"></div>
                 </div>
             </div>
-
-            <!-- Toggler mobile -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Ouvrir le menu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto gap-1">
@@ -1986,10 +1986,10 @@
             </div>
             <span>Faire un don</span>
         </a>
-        <button type="button" class="mobile-bottom-nav-item border-0 bg-transparent p-0" onclick="toggleChatWidget(true)">
-            <i class="fas fa-comments"></i>
-            <span>Assistance</span>
-        </button>
+        <a href="{% url 'archives' %}" class="mobile-bottom-nav-item {% if 'archives' in request.path %}active{% endif %}">
+            <i class="fas fa-archive"></i>
+            <span>Archives</span>
+        </a>
     </nav>
 
     <!-- Messages Django -->
