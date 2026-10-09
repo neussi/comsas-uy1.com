@@ -23,7 +23,7 @@ from .models import (
     JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
     JUINActivity, JUINDonation, JUINSponsor, JUINTeam,
     ClubCommission, ClubCommissionApplication, ProjectSubmission, Donation,
-    RequestDocument
+    RequestDocument, Delegate, BlogArticle, PastPresident
 )
 from .forms import (
     MemberRegistrationForm, EventRegistrationForm, 
@@ -40,12 +40,14 @@ def home(request):
     # Récupérer les paramètres du site
     site_settings = SiteSettings.objects.first()
     
-    # Événements en vedette (prochains)
+    # Événements en vedette (prochains ou récents)
     featured_events = Event.objects.filter(
         is_featured=True,
         is_active=True,
         date_event__gte=timezone.now()
-    )[:3]
+    ).order_by('date_event')[:3]
+    if not featured_events.exists():
+        featured_events = Event.objects.filter(is_active=True).order_by('-date_event')[:3]
     
     # Projets en vedette
     featured_projects = Project.objects.filter(is_featured=True)[:3]
@@ -55,11 +57,27 @@ def home(request):
     
     # Galerie en vedette
     featured_gallery = Gallery.objects.filter(is_featured=True)[:6]
+    if not featured_gallery.exists():
+        featured_gallery = Gallery.objects.all().order_by('-created_at')[:6]
     
     # Membres du bureau
     bureau_members = Member.objects.filter(
         is_active=True
     )
+    
+    # Délégués de filières et niveaux
+    featured_delegates = Delegate.objects.all().order_by('level', 'name')[:6]
+    total_delegates = Delegate.objects.count()
+    
+    # Blog et articles
+    featured_blog = BlogArticle.objects.filter(is_published=True).order_by('-published_at')[:3]
+    
+    # Archives académiques
+    featured_archives = Archive.objects.all().order_by('-created_at')[:4]
+    total_archives = Archive.objects.count()
+    
+    # Présidents
+    past_presidents = PastPresident.objects.all().order_by('-mandate_end')[:3]
     
     # Statistiques pour la home
     total_members = Member.objects.filter(is_active=True).count()
@@ -82,6 +100,12 @@ def home(request):
         'recent_news': recent_news,
         'featured_gallery': featured_gallery,
         'bureau_members': bureau_members,
+        'featured_delegates': featured_delegates,
+        'total_delegates': total_delegates,
+        'featured_blog': featured_blog,
+        'featured_archives': featured_archives,
+        'total_archives': total_archives,
+        'past_presidents': past_presidents,
         'total_members': total_members,
         'completed_projects': completed_projects,
         'juin_edition': juin_edition,
