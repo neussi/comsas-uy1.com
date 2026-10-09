@@ -12,13 +12,14 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST || '167.86.88.92' }}
-        username: ${{ secrets.SSH_USERNAME || 'root' }}
-        password: ${{ secrets.SSH_PASSWORD || 'propenta2025' }}
-        port: ${{ secrets.SSH_PORT || 22 }}
+        username: ${{ secrets.SSH_USERNAME || 'patrice' }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT || 48127 }}
         timeout: 60s
         command_timeout: 30m
         envs: FREEMOPAY_APP_KEY,FREEMOPAY_SECRET_KEY
         script: |
+          sudo bash << 'DEPLOY_SCRIPT_EOF'
           cd /root/system-sh/comsas-uy1.com
           git fetch origin main
           git reset --hard origin/main
@@ -48,3 +49,4 @@ jobs:
           docker-compose exec -T web python manage.py collectstatic --noinput
           docker-compose restart web
           echo "Déploiement forcé terminé avec succès"
+          DEPLOY_SCRIPT_EOF
