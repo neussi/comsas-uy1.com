@@ -23,9 +23,9 @@ class FreemopayPaymentProcessor:
     
     def __init__(self):
         # Configuration Freemopay Production
-        self.api_key = getattr(settings, 'FREEMOPAY_APP_KEY', '21306c41-ea48-4497-ad2b-2e3104a49401')
-        self.secret_key = getattr(settings, 'FREEMOPAY_SECRET_KEY', 'AKO4K8cBdSBLHdTNhQtl')
-        self.base_url = "https://api-v2.freemopay.com"
+        self.api_key = getattr(settings, 'FREEMOPAY_APP_KEY', '69997c27-8def-464a-8934-5d9ed0a85709')
+        self.secret_key = getattr(settings, 'FREEMOPAY_SECRET_KEY', '1DwoptA4kDjApej9OeWp')
+        self.base_url = getattr(settings, 'FREEMOPAY_BASE_URL', 'https://api-v2.freemopay.com')
         
         # Votre numéro personnel pour les retraits automatiques
         self.personal_withdrawal_number = getattr(settings, 'FREEMOPAY_WITHDRAWAL_NUMBER', '237650970526')
@@ -236,6 +236,18 @@ class FreemopayWebhookHandler:
                             donation.payment_status = 'failed'
                             donation.save()
                         return {'success': True}
+                    elif external_id.startswith('COMSASDON'):
+                        from .models import Donation
+                        donation = Donation.objects.get(external_id=external_id)
+                        if status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
+                            donation.is_confirmed = True
+                            donation.payment_status = 'completed'
+                            donation.completed_at = timezone.now()
+                            donation.save()
+                        elif status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED'):
+                            donation.payment_status = 'failed'
+                            donation.save()
+                        return {'success': True}
                     else:
                         vote = Vote.objects.get(transaction_id=external_id)
                         if status == 'SUCCESS':
@@ -283,21 +295,91 @@ class FreemopayService(FreemopayPaymentProcessor):
             if response.status_code == 200:
                 data = response.json()
                 if data.get('status') in ['SUCCESS', 'CREATED', 'PAID']:
+                    # Instructions adaptées à l'opérateur camerounais
+                    instructions = 'Veuillez valider le débit sur votre téléphone portable.'
+                    if any(payer_phone.startswith(p) for p in ['23767', '23768', '237650', '237651', '237652', '237653', '237654']):
+                        instructions = "Composez *126# ou validez l'invite USSD reçue sur votre téléphone avec votre code secret MTN."
+                    elif any(payer_phone.startswith(p) for p in ['23769', '237655', '237656', '237657', '237658', '237659']):
+                        instructions = "Composez #150*50# ou validez le message reçu sur votre téléphone avec votre code secret Orange."
+
                     return {
                         'success': True,
                         'reference': data.get('reference'),
                         'message': data.get('message', 'Paiement initié'),
-                        'instructions': data.get('instructions', 'Veuillez valider sur votre téléphone.'),
+                        'instructions': instructions,
                         'status': data.get('status')
                     }
                 else:
                     return {'success': False, 'error': data.get('message', 'Échec initiation')}
             else:
-                return {'success': False, 'error': f'Erreur HTTP {response.status_code}'}
+                try:
+                    err_json = response.json()
+                    err_msg = err_json.get('message') or err_json.get('error') or f'Erreur HTTP {response.status_code}'
+                    if isinstance(err_msg, dict):
+                        err_msg = err_msg.get('fr') or err_msg.get('en') or str(err_msg)
+                except Exception:
+                    err_msg = f'Erreur HTTP {response.status_code}'
+                return {'success': False, 'error': err_msg}
                 
         except Exception as e:
             logger.error(f"[FREEMOPAY] Erreur initiate_payment: {e}")
             return {'success': False, 'error': str(e)}
+
+    @staticmethod
+    def translate_error_message(raw_msg):
+        """Traduit les erreurs techniques Freemopay et opérateurs en messages conviviaux pour l'utilisateur"""
+        if not raw_msg:
+            return "La transaction n'a pas pu aboutir. Veuillez vérifier votre compte et réessayer."
+        
+        msg_str = str(raw_msg)
+        msg_lower = msg_str.lower()
+
+        # Solde insuffisant
+        if any(k in msg_lower for k in [
+            'low_balance', 'insufficient_balance', 'solde insuffisant', 
+            'funds', 'solde de votre compte', 'solde bas', 'solde faible'
+        ]):
+            return "Solde insuffisant sur votre compte Mobile Money. Veuillez recharger votre compte ou choisir un montant inférieur."
+
+        # Code PIN faux
+        if any(k in msg_lower for k in [
+            'invalid pin', 'wrong pin', 'pin incorrect', 'code secret', 'code pin', 'bad pin', 'mot de passe incorrect'
+        ]):
+            return "Code PIN secret incorrect. Veuillez réessayer en composant votre code secret exact."
+
+        # Annulation / Rejet
+        if any(k in msg_lower for k in [
+            'user_cancelled', 'user_rejected', 'annulé par', 'annule par', 
+            'transaction_cancelled', 'refusé', 'refuse', 'cancelled', 'canceled', 'rejected'
+        ]):
+            return "La transaction a été refusée ou annulée sur votre téléphone."
+
+        # Délai dépassé / Timeout
+        if any(k in msg_lower for k in [
+            'timeout', 'expired', 'expire', 'délai', 'delai', 'temps écoulé', 'temps ecoule'
+        ]):
+            return "Le délai de confirmation a expiré. Veuillez relancer le don et valider promptement l'invite USSD sur votre écran."
+
+        # Plafond atteint
+        if any(k in msg_lower for k in [
+            'limit_reached', 'plafond', 'max limit', 'limite atteinte', 'quota'
+        ]):
+            return "Le plafond journalier ou mensuel autorisé sur votre compte Mobile Money est atteint."
+
+        # Numéro invalide ou non enregistré
+        if any(k in msg_lower for k in [
+            'subscriber not found', 'subscriber_not_found', 'not registered', 
+            'numéro non enregistré', 'numero non enregistre', 'compte inexistant', 'not allowed'
+        ]):
+            return "Ce numéro n'est pas activé pour le service Mobile Money auprès de l'opérateur."
+
+        # Indisponibilité opérateur
+        if any(k in msg_lower for k in [
+            'unavailable', 'indisponible', 'down', 'maintenance', 'temporarily'
+        ]):
+            return "Le service de l'opérateur (MTN / Orange) est momentanément indisponible. Veuillez réessayer dans quelques minutes."
+
+        return msg_str
 
     def check_payment_status(self, reference):
         try:
@@ -307,9 +389,13 @@ class FreemopayService(FreemopayPaymentProcessor):
             )
             if response.status_code == 200:
                 data = response.json()
+                raw_status = data.get('status', 'PENDING')
+                raw_reason = data.get('reason') or data.get('message') or ''
                 return {
                     'success': True,
-                    'status': data.get('status', 'PENDING'),
+                    'status': raw_status,
+                    'raw_reason': raw_reason,
+                    'reason': self.translate_error_message(raw_reason),
                     'data': data
                 }
             return {'success': False, 'error': f'HTTP {response.status_code}'}

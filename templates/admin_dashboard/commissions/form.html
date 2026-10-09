@@ -1,36 +1,67 @@
 {% extends 'admin_dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Modifier Commission{% endblock %}
+{% block title %}{{ action }} Commission - COM.S.AS{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 fw-bold">🏛️ {{ action }} Commission</h1>
-        <a href="{% url 'admin_club_commissions' %}" class="btn btn-outline-secondary btn-sm"><i
-                class="fas fa-arrow-left me-1"></i>Retour</a>
+        <h1 class="h3 fw-bold"><i class="fas fa-sitemap text-primary me-2"></i>{{ action }} la Commission</h1>
+        <a href="{% url 'admin_club_commissions' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
     </div>
-    <div class="card border-0 shadow-sm" style="max-width: 640px;">
+    <div class="card border-0 shadow-sm" style="max-width: 760px;">
         <div class="card-body p-4">
             <form method="post">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Nom de la commission</label>
-                    <input type="text" name="name" class="form-control" value="{{ commission.name|default:'' }}"
-                        required>
+                    <label class="form-label fw-semibold">Nom de la commission *</label>
+                    <input type="text" name="name" class="form-control" value="{{ commission.name|default:'' }}" required placeholder="Ex: Commission Technique et Projets">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Description / Mission</label>
-                    <textarea name="description" class="form-control"
-                        rows="3">{{ commission.description|default:'' }}</textarea>
+                    <label class="form-label fw-semibold">Description générale</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Présentation synthétique de la commission...">{{ commission.description|default:'' }}</textarea>
                 </div>
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Icône (FontAwesome)</label>
-                    <input type="text" name="icon" class="form-control"
-                        value="{{ commission.icon|default:'fas fa-folder' }}" placeholder="fas fa-folder">
-                    <small class="text-muted">Ex: fas fa-users, fas fa-code, etc.</small>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Rôle et Objectifs</label>
+                    <textarea name="role" class="form-control" rows="3" placeholder="Rôle, attributions et missions spécifiques de la commission...">{{ commission.role|default:'' }}</textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">{{ action }} la commission</button>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Icône FontAwesome</label>
+                    <input type="text" name="icon" class="form-control" value="{{ commission.icon|default:'fas fa-users-cog' }}" placeholder="fas fa-users-cog">
+                    <small class="text-muted">Exemples: fas fa-laptop-code, fas fa-bullhorn, fas fa-palette, fas fa-shield-alt, fas fa-network-wired</small>
+                </div>
+
+                <div class="border-top pt-3 mt-4">
+                    <h6 class="fw-bold text-primary mb-3">Responsables de la Commission (désignation directe ou indicatif)</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Superviseur</label>
+                            <input type="text" name="supervisor_name" class="form-control" value="{{ commission.supervisor_name|default:'' }}" placeholder="Nom complet du superviseur">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Directeur</label>
+                            <input type="text" name="director_name" class="form-control" value="{{ commission.director_name|default:'' }}" placeholder="Nom complet du directeur">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Directeur Adjoint</label>
+                            <input type="text" name="deputy_director_name" class="form-control" value="{{ commission.deputy_director_name|default:'' }}" placeholder="Nom du directeur adjoint">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Rapporteur</label>
+                            <input type="text" name="rapporteur_name" class="form-control" value="{{ commission.rapporteur_name|default:'' }}" placeholder="Nom du rapporteur">
+                        </div>
+                    </div>
+                    <small class="text-muted d-block mt-2">Note: Si des membres ont été approuvés avec ces rôles via les candidatures, ils seront automatiquement liés avec leur photo et profil complet.</small>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-check me-1"></i>Enregistrer
+                    </button>
+                    <a href="{% url 'admin_club_commissions' %}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
             </form>
         </div>
     </div>

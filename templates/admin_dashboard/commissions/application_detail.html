@@ -1,12 +1,12 @@
 {% extends 'admin_dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Détail Candidature — {{ application.nom_prenom }}{% endblock %}
+{% block title %}Détail Candidature - {{ application.nom_prenom }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 fw-bold">👤 {{ application.nom_prenom }}</h1>
+        <h1 class="h3 fw-bold"><i class="fas fa-user-circle me-2 text-primary"></i>{{ application.nom_prenom }}</h1>
         <a href="{% url 'admin_club_applications' %}" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-left me-1"></i>Retour
         </a>
@@ -79,11 +79,11 @@
                 <div class="card-header bg-white border-0 pt-4">
                     <h5 class="fw-bold mb-0">Décision / Statut :
                         {% if application.status == 'approved' %}
-                            <span class="badge bg-success">✅ Approuvé</span>
+                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Approuvé</span>
                         {% elif application.status == 'rejected' %}
-                            <span class="badge bg-danger">❌ Rejeté</span>
+                            <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Rejeté</span>
                         {% else %}
-                            <span class="badge bg-warning text-dark">⏳ En attente</span>
+                            <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>En attente</span>
                         {% endif %}
                     </h5>
                 </div>
@@ -105,25 +105,29 @@
                                 <div class="mb-3">
                                     <label class="form-label small fw-bold">Attribuer un rôle définitif :</label>
                                     <select name="role_applied" class="form-select">
+                                        <option value="supervisor"
+                                            {% if application.role_applied == 'supervisor' %}selected{% endif %}>
+                                            Superviseur
+                                        </option>
                                         <option value="director"
                                             {% if application.role_applied == 'director' %}selected{% endif %}>
-                                            Directeur(trice)
+                                            Directeur
                                         </option>
                                         <option value="deputy_director"
                                             {% if application.role_applied == 'deputy_director' %}selected{% endif %}>
-                                            Directeur(trice) Adjoint(e)
+                                            Directeur Adjoint
                                         </option>
                                         <option value="rapporteur"
                                             {% if application.role_applied == 'rapporteur' %}selected{% endif %}>
-                                            Rapporteur(e)
+                                            Rapporteur
                                         </option>
                                         <option value="deputy_rapporteur"
                                             {% if application.role_applied == 'deputy_rapporteur' %}selected{% endif %}>
-                                            Rapporteur(e) Adjoint(e)
+                                            Rapporteur Adjoint
                                         </option>
                                         <option value="member"
                                             {% if application.role_applied == 'member' %}selected{% endif %}>
-                                            Membre Simple
+                                            Membre
                                         </option>
                                     </select>
                                 </div>

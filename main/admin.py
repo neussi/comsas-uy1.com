@@ -7,7 +7,7 @@ from .models import (
     JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
     JUINActivity, JUINDonation, JUINSponsor, JUINTeam, JUINCandidate, JUINVote,
     ProjectSubmission, ClubCommission, ClubCommissionApplication,
-    AcademicResource, JobOffer
+    AcademicResource, JobOffer, Donation
 )
 
 # Sponsorship System Utils
@@ -431,6 +431,14 @@ class JUINDonationAdmin(admin.ModelAdmin):
     list_filter = ('is_confirmed', 'type_paiement', 'edition')
     search_fields = ('nom_prenom', 'email', 'telephone')
 
+@admin.register(Donation)
+class DonationAdmin(admin.ModelAdmin):
+    list_display = ('nom_prenom', 'montant', 'telephone', 'is_public', 'is_confirmed', 'payment_status', 'date_don')
+    list_filter = ('is_confirmed', 'payment_status', 'is_public', 'date_don')
+    search_fields = ('nom_prenom', 'telephone', 'email', 'external_id')
+    readonly_fields = ('external_id', 'date_don', 'completed_at')
+    list_editable = ('is_public', 'is_confirmed')
+
 
 
 @admin.register(AcademicResource)
@@ -501,12 +509,18 @@ class ProjectAdmin(admin.ModelAdmin):
     list_editable = ('status', 'is_featured')
     search_fields = ('title_fr', 'description_fr')
 
+class GalleryInline(admin.TabularInline):
+    model = Gallery
+    extra = 1
+    fields = ('media_type', 'image', 'video_url', 'video_file', 'title_fr', 'is_featured')
+
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title_fr', 'date_event', 'location', 'is_active', 'is_featured', 'certificates_sent')
+    list_display = ('title_fr', 'date_event', 'custom_registered_count', 'attendees_count', 'is_active', 'is_featured', 'certificates_sent')
     list_filter = ('is_active', 'is_featured', 'certificates_sent')
-    list_editable = ('is_active', 'is_featured')
+    list_editable = ('custom_registered_count', 'attendees_count', 'is_active', 'is_featured')
     search_fields = ('title_fr', 'location')
+    inlines = [GalleryInline]
     actions = ['send_event_certificates']
 
     def send_event_certificates(self, request, queryset):

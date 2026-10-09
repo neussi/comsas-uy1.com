@@ -610,7 +610,7 @@ class ClubCommissionApplicationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['commission'].empty_label = "-- Choisissez une Direction --"
+        self.fields['commission'].empty_label = "Sélectionnez une commission"
         self.fields['photo'].required = True
         for field_name, field in self.fields.items():
             if field_name not in ('photo', 'commission'):

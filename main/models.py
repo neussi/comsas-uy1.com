@@ -154,6 +154,18 @@ class Event(models.Model):
     gallery_album = models.ForeignKey('GalleryAlbum', on_delete=models.SET_NULL, null=True, blank=True,
                                       related_name='events', verbose_name="Album galerie lié")
 
+    # Compteurs participants modifiables par l'administrateur
+    custom_registered_count = models.PositiveIntegerField(
+        null=True, blank=True,
+        verbose_name="Nombre d'inscrits personnalisé",
+        help_text="Permet à l'administrateur de modifier ou surcharger le nombre d'inscrits affiché"
+    )
+    attendees_count = models.PositiveIntegerField(
+        null=True, blank=True,
+        verbose_name="Nombre réel de participants",
+        help_text="Nombre effectif de participants ayant assisté à l'activité"
+    )
+
     class Meta:
         verbose_name = "Événement"
         verbose_name_plural = "Événements"
@@ -168,6 +180,8 @@ class Event(models.Model):
     
     @property
     def registered_count(self):
+        if self.custom_registered_count is not None:
+            return self.custom_registered_count
         return self.eventregistration_set.filter(is_confirmed=True).count()
 
 class EventRegistration(models.Model):
@@ -255,6 +269,7 @@ class Gallery(models.Model):
     description_en = models.TextField(blank=True, verbose_name="Description (Anglais)")
     media_type = models.CharField(max_length=10, choices=MEDIA_TYPES, default='image')
     album = models.ForeignKey(GalleryAlbum, on_delete=models.CASCADE, related_name='images', verbose_name="Album", null=True, blank=True)
+    event = models.ForeignKey('Event', on_delete=models.SET_NULL, null=True, blank=True, related_name='gallery_media', verbose_name="Événement associé")
     image = models.ImageField(upload_to='gallery/images/', blank=True, null=True)
     video_url = models.URLField(blank=True, null=True, verbose_name="URL de la vidéo")
     video_file = models.FileField(upload_to='gallery/videos/', blank=True, null=True)
@@ -379,15 +394,22 @@ class ProjectSubmission(models.Model):
 # ------------- CLUB COMMISSIONS (DIRECTIONS) -------------
 
 class ClubCommission(models.Model):
-    """Directions permanentes du Club COMS.A.S"""
-    name = models.CharField(max_length=255, verbose_name="Nom de la direction")
+    """Commissions permanentes du Club COMS.A.S"""
+    name = models.CharField(max_length=255, verbose_name="Nom de la commission")
     slug = models.SlugField(max_length=255, unique=True, verbose_name="Slug")
-    description = models.TextField(verbose_name="Description / Missions", blank=True)
-    icon = models.CharField(max_length=255, default='fas fa-folder', verbose_name="Icône FontAwesome")
+    description = models.TextField(verbose_name="Description", blank=True)
+    role = models.TextField(verbose_name="Rôle et Missions", blank=True, help_text="Rôle, attributions et objectifs de la commission")
+    icon = models.CharField(max_length=255, default='fas fa-users-cog', verbose_name="Icône FontAwesome")
+    
+    # Responsables directs (optionnels si désignés hors candidatures)
+    supervisor_name = models.CharField(max_length=200, blank=True, verbose_name="Superviseur")
+    director_name = models.CharField(max_length=200, blank=True, verbose_name="Directeur")
+    deputy_director_name = models.CharField(max_length=200, blank=True, verbose_name="Directeur Adjoint")
+    rapporteur_name = models.CharField(max_length=200, blank=True, verbose_name="Rapporteur")
     
     class Meta:
-        verbose_name = "Direction du Club"
-        verbose_name_plural = "Directions du Club"
+        verbose_name = "Commission du Club"
+        verbose_name_plural = "Commissions du Club"
         ordering = ['name']
 
     def __str__(self):
@@ -398,27 +420,72 @@ class ClubCommission(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    @property
+    def approved_applications(self):
+        return self.applications.filter(status='approved')
+
+    @property
+    def get_director(self):
+        app = self.applications.filter(status='approved', role_applied='director').first()
+        if app:
+            return app
+        if self.director_name:
+            return {'nom_prenom': self.director_name, 'role_title': 'Directeur', 'is_custom': True}
+        return None
+
+    @property
+    def get_deputy_director(self):
+        app = self.applications.filter(status='approved', role_applied='deputy_director').first()
+        if app:
+            return app
+        if self.deputy_director_name:
+            return {'nom_prenom': self.deputy_director_name, 'role_title': 'Directeur Adjoint', 'is_custom': True}
+        return None
+
+    @property
+    def get_rapporteur(self):
+        app = self.applications.filter(status='approved', role_applied__in=['rapporteur', 'deputy_rapporteur']).first()
+        if app:
+            return app
+        if self.rapporteur_name:
+            return {'nom_prenom': self.rapporteur_name, 'role_title': 'Rapporteur', 'is_custom': True}
+        return None
+
+    @property
+    def get_supervisor(self):
+        app = self.applications.filter(status='approved', role_applied='supervisor').first()
+        if app:
+            return app
+        if self.supervisor_name:
+            return {'nom_prenom': self.supervisor_name, 'role_title': 'Superviseur', 'is_custom': True}
+        return None
+
+    @property
+    def get_members(self):
+        return self.applications.filter(status='approved', role_applied='member').order_by('nom_prenom')
+
 class ClubCommissionApplication(models.Model):
-    """Candidature à une direction du Club"""
+    """Candidature à une commission du Club"""
     STATUT_CHOICES = [
         ('pending', 'En attente'),
         ('approved', 'Approuvé'),
         ('rejected', 'Rejeté'),
     ]
     ROLE_CHOICES = [
-        ('director', 'Directeur(trice)'),
-        ('deputy_director', 'Directeur(trice) Adjoint(e)'),
-        ('rapporteur', 'Rapporteur(e)'),
-        ('deputy_rapporteur', 'Rapporteur(e) Adjoint(e)'),
-        ('member', 'Membre Simple'),
+        ('director', 'Directeur'),
+        ('deputy_director', 'Directeur Adjoint'),
+        ('rapporteur', 'Rapporteur'),
+        ('deputy_rapporteur', 'Rapporteur Adjoint'),
+        ('supervisor', 'Superviseur'),
+        ('member', 'Membre'),
     ]
     
-    commission = models.ForeignKey(ClubCommission, on_delete=models.CASCADE, related_name='applications', verbose_name="Direction")
+    commission = models.ForeignKey(ClubCommission, on_delete=models.CASCADE, related_name='applications', verbose_name="Commission")
     nom_prenom = models.CharField(max_length=200, verbose_name="Nom et Prénom")
     email = models.EmailField(verbose_name="Adresse e-mail")
     telephone = models.CharField(max_length=20, verbose_name="Numéro de téléphone")
     niveau = models.CharField(max_length=50, verbose_name="Niveau d'étude")
-    photo = models.ImageField(upload_to='club/applications/', verbose_name="Photo portrait")
+    photo = models.ImageField(upload_to='club/applications/', verbose_name="Photo portrait", blank=True, null=True)
     motivation = models.TextField(verbose_name="Motivation")
     role_applied = models.CharField(max_length=30, choices=ROLE_CHOICES, default='member', verbose_name="Poste souhaité")
     
@@ -426,12 +493,24 @@ class ClubCommissionApplication(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Candidature Direction Club"
-        verbose_name_plural = "Candidatures Directions Club"
+        verbose_name = "Candidature Commission Club"
+        verbose_name_plural = "Candidatures Commissions Club"
         ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.nom_prenom} -> {self.commission.name}"
+
+    @property
+    def member_profile_url(self):
+        from main.models import Member
+        m = Member.objects.filter(email=self.email).first()
+        if not m:
+            m = Member.objects.filter(nom_prenom__iexact=self.nom_prenom).first()
+        if m:
+            if m.portfolio_enabled and m.portfolio_slug:
+                return reverse('member_portfolio', kwargs={'slug': m.portfolio_slug})
+            return reverse('member_profile', kwargs={'pk': m.pk})
+        return None
 
 # ------------- SPONSORSHIP SYSTEM -------------
 
@@ -1247,6 +1326,51 @@ class JUINDonation(models.Model):
     @property
     def display_name(self):
         return "Donateur Anonyme" if self.is_anonymous else self.nom_prenom
+
+
+class Donation(models.Model):
+    """Modèle pour les dons à l'association COMSAS (via Freemopay Mobile Money)"""
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('initiated', 'Initié'),
+        ('completed', 'Confirmé'),
+        ('failed', 'Échoué'),
+        ('cancelled', 'Annulé'),
+    ]
+
+    nom_prenom = models.CharField(max_length=200, verbose_name="Nom et prénom du donateur")
+    email = models.EmailField(blank=True, null=True, verbose_name="Adresse email")
+    telephone = models.CharField(max_length=30, verbose_name="Numéro Mobile Money (MTN / Orange)")
+    montant = models.DecimalField(max_digits=12, decimal_places=0, verbose_name="Montant du don (FCFA)")
+    message = models.TextField(blank=True, verbose_name="Message de soutien")
+    is_public = models.BooleanField(
+        default=True,
+        verbose_name="Afficher mon don publiquement dans l'historique",
+        help_text="Si décoché, votre don apparaîtra comme 'Donateur Anonyme'"
+    )
+    is_confirmed = models.BooleanField(default=False, verbose_name="Paiement confirmé")
+    date_don = models.DateTimeField(auto_now_add=True, verbose_name="Date du don")
+    completed_at = models.DateTimeField(null=True, blank=True, verbose_name="Date de confirmation")
+    
+    # FreemoPay payment tracking
+    freemopay_reference = models.CharField(max_length=200, blank=True, verbose_name="Référence FreemoPay")
+    payment_status = models.CharField(
+        max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending',
+        verbose_name="Statut du paiement"
+    )
+    external_id = models.CharField(max_length=100, unique=True, verbose_name="ID de transaction")
+
+    class Meta:
+        verbose_name = "Don Association"
+        verbose_name_plural = "Dons Association"
+        ordering = ['-date_don']
+
+    def __str__(self):
+        return f"{self.nom_prenom} - {self.montant} FCFA ({self.payment_status})"
+
+    @property
+    def display_name(self):
+        return self.nom_prenom if self.is_public else "Donateur Anonyme"
 
 
 class JUINCandidate(models.Model):

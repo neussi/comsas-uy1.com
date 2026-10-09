@@ -5,68 +5,136 @@
 
 {% block title %}{{ event.title_fr }} - COMS.A.S{% endblock %}
 
+{% block extra_css %}
+<style>
+    .event-hero {
+        background: linear-gradient(135deg, #FFF0F5 0%, #FFFFFF 100%);
+        border-bottom: 1px solid #FCE4EC;
+    }
+    .badge-rose {
+        background-color: #FCE4EC;
+        color: #C2185B;
+        font-weight: 600;
+    }
+    .text-rose {
+        color: #E91E63 !important;
+    }
+    .text-rose-dark {
+        color: #C2185B !important;
+    }
+    .btn-rose {
+        background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+        color: #FFFFFF;
+        border: none;
+        transition: all 0.25s ease;
+    }
+    .btn-rose:hover {
+        background: linear-gradient(135deg, #C2185B 0%, #AD1457 100%);
+        color: #FFFFFF;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(233, 30, 99, 0.25);
+    }
+    .icon-box-rose {
+        width: 42px;
+        height: 42px;
+        background: #FCE4EC;
+        color: #C2185B;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .poster-frame {
+        border-radius: 1.25rem;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        border: 2px solid #FCE4EC;
+        overflow: hidden;
+        background: #FFFFFF;
+    }
+    .poster-frame img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Hero Section -->
-<!-- Hero Section -->
-<section class="py-5 bg-white position-relative overflow-hidden">
-    <div class="container position-relative z-1 py-4">
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'home' %}"
-                        class="text-muted text-decoration-none">Accueil</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'events' %}"
-                        class="text-muted text-decoration-none">Événements</a></li>
-                <li class="breadcrumb-item active text-dark" aria-current="page">{{ event.title_fr|truncatechars:30 }}
-                </li>
+<section class="event-hero py-5">
+    <div class="container py-3">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted text-decoration-none">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'events' %}" class="text-muted text-decoration-none">Événements</a></li>
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ event.title_fr|truncatechars:35 }}</li>
             </ol>
         </nav>
-        <div class="row align-items-center">
+        
+        <div class="row align-items-center g-4">
             <div class="col-lg-7">
                 <div class="mb-3">
-                    {% if event.date_event > now %}
-                    <span
-                        class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill">
-                        <i class="fas fa-calendar-plus me-1"></i> À Venir
+                    {% if event.is_registration_open %}
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
+                        <i class="fas fa-check-circle me-1"></i>Inscriptions Ouvertes
                     </span>
                     {% else %}
-                    <span
-                        class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-3 py-2 rounded-pill">
-                        <i class="fas fa-check me-1"></i> Passé
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
+                        <i class="fas fa-lock me-1"></i>Inscriptions Closes
                     </span>
                     {% endif %}
                 </div>
-                <h1 class="display-4 fw-bold mb-4 text-dark" style="overflow-wrap: break-word; word-wrap: break-word;">
-                    {{ event.title_fr }}</h1>
-                <p class="lead text-muted">{{ event.description_fr|striptags|truncatewords:25 }}</p>
-                <div class="mt-4 d-flex flex-wrap gap-4 align-items-center text-muted">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-circle bg-primary bg-opacity-10 text-primary me-2 p-2 rounded-circle">
-                            <i class="fas fa-calendar"></i>
+
+                <h1 class="display-5 fw-bold text-dark mb-3">
+                    {{ event.title_fr }}
+                </h1>
+                
+                <p class="lead text-muted mb-4">
+                    {{ event.description_fr|striptags|truncatewords:28 }}
+                </p>
+
+                <!-- Key Info Pills -->
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 border border-light shadow-sm">
+                        <div class="icon-box-rose me-2">
+                            <i class="fas fa-calendar-alt"></i>
                         </div>
-                        <span>{{ event.date_event|date:"d F Y" }}</span>
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Date</small>
+                            <strong class="text-dark">{{ event.date_event|date:"d F Y" }}</strong>
+                        </div>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <div class="icon-circle bg-primary bg-opacity-10 text-primary me-2 p-2 rounded-circle">
+                    <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 border border-light shadow-sm">
+                        <div class="icon-box-rose me-2">
                             <i class="fas fa-clock"></i>
                         </div>
-                        <span>{{ event.date_event|time:"H:i" }}</span>
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Heure</small>
+                            <strong class="text-dark">{{ event.date_event|time:"H:i" }}</strong>
+                        </div>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <div class="icon-circle bg-primary bg-opacity-10 text-primary me-2 p-2 rounded-circle">
+                    <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 border border-light shadow-sm">
+                        <div class="icon-box-rose me-2">
                             <i class="fas fa-map-marker-alt"></i>
                         </div>
-                        <span>{{ event.location }}</span>
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Lieu</small>
+                            <strong class="text-dark">{{ event.location }}</strong>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5 d-none d-lg-block text-center ps-lg-5">
+
+            <!-- Event Poster in Hero -->
+            <div class="col-lg-5 text-center">
                 {% if event.image %}
-                <img src="{{ event.image.url }}" alt="{{ event.title_fr }}"
-                    class="img-fluid rounded-4 shadow-lg rotate-hover" style="max-height: 350px;">
+                <div class="poster-frame d-inline-block">
+                    <img src="{{ event.image.url }}" alt="{{ event.title_fr }}">
+                </div>
                 {% else %}
-                <div class="bg-light rounded-4 d-flex align-items-center justify-content-center shadow-sm p-5"
-                    style="height: 300px;">
-                    <i class="fas fa-calendar-alt fa-5x text-primary opacity-25"></i>
+                <div class="bg-white rounded-4 p-5 text-center border border-light shadow-sm">
+                    <i class="fas fa-calendar-alt fa-4x text-rose-dark opacity-50 mb-3"></i>
+                    <h5 class="text-muted mb-0">Affiche Officielle COMSAS</h5>
                 </div>
                 {% endif %}
             </div>
@@ -75,128 +143,193 @@
 </section>
 
 <!-- Content Section -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-white">
     <div class="container">
         <div class="row g-5">
+            <!-- Left Column: Description & Registration -->
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
-                    <h3 class="fw-bold mb-4 text-primary">À propos de cet événement</h3>
-                    <div class="event-description">
+                <!-- Description Card -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid #F3E8EE !important;">
+                    <h3 class="h4 fw-bold mb-3 text-rose-dark">
+                        <i class="fas fa-info-circle me-2"></i>Programme et Description
+                    </h3>
+                    <div class="event-description text-secondary leading-relaxed">
                         {{ event.description_fr|safe }}
                     </div>
                 </div>
 
-                <!-- Galerie d'images -->
-                {% if images %}
-                <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
-                    <h3 class="fw-bold mb-4 text-primary"><i class="fas fa-images me-2"></i>Galerie Photos</h3>
-                    <div class="row g-2">
-                        {% for img in images %}
-                        <div class="col-6 col-md-4">
-                            <a href="{{ img.image.url }}" target="_blank">
-                                <img src="{{ img.image.url }}" class="img-fluid rounded-3 shadow-sm hover-scale w-100"
-                                    style="height: 150px; object-fit: cover;" alt="Photo {{ forloop.counter }}">
-                            </a>
-                        </div>
-                        {% endfor %}
+                <!-- Registration Block -->
+                {% if can_register %}
+                <div id="registration-form" class="card border-0 shadow-sm rounded-4 p-4" style="border-top: 4px solid #E91E63 !important;">
+                    <h3 class="h4 fw-bold mb-2 text-dark">Inscription à l'activité</h3>
+                    <p class="text-muted small mb-3">Complétez vos coordonnées pour confirmer votre participation.</p>
+                    
+                    <div class="p-3 rounded-3 mb-4" style="background: #FFF0F5; border: 1px solid #FCE4EC;">
+                        <i class="fas fa-clock text-rose-dark me-2"></i>
+                        <span class="small text-dark">Date limite d'inscription : <strong>{{ event.registration_deadline|date:"d F Y à H:i" }}</strong></span>
                     </div>
+
+                    <form method="post" action="{% url 'event_detail' event.id %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-rose rounded-pill px-5 py-2 fw-bold">
+                                Valider mon inscription
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <div class="card border-0 shadow-sm rounded-4 p-4" style="border-top: 4px solid #6C757D !important; background: #FAFAFA;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="p-3 rounded-circle me-3" style="background: #E9ECEF; color: #495057;">
+                            <i class="fas fa-lock fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="h5 fw-bold mb-1 text-dark">Inscriptions Closes</h4>
+                            <p class="text-muted mb-0 small">
+                                La date limite officielle fixée au <strong>{{ event.registration_deadline|date:"d F Y à H:i" }}</strong> est expirée.
+                            </p>
+                        </div>
+                    </div>
+                    <p class="small text-muted mb-0">
+                        Conformément au règlement du club, aucune inscription tardive n'est enregistrée au-delà de cette date. Pour toute question, contactez le comité d'organisation du COMSAS.
+                    </p>
                 </div>
                 {% endif %}
 
-                <!-- Participants liste -->
-                {% if event.date_event < now and participants %} <div
-                    class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
-                    <h3 class="fw-bold mb-4 text-primary"><i class="fas fa-users me-2"></i>Participants ({{
-                        participants.count }})</h3>
+                <!-- Section Galerie Médias (Photos et Vidéos) de l'événement -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mt-4" style="border: 1px solid #F3E8EE !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h4 class="h5 fw-bold mb-0 text-dark">
+                            <i class="fas fa-camera-retro me-2 text-rose-dark"></i>Galerie Photos & Vidéos de l'Activité
+                        </h4>
+                        {% if gallery_media %}
+                        <span class="badge badge-rose px-3 py-1 rounded-pill">{{ gallery_media|length }} média(s)</span>
+                        {% endif %}
+                    </div>
+
+                    {% if gallery_media %}
                     <div class="row g-3">
-                        {% for p in participants %}
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center p-3 border rounded-3 bg-light">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px; font-weight: bold;">
-                                    {{ p.nom_prenom|make_list|first|upper }}
-                                </div>
-                                <span class="fw-semibold text-dark">{{ p.nom_prenom }}</span>
+                        {% for media in gallery_media %}
+                        <div class="col-md-6 col-lg-4">
+                            {% if media.media_type == 'image' and media.image %}
+                            <div class="rounded-3 overflow-hidden shadow-sm position-relative" style="height: 180px; background: #000;">
+                                <a href="{{ media.image.url }}" target="_blank" title="{{ media.title_fr }}">
+                                    <img src="{{ media.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.25s;" alt="{{ media.title_fr }}">
+                                </a>
                             </div>
+                            <div class="small text-dark fw-semibold mt-1 text-truncate">{{ media.title_fr }}</div>
+                            {% elif media.media_type == 'video' %}
+                            <div class="rounded-3 overflow-hidden shadow-sm position-relative" style="height: 180px; background: #1A0A10;">
+                                {% if media.video_file %}
+                                <video src="{{ media.video_file.url }}" controls class="w-100 h-100" style="object-fit: cover;"></video>
+                                {% elif media.video_url %}
+                                <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center p-3">
+                                    <i class="fas fa-play-circle fa-3x text-white mb-2"></i>
+                                    <a href="{{ media.video_url }}" target="_blank" class="btn btn-sm btn-rose rounded-pill px-3">
+                                        Voir la vidéo
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="small text-dark fw-semibold mt-1 text-truncate">{{ media.title_fr }}</div>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>
-            </div>
-            {% endif %}
-
-            <!-- Registration Form -->
-            {% if can_register %}
-            <div id="registration-form"
-                class="card border-0 shadow-sm rounded-4 p-4 bg-white border-top border-5 border-warning">
-                <h3 class="fw-bold mb-4">Inscription</h3>
-                <p class="text-muted mb-4">Remplissez le formulaire ci-dessous pour participer.</p>
-                <form method="post" action="{% url 'event_detail' event.id %}" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-                    <button type="submit" class="btn btn-primary rounded-pill px-5 mt-3 fw-bold">Confirmer
-                        l'inscription</button>
-                </form>
-            </div>
-            {% elif event.date_event > now %}
-            <div class="alert alert-info rounded-4 shadow-sm border-0">
-                <i class="fas fa-info-circle me-2"></i> Les inscriptions pour cet événement ne sont plus ouvertes.
-            </div>
-            {% endif %}
-        </div>
-
-        <div class="col-lg-4">
-            <!-- Info Card -->
-            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
-                <h5 class="fw-bold mb-3 border-bottom pb-2">Détails Pratiques</h5>
-                <ul class="list-unstyled mb-0">
-                    <li class="mb-3 d-flex align-items-center">
-                        <div class="bg-light rounded-circle p-2 me-3 text-primary"><i class="fas fa-calendar"></i>
-                        </div>
-                        <div>
-                            <small class="text-muted d-block">Date</small>
-                            <strong>{{ event.date_event|date:"l d F Y" }}</strong>
-                        </div>
-                    </li>
-                    <li class="mb-3 d-flex align-items-center">
-                        <div class="bg-light rounded-circle p-2 me-3 text-primary"><i class="fas fa-clock"></i>
-                        </div>
-                        <div>
-                            <small class="text-muted d-block">Heure</small>
-                            <strong>{{ event.date_event|time:"H:i" }}</strong>
-                        </div>
-                    </li>
-                    <li class="mb-3 d-flex align-items-center">
-                        <div class="bg-light rounded-circle p-2 me-3 text-primary"><i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div>
-                            <small class="text-muted d-block">Lieu</small>
-                            <strong>{{ event.location }}</strong>
-                        </div>
-                    </li>
-                    <li class="d-flex align-items-center">
-                        <div class="bg-light rounded-circle p-2 me-3 text-warning"><i class="fas fa-users"></i>
-                        </div>
-                        <div>
-                            <small class="text-muted d-block">Participants</small>
-                            <strong>{{ event.registered_count|default:"0" }} inscrits</strong>
-                        </div>
-                    </li>
-                </ul>
+                    {% else %}
+                    <div class="text-center py-4 bg-light rounded-3">
+                        <i class="fas fa-images fa-2x text-muted mb-2 opacity-50"></i>
+                        <p class="small text-muted mb-0">
+                            Les photos et vidéos officielles de cette activité sont ajoutées au fur et à mesure par les organisateurs.
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
 
-            <!-- Share -->
-            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white">
-                <h6 class="fw-bold mb-3">Partager cet événement</h6>
-                <div class="d-flex justify-content-center gap-2">
-                    <a href="#" class="btn btn-sm btn-outline-primary rounded-circle"><i
-                            class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="btn btn-sm btn-outline-info rounded-circle"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="btn btn-sm btn-outline-success rounded-circle"><i
-                            class="fab fa-whatsapp"></i></a>
+            <!-- Right Column: Sidebar Info -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid #F3E8EE !important;">
+                    <h4 class="h5 fw-bold mb-3 pb-2 border-bottom text-dark">Fiche Pratique</h4>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3 d-flex align-items-start">
+                            <div class="icon-box-rose me-3 flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="fas fa-calendar" style="font-size: 0.9rem;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Date officielle</small>
+                                <strong class="text-dark">{{ event.date_event|date:"l d F Y" }}</strong>
+                            </div>
+                        </li>
+                        <li class="mb-3 d-flex align-items-start">
+                            <div class="icon-box-rose me-3 flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="fas fa-clock" style="font-size: 0.9rem;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Horaire</small>
+                                <strong class="text-dark">{{ event.date_event|time:"H:i" }}</strong>
+                            </div>
+                        </li>
+                        <li class="mb-3 d-flex align-items-start">
+                            <div class="icon-box-rose me-3 flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="fas fa-map-marker-alt" style="font-size: 0.9rem;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Lieu</small>
+                                <strong class="text-dark">{{ event.location }}</strong>
+                            </div>
+                        </li>
+                        <li class="mb-3 d-flex align-items-start">
+                            <div class="icon-box-rose me-3 flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="fas fa-users" style="font-size: 0.9rem;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Inscriptions</small>
+                                <strong class="text-dark">{{ event.registered_count }} inscrits</strong>
+                            </div>
+                        </li>
+                        {% if event.attendees_count %}
+                        <li class="mb-3 d-flex align-items-start">
+                            <div class="icon-box-rose me-3 flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="fas fa-user-check" style="font-size: 0.9rem;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Participants effectifs</small>
+                                <strong class="text-dark">{{ event.attendees_count }} participants</strong>
+                            </div>
+                        </li>
+                        {% endif %}
+                        <li class="d-flex align-items-start">
+                            <div class="icon-box-rose me-3 flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="fas fa-certificate" style="font-size: 0.9rem;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Attestation</small>
+                                <strong class="text-dark">
+                                    {% if event.certificate_enabled %}
+                                    Délivrée aux participants confirmés
+                                    {% else %}
+                                    Non applicable
+                                    {% endif %}
+                                </strong>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center" style="border: 1px solid #F3E8EE !important;">
+                    <h5 class="h6 fw-bold mb-3 text-dark">Association COMSAS</h5>
+                    <p class="small text-muted mb-3">
+                        Faculté des Sciences, Université de Yaoundé 1
+                    </p>
+                    <a href="{% url 'events' %}" class="btn btn-outline-rose rounded-pill btn-sm py-2 px-3 fw-semibold">
+                        <i class="fas fa-arrow-left me-1"></i>Retour aux événements
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 </section>
 {% endblock %}

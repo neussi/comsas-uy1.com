@@ -1,12 +1,12 @@
 {% extends 'admin_dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Commissions du Club{% endblock %}
+{% block title %}Commissions du Club - COM.S.AS{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 fw-bold">🏛️ Commissions du Club COM.S.AS</h1>
+        <h1 class="h3 fw-bold"><i class="fas fa-sitemap text-primary me-2"></i>Commissions du Club COM.S.AS</h1>
         <div class="d-flex gap-2">
             <a href="{% url 'admin_club_commission_create' %}" class="btn btn-success btn-sm">
                 <i class="fas fa-plus me-1"></i>Ajouter une commission
@@ -23,8 +23,8 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
-                        <div class="me-2 fs-4 text-primary" style="width: 40px; text-align: center;">
-                            <i class="{{ commission.icon|default:'fas fa-folder' }}"></i>
+                        <div class="me-3 fs-4 text-primary d-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 48px; height: 48px;">
+                            <i class="{{ commission.icon|default:'fas fa-users-cog' }}"></i>
                         </div>
                         <div>
                             <h5 class="fw-bold mb-0">{{ commission.name }}</h5>
@@ -32,12 +32,15 @@
                         </div>
                     </div>
                     {% if commission.description %}
-                    <p class="small text-muted">{{ commission.description|truncatechars:100 }}</p>
+                    <p class="small text-muted mb-2">{{ commission.description|truncatechars:100 }}</p>
+                    {% endif %}
+                    {% if commission.role %}
+                    <p class="small text-secondary mb-3"><strong class="text-dark">Role :</strong> {{ commission.role|truncatechars:80 }}</p>
                     {% endif %}
                     <div class="d-flex gap-2 mt-3 flex-wrap">
                         <span class="badge bg-secondary">{{ commission.app_count }} candidature(s)</span>
                         <span class="badge bg-warning text-dark">{{ commission.pending_count }} en attente</span>
-                        <span class="badge bg-success">{{ commission.approved_count }} approuvé(s)</span>
+                        <span class="badge bg-success">{{ commission.approved_count }} approuve(s)</span>
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-top-0 d-flex gap-2">
@@ -46,19 +49,25 @@
                         <i class="fas fa-eye me-1"></i>Candidatures
                     </a>
                     <a href="{% url 'admin_club_commission_edit' commission.pk %}"
-                        class="btn btn-sm btn-outline-secondary">
+                        class="btn btn-sm btn-outline-secondary" title="Modifier">
                         <i class="fas fa-edit"></i>
                     </a>
                     <form method="post" action="{% url 'admin_club_commission_delete' commission.pk %}"
                         onsubmit="return confirm('Supprimer cette commission ?');" class="d-inline">
                         {% csrf_token %}
-                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" title="Supprimer"><i class="fas fa-trash"></i></button>
                     </form>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center text-muted py-5">Aucune commission créée pour l'instant.</div>
+        <div class="col-12 text-center text-muted py-5">
+            <div class="mb-3"><i class="fas fa-sitemap fa-3x text-muted opacity-50"></i></div>
+            <p>Aucune commission créée pour l'instant.</p>
+            <a href="{% url 'admin_club_commission_create' %}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Créer la première commission
+            </a>
+        </div>
         {% endfor %}
     </div>
 </div>

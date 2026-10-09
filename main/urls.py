@@ -37,10 +37,13 @@ urlpatterns = [
     
     # Galerie
     path('gallery/', views.gallery, name='gallery'),
+    path('galerie/', views.gallery, name='galerie'),
     path('gallery/<int:pk>/', views.gallery_detail, name='gallery_detail'),
     
     # Dons
     path('donations/', views.donations, name='donations'),
+    path('donations/initiate/', views.initiate_donation, name='initiate_donation'),
+    path('donations/status/<str:external_id>/', views.check_donation_status, name='check_donation_status'),
     
     # Contact
     path('contact/', views.contact, name='contact'),
@@ -129,11 +132,15 @@ urlpatterns = [
     path('projets/soumettre/', views.project_submit, name='project_submit'),
     path('projets/succes/', views.project_submit_success, name='project_submit_success'),
     
-    # Directions du Club
+    # Commissions du Club
     path('directions/', views.club_commissions_list, name='club_commissions_list'),
     path('directions/postuler/', views.club_commission_apply, name='club_commission_apply'),
     path('directions/succes/', views.club_commission_apply_success, name='club_commission_apply_success'),
     path('directions/<slug:slug>/', views.club_commission_detail, name='club_commission_detail'),
+    path('commissions/', views.club_commissions_list, name='commissions_list'),
+    path('commissions/postuler/', views.club_commission_apply, name='commission_apply'),
+    path('commissions/succes/', views.club_commission_apply_success, name='commission_apply_success'),
+    path('commissions/<slug:slug>/', views.club_commission_detail, name='commission_detail'),
     
     # Ressources & Alumni
     path('ressources/', views.resources_list, name='resources_list'),

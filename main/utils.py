@@ -14,231 +14,148 @@ from reportlab.lib import colors
 
 def generate_member_card(member):
     """
-    Génère une carte de membre professionnelle au format PDF.
-    Taille standard CR80 (85.6mm x 53.98mm).
+    Génère une carte de membre officielle au format PDF.
+    Taille standard CR80 (85.6mm x 54mm) - Charte officielle Rose et Blanc du COMSAS.
     """
-    # We need mm from reportlab.lib.units
     from reportlab.lib.units import mm
     
-    # Dimensions carte de crédit standard
     width, height = 85.6 * mm, 54 * mm
     buffer = BytesIO()
-    
     c = canvas.Canvas(buffer, pagesize=(width, height))
     
-    # --- FOND & DESIGN ---
-    # Fond blanc
-    c.setFillColorRGB(1, 1, 1)
+    # 1. Fond blanc pur (AUCUN QUADRILLAGE)
+    c.setFillColor(colors.white)
     c.rect(0, 0, width, height, fill=1, stroke=0)
     
-    # Formes décoratives aux angles (Rose #E91E63)
-    c.setFillColorRGB(0.91, 0.12, 0.39) 
-    
-    # Angle Haut-Droit
-    p1 = c.beginPath()
-    p1.moveTo(width, height)
-    p1.lineTo(width - 20*mm, height)
-    p1.lineTo(width, height - 20*mm)
-    p1.close()
-    c.drawPath(p1, fill=1, stroke=0)
-    
-    # Angle Bas-Gauche
-    p2 = c.beginPath()
-    p2.moveTo(0, 0)
-    p2.lineTo(0, 20*mm)
-    p2.lineTo(20*mm, 0)
-    p2.close()
-    c.drawPath(p2, fill=1, stroke=0)
+    # 2. Couleurs officielles Rose et Blanc
+    ROSE_COMSAS = colors.HexColor('#E91E63')
+    ROSE_DARK = colors.HexColor('#C2185B')
+    ROSE_LIGHT = colors.HexColor('#FCE4EC')
+    TEXT_DARK = colors.HexColor('#1A0A10')
+    TEXT_MUTED = colors.HexColor('#6B7280')
 
-    # --- LOGO & EN-TÊTE ---
-    # Logo: Haut Gauche
-    logo_file = 'comsas.png'
-    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', logo_file)
-    header_y = height - 12*mm
+    # Bandeau supérieur Rose COMSAS
+    c.setFillColor(ROSE_COMSAS)
+    c.rect(0, height - 3.5*mm, width, 3.5*mm, fill=1, stroke=0)
     
-    if os.path.exists(logo_path):
-        try:
-            c.drawImage(logo_path, 3*mm, height - 13*mm, width=10*mm, height=10*mm, mask='auto', preserveAspectRatio=True)
-        except:
-            pass
-            
-    # Titre Principal
-    c.setFillColorRGB(0, 0, 0)
-    c.setFont("Helvetica-Bold", 10)
-    c.drawString(15*mm, height - 8*mm, "Computer Science Association")
-    
-    # Sous-titre
-    c.setFont("Helvetica", 6)
-    c.setFillColorRGB(0.3, 0.3, 0.3)
-    c.drawString(15*mm, height - 11*mm, "Club Informatique de l'Université de Yaoundé 1")
-    
-    # Ligne de séparation fine
-    c.setStrokeColorRGB(0.91, 0.12, 0.39)
-    c.setLineWidth(0.5)
-    c.line(3*mm, height - 15*mm, width - 3*mm, height - 15*mm)
-    
-    # --- PHOTO (Gauche) ---
-    photo_x = 4*mm
-    photo_y = 14*mm 
-    photo_w = 20*mm
-    photo_h = 24*mm
-    
-    # Cadre photo
-    c.setStrokeColorRGB(0.8, 0.8, 0.8)
-    c.rect(photo_x, photo_y, photo_w, photo_h, fill=0, stroke=1)
-    
-    if member.photo:
-        try:
-            c.drawImage(member.photo.path, photo_x, photo_y, width=photo_w, height=photo_h, mask='auto', preserveAspectRatio=True, anchor='c')
-        except:
-            c.setFont("Helvetica", 5)
-            c.drawCentredString(photo_x + photo_w/2, photo_y + photo_h/2, "Photo")
-    else:
-        c.setFont("Helvetica", 5)
-        c.drawCentredString(photo_x + photo_w/2, photo_y + photo_h/2, "No Photo")
-            
-    # --- INFORMATIONS (Centre/Droite) ---
-    text_x = 28*mm
-    
-    # Titre de la carte
-    c.setFont("Helvetica-Bold", 9)
-    c.setFillColorRGB(0.91, 0.12, 0.39) # Pink
-    c.drawString(text_x, 34*mm, "CARTE DE MEMBRE")
-    
-    # Texte de certification
-    c.setFont("Helvetica", 7)
-    c.setFillColorRGB(0, 0, 0)
-    c.drawString(text_x, 30*mm, "Nous certifions que :")
-    
-    # Nom du membre
-    c.setFont("Helvetica-Bold", 11)
-    c.drawString(text_x, 26*mm, f"{member.nom_prenom.upper()}")
-    
-    # Statut / Poste
-    status_line = "Membre Actif"
-    if member.member_type == 'bureau' and getattr(member, 'poste_bureau', None):
-         status_line = member.poste_bureau
-    elif member.member_type == 'founder':
-         status_line = "Membre Fondateur"
-         
-    c.setFont("Helvetica", 8)
-    c.setFillColorRGB(0.2, 0.2, 0.2)
-    c.drawString(text_x, 22*mm, status_line)
-    
-    # Détails Ligne 1: Matricule et Niveau
-    c.setFont("Helvetica", 7)
-    c.drawString(text_x, 18.5*mm, f"Matricule: {member.matricule or 'N/A'}")
-    
-    niveau_text = getattr(member, 'get_niveau_display', lambda: getattr(member, 'niveau', 'N/A'))() or getattr(member, 'promotion', 'N/A')
-    c.drawString(text_x + 28*mm, 18.5*mm, f"Niveau: {niveau_text}")
+    # Liseré rose inférieur
+    c.setFillColor(ROSE_DARK)
+    c.rect(0, 0, width, 1.5*mm, fill=1, stroke=0)
 
-    # Détails Ligne 2: Téléphone
-    c.drawString(text_x, 15.5*mm, f"Tél: {member.telephone or 'N/A'}")
-
-    # --- PIED DE PAGE & SIGNATURE ---
-    
-    # QR Code (Bas Droite)
-    qr_size = 12*mm
-    qr_x = width - qr_size - 3*mm
-    qr_y = 3*mm 
-    
-    try:
-        profile_url = settings.SITE_URL + reverse('member_profile', args=[member.id])
-    except:
-        profile_url = getattr(settings, 'SITE_URL', 'https://comsas-uy1.com') + f"/membre/{member.id}"
-    # --- FOND & DESIGN (Premium Tech Theme) ---
-    ORANGE_MANDAT = colors.Color(243/255, 146/255, 0/255)
-    TECH_DARK = colors.Color(31/255, 41/255, 55/255)
-    
-    # Background
-    c.setFillColor(TECH_DARK)
-    c.rect(0, 0, width, height, fill=1, stroke=0)
-    
-    # Tech Grid Layer
-    c.setStrokeColor(colors.white)
-    c.setLineWidth(0.05)
-    for i in range(0, int(width), int(5*mm)): c.line(i, 0, i, height)
-    for i in range(0, int(height), int(5*mm)): c.line(0, i, width, i)
-
-    # Accent Top Bar
-    c.setFillColor(ORANGE_MANDAT)
-    c.rect(0, height - 3*mm, width, 3*mm, fill=1, stroke=0)
-    
-    # --- LOGO & Identity ---
+    # 3. Logo et En-tête
     logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'comsas.png')
     if os.path.exists(logo_path):
-        try: c.drawImage(logo_path, 2*mm, height - 12*mm, width=8*mm, height=8*mm, mask='auto', preserveAspectRatio=True)
-        except: pass
-            
-    c.setFillColor(colors.white)
-    c.setFont("Helvetica-Bold", 7)
-    c.drawString(11*mm, height - 8*mm, "COMPUTER SCIENCE ASSOCIATION")
-    c.setFont("Helvetica", 4.5)
-    c.drawString(11*mm, height - 10.5*mm, "Club Informatique de l'Université de Yaoundé 1")
+        try:
+            c.drawImage(logo_path, 3.5*mm, height - 13*mm, width=8.5*mm, height=8.5*mm, mask='auto', preserveAspectRatio=True)
+        except Exception:
+            pass
+
+    c.setFillColor(ROSE_DARK)
+    c.setFont("Helvetica-Bold", 8.5)
+    c.drawString(13.5*mm, height - 8.5*mm, "COMPUTER SCIENCE ASSOCIATION")
     
-    # --- Body Content (Card within Card for Contrast) ---
-    inner_x, inner_y = 2*mm, 2*mm 
-    inner_w, inner_h = width - 4*mm, height - 15*mm 
-    c.setFillColor(colors.white)
-    c.rect(inner_x, inner_y, inner_w, inner_h, fill=1, stroke=0)
+    c.setFont("Helvetica", 5.5)
+    c.setFillColor(TEXT_MUTED)
+    c.drawString(13.5*mm, height - 11.5*mm, "Club Informatique de l'Université de Yaoundé 1")
+
+    # Ligne de séparation fine rose
+    c.setStrokeColor(ROSE_COMSAS)
+    c.setLineWidth(0.6)
+    c.line(3.5*mm, height - 14*mm, width - 3.5*mm, height - 14*mm)
+
+    # 4. Photo du membre (Gauche)
+    photo_x = 4*mm
+    photo_y = 6*mm
+    photo_w = 21*mm
+    photo_h = 28*mm
     
-    # --- Member Photo ---
-    photo_x, photo_y = 4*mm, 10*mm 
-    photo_w, photo_h = 24*mm, 28*mm
-    c.setStrokeColor(ORANGE_MANDAT)
-    c.setLineWidth(1)
+    c.setFillColor(ROSE_LIGHT)
+    c.rect(photo_x, photo_y, photo_w, photo_h, fill=1, stroke=0)
+    c.setStrokeColor(ROSE_COMSAS)
+    c.setLineWidth(0.8)
     c.rect(photo_x, photo_y, photo_w, photo_h, fill=0, stroke=1)
-    
-    if member.photo:
-        try: c.drawImage(member.photo.path, photo_x, photo_y, width=photo_w, height=photo_h, mask='auto', preserveAspectRatio=True, anchor='c')
-        except: pass
-            
-    # --- Details ---
-    tx = 30*mm
+
+    if member.photo and hasattr(member.photo, 'path') and os.path.exists(member.photo.path):
+        try:
+            c.drawImage(member.photo.path, photo_x, photo_y, width=photo_w, height=photo_h, mask='auto', preserveAspectRatio=True, anchor='c')
+        except Exception:
+            c.setFont("Helvetica", 6)
+            c.setFillColor(TEXT_MUTED)
+            c.drawCentredString(photo_x + photo_w/2, photo_y + photo_h/2, "Photo")
+    else:
+        c.setFont("Helvetica-Bold", 6)
+        c.setFillColor(ROSE_COMSAS)
+        c.drawCentredString(photo_x + photo_w/2, photo_y + photo_h/2, "COMSAS")
+
+    # 5. Informations personnelles (Centre)
+    tx = 28*mm
     c.setFont("Helvetica-Bold", 8)
-    c.setFillColor(ORANGE_MANDAT)
-    c.drawString(tx, 32*mm, "CARTE DE MEMBRE")
-    
-    c.setFont("Helvetica-Bold", 10)
-    c.setFillColor(TECH_DARK)
-    c.drawString(tx, 27*mm, f"{member.nom_prenom.upper()}")
-    
+    c.setFillColor(ROSE_COMSAS)
+    c.drawString(tx, height - 18.5*mm, "CARTE DE MEMBRE")
+
+    # Nom et prénom du membre avec mise à l'échelle automatique
+    nom_affiche = (member.nom_prenom or '').upper()
+    qr_size = 11*mm
+    qr_x = width - qr_size - 4*mm
+    max_text_width = qr_x - tx - 2*mm
+    nom_font_size = 9.0
+    while nom_font_size > 6.0 and stringWidth(nom_affiche, "Helvetica-Bold", nom_font_size) > max_text_width:
+        nom_font_size -= 0.5
+    c.setFont("Helvetica-Bold", nom_font_size)
+    c.setFillColor(TEXT_DARK)
+    c.drawString(tx, height - 23*mm, nom_affiche)
+
+    # Statut / Rôle
     status = "Membre Actif"
-    if member.member_type == 'bureau' and getattr(member, 'poste_bureau', None): status = member.poste_bureau
-    
-    c.setFont("Helvetica-Bold", 7)
-    c.setFillColor(ORANGE_MANDAT)
-    c.drawString(tx, 23*mm, status)
-    
-    c.setFont("Helvetica", 6)
-    c.setFillColor(colors.gray)
-    c.drawString(tx, 19*mm, f"ID: {member.matricule or 'N/A'}")
-    c.drawString(tx, 16*mm, f"Niveau: {getattr(member, 'niveau', 'N/A')}")
-    c.drawString(tx, 13*mm, f"Tél: {member.telephone or 'N/A'}")
+    if member.member_type == 'bureau' and getattr(member, 'poste_bureau', None):
+        status = member.poste_bureau
+    elif member.member_type == 'founder':
+        status = "Membre Fondateur"
 
-    # --- Officiality Section ---
-    sig_y_label = 11*mm
-    lx = width - 20*mm
-    c.setFont("Helvetica-Bold", 6)
-    c.setFillColor(TECH_DARK)
-    c.drawCentredString(lx, sig_y_label, "Le Président du COMS.A.S")
-    
-    # Signature/Stamp BELOW THE LABEL
-    sig_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'signature.png')
-    if os.path.exists(sig_path):
-        c.drawImage(sig_path, lx - 12*mm, 2*mm, width=24*mm, height=12*mm, mask='auto', preserveAspectRatio=True)
+    role_font_size = 7.5
+    while role_font_size > 5.5 and stringWidth(status, "Helvetica-Bold", role_font_size) > max_text_width:
+        role_font_size -= 0.5
+    c.setFont("Helvetica-Bold", role_font_size)
+    c.setFillColor(ROSE_DARK)
+    c.drawString(tx, height - 26.5*mm, status)
 
-    # QR Code Verification
-    qx, qy, qs = width - 11*mm, 15*mm, 7*mm
+    # Coordonnées et Niveau académique
+    c.setFont("Helvetica", 6.5)
+    c.setFillColor(TEXT_DARK)
+    c.drawString(tx, height - 30.5*mm, f"Matricule : {member.matricule or 'Non renseigné'}")
+    
+    niveau_nom = getattr(member, 'get_niveau_display', lambda: getattr(member, 'niveau', 'N/A'))() or getattr(member, 'promotion', 'N/A')
+    c.drawString(tx, height - 34*mm, f"Niveau : {niveau_nom}")
+    c.drawString(tx, height - 37.5*mm, f"Téléphone : {member.telephone or 'N/A'}")
+
+    # 6. QR Code de vérification (Droite)
+    profile_url = f"{getattr(settings, 'SITE_URL', 'https://comsas-uy1.com')}/membre/{member.id}"
+    qr_size = 11*mm
+    qr_x = width - qr_size - 4*mm
+    qr_y = height - 26*mm
+
     qr = qrcode.QRCode(box_size=1, border=0)
     qr.add_data(profile_url)
     qr.make(fit=True)
-    qimg = qr.make_image(fill_color="black", back_color="white")
+    qimg = qr.make_image(fill_color="#C2185B", back_color="white")
     qb = BytesIO()
     qimg.save(qb)
     qb.seek(0)
-    c.drawImage(ImageReader(qb), qx, qy, width=qs, height=qs)
-    
+    c.drawImage(ImageReader(qb), qr_x, qr_y, width=qr_size, height=qr_size)
+
+    # 7. Signature et Cachet officiel du Président (En bas à droite)
+    sig_center_x = width - 17*mm
+    c.setFont("Helvetica-Bold", 6.2)
+    c.setFillColor(TEXT_DARK)
+    c.drawCentredString(sig_center_x, 11*mm, "Le Président du COMS.A.S")
+
+    sig_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'signature.png')
+    if os.path.exists(sig_path):
+        try:
+            c.drawImage(sig_path, sig_center_x - 11*mm, 2*mm, width=22*mm, height=9*mm, mask='auto', preserveAspectRatio=True)
+        except Exception:
+            pass
+
     c.showPage()
     c.save()
     

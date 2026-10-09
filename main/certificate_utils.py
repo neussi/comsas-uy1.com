@@ -4,7 +4,7 @@ from io import BytesIO
 from django.core.files import File
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import inch, mm
+from reportlab.lib.units import mm
 from reportlab.lib.utils import ImageReader
 from reportlab.lib import colors
 from reportlab.pdfbase.pdfmetrics import stringWidth
@@ -15,160 +15,191 @@ from django.urls import reverse
 
 def generate_certificate(registration):
     """
-    Generates a HIGH-FIDELITY PREMIUM technical certificate.
-    Refined with dynamic name scaling for up to 5 names.
+    Génère une attestation / certificat officiel de participation.
+    Format A4 Paysage - Charte officielle Rose et Blanc du COMSAS (sans quadrillage ni carrés).
     """
     event = registration.event
     
     if not getattr(event, 'certificate_enabled', True):
         return None
 
-    # --- SETUP ---
     buffer = BytesIO()
-    # Landscape orientation for a more professional "Award" feel
-    page_width, page_height = A4
-    page_width, page_height = page_height, page_width 
+    # Format A4 Paysage
+    page_height, page_width = A4
     p = canvas.Canvas(buffer, pagesize=(page_width, page_height))
     
-    # Premium Palette
-    ORANGE_MANDAT = colors.Color(243/255, 146/255, 0/255) # #F39200
-    TECH_DARK = colors.Color(31/255, 41/255, 55/255) # Deep Gray for text
-    GRID_LINE = colors.Color(0, 0, 0, 0.03)
+    # Couleurs officielles COMSAS
+    ROSE_COMSAS = colors.HexColor('#E91E63')
+    ROSE_DARK = colors.HexColor('#C2185B')
+    ROSE_PALE = colors.HexColor('#FCE4EC')
+    TEXT_DARK = colors.HexColor('#1A0A10')
+    TEXT_MUTED = colors.HexColor('#555555')
 
-    # 1. Background: High-Contrast White
+    # 1. Fond blanc pur (AUCUN QUADRILLAGE)
     p.setFillColor(colors.white)
     p.rect(0, 0, page_width, page_height, fill=1, stroke=0)
-    
-    # Subtle Technical Grid Layer (Light Gray)
-    p.setStrokeColor(GRID_LINE)
-    p.setLineWidth(0.5)
-    for x in range(0, int(page_width), int(10*mm)): p.line(x, 0, x, page_height)
-    for y in range(0, int(page_height), int(10*mm)): p.line(0, y, page_width, y)
 
-    # Decorative Side Accent (Orange)
-    p.setFillColor(ORANGE_MANDAT)
-    p.rect(0, 0, 8*mm, page_height, fill=1, stroke=0)
-
-    # 2. Main Frame
-    p.setStrokeColor(ORANGE_MANDAT)
-    p.setLineWidth(1)
-    p.rect(12*mm, 10*mm, page_width - 22*mm, page_height - 20*mm, fill=0, stroke=1)
-    
-    # Corner Indicators
-    p.setStrokeColor(TECH_DARK)
+    # 2. Cadre d'honneur diplomatique double-filet Rose COMSAS
+    # Filet extérieur
+    p.setStrokeColor(ROSE_COMSAS)
     p.setLineWidth(2)
-    # Top Left
-    p.line(12*mm, page_height - 20*mm, 25*mm, page_height - 20*mm)
-    p.line(12*mm, page_height - 20*mm, 12*mm, page_height - 35*mm)
-    # Bottom Right
-    p.line(page_width - 20*mm, 10*mm, page_width - 10*mm, 10*mm)
-    p.line(page_width - 10*mm, 10*mm, page_width - 10*mm, 25*mm)
+    p.rect(10*mm, 10*mm, page_width - 20*mm, page_height - 20*mm, fill=0, stroke=1)
 
-    # 3. Logos (Top Layer)
-    comsas_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
+    # Filet intérieur fin
+    p.setStrokeColor(ROSE_DARK)
+    p.setLineWidth(0.6)
+    p.rect(13*mm, 13*mm, page_width - 26*mm, page_height - 26*mm, fill=0, stroke=1)
+
+    # Coins décoratifs discrets
+    c_len = 8*mm
+    p.setStrokeColor(ROSE_DARK)
+    p.setLineWidth(1.5)
+    # Haut gauche
+    p.line(10*mm, page_height - 10*mm - c_len, 10*mm, page_height - 10*mm)
+    p.line(10*mm, page_height - 10*mm, 10*mm + c_len, page_height - 10*mm)
+    # Haut droit
+    p.line(page_width - 10*mm - c_len, page_height - 10*mm, page_width - 10*mm, page_height - 10*mm)
+    p.line(page_width - 10*mm, page_height - 10*mm, page_width - 10*mm, page_height - 10*mm - c_len)
+    # Bas gauche
+    p.line(10*mm, 10*mm + c_len, 10*mm, 10*mm)
+    p.line(10*mm, 10*mm, 10*mm + c_len, 10*mm)
+    # Bas droit
+    p.line(page_width - 10*mm - c_len, 10*mm, page_width - 10*mm, 10*mm)
+    p.line(page_width - 10*mm, 10*mm, page_width - 10*mm, 10*mm + c_len)
+
+    # 3. Logo officiel COMSAS (Haut gauche)
+    comsas_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'comsas.png')
     if os.path.exists(comsas_path):
-        p.drawImage(ImageReader(comsas_path), 20*mm, page_height - 35*mm, width=18*mm, height=18*mm, mask='auto', preserveAspectRatio=True)
+        try:
+            p.drawImage(ImageReader(comsas_path), 20*mm, page_height - 38*mm, width=20*mm, height=20*mm, mask='auto', preserveAspectRatio=True)
+        except Exception:
+            pass
 
-    # 4. Header Titles
-    p.setFillColor(TECH_DARK)
-    p.setFont("Helvetica-Bold", 55)
-    p.drawCentredString(page_width/2, page_height - 45*mm, "CERTIFICAT")
-    
-    p.setFillColor(ORANGE_MANDAT)
-    p.setFont("Helvetica-Bold", 18)
-    p.drawCentredString(page_width/2, page_height - 55*mm, "DE PARTICIPATION ET D'EXCELLENCE")
+    # Logo UY1 (Haut droite)
+    uy1_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'uy1.png')
+    if os.path.exists(uy1_path):
+        try:
+            p.drawImage(ImageReader(uy1_path), page_width - 40*mm, page_height - 38*mm, width=20*mm, height=20*mm, mask='auto', preserveAspectRatio=True)
+        except Exception:
+            pass
 
-    # 5. Awardee Section (Dynamic Scaling)
-    p.setFillColor(colors.gray)
-    p.setFont("Helvetica", 16)
-    p.drawCentredString(page_width/2, page_height*0.65, "Ce certificat est fièrement décerné à :")
-    
-    p.setFillColor(ORANGE_MANDAT)
-    
-    # --- DYNAMIC FONT SCALING ---
-    name = registration.nom_prenom.upper()
-    max_w = page_width * 0.75
-    fs = 48
-    while stringWidth(name, "Helvetica-Bold", fs) > max_w and fs > 20:
-        fs -= 2
-    
-    p.setFont("Helvetica-Bold", fs)
-    p.drawCentredString(page_width/2, page_height*0.55, name)
-    
-    # Separator Line
-    p.setStrokeColor(TECH_DARK)
-    p.setLineWidth(0.5)
-    p.line(page_width*0.2, page_height*0.52, page_width*0.8, page_height*0.52)
+    # 4. En-tête institutionnel
+    p.setFillColor(TEXT_MUTED)
+    p.setFont("Helvetica-Bold", 10)
+    p.drawCentredString(page_width/2, page_height - 24*mm, "UNIVERSITÉ DE YAOUNDÉ 1 - FACULTÉ DES SCIENCES")
+    p.setFont("Helvetica", 8.5)
+    p.drawCentredString(page_width/2, page_height - 29*mm, "Département d'Informatique - Computer Science Association (COMSAS)")
 
-    # 6. Event Description
-    p.setFillColor(TECH_DARK)
-    p.setFont("Helvetica", 14)
-    desc = event.certificate_main_text or f"pour sa participation remarquable à l'événement \"{event.title_fr}\" organisé par le COMSAS."
-    
-    # Wrap text
-    words = desc.split()
-    lines, curr = [], ""
-    for w in words:
-        if stringWidth(curr + " " + w, "Helvetica", 14) < (page_width - 60*mm): curr += " " + w if curr else w
-        else: lines.append(curr); curr = w
-    if curr: lines.append(curr)
-    
-    y_cursor = page_height*0.48
-    for line in lines[:4]:
-        p.drawCentredString(page_width/2, y_cursor, line)
-        y_cursor -= 7*mm
+    # 5. Titre du Certificat
+    p.setFillColor(ROSE_DARK)
+    p.setFont("Helvetica-Bold", 36)
+    titre_certif = event.certificate_title if getattr(event, 'certificate_title', None) else "ATTESTATION DE PARTICIPATION"
+    p.drawCentredString(page_width/2, page_height - 48*mm, titre_certif.upper())
 
-    # 7. Official Signature (CRITICAL POSITIONING: BELOW THE TITLE)
-    sig_y_label = 55*mm
+    # Sous-titre décoratif
+    p.setFillColor(ROSE_COMSAS)
     p.setFont("Helvetica-Bold", 12)
-    p.setFillColor(TECH_DARK)
-    p.drawCentredString(page_width/2, sig_y_label, "Le Président du COMS.A.S")
+    p.drawCentredString(page_width/2, page_height - 56*mm, "DÉCERNÉE POUR VALOIR CE QUE DE DROIT")
+
+    # Ligne fine centrale
+    p.setStrokeColor(ROSE_COMSAS)
+    p.setLineWidth(0.8)
+    p.line(page_width*0.35, page_height - 60*mm, page_width*0.65, page_height - 60*mm)
+
+    # 6. Récipiendaire
+    p.setFillColor(TEXT_MUTED)
+    p.setFont("Helvetica", 13)
+    p.drawCentredString(page_width/2, page_height - 72*mm, "La présente attestation est fièrement décernée à :")
+
+    # Nom du participant avec adaptation dynamique de taille
+    nom_participant = registration.nom_prenom.upper()
+    font_size = 32
+    max_text_width = page_width - 60*mm
+    while stringWidth(nom_participant, "Helvetica-Bold", font_size) > max_text_width and font_size > 16:
+        font_size -= 2
+
+    p.setFillColor(TEXT_DARK)
+    p.setFont("Helvetica-Bold", font_size)
+    p.drawCentredString(page_width/2, page_height - 87*mm, nom_participant)
+
+    # Soulignement élégant
+    p.setStrokeColor(ROSE_COMSAS)
+    p.setLineWidth(1)
+    p.line(page_width*0.25, page_height - 92*mm, page_width*0.75, page_height - 92*mm)
+
+    # 7. Motif et Description de l'événement
+    p.setFillColor(TEXT_DARK)
+    p.setFont("Helvetica", 13)
     
-    sig_path = event.president_signature.path if event.president_signature else os.path.join(settings.BASE_DIR, 'static/images/signature.png')
+    texte_principal = event.certificate_main_text or f"pour sa participation active et remarquable aux travaux de l'événement \"{event.title_fr}\" organisé par le COMSAS."
+    
+    # Découpage du texte sur plusieurs lignes propres
+    mots = texte_principal.split()
+    lignes, ligne_en_cours = [], ""
+    for mot in mots:
+        if stringWidth(ligne_en_cours + " " + mot, "Helvetica", 13) < (page_width - 60*mm):
+            ligne_en_cours += (" " + mot if ligne_en_cours else mot)
+        else:
+            lignes.append(ligne_en_cours)
+            ligne_en_cours = mot
+    if ligne_en_cours:
+        lignes.append(ligne_en_cours)
+
+    y_pos = page_height - 105*mm
+    for l in lignes[:3]:
+        p.drawCentredString(page_width/2, y_pos, l)
+        y_pos -= 6.5*mm
+
+    # 8. Date & Lieu (Bas gauche)
+    p.setFont("Helvetica-Oblique", 10)
+    p.setFillColor(TEXT_MUTED)
+    date_str = timezone.now().strftime('%d/%m/%Y')
+    p.drawString(22*mm, 35*mm, f"Fait à Yaoundé, le {date_str}")
+    p.setFont("Helvetica", 8)
+    p.drawString(22*mm, 30*mm, "Réf. Officielle COMSAS - Faculté des Sciences")
+
+    # 9. Signatures officielles (Centre et droite)
+    sig_center_x = page_width/2
+    p.setFont("Helvetica-Bold", 11)
+    p.setFillColor(TEXT_DARK)
+    pres_title = getattr(event, 'certificate_president_title', '') or "Le Président du COMS.A.S"
+    p.drawCentredString(sig_center_x, 38*mm, pres_title)
+
+    # Cachet / Signature du président
+    sig_path = event.president_signature.path if (getattr(event, 'president_signature', None) and os.path.exists(event.president_signature.path)) else os.path.join(settings.BASE_DIR, 'static', 'images', 'signature.png')
     if os.path.exists(sig_path):
-        # ENLARGED STAMP BELOW THE TEXT
-        p.drawImage(ImageReader(sig_path), (page_width - 65*mm)/2, sig_y_label - 45*mm, width=65*mm, height=40*mm, mask='auto', preserveAspectRatio=True)
+        try:
+            p.drawImage(ImageReader(sig_path), sig_center_x - 22*mm, 15*mm, width=44*mm, height=22*mm, mask='auto', preserveAspectRatio=True)
+        except Exception:
+            pass
 
-    # 8. Branding & Verification Footer
-    # Date & Loc
-    p.setFont("Helvetica-Oblique", 11)
-    p.setFillColor(colors.gray)
-    p.drawString(20*mm, 20*mm, f"Yaoundé, le {timezone.now().strftime('%d %B %Y')}")
-
-    # Partner Logos (Bottom Left Row)
-    lp_s = 14*mm
-    uy1_path = os.path.join(settings.BASE_DIR, 'static/images/uy1.png')
-    final_lp = [uy1_path]
-    if event.partner_logo_1: final_lp.append(event.partner_logo_1.path)
-    if event.partner_logo_2: final_lp.append(event.partner_logo_2.path)
+    # 10. QR Code de certification d'authenticité (Bas droite)
+    qr_taille = 24*mm
+    qr_x = page_width - 45*mm
+    qr_y = 20*mm
     
-    lp_cursor = 20*mm
-    for lp in final_lp[:3]:
-        try: p.drawImage(ImageReader(lp), lp_cursor, 28*mm, width=lp_s, height=lp_s, mask='auto', preserveAspectRatio=True)
-        except: pass
-        lp_cursor += 18*mm
-
-    # QR Code Verification (Repositioned: UP and LEFT)
-    qr_s = 28*mm
-    qx, qy = page_width - 55*mm, 30*mm 
-    verify_url = settings.SITE_URL + reverse('ticket_verify', kwargs={'uuid': registration.uuid})
-    qr = qrcode.QRCode(box_size=10, border=1)
+    verify_url = f"{getattr(settings, 'SITE_URL', 'https://comsas-uy1.com')}{reverse('ticket_verify', kwargs={'uuid': registration.uuid})}"
+    qr = qrcode.QRCode(box_size=6, border=0)
     qr.add_data(verify_url)
     qr.make(fit=True)
-    qr_buf = BytesIO()
-    qr.make_image().save(qr_buf, 'PNG')
-    qr_buf.seek(0)
-    p.drawImage(ImageReader(qr_buf), qx, qy, width=qr_s, height=qr_s)
+    qr_buffer = BytesIO()
+    qr.make_image(fill_color="#C2185B", back_color="white").save(qr_buffer, 'PNG')
+    qr_buffer.seek(0)
     
-    p.setFont("Helvetica", 7)
-    p.setFillColor(colors.gray)
-    p.drawCentredString(qx + qr_s/2, qy - 4*mm, f"ID: {registration.uuid}")
-    p.drawCentredString(qx + qr_s/2, qy - 7*mm, "VERIFIER L'AUTHENTICITE")
+    p.drawImage(ImageReader(qr_buffer), qr_x, qr_y, width=qr_taille, height=qr_taille)
+    
+    p.setFont("Helvetica-Bold", 6.5)
+    p.setFillColor(ROSE_DARK)
+    p.drawCentredString(qr_x + qr_taille/2, qr_y - 3.5*mm, "CERTIFICAT VÉRIFIABLE")
+    p.setFont("Helvetica", 5.5)
+    p.setFillColor(TEXT_MUTED)
+    p.drawCentredString(qr_x + qr_taille/2, qr_y - 6*mm, str(registration.uuid)[:18])
 
     p.showPage()
     p.save()
-    
+
     buffer.seek(0)
-    if registration.certificate_pdf: registration.certificate_pdf.delete(save=False)
+    if registration.certificate_pdf:
+        registration.certificate_pdf.delete(save=False)
     registration.certificate_pdf.save(f'certificate_{registration.uuid}.pdf', File(buffer), save=True)
     return registration.certificate_pdf.url

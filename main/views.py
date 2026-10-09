@@ -21,7 +21,7 @@ from .models import (
     Contest, Candidate, Vote, Archive, ArchiveComment,
     JUINEdition, JUINCommission, JUINCommissionApplication, JUINCompetition,
     JUINActivity, JUINDonation, JUINSponsor, JUINTeam,
-    ClubCommission, ClubCommissionApplication, ProjectSubmission
+    ClubCommission, ClubCommissionApplication, ProjectSubmission, Donation
 )
 from .forms import (
     MemberRegistrationForm, EventRegistrationForm, 
@@ -333,33 +333,43 @@ def project_detail(request, pk):
     return render(request, 'main/project_detail.html', context)
 
 def events(request):
-    """Page des événements"""
+    """Page des événements et activités du COMSAS"""
+    now = timezone.now()
+    all_events = Event.objects.all().order_by('-date_event')
+    
     # Événements à venir
     upcoming_events = Event.objects.filter(
-        date_event__gte=timezone.now(),
+        date_event__gte=now,
         is_active=True
     ).order_by('date_event')
     
-    # Événements passés
+    # Tous les événements passés
     past_events = Event.objects.filter(
-        date_event__lt=timezone.now()
-    ).order_by('-date_event')[:6]
+        date_event__lt=now
+    ).order_by('-date_event')
     
     context = {
+        'all_events': all_events,
         'upcoming_events': upcoming_events,
         'past_events': past_events,
+        'now': now,
     }
     
     return render(request, 'main/events.html', context)
 
 def event_detail(request, pk):
-    """Détail d'un événement"""
+    """Détail d'un événement avec respect strict des dates d'inscription"""
     event = get_object_or_404(Event, pk=pk)
+    now = timezone.now()
     
-    # Vérifier si l'inscription est ouverte
+    # Vérifier si l'inscription est ouverte (date limite respectée et événement actif)
     can_register = event.is_registration_open
     
-    if request.method == 'POST' and can_register:
+    if request.method == 'POST':
+        if not can_register:
+            messages.error(request, "Les inscriptions pour cet événement sont closes car la date limite d'inscription est dépassée.")
+            return redirect('event_detail', pk=pk)
+
         form = EventRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             registration = form.save(commit=False)
@@ -420,17 +430,20 @@ def event_detail(request, pk):
     # Participants
     participants = event.eventregistration_set.filter(is_confirmed=True).order_by('nom_prenom')
     
-    # Galerie
-    images = []
+    # Galerie de l'événement (photos et vidéos)
+    gallery_media = list(event.gallery_media.all())
     if event.gallery_album:
-        images = event.gallery_album.images.all()
+        for m in event.gallery_album.images.all():
+            if m not in gallery_media:
+                gallery_media.append(m)
 
     context = {
         'event': event,
         'form': form,
         'can_register': can_register,
         'participants': participants,
-        'images': images,
+        'gallery_media': gallery_media,
+        'images': gallery_media,
     }
     
     return render(request, 'main/event_detail.html', context)
@@ -465,15 +478,17 @@ def event_registration_success(request, uuid):
     return render(request, 'main/event_registration_success.html', context)
 
 def gallery(request):
-    """Page galerie / multimédia (Albums)"""
+    """Page galerie / multimédia (Albums et Médias d'événements)"""
     albums = GalleryAlbum.objects.all().order_by('-event_date')
+    recent_media = Gallery.objects.all().select_related('event', 'album').order_by('-created_at')
     
     paginator = Paginator(albums, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     context = {
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'recent_media': recent_media,
     }
     return render(request, 'main/gallery.html', context)
 
@@ -519,22 +534,149 @@ def news_detail(request, pk):
 
 
 def donations(request):
-    """Page des dons et cotisations"""
-    # Projets nécessitant des fonds
-    funded_projects = Project.objects.filter(
-        status__in=['planning', 'ongoing']
-    ).order_by('-is_featured', '-created_at')
-    
-    from .forms import JUINDonationForm
+    """Page des dons officiels à l'association COMSAS (via Freemopay Mobile Money)"""
+    from django.db.models import Sum
+    confirmed_donations = Donation.objects.filter(is_confirmed=True).order_by('-date_don')
+    total_collected = confirmed_donations.aggregate(Sum('montant'))['montant__sum'] or 0
+    donor_count = confirmed_donations.count()
+
     context = {
-        'funded_projects': funded_projects,
-        'whatsapp_president': settings.WHATSAPP_PRESIDENT,
-        'whatsapp_treasurer_mtn': settings.WHATSAPP_TREASURER_MTN,
-        'whatsapp_treasurer_orange': settings.WHATSAPP_TREASURER_ORANGE,
-        'donate_form': JUINDonationForm(),
+        'donations': confirmed_donations,
+        'total_collected': int(total_collected),
+        'donor_count': donor_count,
     }
-    
     return render(request, 'main/donations.html', context)
+
+@csrf_exempt
+def initiate_donation(request):
+    """Initie un don via Freemopay Mobile Money (MTN / Orange Money)"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
+
+    try:
+        nom_prenom = request.POST.get('nom_prenom', '').strip()
+        telephone = request.POST.get('telephone', '').strip()
+        email = request.POST.get('email', '').strip()
+        montant_str = request.POST.get('montant', '').strip()
+        message = request.POST.get('message', '').strip()
+        is_public = request.POST.get('is_public') in ['true', 'True', '1', 'on']
+
+        if not nom_prenom:
+            return JsonResponse({'success': False, 'error': 'Veuillez renseigner votre nom complet.'})
+        
+        if not telephone:
+            return JsonResponse({'success': False, 'error': 'Veuillez renseigner votre numéro Mobile Money.'})
+
+        try:
+            montant = int(montant_str)
+            if montant < 100:
+                return JsonResponse({'success': False, 'error': 'Le montant minimum est de 100 FCFA.'})
+        except (ValueError, TypeError):
+            return JsonResponse({'success': False, 'error': 'Veuillez saisir un montant valide.'})
+
+        clean_phone = telephone.replace('+', '').replace(' ', '').replace('-', '')
+        if not clean_phone.startswith('237') and len(clean_phone) == 9:
+            clean_phone = f"237{clean_phone}"
+
+        external_id = f"COMSASDON-{uuid.uuid4().hex[:10].upper()}"
+        donation = Donation.objects.create(
+            nom_prenom=nom_prenom,
+            telephone=clean_phone,
+            email=email if email else None,
+            montant=montant,
+            message=message,
+            is_public=is_public,
+            external_id=external_id,
+            payment_status='pending'
+        )
+
+        service = FreemopayService()
+        res = service.initiate_payment(
+            amount=montant,
+            phone_number=clean_phone,
+            description=f"Don COMSAS - {nom_prenom[:30]}",
+            external_id=external_id
+        )
+
+        if res and res.get('success'):
+            donation.freemopay_reference = res.get('reference', '')
+            donation.payment_status = 'initiated'
+            donation.save()
+            return JsonResponse({
+                'success': True,
+                'external_id': external_id,
+                'instructions': res.get('instructions', 'Veuillez valider le débit sur votre téléphone portable.')
+            })
+        else:
+            donation.payment_status = 'failed'
+            donation.save()
+            raw_err = res.get('error') if res else 'Service de paiement indisponible.'
+            error_msg = FreemopayService.translate_error_message(raw_err)
+            return JsonResponse({'success': False, 'error': error_msg})
+
+    except Exception as e:
+        logger.error(f"[DONATION] Exception initiate_donation: {e}", exc_info=True)
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+def check_donation_status(request, external_id):
+    """Vérifie le statut d'un don via polling AJAX"""
+    donation = get_object_or_404(Donation, external_id=external_id)
+
+    if donation.is_confirmed:
+        return JsonResponse({
+            'success': True,
+            'status': 'completed',
+            'is_confirmed': True,
+            'nom_prenom': donation.display_name,
+            'montant': int(donation.montant)
+        })
+
+    if donation.payment_status in ('initiated', 'pending', 'processing') and donation.freemopay_reference:
+        try:
+            service = FreemopayService()
+            check = service.check_payment_status(donation.freemopay_reference)
+            if check.get('success'):
+                raw_status = (check.get('status') or '').upper()
+                if raw_status in ('SUCCESS', 'PAID', 'COMPLETED', 'SUCCESSFUL'):
+                    donation.is_confirmed = True
+                    donation.payment_status = 'completed'
+                    donation.completed_at = timezone.now()
+                    donation.save()
+                    return JsonResponse({
+                        'success': True,
+                        'status': 'completed',
+                        'is_confirmed': True,
+                        'nom_prenom': donation.display_name,
+                        'montant': int(donation.montant)
+                    })
+                elif raw_status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED'):
+                    donation.payment_status = 'failed'
+                    donation.save()
+                    reason = check.get('reason') or FreemopayService.translate_error_message((check.get('data') or {}).get('reason')) or 'Le paiement a échoué. Veuillez vérifier votre solde et réessayer.'
+                    return JsonResponse({
+                        'success': True,
+                        'status': 'failed',
+                        'is_confirmed': False,
+                        'message': reason
+                    })
+                elif raw_status in ('CANCELLED', 'CANCELED', 'REJECTED'):
+                    donation.payment_status = 'cancelled'
+                    donation.save()
+                    reason = check.get('reason') or FreemopayService.translate_error_message((check.get('data') or {}).get('reason')) or 'La transaction a été annulée sur votre téléphone.'
+                    return JsonResponse({
+                        'success': True,
+                        'status': 'cancelled',
+                        'is_confirmed': False,
+                        'message': reason
+                    })
+        except Exception as e:
+            logger.error(f"[DONATION STATUS] Erreur: {e}")
+
+    return JsonResponse({
+        'success': True,
+        'status': donation.payment_status,
+        'is_confirmed': donation.is_confirmed
+    })
 
 def contact(request):
     """Page de contact"""
@@ -1580,37 +1722,46 @@ def club_commissions_list(request):
     return render(request, 'main/club_commissions_list.html', {'commissions': commissions})
 
 def club_commission_detail(request, slug):
-    """Détail d'une direction avec ses membres"""
+    """Détail d'une commission du COMSAS avec ses responsables et ses membres validés"""
     commission = get_object_or_404(ClubCommission, slug=slug)
     
-    # Ordering members by role
-    from django.db.models import Case, When, Value, IntegerField
-    role_order = Case(
-        When(role_applied='director', then=Value(1)),
-        When(role_applied='deputy_director', then=Value(2)),
-        When(role_applied='rapporteur', then=Value(3)),
-        When(role_applied='deputy_rapporteur', then=Value(4)),
-        When(role_applied='member', then=Value(5)),
-        default=Value(10),
-        output_field=IntegerField(),
-    )
-    members = commission.applications.filter(status='approved').order_by(role_order, 'nom_prenom')
+    # Responsables clés
+    supervisor = commission.get_supervisor
+    director = commission.get_director
+    deputy_director = commission.get_deputy_director
+    rapporteur = commission.get_rapporteur
     
+    # Membres simples validés
+    members = commission.applications.filter(status='approved', role_applied='member').order_by('nom_prenom')
+    
+    # Total de l'équipe validée
+    total_approved = commission.applications.filter(status='approved').count()
+
     return render(request, 'main/club_commission_detail.html', {
         'commission': commission,
-        'members': members
+        'supervisor': supervisor,
+        'director': director,
+        'deputy_director': deputy_director,
+        'rapporteur': rapporteur,
+        'members': members,
+        'total_approved': total_approved,
     })
 
 def club_commission_apply(request):
-    """Formulaire de candidature à une direction"""
+    """Formulaire de candidature à une commission"""
+    initial_data = {}
+    commission_id = request.GET.get('commission')
+    if commission_id:
+        initial_data['commission'] = commission_id
+
     if request.method == 'POST':
         form = ClubCommissionApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            messages.success(request, "Votre candidature a été envoyée avec succès !")
+            messages.success(request, "Votre candidature a été transmise avec succès.")
             return redirect('club_commission_apply_success')
     else:
-        form = ClubCommissionApplicationForm()
+        form = ClubCommissionApplicationForm(initial=initial_data)
         
     return render(request, 'main/club_commission_apply.html', {'form': form})
 

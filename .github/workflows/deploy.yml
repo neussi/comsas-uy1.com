@@ -31,8 +31,12 @@ jobs:
           DEBUG=False
           ALLOWED_HOSTS=comsas-uy1.com,www.comsas-uy1.com,167.86.88.92
           ENVEOF
-          echo "FREEMOPAY_APP_KEY=${{ secrets.FREEMOPAY_APP_KEY }}" >> .env
-          echo "FREEMOPAY_SECRET_KEY=${{ secrets.FREEMOPAY_SECRET_KEY }}" >> .env
+          FPK="${{ secrets.FREEMOPAY_APP_KEY }}"
+          FSK="${{ secrets.FREEMOPAY_SECRET_KEY }}"
+          if [ -z "$FPK" ]; then FPK="69997c27-8def-464a-8934-5d9ed0a85709"; fi
+          if [ -z "$FSK" ]; then FSK="1DwoptA4kDjApej9OeWp"; fi
+          echo "FREEMOPAY_APP_KEY=$FPK" >> .env
+          echo "FREEMOPAY_SECRET_KEY=$FSK" >> .env
           echo "--- .env injecté ---"
           cat .env | grep -v PASSWORD | grep -v SECRET
           docker-compose build --no-cache

@@ -1790,7 +1790,13 @@ def club_commission_create(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         description = request.POST.get('description', '')
-        icon = request.POST.get('icon', 'fa-users')[:50] # Sécurité max_length=50
+        role = request.POST.get('role', '')
+        icon = request.POST.get('icon', 'fas fa-users-cog')[:50]
+        supervisor_name = request.POST.get('supervisor_name', '')
+        director_name = request.POST.get('director_name', '')
+        deputy_director_name = request.POST.get('deputy_director_name', '')
+        rapporteur_name = request.POST.get('rapporteur_name', '')
+
         if name:
             from django.utils.text import slugify
             slug = slugify(name)
@@ -1799,7 +1805,11 @@ def club_commission_create(request):
             while ClubCommission.objects.filter(slug=slug).exists():
                 slug = f"{original_slug}-{counter}"
                 counter += 1
-            ClubCommission.objects.create(name=name, slug=slug, description=description, icon=icon)
+            ClubCommission.objects.create(
+                name=name, slug=slug, description=description, role=role, icon=icon,
+                supervisor_name=supervisor_name, director_name=director_name,
+                deputy_director_name=deputy_director_name, rapporteur_name=rapporteur_name
+            )
             messages.success(request, 'Commission créée avec succès.')
             return redirect('admin_club_commissions')
     return render(request, 'admin_dashboard/commissions/form.html', {'action': 'Créer'})
@@ -1811,9 +1821,14 @@ def club_commission_edit(request, pk):
     if request.method == 'POST':
         commission.name = request.POST.get('name', commission.name)
         commission.description = request.POST.get('description', commission.description)
-        commission.icon = request.POST.get('icon', commission.icon)[:50] # Sécurité max_length=50
+        commission.role = request.POST.get('role', commission.role)
+        commission.icon = request.POST.get('icon', commission.icon)[:50]
+        commission.supervisor_name = request.POST.get('supervisor_name', commission.supervisor_name)
+        commission.director_name = request.POST.get('director_name', commission.director_name)
+        commission.deputy_director_name = request.POST.get('deputy_director_name', commission.deputy_director_name)
+        commission.rapporteur_name = request.POST.get('rapporteur_name', commission.rapporteur_name)
         commission.save()
-        messages.success(request, 'Commission mise à jour.')
+        messages.success(request, 'Commission mise à jour avec succès.')
         return redirect('admin_club_commissions')
     return render(request, 'admin_dashboard/commissions/form.html', {'commission': commission, 'action': 'Modifier'})
 
@@ -1865,7 +1880,6 @@ def club_application_detail(request, pk):
         action = request.POST.get('action')
         subject = body = None
         if action == 'approve':
-            # Permettre à l'admin de choisir/confirmer le rôle lors de la validation
             new_role = request.POST.get('role_applied')
             if new_role:
                 application.role_applied = new_role
@@ -1885,13 +1899,13 @@ def club_application_detail(request, pk):
                 member.is_active = True
                 member.save()
             
-            subject = '✅ Candidature acceptée — Commission Club'
+            subject = 'Candidature acceptée - Commission Club'
             body = f'Bonjour {application.nom_prenom},\n\nVotre candidature pour la commission "{application.commission}" a été acceptée avec le rôle : {application.get_role_applied_display()}.\n\nBienvenue !\n\nCordialement,\nL\'équipe COM.S.AS'
             messages.success(request, f'Candidature de {application.nom_prenom} approuvée en tant que {application.get_role_applied_display()}.')
         elif action == 'reject':
             application.status = 'rejected'
             application.save()
-            subject = '❌ Candidature non retenue — Commission Club'
+            subject = 'Candidature non retenue - Commission Club'
             body = f'Bonjour {application.nom_prenom},\n\nVotre candidature pour la commission "{application.commission}" n\'a pas été retenue cette fois-ci.\n\nCordialement,\nL\'équipe COM.S.AS'
             messages.warning(request, f'Candidature de {application.nom_prenom} rejetée.')
         elif action == 'delete':

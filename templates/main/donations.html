@@ -2,1002 +2,337 @@
 {% load static %}
 {% load custom_filters %}
 
-{% block title %}Faire un Don — J.U.IN 2026 | COMS.A.S{% endblock %}
+{% block title %}Soutenir le COMS.A.S - Dons et Contribution Officielle{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --rose: #E91E63;
-        --rose-light: #f06292;
-        --rose-dark: #c2185b;
-        --rose-pale: rgba(233, 30, 99, .08);
-        --rose-border: rgba(233, 30, 99, .2);
-        --rose-shadow: rgba(233, 30, 99, .15);
-        --blanc: #ffffff;
-        --blanc-off: #fdf5f8;
-        --text-dark: #1a0a10;
-        --text-muted: #8a6070;
-        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
-        --gradient-dark: linear-gradient(135deg, #2d0617 0%, #1a0a10 100%);
-        --whatsapp: #25D366;
-        --mtn: #FFCC00;
-        --orange: #FF6600;
+    .don-hero {
+        background: linear-gradient(135deg, #FFF0F5 0%, #FFFFFF 100%);
+        border-bottom: 1px solid #FCE4EC;
     }
-
-    *, *::before, *::after { box-sizing: border-box; }
-
-    body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background: var(--blanc-off);
-        color: var(--text-dark);
-    }
-
-    .text-gradient {
-        background: var(--gradient);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
-    }
-
-    /* ══════════════════════════
-       HERO
-    ══════════════════════════ */
-    .hero-don {
-        min-height: 92vh;
-        display: flex;
-        align-items: center;
-        background:
-            radial-gradient(ellipse 70% 60% at 90% 10%, rgba(233,30,99,.07) 0%, transparent 55%),
-            radial-gradient(ellipse 50% 50% at 5% 95%, rgba(233,30,99,.05) 0%, transparent 55%),
-            var(--blanc);
-        position: relative;
-        overflow: hidden;
-        padding: 80px 0 60px;
-    }
-
-    .hero-grid {
-        position: absolute;
-        inset: 0;
-        background-image:
-            linear-gradient(rgba(233,30,99,.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(233,30,99,.04) 1px, transparent 1px);
-        background-size: 52px 52px;
-        pointer-events: none;
-    }
-
-    .pulse-dot {
-        width: 8px; height: 8px;
-        background: var(--rose);
-        border-radius: 50%;
-        display: inline-block;
-        position: relative;
-    }
-
-    .pulse-dot::after {
-        content: '';
-        position: absolute;
-        inset: -4px;
-        border-radius: 50%;
-        background: rgba(233,30,99,.3);
-        animation: pulse 1.8s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-        0%,100% { transform: scale(1); opacity: .8; }
-        50% { transform: scale(1.8); opacity: 0; }
-    }
-
-    .hero-don h1 {
-        font-size: clamp(2.6rem, 5.5vw, 4.2rem);
-        font-weight: 900;
-        line-height: 1.1;
-        color: var(--text-dark);
-    }
-
-    .hero-don p.lead {
-        color: var(--text-muted);
-        font-size: 1.1rem;
-        line-height: 1.7;
-    }
-
-    /* ── Goal card ── */
-    .goal-card {
-        background: var(--blanc);
-        border-radius: 28px;
-        padding: 36px 32px;
-        box-shadow: 0 20px 60px var(--rose-shadow);
-        border: 1px solid var(--rose-border);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .goal-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 4px;
-        background: var(--gradient);
-    }
-
-    .goal-label {
-        font-size: .68rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-    }
-
-    .goal-amount-big {
-        font-size: 2.4rem;
-        font-weight: 900;
-        background: var(--gradient);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        line-height: 1;
-        margin-bottom: 20px;
-    }
-
-    .progress-track {
-        height: 10px;
-        background: var(--rose-pale);
-        border-radius: 50px;
-        overflow: hidden;
-        margin-bottom: 8px;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: var(--gradient);
-        border-radius: 50px;
-        width: 0;
-        transition: width 1.6s cubic-bezier(.25,.46,.45,.94);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .progress-fill::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
-        animation: shimmer 2s infinite;
-    }
-
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-
-    .progress-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: .68rem;
-        color: var(--text-muted);
-        font-weight: 600;
-        margin-bottom: 20px;
-    }
-
-    .goal-mini-stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-
-    .goal-mini-stat {
-        background: var(--blanc-off);
-        border-radius: 14px;
-        padding: 14px 16px;
-        border: 1px solid var(--rose-border);
-        text-align: center;
-    }
-
-    .goal-mini-stat .val {
-        font-size: 1.2rem;
-        font-weight: 900;
-        background: var(--gradient);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .goal-mini-stat .lbl {
-        font-size: .65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--text-muted);
-        margin-top: 3px;
-    }
-
-    /* ══════════════════════════
-       SECTION BADGE
-    ══════════════════════════ */
-    .section-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--rose-pale);
-        border: 1px solid var(--rose-border);
-        color: var(--rose);
-        padding: 6px 18px;
-        border-radius: 50px;
-        font-size: .72rem;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        margin-bottom: 18px;
-    }
-
-    .section-alt { background: var(--blanc-off); }
-
-    /* ══════════════════════════
-       MÉTHODES DE PAIEMENT
-    ══════════════════════════ */
-    .method-card {
-        background: var(--blanc);
-        border-radius: 24px;
-        padding: 32px 26px;
-        box-shadow: 0 8px 32px var(--rose-shadow);
-        border: 2px solid transparent;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        transition: all .35s cubic-bezier(.165,.84,.44,1);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .method-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 3px;
-        opacity: 0;
-        transition: opacity .3s;
-    }
-
-    .method-card:hover { transform: translateY(-8px); }
-
-    .method-card.whatsapp:hover { border-color: rgba(37,211,102,.35); box-shadow: 0 20px 48px rgba(37,211,102,.15); }
-    .method-card.mtn:hover      { border-color: rgba(255,204,0,.5);  box-shadow: 0 20px 48px rgba(255,204,0,.15);  }
-    .method-card.orange:hover   { border-color: rgba(255,102,0,.35); box-shadow: 0 20px 48px rgba(255,102,0,.15); }
-
-    .method-card.whatsapp::before { background: var(--whatsapp); }
-    .method-card.mtn::before      { background: var(--mtn); }
-    .method-card.orange::before   { background: var(--orange); }
-
-    .method-card:hover::before { opacity: 1; }
-
-    .method-icon-wrap {
-        width: 72px; height: 72px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
-        color: white;
-        margin-bottom: 18px;
-        box-shadow: 0 8px 20px rgba(0,0,0,.15);
-    }
-
-    .method-icon-wrap.whatsapp { background: var(--whatsapp); }
-    .method-icon-wrap.mtn      { background: var(--mtn); color: #333; }
-    .method-icon-wrap.orange   { background: var(--orange); }
-
-    .method-title {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: var(--text-dark);
-        margin-bottom: 4px;
-    }
-
-    .method-sub {
-        font-size: .8rem;
-        color: var(--text-muted);
-        margin-bottom: 20px;
-    }
-
-    /* ── Numéro display ── */
-    .number-box {
-        background: var(--blanc-off);
-        border: 1.5px solid var(--rose-border);
-        border-radius: 14px;
-        padding: 12px 16px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        width: 100%;
-        margin-bottom: 8px;
-    }
-
-    .number-box .num {
-        font-family: 'Courier New', monospace;
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        letter-spacing: 1px;
-    }
-
-    .copy-btn {
-        background: var(--rose-pale);
-        border: 1px solid var(--rose-border);
-        border-radius: 8px;
-        padding: 6px 10px;
-        cursor: pointer;
-        color: var(--rose);
-        font-size: .8rem;
-        transition: all .2s;
-        flex-shrink: 0;
-    }
-
-    .copy-btn:hover { background: var(--rose); color: white; border-color: var(--rose); }
-    .copy-btn.copied { background: #10b981; color: white; border-color: #10b981; }
-
-    .ussd-hint {
-        font-size: .72rem;
-        color: var(--text-muted);
-        margin-bottom: 20px;
+    .badge-rose {
+        background-color: #FCE4EC;
+        color: #C2185B;
         font-weight: 600;
     }
-
-    .ussd-hint code {
-        background: var(--rose-pale);
-        color: var(--rose);
-        padding: 2px 7px;
-        border-radius: 6px;
-        font-size: .72rem;
+    .text-rose {
+        color: #E91E63 !important;
     }
-
-    /* ── CTA buttons ── */
-    .btn-method {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 12px 22px;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: .88rem;
-        text-decoration: none;
-        transition: all .25s;
-        margin-top: auto;
-        width: 100%;
+    .text-rose-dark {
+        color: #C2185B !important;
     }
-
-    .btn-method.whatsapp { background: var(--whatsapp); color: white; }
-    .btn-method.mtn      { background: var(--mtn); color: #333; }
-    .btn-method.orange   { background: var(--orange); color: white; }
-
-    .btn-method:hover { transform: translateY(-2px); filter: brightness(1.08); }
-    .btn-method.mtn:hover { color: #333; }
-
-    /* ══════════════════════════
-       MONTANTS SUGGÉRÉS
-    ══════════════════════════ */
-    .amounts-wrap {
-        background: var(--blanc);
-        border-radius: 24px;
-        padding: 32px 28px;
-        box-shadow: 0 8px 32px var(--rose-shadow);
-        border: 1px solid var(--rose-border);
-        text-align: center;
-    }
-
-    .amounts-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        max-width: 560px;
-        margin: 0 auto;
-    }
-
-    .amount-btn {
-        background: var(--blanc-off);
-        border: 1.5px solid var(--rose-border);
-        border-radius: 16px;
-        padding: 18px 10px;
-        cursor: pointer;
-        transition: all .25s cubic-bezier(.175,.885,.32,1.275);
-        text-align: center;
-    }
-
-    .amount-btn:hover {
-        background: var(--rose-pale);
-        border-color: var(--rose);
-        transform: translateY(-3px) scale(1.04);
-        box-shadow: 0 8px 20px var(--rose-shadow);
-    }
-
-    .amount-btn.custom {
-        border-color: rgba(245,158,11,.4);
-        background: rgba(245,158,11,.05);
-    }
-
-    .amount-btn.custom:hover {
-        border-color: #f59e0b;
-        background: rgba(245,158,11,.1);
-    }
-
-    .amount-btn .val {
-        display: block;
-        font-size: 1.2rem;
-        font-weight: 900;
-        color: var(--text-dark);
-        line-height: 1;
-    }
-
-    .amount-btn.custom .val { font-size: 1rem; color: #92400e; }
-
-    .amount-btn .cur {
-        display: block;
-        font-size: .62rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--text-muted);
-        margin-top: 4px;
-    }
-
-    /* ══════════════════════════
-       IMPACT
-    ══════════════════════════ */
-    .impact-stat-box {
-        text-align: center;
-        padding: 28px 16px;
-    }
-
-    .impact-num {
-        font-size: 2.8rem;
-        font-weight: 900;
-        background: var(--gradient);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        line-height: 1;
-        margin-bottom: 8px;
-    }
-
-    .impact-lbl {
-        font-size: .78rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        color: var(--text-muted);
-    }
-
-    /* ── Testimonial ── */
-    .testimonial-box {
-        background: var(--gradient-dark);
-        border-radius: 24px;
-        padding: 36px 32px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .testimonial-box::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 3px;
-        background: var(--gradient);
-    }
-
-    .testimonial-box .quote-icon {
-        font-size: 2.5rem;
-        background: var(--gradient);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 16px;
-        opacity: .5;
-    }
-
-    .testimonial-box p {
-        color: rgba(255,255,255,.75);
-        font-size: .95rem;
-        line-height: 1.8;
-        font-style: italic;
-        margin-bottom: 20px;
-    }
-
-    .testimonial-box .author-name {
-        font-weight: 800;
-        color: white;
-        font-size: .9rem;
-    }
-
-    .testimonial-box .author-role {
-        font-size: .75rem;
-        color: rgba(255,255,255,.4);
-        margin-top: 2px;
-    }
-
-    /* ══════════════════════════
-       FORMULAIRE
-    ══════════════════════════ */
-    .form-dark-card {
-        background: var(--gradient-dark);
-        border-radius: 28px;
-        padding: 48px 44px;
-        box-shadow: 0 40px 80px rgba(233,30,99,.2);
-        border: 1px solid rgba(233,30,99,.2);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .form-dark-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 4px;
-        background: var(--gradient);
-    }
-
-    .why-list li {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        margin-bottom: 16px;
-        color: rgba(255,255,255,.65);
-        font-size: .88rem;
-        line-height: 1.6;
-    }
-
-    .why-list li i {
-        color: var(--rose-light);
-        flex-shrink: 0;
-        margin-top: 3px;
-    }
-
-    .secure-note {
-        background: rgba(255,255,255,.05);
-        border: 1px solid rgba(255,255,255,.1);
-        border-radius: 14px;
-        padding: 14px 16px;
-        font-size: .76rem;
-        color: rgba(255,255,255,.4);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 24px;
-    }
-
-    .secure-note i { color: var(--rose-light); }
-
-    .form-label {
-        font-size: .75rem;
-        font-weight: 700;
-        color: rgba(255,255,255,.55);
-        margin-bottom: 6px;
-        display: block;
-        text-transform: uppercase;
-        letter-spacing: .8px;
-    }
-
-    .form-dark-card .form-control,
-    .form-dark-card .form-select {
-        background: rgba(255,255,255,.07);
-        border: 1px solid rgba(255,255,255,.14);
-        color: white;
-        border-radius: 12px;
-        padding: 12px 16px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: .9rem;
-        transition: all .25s;
-        width: 100%;
-    }
-
-    .form-dark-card .form-control:focus,
-    .form-dark-card .form-select:focus {
-        background: rgba(255,255,255,.1);
-        border-color: var(--rose-light);
-        box-shadow: 0 0 0 4px rgba(233,30,99,.15);
-        outline: none;
-    }
-
-    .form-dark-card .form-control::placeholder { color: rgba(255,255,255,.25); }
-    .form-dark-card select option { background: #1a0a10; color: white; }
-
-    .btn-submit {
-        background: var(--gradient);
-        color: white;
-        font-weight: 700;
-        font-size: 1rem;
+    .btn-rose {
+        background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+        color: #FFFFFF;
         border: none;
-        border-radius: 50px;
-        padding: 14px 40px;
-        box-shadow: 0 8px 24px rgba(233,30,99,.35);
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        transition: transform .2s, box-shadow .2s;
-        width: 100%;
-        justify-content: center;
+        transition: all 0.25s ease;
     }
-
-    .btn-submit:hover {
+    .btn-rose:hover {
+        background: linear-gradient(135deg, #C2185B 0%, #AD1457 100%);
+        color: #FFFFFF;
         transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(233,30,99,.45);
-        color: white;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, 0.25);
     }
-
-    /* ══════════════════════════
-       CTA FINAL
-    ══════════════════════════ */
-    .cta-section {
-        background: var(--gradient-dark);
-        position: relative;
-        overflow: hidden;
-        padding: 80px 0;
-    }
-
-    .cta-section::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 3px;
-        background: var(--gradient);
-    }
-
-    /* ══════════════════════════
-       TOAST
-    ══════════════════════════ */
-    .toast-notif {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #10b981;
-        color: white;
-        padding: 14px 20px;
-        border-radius: 14px;
-        box-shadow: 0 10px 30px rgba(0,0,0,.2);
-        z-index: 9999;
+    .amount-pill {
+        border: 2px solid #F8BBD0;
+        background: #FFFFFF;
+        color: #C2185B;
+        border-radius: 50rem;
+        padding: 10px 18px;
         font-weight: 700;
-        font-size: .88rem;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+    .amount-pill:hover {
+        border-color: #E91E63;
+        background: #FFF0F5;
+        transform: translateY(-2px);
+    }
+    .amount-pill.active {
+        background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+        color: #FFFFFF;
+        border-color: #C2185B;
+        box-shadow: 0 4px 12px rgba(233, 30, 99, 0.2);
+    }
+    .card-don {
+        background: #FFFFFF;
+        border: 1px solid #F3E8EE;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    }
+    .stat-badge {
+        background: #FFF0F5;
+        border: 1px solid #FCE4EC;
+        border-radius: 1rem;
+        padding: 1.25rem;
+    }
+    .donor-card {
+        background: #FFFFFF;
+        border: 1px solid #F3E8EE;
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        transition: all 0.2s ease;
+    }
+    .donor-card:hover {
+        border-color: #F8BBD0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(233, 30, 99, 0.06);
+    }
+    .donor-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #FCE4EC;
+        color: #C2185B;
+        font-weight: 700;
         display: flex;
         align-items: center;
-        gap: 10px;
-        transform: translateX(120%);
-        transition: transform .35s cubic-bezier(.175,.885,.32,1.275);
+        justify-content: center;
+        flex-shrink: 0;
     }
-
-    .toast-notif.show { transform: translateX(0); }
-
-    /* ── Responsive ── */
-    @media (max-width: 767px) {
-        .amounts-grid { grid-template-columns: repeat(2,1fr); }
-        .form-dark-card { padding: 28px 20px; }
+    .payment-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1050;
+        align-items: center;
+        justify-content: center;
+    }
+    .payment-modal.active {
+        display: flex;
+    }
+    .modal-content-box {
+        background: #FFFFFF;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        max-width: 480px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        border: 1px solid #FCE4EC;
+        text-align: center;
+    }
+    .spinner-rose {
+        width: 3.5rem;
+        height: 3.5rem;
+        border: 4px solid #FCE4EC;
+        border-top-color: #E91E63;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1.5rem;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-
-<!-- ══════════════════════════════════════
-     1. HERO
-══════════════════════════════════════ -->
-<section class="hero-don">
-    <div class="hero-grid"></div>
-    <div class="container position-relative" style="z-index:1;">
-        <div class="row align-items-center gy-5">
-
-            <!-- Gauche -->
-            <div class="col-lg-6" data-aos="fade-right">
-                <div class="d-inline-flex align-items-center py-2 px-3 rounded-pill mb-4"
-                    style="background:var(--rose-pale);border:1px solid var(--rose-border);">
-                    <span class="pulse-dot me-2"></span>
-                    <span class="fw-bold small text-uppercase" style="letter-spacing:1px;color:var(--rose);">J.U.IN 2026 — Jubilé d'Émeraude</span>
+<!-- Hero Section -->
+<section class="don-hero py-5">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted text-decoration-none">Accueil</a></li>
+                        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Dons & Soutien</li>
+                    </ol>
+                </nav>
+                <div class="d-inline-flex align-items-center badge-rose px-3 py-1 rounded-pill mb-3">
+                    <i class="fas fa-hand-holding-heart me-2"></i>Solidarité & Impact Académique
                 </div>
-                <h1 class="mb-4">
-                    Soutenez<br><span class="text-gradient">l'Innovation</span><br>Jeune
+                <h1 class="display-4 fw-bold text-dark mb-3">
+                    Soutenez les Projets du <span style="color: #E91E63;">COMSAS</span>
                 </h1>
-                <p class="lead mb-5">
-                    Votre contribution aide directement à organiser la 20ème édition des Journées Universitaires de l'Informatique — l'événement tech étudiant le plus important du Cameroun.
+                <p class="lead text-muted mb-4">
+                    Vos contributions soutiennent directement l'organisation des formations, l'équipement du laboratoire informatique et les initiatives d'insertion professionnelle pour les étudiants de l'Université de Yaoundé 1.
                 </p>
-                <a href="#methodes" class="d-inline-flex align-items-center gap-2 fw-bold py-3 px-5 rounded-pill text-white text-decoration-none"
-                    style="background:var(--gradient);box-shadow:0 8px 24px var(--rose-shadow);font-size:1rem;">
-                    <i class="fas fa-heart"></i>Faire un don maintenant
-                </a>
-            </div>
-
-            <!-- Droite — Objectif -->
-            <div class="col-lg-5 offset-lg-1" data-aos="zoom-in" data-aos-delay="200">
-                <div class="goal-card">
-                    <div class="goal-label">Objectif J.U.IN 2026</div>
-                    <div class="goal-amount-big">
-                        {% if edition %}{{ edition.fundraising_goal|floatformat:0|default:"500 000" }}{% else %}5.000.000{% endif %} <span style="font-size:1rem;font-weight:600;color:var(--text-muted);">FCFA</span>
-                    </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" id="goalProgress"
-                            data-progress="{% if total_raised and edition.fundraising_goal %}{% widthratio total_raised edition.fundraising_goal 100 %}{% else %}0{% endif %}">
-                        </div>
-                    </div>
-                    <div class="progress-labels">
-                        <span>0 FCFA</span>
-                        <span>{% if total_raised %}{{ total_raised|floatformat:0 }}{% else %}0{% endif %} collectés</span>
-                    </div>
-                    <div class="goal-mini-stats">
-                        <div class="goal-mini-stat">
-                            <div class="val">{% if total_raised %}{{ total_raised|floatformat:0 }}{% else %}0{% endif %}</div>
-                            <div class="lbl">FCFA collectés</div>
-                        </div>
-                        <div class="goal-mini-stat">
-                            <div class="val">10 000+</div>
-                            <div class="lbl">Participants attendus</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════
-     2. MÉTHODES DE DON
-══════════════════════════════════════ -->
-<section id="methodes" class="py-5 section-alt">
-    <div class="container py-5">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <div class="section-badge"><i class="fas fa-mobile-alt"></i>Méthodes de paiement</div>
-            <h2 class="display-5 fw-bold mb-3">
-                Choisissez votre <span class="text-gradient">méthode</span>
-            </h2>
-            <p style="color:var(--text-muted);max-width:500px;margin:0 auto;">
-                Trois canaux sécurisés pour envoyer votre contribution directement au trésorier.
-            </p>
-        </div>
-
-        <div class="row g-4 justify-content-center">
-
-            <!-- WhatsApp -->
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
-                <div class="method-card whatsapp">
-                    <div class="method-icon-wrap whatsapp">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <div class="method-title">WhatsApp</div>
-                    <div class="method-sub">Contact direct & rapide</div>
-
-                    <div class="number-box">
-                        <span class="num">650 970 526</span>
-                        <button class="copy-btn" onclick="copyNum('650970526', this)" title="Copier">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-                    <div class="number-box mb-3">
-                        <span class="num">659 471 152</span>
-                        <button class="copy-btn" onclick="copyNum('659471152', this)" title="Copier">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-
-                    <a href="https://wa.me/237650970526?text=Bonjour%2C%20je%20souhaite%20faire%20un%20don%20pour%20le%20J.U.IN%202026%20%F0%9F%92%9A"
-                        class="btn-method whatsapp" target="_blank">
-                        <i class="fab fa-whatsapp"></i>Envoyer un message
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#formulaire-don" class="btn btn-rose rounded-pill px-4 py-2 fw-semibold">
+                        <i class="fas fa-heart me-2"></i>Faire un don direct
+                    </a>
+                    <a href="#tableau-donateurs" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
+                        <i class="fas fa-list me-2"></i>Voir les donateurs
                     </a>
                 </div>
             </div>
 
-            <!-- MTN Money -->
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="method-card mtn">
-                    <div class="method-icon-wrap mtn">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <div class="method-title">MTN Mobile Money</div>
-                    <div class="method-sub">Transfert sécurisé</div>
-
-                    <div class="number-box">
-                        <span class="num">650 970 526</span>
-                        <button class="copy-btn" onclick="copyNum('650970526', this)" title="Copier">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-
-                    <div class="ussd-hint mb-3">
-                        Composez <code>*126#</code> → Transfert d'argent → Entrez le numéro
-                    </div>
-
-                    <a href="https://wa.me/237650970526?text=Bonjour%2C%20j%27ai%20effectu%C3%A9%20un%20virement%20MTN%20Money%20pour%20le%20J.U.IN%202026.%20Pouvez-vous%20confirmer%20la%20r%C3%A9ception%20%3F"
-                        class="btn-method mtn" target="_blank">
-                        <i class="fas fa-check-circle"></i>Confirmer le don
-                    </a>
-                </div>
-            </div>
-
-            <!-- Orange Money -->
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="method-card orange">
-                    <div class="method-icon-wrap orange">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <div class="method-title">Orange Money</div>
-                    <div class="method-sub">Solution mobile fiable</div>
-
-                    <div class="number-box">
-                        <span class="num">659 471 152</span>
-                        <button class="copy-btn" onclick="copyNum('659471152', this)" title="Copier">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-
-                    <div class="ussd-hint mb-3">
-                        Composez <code>#150#</code> → Transfert d'argent → Entrez le numéro
-                    </div>
-
-                    <a href="https://wa.me/237659471152?text=Bonjour%2C%20j%27ai%20effectu%C3%A9%20un%20virement%20Orange%20Money%20pour%20le%20J.U.IN%202026.%20Pouvez-vous%20confirmer%20la%20r%C3%A9ception%20%3F"
-                        class="btn-method orange" target="_blank">
-                        <i class="fas fa-check-circle"></i>Confirmer le don
-                    </a>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Montants suggérés -->
-        <div class="mt-5" data-aos="fade-up">
-            <div class="amounts-wrap">
-                <div class="section-badge mb-3"><i class="fas fa-coins"></i>Montants suggérés</div>
-                <p class="mb-4" style="color:var(--text-muted);font-size:.9rem;">Cliquez sur un montant pour ouvrir directement WhatsApp avec le message pré-rempli.</p>
-                <div class="amounts-grid">
-                    <button class="amount-btn" onclick="donateAmount(5000)">
-                        <span class="val">5K</span>
-                        <span class="cur">FCFA</span>
-                    </button>
-                    <button class="amount-btn" onclick="donateAmount(10000)">
-                        <span class="val">10K</span>
-                        <span class="cur">FCFA</span>
-                    </button>
-                    <button class="amount-btn" onclick="donateAmount(25000)">
-                        <span class="val">25K</span>
-                        <span class="cur">FCFA</span>
-                    </button>
-                    <button class="amount-btn custom" onclick="donateCustom()">
-                        <span class="val" style="font-size:.95rem;">Autre</span>
-                        <span class="cur">montant</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════
-     3. IMPACT & TÉMOIGNAGE
-══════════════════════════════════════ -->
-<section class="py-5 bg-white">
-    <div class="container py-5">
-        <div class="row align-items-center g-5">
-
-            <div class="col-lg-6" data-aos="fade-right">
-                <div class="section-badge"><i class="fas fa-chart-line"></i>Impact de vos dons</div>
-                <h2 class="display-5 fw-bold mb-4">
-                    Chaque franc <span class="text-gradient">compte</span>
-                </h2>
-                <p class="mb-5" style="color:var(--text-muted);line-height:1.8;">
-                    Vos dons financent directement les activités du J.U.IN : hackathons, conférences, compétitions sportives, gala de clôture et prix pour les lauréats.
-                </p>
+            <div class="col-lg-5 mt-4 mt-lg-0">
                 <div class="row g-3">
-                    <div class="col-4">
-                        <div class="impact-stat-box">
-                            <div class="impact-num" data-target="20">0</div>
-                            <div class="impact-lbl">Éditions</div>
+                    <div class="col-6">
+                        <div class="stat-badge text-center">
+                            <div class="small text-muted mb-1">Total Récolté</div>
+                            <div class="h3 fw-bold mb-0 text-rose-dark" id="stat-total">{{ total_collected|default:"0" }} FCFA</div>
+                            <div class="small text-secondary mt-1">Contributions reçues</div>
                         </div>
                     </div>
-                    <div class="col-4">
-                        <div class="impact-stat-box">
-                            <div class="impact-num" data-target="10">0</div>
-                            <div class="impact-lbl">Commissions</div>
+                    <div class="col-6">
+                        <div class="stat-badge text-center">
+                            <div class="small text-muted mb-1">Donateurs</div>
+                            <div class="h3 fw-bold mb-0 text-rose-dark" id="stat-count">{{ donor_count|default:"0" }}</div>
+                            <div class="small text-secondary mt-1">Membres et partenaires</div>
                         </div>
                     </div>
-                    <div class="col-4">
-                        <div class="impact-stat-box">
-                            <div class="impact-num" data-target="10000">0</div>
-                            <div class="impact-lbl">Participants</div>
+                    <div class="col-12">
+                        <div class="p-3 bg-white rounded-4 border border-light shadow-sm text-center">
+                            <span class="small text-muted d-block mb-1">Moyen de paiement sécurisé</span>
+                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-semibold">
+                                <i class="fas fa-shield-alt me-1"></i>Mobile Money (MTN & Orange) via Freemopay
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-lg-6" data-aos="fade-left">
-                <div class="testimonial-box">
-                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
-                    <p>"Grâce au soutien de la communauté, j'ai pu participer au hackathon J.U.IN et remporter le premier prix. Aujourd'hui je dirige ma propre startup à Yaoundé."</p>
-                    <div class="author-name">Armel G.</div>
-                    <div class="author-role">Lauréat J.U.IN — Fondateur de startup tech</div>
-                </div>
-            </div>
-
         </div>
     </div>
 </section>
 
-<!-- ══════════════════════════════════════
-     4. FORMULAIRE OFFICIEL
-══════════════════════════════════════ -->
-<section id="donation-form" class="py-5 section-alt">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-9" data-aos="fade-up">
-                <div class="form-dark-card">
-                    <div class="row g-5">
+<!-- Donation Form & Donors List Section -->
+<section class="py-5 bg-white" id="formulaire-don">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Left Column: Formulaire de Don -->
+            <div class="col-lg-6">
+                <div class="card-don p-4 p-md-5">
+                    <div class="mb-4">
+                        <h2 class="h3 fw-bold text-dark mb-1">Effectuer un Don</h2>
+                        <p class="text-muted small mb-0">Paiement direct sécurisé par Mobile Money avec validation sur votre téléphone.</p>
+                    </div>
 
-                        <!-- Pourquoi donner -->
-                        <div class="col-lg-5">
-                            <div class="section-badge"><i class="fas fa-heart"></i>Pourquoi donner ?</div>
-                            <h3 class="fw-bold mb-4" style="color:white;font-size:1.4rem;">Votre impact direct sur le J.U.IN</h3>
-                            <ul class="list-unstyled why-list">
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Financer les prix et récompenses pour les lauréats des hackathons et compétitions.</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Couvrir la logistique : sono, mobilier, impression, signalétique de l'événement.</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Inviter des conférenciers et experts du numérique pour les étudiants.</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Rendre l'accès à l'événement gratuit pour tous les étudiants de l'UY1.</span>
-                                </li>
-                            </ul>
-                            <div class="secure-note">
-                                <i class="fas fa-shield-alt"></i>
-                                Paiement via Mobile Money — confirmez via WhatsApp après transfert.
+                    <form id="donation-form" onsubmit="submitDonation(event)">
+                        {% csrf_token %}
+
+                        <!-- Montant Prédéfini -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark small">Choisissez un montant rapide (FCFA)</label>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <span class="amount-pill" onclick="setAmount(1000, this)">1 000</span>
+                                <span class="amount-pill" onclick="setAmount(2500, this)">2 500</span>
+                                <span class="amount-pill active" onclick="setAmount(5000, this)">5 000</span>
+                                <span class="amount-pill" onclick="setAmount(10000, this)">10 000</span>
+                                <span class="amount-pill" onclick="setAmount(25000, this)">25 000</span>
+                                <span class="amount-pill" onclick="setAmount(50000, this)">50 000</span>
+                            </div>
+                            
+                            <label class="form-label fw-bold text-dark small" for="montant">Montant personnalisé (FCFA)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control form-control-lg rounded-start-3" id="montant" name="montant" value="5000" min="100" required>
+                                <span class="input-group-text bg-light text-muted fw-bold rounded-end-3">FCFA</span>
                             </div>
                         </div>
 
-                        <!-- Formulaire -->
-                        <div class="col-lg-7">
-                            <h3 class="fw-bold mb-4" style="color:white;font-size:1.4rem;">
-                                <i class="fas fa-paper-plane me-2" style="color:var(--rose-light);"></i>
-                                Enregistrer mon don
-                            </h3>
-                            <form method="post" action="{% url 'juin_donate' %}">
-                                {% csrf_token %}
-                                <div class="row g-3">
-                                    <div class="col-12">
-                                        <label class="form-label">Nom complet *</label>
-                                        {{ donate_form.nom_prenom }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Email <span style="color:rgba(255,255,255,.25);font-weight:400;">— facultatif</span></label>
-                                        {{ donate_form.email }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Montant (FCFA) *</label>
-                                        {{ donate_form.montant }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Opérateur *</label>
-                                        {{ donate_form.type_paiement }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">N° Mobile Money *</label>
-                                        {{ donate_form.telephone }}
-                                    </div>
-                                    <div class="col-12 mt-2">
-                                        <button type="submit" class="btn-submit">
-                                            <i class="fas fa-heart"></i>Valider mon don
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+                        <!-- Nom complet -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark small" for="nom_prenom">Votre nom et prénom *</label>
+                            <input type="text" class="form-control rounded-3" id="nom_prenom" name="nom_prenom" placeholder="Ex: Patrice Neussi" required>
                         </div>
 
+                        <!-- Téléphone Mobile Money -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark small" for="telephone">Numéro Mobile Money (MTN ou Orange) *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted fw-bold rounded-start-3">+237</span>
+                                <input type="tel" class="form-control rounded-end-3" id="telephone" name="telephone" placeholder="6XXXXXXXX" required>
+                            </div>
+                            <div class="form-text small text-muted">Le débit sera demandé sur ce numéro via l'opérateur.</div>
+                        </div>
+
+                        <!-- Email (optionnel) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark small" for="email">Adresse email (optionnel)</label>
+                            <input type="email" class="form-control rounded-3" id="email" name="email" placeholder="Pour recevoir un accusé de réception">
+                        </div>
+
+                        <!-- Message de soutien -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark small" for="message">Message de soutien ou mot d'encouragement (optionnel)</label>
+                            <textarea class="form-control rounded-3" id="message" name="message" rows="2" placeholder="Un mot pour les étudiants du COMSAS..."></textarea>
+                        </div>
+
+                        <!-- Option d'affichage public -->
+                        <div class="form-check p-3 rounded-3 mb-4" style="background: #FFF0F5; border: 1px solid #FCE4EC;">
+                            <input class="form-check-input mt-1" type="checkbox" id="is_public" name="is_public" checked>
+                            <label class="form-check-label small text-dark fw-semibold" for="is_public">
+                                Afficher publiquement mon nom et mon don dans l'historique des donateurs
+                            </label>
+                            <div class="small text-muted mt-1 ps-4">
+                                Si vous décochez cette option, votre nom sera masqué et affiché comme « Donateur Anonyme ».
+                            </div>
+                        </div>
+
+                        <!-- Alerte d'erreur de formulaire -->
+                        <div id="form-error-alert" class="alert text-start small mb-3 py-2 px-3 rounded-3" style="display: none; background: #FFF5F5; border: 1px solid #FED7D7; color: #C53030;">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-exclamation-circle text-danger"></i>
+                                <span id="form-error-msg"></span>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-rose w-100 py-3 rounded-pill fw-bold h5 mb-2" id="submit-btn">
+                            <i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay
+                        </button>
+                        <div class="text-center small text-muted">
+                            Transaction sécurisée par Freemopay. Aucun frais supplémentaire facturé.
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Mur des Donateurs / Historique -->
+            <div class="col-lg-6" id="tableau-donateurs">
+                <div class="card-don p-4 p-md-5 h-100 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                        <div>
+                            <h2 class="h4 fw-bold text-dark mb-0">Tableau d'Honneur</h2>
+                            <small class="text-muted">Historique des contributions reçues</small>
+                        </div>
+                        <span class="badge badge-rose px-3 py-2 rounded-pill">
+                            <i class="fas fa-heart me-1"></i>{{ donor_count|default:"0" }} soutien(s)
+                        </span>
+                    </div>
+
+                    <div class="donor-list flex-grow-1" id="donor-list-container" style="max-height: 600px; overflow-y: auto;">
+                        {% if donations %}
+                            {% for don in donations %}
+                            <div class="donor-card mb-3 d-flex align-items-start gap-3">
+                                <div class="donor-avatar">
+                                    {% if don.is_public %}
+                                        {{ don.nom_prenom|slice:":1"|upper }}
+                                    {% else %}
+                                        <i class="fas fa-user-secret"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h3 class="h6 fw-bold mb-0 text-dark">
+                                            {{ don.display_name }}
+                                        </h3>
+                                        <span class="badge badge-rose rounded-pill px-2 py-1">
+                                            {{ don.montant }} FCFA
+                                        </span>
+                                    </div>
+                                    <div class="small text-muted mb-1">
+                                        <i class="fas fa-calendar-alt me-1"></i>{{ don.date_don|date:"d F Y à H:i" }}
+                                    </div>
+                                    {% if don.message %}
+                                    <p class="small text-secondary mb-0 fst-italic">
+                                        « {{ don.message }} »
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="fas fa-heart fa-3x mb-3 text-rose opacity-50"></i>
+                                <h5 class="fw-bold mb-1">Soyez le premier donateur !</h5>
+                                <p class="small">Votre contribution soutient directement les projets des étudiants en informatique.</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -1005,109 +340,225 @@
     </div>
 </section>
 
-<!-- ══════════════════════════════════════
-     5. CTA FINAL
-══════════════════════════════════════ -->
-<section class="cta-section text-center">
-    <div class="container">
-        <div class="section-badge mb-4"><i class="fas fa-star"></i>Jubilé d'Émeraude</div>
-        <h2 class="display-4 fw-bold text-white mb-4">
-            Ensemble, écrivons<br><span class="text-gradient">l'histoire</span>
-        </h2>
-        <p class="lead mb-5 mx-auto" style="color:rgba(255,255,255,.5);max-width:540px;">
-            Rejoignez les donateurs qui soutiennent la jeunesse technologique camerounaise pour ce jubilé historique.
-        </p>
-        <a href="#methodes" class="d-inline-flex align-items-center gap-2 fw-bold py-3 px-5 rounded-pill text-white text-decoration-none"
-            style="background:var(--gradient);box-shadow:0 8px 24px rgba(233,30,99,.4);font-size:1rem;">
-            <i class="fas fa-heart"></i>Faire un don maintenant
-        </a>
+<!-- Modal de traitement du paiement Freemopay -->
+<div class="payment-modal" id="payment-modal">
+    <div class="modal-content-box">
+        <!-- État 1 : En attente de validation USSD -->
+        <div id="modal-pending">
+            <div class="spinner-rose"></div>
+            <h3 class="h4 fw-bold text-dark mb-2">Paiement en Cours</h3>
+            <p class="text-muted small mb-3" id="modal-instructions">
+                Une demande de débit a été envoyée sur votre téléphone.
+            </p>
+            <div class="p-3 bg-light rounded-3 mb-4 text-start small">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Montant :</span>
+                    <strong class="text-rose-dark" id="modal-amount">5000 FCFA</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Téléphone :</span>
+                    <strong class="text-dark" id="modal-phone">6XXXXXXXX</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Statut :</span>
+                    <span class="badge bg-warning text-dark">En attente de validation</span>
+                </div>
+            </div>
+            <p class="small text-muted mb-0">
+                <i class="fas fa-info-circle me-1"></i>Veuillez saisir votre code PIN secret sur votre téléphone pour confirmer le paiement.
+            </p>
+        </div>
+
+        <!-- État 2 : Succès -->
+        <div id="modal-success" style="display: none;">
+            <div class="mb-3 text-success">
+                <i class="fas fa-check-circle fa-4x"></i>
+            </div>
+            <h3 class="h4 fw-bold text-dark mb-2">Paiement Validé avec Succès !</h3>
+            <p class="text-muted small mb-4">
+                Merci infiniment pour votre soutien envers l'association COMSAS. Votre don a bien été enregistré.
+            </p>
+            <button class="btn btn-rose rounded-pill px-4 py-2 fw-bold" onclick="closeModal(true)">
+                Terminer et actualiser
+            </button>
+        </div>
+
+        <!-- État 3 : Échec ou Annulation -->
+        <div id="modal-error" style="display: none;">
+            <div class="mb-3 text-danger">
+                <i class="fas fa-exclamation-circle fa-4x"></i>
+            </div>
+            <h3 class="h4 fw-bold text-dark mb-2">Paiement Non Validé</h3>
+            
+            <div class="alert text-start small mb-3 py-3 px-3 rounded-3" style="background: #FFF5F5; border: 1px solid #FED7D7; color: #C53030;">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="fas fa-info-circle mt-1 text-danger"></i>
+                    <div>
+                        <strong class="d-block mb-1">Motif :</strong>
+                        <span id="modal-error-text">La transaction n'a pas pu aboutir.</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="small text-muted mb-4">
+                Vous pouvez ajuster le montant ou le numéro et relancer la transaction en toute sécurité.
+            </p>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                <button class="btn btn-rose rounded-pill px-4 py-2 fw-bold" onclick="closeModal(false)">
+                    <i class="fas fa-redo me-1"></i>Réessayer
+                </button>
+                <button class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold" onclick="closeModal(false)">
+                    Fermer
+                </button>
+            </div>
+        </div>
     </div>
-</section>
-
-<!-- Toast -->
-<div class="toast-notif" id="toastNotif">
-    <i class="fas fa-check-circle"></i>
-    <span id="toastMsg">Numéro copié !</span>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    let pollInterval = null;
 
-    // ── Progress bar
-    const fill = document.getElementById('goalProgress');
-    if (fill) {
-        const pct = Math.min(parseInt(fill.dataset.progress) || 0, 100);
-        setTimeout(() => { fill.style.width = pct + '%'; }, 400);
+    function setAmount(val, element) {
+        document.getElementById('montant').value = val;
+        document.querySelectorAll('.amount-pill').forEach(el => el.classList.remove('active'));
+        if (element) {
+            element.classList.add('active');
+        }
     }
 
-    // ── Counter animation
-    const counters = document.querySelectorAll('.impact-num[data-target]');
-    const obs = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.dataset.done) {
-                entry.target.dataset.done = '1';
-                const target = parseInt(entry.target.dataset.target);
-                const step = target / 60;
-                let current = 0;
-                const timer = setInterval(() => {
-                    current = Math.min(current + step, target);
-                    entry.target.textContent = Math.floor(current).toLocaleString();
-                    if (current >= target) clearInterval(timer);
-                }, 20);
-            }
-        });
-    }, { threshold: 0.5 });
-    counters.forEach(c => obs.observe(c));
-
-    // ── Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', function(e) {
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('montant').addEventListener('input', function() {
+        const val = parseInt(this.value);
+        document.querySelectorAll('.amount-pill').forEach(el => {
+            if (parseInt(el.textContent.replace(/\s/g, '')) === val) {
+                el.classList.add('active');
+            } else {
+                el.classList.remove('active');
             }
         });
     });
 
-});
-
-// ── Copy number
-function copyNum(number, btn) {
-    navigator.clipboard.writeText(number).then(() => {
-        btn.classList.add('copied');
-        btn.innerHTML = '<i class="fas fa-check"></i>';
-        showToast('Numéro ' + number + ' copié !');
-        setTimeout(() => {
-            btn.classList.remove('copied');
-            btn.innerHTML = '<i class="fas fa-copy"></i>';
-        }, 2000);
-    });
-}
-
-// ── Amount buttons
-function donateAmount(amount) {
-    const formatted = amount.toLocaleString('fr-FR');
-    const msg = encodeURIComponent(`Bonjour, je souhaite faire un don de ${formatted} FCFA pour le J.U.IN 2026 🌿`);
-    window.open(`https://wa.me/237650970526?text=${msg}`, '_blank');
-}
-
-function donateCustom() {
-    const amount = prompt('Entrez le montant de votre don (en FCFA) :');
-    if (amount && !isNaN(amount) && parseInt(amount) > 0) {
-        donateAmount(parseInt(amount));
+    function showFormError(msg) {
+        const alertBox = document.getElementById('form-error-alert');
+        document.getElementById('form-error-msg').textContent = msg;
+        alertBox.style.display = 'block';
+        alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-}
 
-// ── Toast
-function showToast(msg) {
-    const toast = document.getElementById('toastNotif');
-    document.getElementById('toastMsg').textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2800);
-}
+    function clearFormError() {
+        const alertBox = document.getElementById('form-error-alert');
+        if (alertBox) alertBox.style.display = 'none';
+    }
+
+    document.getElementById('donation-form').addEventListener('input', clearFormError);
+
+    async function submitDonation(event) {
+        event.preventDefault();
+        clearFormError();
+
+        const form = document.getElementById('donation-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const formData = new FormData(form);
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Initiation du don...';
+
+        try {
+            const response = await fetch("{% url 'initiate_donation' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Afficher le modal
+                document.getElementById('modal-amount').textContent = formData.get('montant') + ' FCFA';
+                document.getElementById('modal-phone').textContent = formData.get('telephone');
+                document.getElementById('modal-instructions').textContent = data.instructions || 'Veuillez valider le débit sur votre téléphone portable.';
+                
+                document.getElementById('modal-pending').style.display = 'block';
+                document.getElementById('modal-success').style.display = 'none';
+                document.getElementById('modal-error').style.display = 'none';
+                document.getElementById('payment-modal').classList.add('active');
+
+                // Lancer le polling de statut
+                startStatusPolling(data.external_id);
+            } else {
+                showFormError(data.error || 'Une erreur est survenue lors de l\'initiation du paiement.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay';
+            }
+        } catch (err) {
+            showFormError('Erreur de connexion. Veuillez vérifier votre accès à internet et réessayer.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay';
+        }
+    }
+
+    function startStatusPolling(externalId) {
+        if (pollInterval) clearInterval(pollInterval);
+
+        let attempts = 0;
+        const maxAttempts = 50; // ~2.5 minutes
+
+        pollInterval = setInterval(async () => {
+            attempts++;
+            if (attempts > maxAttempts) {
+                clearInterval(pollInterval);
+                showModalError('Délai d\'attente dépassé. Si vous avez validé le débit sur votre téléphone, la confirmation apparaîtra sous peu.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/donations/status/${externalId}/`);
+                const data = await res.json();
+
+                if (data.is_confirmed || data.status === 'completed') {
+                    clearInterval(pollInterval);
+                    showModalSuccess();
+                } else if (data.status === 'failed' || data.status === 'cancelled') {
+                    clearInterval(pollInterval);
+                    showModalError(data.message || 'La transaction a été refusée ou a échoué.');
+                }
+            } catch (e) {
+                console.error('Polling error', e);
+            }
+        }, 3000);
+    }
+
+    function showModalSuccess() {
+        document.getElementById('modal-pending').style.display = 'none';
+        document.getElementById('modal-success').style.display = 'block';
+        document.getElementById('modal-error').style.display = 'none';
+    }
+
+    function showModalError(msg) {
+        document.getElementById('modal-pending').style.display = 'none';
+        document.getElementById('modal-success').style.display = 'none';
+        document.getElementById('modal-error').style.display = 'block';
+        if (msg) document.getElementById('modal-error-text').textContent = msg;
+
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay';
+    }
+
+    function closeModal(refresh) {
+        if (pollInterval) clearInterval(pollInterval);
+        document.getElementById('payment-modal').classList.remove('active');
+        if (refresh) {
+            window.location.reload();
+        } else {
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay';
+        }
+    }
 </script>
 {% endblock %}

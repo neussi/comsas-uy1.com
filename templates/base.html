@@ -352,7 +352,8 @@
                 margin-top: 8px;
             }
 
-            .btn-nav-cta {
+            .btn-nav-cta,
+            .btn-nav-don {
                 width: 100%;
                 justify-content: center;
                 padding: 12px 22px;
@@ -529,6 +530,43 @@
         }
 
         /* ── CTA Button navbar ── */
+        .btn-nav-don {
+            background: #ffffff;
+            color: var(--rose) !important;
+            font-weight: 700;
+            font-size: .82rem;
+            border: 1.5px solid var(--rose);
+            border-radius: 50px;
+            padding: 8px 18px;
+            box-shadow: 0 2px 10px rgba(233, 30, 99, .12);
+            transition: all .2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            min-height: 44px;
+            white-space: nowrap;
+        }
+
+        .btn-nav-don:hover,
+        .btn-nav-don.active {
+            background: var(--rose);
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--rose-shadow);
+        }
+
+        .btn-nav-don i {
+            color: var(--rose);
+            transition: color .2s ease;
+        }
+
+        .btn-nav-don:hover i,
+        .btn-nav-don.active i {
+            color: #ffffff !important;
+        }
+
         .btn-nav-cta {
             background: var(--gradient);
             color: white !important;
@@ -546,6 +584,7 @@
             gap: 7px;
             /* Zone tactile mobile */
             min-height: 44px;
+            white-space: nowrap;
         }
 
         .btn-nav-cta:hover {
@@ -1255,7 +1294,7 @@
 
                     <!-- Département -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {% if 'department' in request.path or 'about' in request.path or 'members' in request.path or 'presidents' in request.path %}active{% endif %}"
+                        <a class="nav-link dropdown-toggle {% if 'department' in request.path or 'about' in request.path or 'members' in request.path or 'presidents' in request.path or 'commissions' in request.path or 'directions' in request.path %}active{% endif %}"
                             href="#" id="deptDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Département
                         </a>
@@ -1275,6 +1314,8 @@
                                     <i class="fas fa-chalkboard-teacher me-2 text-primary"></i>Enseignants</a></li>
                             <li><a class="dropdown-item" href="{% url 'members' %}">
                                     <i class="fas fa-users me-2 text-primary"></i>Bureau Exécutif</a></li>
+                            <li><a class="dropdown-item" href="{% url 'club_commissions_list' %}">
+                                    <i class="fas fa-sitemap me-2 text-primary"></i>Commissions du COMSAS</a></li>
                             <li><a class="dropdown-item" href="{% url 'president_list' %}">
                                     <i class="fas fa-crown me-2 text-primary"></i>Anciens Présidents
                                     <span class="nav-badge ms-1">Nouveau</span></a></li>
@@ -1378,7 +1419,10 @@
                 </ul>
 
                 <!-- CTA -->
-                <div class="d-flex align-items-center gap-2 mt-2 mt-lg-0">
+                <div class="d-flex flex-column flex-lg-row align-items-center gap-2 mt-2 mt-lg-0">
+                    <a href="{% url 'donations' %}" class="btn-nav-don {% if request.resolver_match.url_name == 'donations' %}active{% endif %}">
+                        <i class="fas fa-heart"></i>Faire un don
+                    </a>
                     <a href="{% url 'member_registration' %}" class="btn-nav-cta">
                         <i class="fas fa-user-plus"></i>Rejoindre
                     </a>
