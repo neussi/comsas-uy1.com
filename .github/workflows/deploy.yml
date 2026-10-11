@@ -47,6 +47,9 @@ jobs:
           sleep 15
           docker-compose exec -T web python manage.py migrate --noinput
           docker-compose exec -T web python manage.py collectstatic --noinput
+          chown -R www-data:www-data media staticfiles 2>/dev/null || true
+          chmod -R 755 media staticfiles
+          chmod +x /root /root/system-sh 2>/dev/null || true
           docker-compose restart web
           echo "Déploiement forcé terminé avec succès"
           DEPLOY_SCRIPT_EOF

@@ -13,83 +13,85 @@ tech, etudiant informatique{% endblock %}
 <!-- ═══════════════════════════════════════════
      HERO
 ═══════════════════════════════════════════ -->
-<section class="position-relative overflow-hidden bg-white" style="padding-top: 80px; padding-bottom: 60px;">
+<section class="position-relative overflow-hidden bg-white" style="padding-top: clamp(40px, 8vw, 80px); padding-bottom: clamp(30px, 6vw, 60px);">
     <div id="particles-js" class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 0; opacity: 0.4;"></div>
 
     <div class="container position-relative z-2">
         <div class="row align-items-center">
             <div class="col-lg-7 text-center text-lg-start" data-aos="fade-right">
                 <div class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-light rounded-pill border">
-                    <span class="text-primary fw-bold small text-uppercase ls-1">
-                        Computer Science Association · University of Yaoundé I (UY1) · Since 2004
+                    <span class="text-primary fw-bold small text-uppercase ls-1" style="font-size: clamp(0.68rem, 2vw, 0.8rem);">
+                        Computer Science Association · UY1 · Since 2004
                     </span>
                 </div>
 
-                <h1 class="display-3 fw-bolder mb-3 text-dark lh-sm">
+                <h1 class="fw-bolder mb-3 text-dark lh-sm" style="font-size: clamp(2rem, 5.5vw, 3.5rem);">
                     Rejoignez l'élite du <br>
                     <span class="text-primary typing-effect"
                         data-words='["Code.", "Design.", "Réseau.", "I.A.", "Numérique."]'></span>
                     <span class="cursor">|</span>
                 </h1>
 
-                <!-- Boutons d'action clés (très visibles immédiatement sur mobile et desktop) -->
-                <div class="hero-actions-wrap d-flex flex-row flex-wrap gap-2 gap-sm-3 justify-content-center justify-content-lg-start my-4">
+                <!-- Boutons d'action clés (mobile first) -->
+                <div class="hero-actions-wrap d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 justify-content-center justify-content-lg-start my-4">
                     <a href="{% url 'member_registration' %}"
-                        class="btn btn-primary btn-lg rounded-pill px-4 px-sm-5 shadow-sm hover-lift fw-bold flex-grow-1 flex-sm-grow-0 d-flex align-items-center justify-content-center gap-2"
+                        class="btn btn-primary rounded-pill px-4 px-sm-5 shadow-sm hover-lift fw-bold w-100 w-sm-auto d-flex align-items-center justify-content-center gap-2"
                         style="min-height: 48px;">
                         <i class="fas fa-user-plus"></i>
                         <span>Devenir Membre</span>
                     </a>
                     <a href="{% url 'donations' %}"
-                        class="btn btn-lg rounded-pill px-4 px-sm-5 shadow-sm hover-lift fw-bold text-white flex-grow-1 flex-sm-grow-0 d-flex align-items-center justify-content-center gap-2"
+                        class="btn rounded-pill px-4 px-sm-5 shadow-sm hover-lift fw-bold text-white w-100 w-sm-auto d-flex align-items-center justify-content-center gap-2"
                         style="background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%); border: none; min-height: 48px;">
                         <i class="fas fa-heart"></i>
                         <span>Faire un Don</span>
                     </a>
-                    <a href="{% url 'projects' %}" class="btn btn-outline-dark btn-lg rounded-pill px-4 hover-lift fw-semibold d-none d-md-inline-flex align-items-center gap-2">
+                    <a href="{% url 'projects' %}" class="btn btn-outline-dark rounded-pill px-4 hover-lift fw-semibold d-none d-md-inline-flex align-items-center gap-2"
+                        style="min-height: 48px;">
                         <i class="fas fa-code"></i>
                         <span>Nos Projets</span>
                     </a>
                 </div>
 
-                <p class="lead text-muted mb-4 mx-auto mx-lg-0" style="max-width: 600px; font-size: 1.05rem;">
+                <p class="lead text-muted mb-4 mx-auto mx-lg-0" style="max-width: 600px; font-size: clamp(0.92rem, 2.5vw, 1.05rem);">
                     Le <strong>COM.S.AS</strong> est l’Association des étudiants en informatique
                     (Informatique Fondamentale et ICT4D) de la Faculté des Sciences de l’Université de Yaoundé I.
                     Depuis plus de 20 ans, nous accompagnons les étudiants en les aidant à surmonter leurs difficultés
                     académiques, en partageant des connaissances et en organisant des activités au sein du département.
                 </p>
 
-                <div class="row mt-5 pt-4 border-top g-4 justify-content-center justify-content-lg-start">
-                    <div class="col-auto text-center text-lg-start px-4 border-end">
-                        <span class="h2 d-block fw-bold text-dark counter"
-                            data-target="{{ total_members|default:'2000' }}">0</span>
-                        <span class="small text-muted text-uppercase">Membres</span>
+                <!-- Bandeau chiffres clés aligné sur mobile -->
+                <div class="row mt-4 mt-lg-5 pt-3 pt-lg-4 border-top g-2 g-sm-4 justify-content-center justify-content-lg-start">
+                    <div class="col-4 col-sm-auto text-center text-lg-start px-2 px-sm-4 border-end">
+                        <span class="h2 d-block fw-bold text-dark counter mb-0"
+                            data-target="{{ total_members|default:'2000' }}" style="font-size: clamp(1.4rem, 4vw, 2rem);">0</span>
+                        <span class="small text-muted text-uppercase" style="font-size: clamp(0.65rem, 1.8vw, 0.75rem);">Membres</span>
                     </div>
-                    <div class="col-auto text-center text-lg-start px-4 border-end">
-                        <span class="h2 d-block fw-bold text-secondary counter"
-                            data-target="{{ completed_projects|default:'20' }}">0</span>
-                        <span class="small text-muted text-uppercase">Projets</span>
+                    <div class="col-4 col-sm-auto text-center text-lg-start px-2 px-sm-4 border-end">
+                        <span class="h2 d-block fw-bold text-secondary counter mb-0"
+                            data-target="{{ completed_projects|default:'20' }}" style="font-size: clamp(1.4rem, 4vw, 2rem);">0</span>
+                        <span class="small text-muted text-uppercase" style="font-size: clamp(0.65rem, 1.8vw, 0.75rem);">Projets</span>
                     </div>
-                    <div class="col-auto text-center text-lg-start px-4">
-                        <span class="h2 d-block fw-bold text-dark">20+</span>
-                        <span class="small text-muted text-uppercase">Années</span>
+                    <div class="col-4 col-sm-auto text-center text-lg-start px-2 px-sm-4">
+                        <span class="h2 d-block fw-bold text-dark mb-0" style="font-size: clamp(1.4rem, 4vw, 2rem);">20+</span>
+                        <span class="small text-muted text-uppercase" style="font-size: clamp(0.65rem, 1.8vw, 0.75rem);">Années</span>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-5 mb-4 mb-lg-0" data-aos="fade-left">
-                <div class="position-relative mx-auto" style="max-width: 450px;">
+            <div class="col-lg-5 mb-4 mb-lg-0 mt-4 mt-lg-0" data-aos="fade-left">
+                <div class="position-relative mx-auto" style="max-width: 420px; overflow: visible;">
                     <div class="position-absolute top-50 start-50 translate-middle border border-dashed border-primary border-opacity-25 rounded-circle orbit-slow"
-                        style="width: 110%; padding-bottom: 110%; z-index: -1;"></div>
-                    <div class="text-center p-4 position-relative">
+                        style="width: 105%; padding-bottom: 105%; z-index: -1;"></div>
+                    <div class="text-center p-3 p-sm-4 position-relative">
 
                         <div class="position-absolute top-50 start-50 translate-middle bg-primary opacity-10 rounded-circle pulse-ring"
-                            style="width: 300px; height: 300px;"></div>
+                            style="width: 260px; height: 260px;"></div>
 
                         <img src="{% static 'images/bureau.jpeg' %}" class="img-fluid position-relative z-2 hover-scale"
                             alt="COM.S.AS" style="
-                                width: 250px;
-                                height: 250px;
+                                width: clamp(180px, 45vw, 250px);
+                                height: clamp(180px, 45vw, 250px);
                                 object-fit: cover;
                                 border-radius: 50%;
                                 display: block;
@@ -99,38 +101,38 @@ tech, etudiant informatique{% endblock %}
                                 filter: contrast(1.05) brightness(1.05);
                             " onload="
                                 setTimeout(() => {
-                                    this.style.transform='scale(1.15)';
-                                    this.style.boxShadow='0 0 60px rgba(255,0,150,0.6)';
+                                    this.style.transform='scale(1.08)';
+                                    this.style.boxShadow='0 0 50px rgba(255,0,150,0.5)';
                                 }, 2000)
                             " onmouseover="
-                                this.style.transform='scale(1.2)';
-                                this.style.boxShadow='0 0 80px rgba(255,0,150,0.9)';
-                            " onmouseout="
                                 this.style.transform='scale(1.15)';
-                                this.style.boxShadow='0 0 60px rgba(255,0,150,0.6)';
+                                this.style.boxShadow='0 0 70px rgba(255,0,150,0.8)';
+                            " onmouseout="
+                                this.style.transform='scale(1.08)';
+                                this.style.boxShadow='0 0 50px rgba(255,0,150,0.5)';
                         ">
 
                         <!-- Texte en bas -->
-                        <h4 class="mt-4 fw-bold text-uppercase" style="letter-spacing: 2px;">
+                        <h5 class="mt-3 mt-sm-4 fw-bold text-uppercase" style="letter-spacing: 1.5px; font-size: clamp(0.95rem, 2.5vw, 1.25rem);">
                             BUREAU EXÉCUTIF DU COMS.A.S
-                        </h4>
+                        </h5>
 
-                        <p class="text-muted" style="font-size: 14px;">
+                        <p class="text-muted mb-0" style="font-size: clamp(0.75rem, 2vw, 0.88rem);">
                             Leadership • Innovation • Excellence
                         </p>
 
                     </div>
                     <div class="d-none d-sm-block">
                         <div
-                            class="position-absolute top-0 end-0 bg-white p-3 rounded-4 shadow-sm border animate-float">
+                            class="position-absolute top-0 end-0 bg-white p-2 p-sm-3 rounded-4 shadow-sm border animate-float">
                             <i class="fab fa-python fa-2x text-primary"></i>
                         </div>
-                        <div class="position-absolute bottom-0 start-0 bg-white p-3 rounded-4 shadow-sm border animate-float"
+                        <div class="position-absolute bottom-0 start-0 bg-white p-2 p-sm-3 rounded-4 shadow-sm border animate-float"
                             style="animation-delay: 1s;">
                             <i class="fas fa-terminal fa-2x text-secondary"></i>
                         </div>
-                        <div class="position-absolute top-50 start-0 translate-middle-x bg-dark text-white p-3 rounded-4 shadow-sm border animate-float"
-                            style="animation-delay: 2s;">
+                        <div class="position-absolute top-50 start-0 bg-dark text-white p-2 p-sm-3 rounded-4 shadow-sm border animate-float"
+                            style="animation-delay: 2s; transform: translateY(-50%);">
                             <span class="font-monospace fw-bold">&lt;/&gt;</span>
                         </div>
                     </div>
@@ -161,13 +163,13 @@ tech, etudiant informatique{% endblock %}
                 </p>
 
                 <!-- Barre de recherche rapide -->
-                <div class="card border-0 shadow-sm rounded-pill p-2 bg-white mx-auto position-relative" style="max-width: 680px;">
+                <div class="card border-0 shadow-sm rounded-pill p-1 p-sm-2 bg-white mx-auto position-relative" style="max-width: 680px;">
                     <div class="input-group">
-                        <span class="input-group-text bg-transparent border-0 ps-3 text-primary">
-                            <i class="fas fa-search fa-lg"></i>
+                        <span class="input-group-text bg-transparent border-0 ps-2 ps-sm-3 text-primary">
+                            <i class="fas fa-search"></i>
                         </span>
-                        <input type="text" id="homeDocSearchInput" class="form-control border-0 bg-transparent fs-6 py-2" placeholder="Tapez le nom de votre requête (ex: note, stage, relevé, absence...)" autocomplete="off">
-                        <button class="btn btn-primary rounded-pill px-4 fw-bold hover-lift" type="button" onclick="performHomeDocSearch()">
+                        <input type="text" id="homeDocSearchInput" class="form-control border-0 bg-transparent fs-6 py-2 px-2" placeholder="Tapez le nom de votre requête..." autocomplete="off">
+                        <button class="btn btn-primary rounded-pill px-3 px-sm-4 fw-bold hover-lift" type="button" onclick="performHomeDocSearch()">
                             Rechercher
                         </button>
                     </div>
@@ -186,13 +188,13 @@ tech, etudiant informatique{% endblock %}
             </div>
         </div>
 
-        <!-- Section des quelques modèles de requête (4 ou 5 sur une seule ligne) -->
+        <!-- Section des quelques modèles de requête (mobile first header & cards) -->
         <div class="mt-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-dark mb-0">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-3">
+                <h5 class="fw-bold text-dark mb-0 fs-6 fs-sm-5">
                     <i class="fas fa-layer-group text-primary me-2"></i>Modèles de Requêtes Fréquents
                 </h5>
-                <a href="{% url 'request_documents' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
+                <a href="{% url 'request_documents' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold text-nowrap w-100 w-sm-auto text-center">
                     Voir tous les modèles ({{ total_request_docs|default:'5' }}) <i class="fas fa-arrow-right ms-1"></i>
                 </a>
             </div>
@@ -244,14 +246,14 @@ tech, etudiant informatique{% endblock %}
 </section>
 
 <!-- Innovation CTA -->
-<section class="py-5 bg-light border-bottom">
+<section class="py-4 py-md-5 bg-light border-bottom">
     <div class="container text-center">
-        <div class="bg-primary bg-opacity-10 p-5 rounded-4 border border-primary border-opacity-10" data-aos="zoom-in">
-            <h2 class="fw-bold mb-4">Vous avez une <span class="text-primary">idée géniale</span> ?</h2>
-            <p class="text-muted mb-4 mx-auto" style="max-width: 700px;">Le COM.S.AS accompagne les projets numériques
+        <div class="bg-primary bg-opacity-10 p-4 p-md-5 rounded-4 border border-primary border-opacity-10" data-aos="zoom-in">
+            <h2 class="fw-bold mb-3 mb-md-4 fs-3 fs-md-2">Vous avez une <span class="text-primary">idée géniale</span> ?</h2>
+            <p class="text-muted mb-4 mx-auto" style="max-width: 700px; font-size: clamp(0.9rem, 2.5vw, 1.05rem);">Le COM.S.AS accompagne les projets numériques
                 innovants portés par les étudiants de l'UY1. Ne laissez pas votre talent dormir, proposez-nous votre
                 vision !</p>
-            <a href="{% url 'project_submit' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg hover-lift">
+            <a href="{% url 'project_submit' %}" class="btn btn-primary btn-lg rounded-pill px-4 px-sm-5 shadow-lg hover-lift w-100 w-sm-auto">
                 <i class="fas fa-paper-plane me-2"></i>Soumettre mon Projet
             </a>
         </div>
@@ -316,18 +318,19 @@ tech, etudiant informatique{% endblock %}
                         <img src="{% static 'images/hackathon_lab.jpg' %}" 
                              alt="Hackathon Interuniversitaire UY1 - Laboratoire Numérique" 
                              class="img-fluid w-100 object-fit-cover" 
-                             style="height: 440px; transition: transform 0.6s ease;" 
+                             style="height: clamp(240px, 45vw, 440px); transition: transform 0.6s ease;" 
+                             onerror="this.onerror=null; this.src='{% static 'images/bureau.jpeg' %}';"
                              onmouseover="this.style.transform='scale(1.03)'" 
                              onmouseout="this.style.transform='scale(1)'">
-                        <div class="position-absolute top-0 start-0 m-3">
-                            <span class="badge bg-primary text-white px-3 py-2 rounded-pill shadow-sm">
-                                <i class="fas fa-laptop-code me-2"></i>Hackathon Interuniversitaire UY1
+                        <div class="position-absolute top-0 start-0 m-2 m-sm-3">
+                            <span class="badge bg-primary text-white px-2 px-sm-3 py-1 py-sm-2 rounded-pill shadow-sm" style="font-size: clamp(0.7rem, 2vw, 0.85rem);">
+                                <i class="fas fa-laptop-code me-1 me-sm-2"></i>Hackathon UY1
                             </span>
                         </div>
                         <div class="position-absolute bottom-0 start-0 end-0 p-3 p-md-4 text-white" 
                              style="background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.95) 100%);">
-                            <h5 class="fw-bold mb-1 text-white">Environnement Numérique & Innovation</h5>
-                            <p class="small text-white-50 mb-0">
+                            <h5 class="fw-bold mb-1 text-white" style="font-size: clamp(0.95rem, 2.5vw, 1.25rem);">Environnement Numérique & Innovation</h5>
+                            <p class="small text-white-50 mb-0 d-none d-sm-block" style="font-size: 0.82rem;">
                                 Étudiants et développeurs de l'UY1 en session de développement intensif dans notre laboratoire numérique.
                             </p>
                         </div>
@@ -337,19 +340,19 @@ tech, etudiant informatique{% endblock %}
                         <div class="col-4">
                             <div class="bg-light p-2 rounded-3 text-center border">
                                 <span class="d-block fw-bold text-primary fs-5">20+</span>
-                                <small class="text-muted x-small" style="font-size:0.72rem;">Ans d'Excellence</small>
+                                <small class="text-muted x-small" style="font-size:0.7rem;">Ans d'Excellence</small>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="bg-light p-2 rounded-3 text-center border">
                                 <span class="d-block fw-bold text-dark fs-5">2000+</span>
-                                <small class="text-muted x-small" style="font-size:0.72rem;">Membres Formés</small>
+                                <small class="text-muted x-small" style="font-size:0.7rem;">Membres Formés</small>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="bg-light p-2 rounded-3 text-center border">
                                 <span class="d-block fw-bold text-primary fs-5">8</span>
-                                <small class="text-muted x-small" style="font-size:0.72rem;">Commissions</small>
+                                <small class="text-muted x-small" style="font-size:0.7rem;">Commissions</small>
                             </div>
                         </div>
                     </div>
@@ -358,20 +361,20 @@ tech, etudiant informatique{% endblock %}
 
             <!-- Texte explicatif et missions à droite -->
             <div class="col-lg-6" data-aos="fade-left">
-                <p class="fs-5 text-muted mb-4">
+                <p class="fs-5 text-muted mb-4" style="font-size: clamp(0.95rem, 2.5vw, 1.15rem);">
                     Fondé en <strong class="text-dark">2004</strong> par des étudiants du Département d'Informatique
                     animés d'une vision commune, le COM.S.AS s'est imposé progressivement comme un acteur
                     <strong class="text-dark">incontournable de l'écosystème numérique camerounais</strong>.
                 </p>
-                <p class="text-muted mb-4">
+                <p class="text-muted mb-4" style="font-size: clamp(0.88rem, 2vw, 0.98rem);">
                     Au fil des années, l'association a tissé des partenariats avec des institutions publiques,
                     des entreprises privées et des organisations internationales, consolidant son rayonnement
                     bien au-delà des frontières de l'Université de Yaoundé I.
                 </p>
-                <!-- 4 missions -->
+                <!-- 4 missions (responsive pour mobile) -->
                 <div class="row g-3 mb-4">
-                    <div class="col-6">
-                        <div class="d-flex align-items-start gap-2">
+                    <div class="col-12 col-sm-6">
+                        <div class="d-flex align-items-start gap-2 p-2 rounded-3 bg-light bg-opacity-50">
                             <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary flex-shrink-0">
                                 <i class="fas fa-graduation-cap"></i>
                             </div>
@@ -381,8 +384,8 @@ tech, etudiant informatique{% endblock %}
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-start gap-2">
+                    <div class="col-12 col-sm-6">
+                        <div class="d-flex align-items-start gap-2 p-2 rounded-3 bg-light bg-opacity-50">
                             <div class="bg-secondary bg-opacity-10 p-2 rounded-3 text-secondary flex-shrink-0">
                                 <i class="fas fa-briefcase"></i>
                             </div>
@@ -392,8 +395,8 @@ tech, etudiant informatique{% endblock %}
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-start gap-2">
+                    <div class="col-12 col-sm-6">
+                        <div class="d-flex align-items-start gap-2 p-2 rounded-3 bg-light bg-opacity-50">
                             <div class="bg-dark bg-opacity-10 p-2 rounded-3 text-dark flex-shrink-0">
                                 <i class="fas fa-lightbulb"></i>
                             </div>
@@ -403,8 +406,8 @@ tech, etudiant informatique{% endblock %}
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-start gap-2">
+                    <div class="col-12 col-sm-6">
+                        <div class="d-flex align-items-start gap-2 p-2 rounded-3 bg-light bg-opacity-50">
                             <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary flex-shrink-0">
                                 <i class="fas fa-globe-africa"></i>
                             </div>
@@ -416,11 +419,11 @@ tech, etudiant informatique{% endblock %}
                     </div>
                 </div>
 
-                <div class="d-flex flex-wrap gap-2">
-                    <a href="{% url 'about' %}" class="btn btn-outline-dark rounded-pill px-4 hover-lift">
-                        Notre histoire complète <i class="fas fa-arrow-right ms-2"></i>
+                <div class="d-flex flex-column flex-sm-row gap-2">
+                    <a href="{% url 'about' %}" class="btn btn-outline-dark rounded-pill px-4 hover-lift w-100 w-sm-auto text-center">
+                        Notre histoire <i class="fas fa-arrow-right ms-2"></i>
                     </a>
-                    <a href="{% url 'club_commissions_list' %}" class="btn btn-primary rounded-pill px-4 hover-lift">
+                    <a href="{% url 'club_commissions_list' %}" class="btn btn-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center">
                         Rejoindre une commission <i class="fas fa-users ms-2"></i>
                     </a>
                 </div>
@@ -434,22 +437,22 @@ tech, etudiant informatique{% endblock %}
 ═══════════════════════════════════════════ -->
 <section class="py-5 bg-light" id="mot-du-president">
     <div class="container py-4">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden position-relative bg-white p-4 p-md-5">
-            <div class="position-absolute top-0 end-0 p-4 opacity-10 d-none d-md-block">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden position-relative bg-white p-3 p-md-5">
+            <div class="position-absolute top-0 end-0 p-4 opacity-10 d-none d-md-block pe-none" style="opacity: 0.08;">
                 <i class="fas fa-quote-right fa-8x text-primary"></i>
             </div>
             <div class="row align-items-center g-4 position-relative z-1">
                 <div class="col-lg-4 text-center">
                     <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow border border-4 border-white overflow-hidden"
-                         style="width: 170px; height: 170px; background: #e2e8f0;">
+                         style="width: 150px; height: 150px; background: #e2e8f0;">
                         <img src="{% static 'images/pr.jpeg' %}" 
                              alt="NEUSSI NJIETCHEU PATRICE EUGENE" 
                              class="w-100 h-100 object-fit-cover"
                              onerror="this.src='{% static 'images/default-avatar.png' %}';">
                     </div>
-                    <h5 class="fw-bold mb-1 text-dark">NEUSSI NJIETCHEU PATRICE EUGENE</h5>
+                    <h5 class="fw-bold mb-1 text-dark" style="font-size: clamp(0.95rem, 2.5vw, 1.15rem);">NEUSSI NJIETCHEU PATRICE EUGENE</h5>
                     <span class="badge bg-primary text-white rounded-pill px-3 py-1 mb-2">Président du COM.S.AS</span>
-                    <div class="d-flex flex-column gap-1 align-items-center small text-muted">
+                    <div class="d-flex flex-column gap-1 align-items-center small text-muted text-break">
                         <span><i class="fas fa-envelope text-primary me-1"></i>eugene.neussi@facsciences-uy1.cm</span>
                         <span><i class="fas fa-phone text-primary me-1"></i>+237 650 97 05 26 / 659 47 11 52</span>
                     </div>
@@ -458,19 +461,19 @@ tech, etudiant informatique{% endblock %}
                     <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
                         <i class="fas fa-crown me-1"></i>Vision & Présidence
                     </span>
-                    <h3 class="fw-bold text-dark mb-3 fst-italic">
+                    <h3 class="fw-bold text-dark mb-3 fst-italic" style="font-size: clamp(1.15rem, 3.5vw, 1.75rem);">
                         "Nous construisons le pont entre vos rêves et les serveurs du monde entier."
                     </h3>
-                    <p class="text-muted lead fs-6 mb-4">
+                    <p class="text-muted lead fs-6 mb-4" style="font-size: clamp(0.88rem, 2vw, 1rem);">
                         Favoriser l'épanouissement technologique et professionnel de nos membres est notre mission première.
                         Ensemble, nous transformons des étudiants passionnés en ingénieurs d'exception en codant, innovant
                         et entreprenant chaque jour au sein de la Faculté des Sciences de l'Université de Yaoundé I.
                     </p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="{% url 'mandate' %}" class="btn btn-primary rounded-pill px-4 hover-lift">
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <a href="{% url 'mandate' %}" class="btn btn-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center">
                             Plan d'action & Bureau <i class="fas fa-arrow-right ms-2"></i>
                         </a>
-                        <a href="{% url 'president_list' %}" class="btn btn-outline-dark rounded-pill px-4 hover-lift">
+                        <a href="{% url 'president_list' %}" class="btn btn-outline-dark rounded-pill px-4 hover-lift w-100 w-sm-auto text-center">
                             Galerie des Présidents <i class="fas fa-history ms-2"></i>
                         </a>
                     </div>
@@ -485,17 +488,17 @@ tech, etudiant informatique{% endblock %}
 ═══════════════════════════════════════════ -->
 <section class="py-5 bg-white" id="delegues-section">
     <div class="container py-4">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3" data-aos="fade-up">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-end mb-4 gap-3" data-aos="fade-up">
             <div>
                 <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">
                     <i class="fas fa-users-cog me-1"></i>Représentation Étudiante
                 </span>
-                <h2 class="fw-bold text-dark mb-1">Les Délégués de Classe & Filières</h2>
+                <h2 class="fw-bold text-dark mb-1 fs-4 fs-sm-3">Les Délégués de Classe & Filières</h2>
                 <p class="text-muted mb-0 small">
                     Vos interlocuteurs privilégiés pour chaque niveau au Département d'Informatique.
                 </p>
             </div>
-            <a href="{% url 'department_delegates' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift flex-shrink-0">
+            <a href="{% url 'department_delegates' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center flex-shrink-0">
                 Voir tous les délégués {% if total_delegates %}({{ total_delegates }}){% endif %} <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
@@ -592,8 +595,9 @@ tech, etudiant informatique{% endblock %}
 ═══════════════════════════════════════════ -->
 {% if juin_edition %}
 <section class="py-5 bg-dark position-relative overflow-hidden text-white">
-    <div class="position-absolute top-0 end-0 p-5 opacity-10">
-        <i class="fas fa-microchip fa-10x"></i>
+    <!-- Icône d'arrière-plan visible uniquement sur grand écran, jamais par-dessus le texte mobile -->
+    <div class="d-none d-lg-block position-absolute top-0 end-0 p-5 pe-none" style="opacity: 0.05; pointer-events: none; z-index: 0;">
+        <i class="fas fa-microchip fa-10x text-white"></i>
     </div>
     <div class="container position-relative z-1">
         <div class="row align-items-center">
@@ -602,57 +606,59 @@ tech, etudiant informatique{% endblock %}
                     class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill">
                     <span class="text-primary fw-bold small text-uppercase ls-1">Événement Phare · 20+ Éditions</span>
                 </div>
-                <h2 class="display-5 fw-bold mb-3 text-white">
+                <h2 class="fw-bold mb-3 text-white lh-sm" style="font-size: clamp(1.8rem, 5vw, 3rem);">
                     J.U.IN <span class="text-primary">{{ juin_edition.number|default:"2026" }}</span>
                 </h2>
-                <h4 class="fw-light mb-4 text-white-50">{{ juin_edition.theme }}</h4>
-                <p class="lead mb-3 text-white-50">
+                <h4 class="fw-light mb-3 mb-md-4 text-white-50" style="font-size: clamp(1rem, 2.5vw, 1.4rem);">« {{ juin_edition.theme|default:"Le numérique au service de l'entrepreneuriat" }} »</h4>
+                <p class="lead mb-3 text-white-50" style="font-size: clamp(0.9rem, 2vw, 1.1rem);">
                     Les <strong class="text-white">Journées Universitaires de l'Informatique</strong>, l'événement
                     tech universitaire de référence au Cameroun. Organisées chaque année depuis 2004.
                 </p>
-                <p class="text-white-50 mb-4 small">
-                    <i class="fas fa-check-circle text-primary me-2"></i>Conférences & ateliers pratiques &nbsp;·&nbsp;
-                    <i class="fas fa-check-circle text-primary me-2 ms-1"></i>Hackathon &nbsp;·&nbsp;
-                    <i class="fas fa-check-circle text-primary me-2 ms-1"></i>Pitch contest &nbsp;·&nbsp;
-                    <i class="fas fa-check-circle text-primary me-2 ms-1"></i>Soirée de gala
+                <p class="text-white-50 mb-4 small" style="font-size: clamp(0.75rem, 1.8vw, 0.85rem);">
+                    <i class="fas fa-check-circle text-primary me-1"></i>Conférences & ateliers &nbsp;·&nbsp;
+                    <i class="fas fa-check-circle text-primary me-1"></i>Hackathon &nbsp;·&nbsp;
+                    <i class="fas fa-check-circle text-primary me-1"></i>Pitch contest &nbsp;·&nbsp;
+                    <i class="fas fa-check-circle text-primary me-1"></i>Gala
                 </p>
-                <div class="d-flex flex-wrap gap-3">
+                <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
                     <a href="{% url 'juin' %}"
-                        class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm hover-lift">Découvrir le
-                        programme</a>
+                        class="btn btn-primary rounded-pill px-4 py-2 shadow-sm hover-lift w-100 w-sm-auto text-center fw-bold">
+                        Découvrir le programme
+                    </a>
                     <a href="{% url 'juin' %}#soutenir"
-                        class="btn btn-outline-light btn-lg rounded-pill px-4 hover-lift">Soutenir
-                        l'édition</a>
+                        class="btn btn-outline-light rounded-pill px-4 py-2 hover-lift w-100 w-sm-auto text-center fw-semibold">
+                        Soutenir l'édition
+                    </a>
                 </div>
             </div>
             <div class="col-lg-5 offset-lg-1" data-aos="fade-left">
-                <div class="card border border-white border-opacity-25 rounded-4 p-4 text-center shadow-lg"
-                    style="background: rgba(0,0,0,0.45);">
-                    <h5 class="text-uppercase small ls-2 mb-4 text-primary">Le compte à rebours est lancé</h5>
+                <div class="card border border-white border-opacity-25 rounded-4 p-3 p-sm-4 text-center shadow-lg"
+                    style="background: rgba(0,0,0,0.55); backdrop-filter: blur(10px);">
+                    <h5 class="text-uppercase small ls-2 mb-3 mb-sm-4 text-primary fw-bold">Le compte à rebours est lancé</h5>
                     <div class="row g-2" id="home-juin-countdown"
                         data-date="{{ juin_edition.start_date|date:'Y-m-d' }}">
                         <div class="col-3">
-                            <div class="p-3 bg-dark bg-opacity-50 rounded-3">
-                                <span class="h2 d-block fw-bold mb-0 text-white" id="home-days">00</span>
-                                <small class="text-white x-small">Jours</small>
+                            <div class="p-2 p-sm-3 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
+                                <span class="d-block fw-bold mb-0 text-white" id="home-days" style="font-size: clamp(1.2rem, 3.5vw, 1.9rem);">00</span>
+                                <small class="text-white-50" style="font-size: 0.68rem;">Jours</small>
                             </div>
                         </div>
                         <div class="col-3">
-                            <div class="p-3 bg-dark bg-opacity-50 rounded-3">
-                                <span class="h2 d-block fw-bold mb-0 text-white" id="home-hours">00</span>
-                                <small class="text-white x-small">H</small>
+                            <div class="p-2 p-sm-3 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
+                                <span class="d-block fw-bold mb-0 text-white" id="home-hours" style="font-size: clamp(1.2rem, 3.5vw, 1.9rem);">00</span>
+                                <small class="text-white-50" style="font-size: 0.68rem;">H</small>
                             </div>
                         </div>
                         <div class="col-3">
-                            <div class="p-3 bg-dark bg-opacity-50 rounded-3">
-                                <span class="h2 d-block fw-bold mb-0 text-white" id="home-minutes">00</span>
-                                <small class="text-white x-small">Min</small>
+                            <div class="p-2 p-sm-3 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
+                                <span class="d-block fw-bold mb-0 text-white" id="home-minutes" style="font-size: clamp(1.2rem, 3.5vw, 1.9rem);">00</span>
+                                <small class="text-white-50" style="font-size: 0.68rem;">Min</small>
                             </div>
                         </div>
                         <div class="col-3">
-                            <div class="p-3 bg-dark bg-opacity-50 rounded-3">
-                                <span class="h2 d-block fw-bold mb-0 text-white" id="home-seconds">00</span>
-                                <small class="text-white x-small">Sec</small>
+                            <div class="p-2 p-sm-3 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
+                                <span class="d-block fw-bold mb-0 text-white" id="home-seconds" style="font-size: clamp(1.2rem, 3.5vw, 1.9rem);">00</span>
+                                <small class="text-white-50" style="font-size: 0.68rem;">Sec</small>
                             </div>
                         </div>
                     </div>
@@ -818,7 +824,7 @@ tech, etudiant informatique{% endblock %}
                         <div class="rounded-circle bg-warning" style="width: 12px; height: 12px;"></div>
                         <div class="rounded-circle bg-success" style="width: 12px; height: 12px;"></div>
                     </div>
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-sm-4" style="overflow-x: auto; -webkit-overflow-scrolling: touch; font-size: clamp(0.78rem, 2.5vw, 0.95rem);">
                         <p class="mb-1"><span class="text-success">user@comsas:~$</span> python3 join_club.py</p>
                         <p class="mb-1 text-muted">Initialisation du COM.S.AS...</p>
                         <p class="mb-3 text-white">
@@ -841,15 +847,15 @@ tech, etudiant informatique{% endblock %}
 ═══════════════════════════════════════════ -->
 <section class="py-5 bg-white" id="evenements-section">
     <div class="container py-4">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3" data-aos="fade-up">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-end mb-4 gap-3" data-aos="fade-up">
             <div>
                 <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">
                     <i class="fas fa-calendar-star me-1"></i>Agenda & Rencontres
                 </span>
-                <h2 class="fw-bold text-dark mb-1">Activités & Prochains Événements</h2>
+                <h2 class="fw-bold text-dark mb-1 fs-4 fs-sm-3">Activités & Prochains Événements</h2>
                 <p class="text-muted mb-0 small">Participez à nos ateliers de code, conférences d'experts et hackathons.</p>
             </div>
-            <a href="{% url 'events' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift flex-shrink-0">
+            <a href="{% url 'events' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center flex-shrink-0">
                 Voir tous les événements <i class="fas fa-calendar-alt ms-2"></i>
             </a>
         </div>
@@ -960,18 +966,18 @@ tech, etudiant informatique{% endblock %}
 ═══════════════════════════════════════════ -->
 <section class="py-5 bg-white" id="galerie-section">
     <div class="container py-4">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3" data-aos="fade-up">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-end mb-4 gap-3" data-aos="fade-up">
             <div>
                 <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">
                     <i class="fas fa-camera-retro me-1"></i>Vie Associative en Images
                 </span>
-                <h2 class="fw-bold text-dark mb-1">Instantanés du COM.S.AS</h2>
+                <h2 class="fw-bold text-dark mb-1 fs-4 fs-sm-3">Instantanés du COM.S.AS</h2>
                 <p class="text-muted mb-0 small">
                     Découvrez l'ambiance des hackathons, cérémonies de remise de prix, ateliers et journées J.U.IN.
                 </p>
             </div>
-            <a href="{% url 'gallery' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift flex-shrink-0">
-                Explorer toute la galerie <i class="fas fa-images ms-2"></i>
+            <a href="{% url 'gallery' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center flex-shrink-0">
+                Explorer la galerie <i class="fas fa-images ms-2"></i>
             </a>
         </div>
 
@@ -979,45 +985,49 @@ tech, etudiant informatique{% endblock %}
             {% if featured_gallery %}
                 {% for item in featured_gallery|slice:":6" %}
                 <div class="col-6 col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
-                    <div class="position-relative overflow-hidden rounded-4 shadow-sm border border-2 border-white" style="height: 220px; background: #0f172a;">
+                    <div class="position-relative overflow-hidden rounded-4 shadow-sm border border-2 border-white" style="height: clamp(160px, 28vw, 220px); background: #0f172a;">
                         {% if item.image %}
-                        <img src="{{ item.image.url }}" alt="{{ item.title_fr }}" class="w-100 h-100 object-fit-cover" style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="{{ item.image.url }}" alt="{{ item.title_fr }}" class="w-100 h-100 object-fit-cover" 
+                             onerror="this.onerror=null; this.src='{% static 'images/bureau.jpeg' %}';"
+                             style="transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
                         {% else %}
-                        <img src="{% static 'images/hackathon_lab.jpg' %}" alt="COM.S.AS" class="w-100 h-100 object-fit-cover">
+                        <img src="{% static 'images/hackathon_lab.jpg' %}" alt="COM.S.AS" class="w-100 h-100 object-fit-cover"
+                             onerror="this.onerror=null; this.src='{% static 'images/bureau.jpeg' %}';">
                         {% endif %}
-                        <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.85) 100%);">
-                            <h6 class="fw-bold mb-0 text-white small text-truncate">{{ item.title_fr|default:"Moment fort COM.S.AS" }}</h6>
-                            <small class="text-white-50 x-small" style="font-size: 0.7rem;">{{ item.event.title_fr|default:"Faculté des Sciences · UY1" }}</small>
+                        <div class="position-absolute bottom-0 start-0 end-0 p-2 p-sm-3 text-white" style="background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.85) 100%);">
+                            <h6 class="fw-bold mb-0 text-white small text-truncate" style="font-size: clamp(0.72rem, 2vw, 0.85rem);">{{ item.title_fr|default:"Moment fort COM.S.AS" }}</h6>
+                            <small class="text-white-50 x-small" style="font-size: 0.68rem;">{{ item.event.title_fr|default:"Faculté des Sciences · UY1" }}</small>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
                 <div class="col-6 col-md-4">
-                    <div class="position-relative overflow-hidden rounded-4 shadow-sm" style="height: 220px;">
-                        <img src="{% static 'images/hackathon_lab.jpg' %}" alt="Hackathon" class="w-100 h-100 object-fit-cover">
-                        <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.85) 100%);">
-                            <h6 class="fw-bold mb-0 text-white small">Hackathon Interuniversitaire</h6>
-                            <small class="text-white-50 x-small" style="font-size: 0.7rem;">Laboratoire Numérique</small>
+                    <div class="position-relative overflow-hidden rounded-4 shadow-sm" style="height: clamp(160px, 28vw, 220px); background: #0f172a;">
+                        <img src="{% static 'images/hackathon_lab.jpg' %}" alt="Hackathon" class="w-100 h-100 object-fit-cover"
+                             onerror="this.onerror=null; this.src='{% static 'images/bureau.jpeg' %}';">
+                        <div class="position-absolute bottom-0 start-0 end-0 p-2 p-sm-3 text-white" style="background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.85) 100%);">
+                            <h6 class="fw-bold mb-0 text-white small text-truncate" style="font-size: clamp(0.75rem, 2vw, 0.88rem);">Hackathon UY1</h6>
+                            <small class="text-white-50 x-small" style="font-size: 0.68rem;">Laboratoire Numérique</small>
                         </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4">
-                    <div class="position-relative overflow-hidden rounded-4 shadow-sm" style="height: 220px;">
+                    <div class="position-relative overflow-hidden rounded-4 shadow-sm" style="height: clamp(160px, 28vw, 220px); background: #0f172a;">
                         <img src="{% static 'images/bureau.jpeg' %}" alt="Bureau COM.S.AS" class="w-100 h-100 object-fit-cover">
-                        <div class="position-absolute bottom-0 start-0 end-0 p-3 text-white" style="background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.85) 100%);">
-                            <h6 class="fw-bold mb-0 text-white small">Bureau Exécutif 2025-2026</h6>
-                            <small class="text-white-50 x-small" style="font-size: 0.7rem;">Équipe de direction</small>
+                        <div class="position-absolute bottom-0 start-0 end-0 p-2 p-sm-3 text-white" style="background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.85) 100%);">
+                            <h6 class="fw-bold mb-0 text-white small text-truncate" style="font-size: clamp(0.75rem, 2vw, 0.88rem);">Bureau Exécutif</h6>
+                            <small class="text-white-50 x-small" style="font-size: 0.68rem;">Équipe de direction</small>
                         </div>
                     </div>
                 </div>
-                <div class="col-6 col-md-4">
-                    <div class="position-relative overflow-hidden rounded-4 shadow-sm" style="height: 220px; background: linear-gradient(135deg, #1e293b, #0f172a);">
+                <div class="col-12 col-md-4">
+                    <div class="position-relative overflow-hidden rounded-4 shadow-sm" style="height: clamp(160px, 28vw, 220px); background: linear-gradient(135deg, #1e293b, #0f172a);">
                         <div class="d-flex flex-column align-items-center justify-content-center h-100 text-white p-3 text-center">
-                            <i class="fas fa-photo-video fa-3x text-primary mb-2"></i>
-                            <h6 class="fw-bold mb-1">Toutes les Photos</h6>
-                            <small class="text-white-50 mb-3" style="font-size: 0.72rem;">Cérémonies, J.U.IN & ateliers</small>
-                            <a href="{% url 'gallery' %}" class="btn btn-sm btn-primary rounded-pill px-3">Voir la galerie</a>
+                            <i class="fas fa-photo-video fa-2x fa-sm-3x text-primary mb-2"></i>
+                            <h6 class="fw-bold mb-1 fs-6">Toutes les Photos</h6>
+                            <small class="text-white-50 mb-2 mb-sm-3" style="font-size: 0.72rem;">Cérémonies, J.U.IN & ateliers</small>
+                            <a href="{% url 'gallery' %}" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold">Voir la galerie</a>
                         </div>
                     </div>
                 </div>
@@ -1031,21 +1041,21 @@ tech, etudiant informatique{% endblock %}
 ═══════════════════════════════════════════ -->
 <section class="py-5 bg-light" id="archives-section">
     <div class="container py-4">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3" data-aos="fade-up">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-end mb-4 gap-3" data-aos="fade-up">
             <div>
                 <span class="badge bg-dark text-white px-3 py-2 rounded-pill mb-2">
                     <i class="fas fa-folder-open me-1"></i>Ressources & Documents
                 </span>
-                <h2 class="fw-bold text-dark mb-1">Archives Académiques & Requêtes</h2>
+                <h2 class="fw-bold text-dark mb-1 fs-4 fs-sm-3">Archives Académiques & Requêtes</h2>
                 <p class="text-muted mb-0 small">
                     Téléchargez vos modèles de requêtes officielles, procès-verbaux et annales d'examens.
                 </p>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
-                <a href="{% url 'request_documents' %}" class="btn btn-outline-dark rounded-pill px-3 hover-lift small">
+            <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-sm-auto">
+                <a href="{% url 'request_documents' %}" class="btn btn-outline-dark rounded-pill px-3 hover-lift small text-center">
                     <i class="fas fa-file-signature me-1"></i>Modèles de requêtes
                 </a>
-                <a href="{% url 'archives' %}" class="btn btn-primary rounded-pill px-3 hover-lift small">
+                <a href="{% url 'archives' %}" class="btn btn-primary rounded-pill px-3 hover-lift small text-center">
                     <i class="fas fa-archive me-1"></i>Toutes les archives
                 </a>
             </div>
@@ -1055,7 +1065,7 @@ tech, etudiant informatique{% endblock %}
             <!-- Modèles de requêtes vedettes -->
             {% if featured_request_docs %}
                 {% for doc in featured_request_docs|slice:":4" %}
-                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
+                <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-3 hover-lift bg-white">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1" style="font-size:0.68rem;">
@@ -1078,7 +1088,7 @@ tech, etudiant informatique{% endblock %}
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="col-md-6 col-lg-3">
+                <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-3 hover-lift bg-white">
                         <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1 align-self-start mb-2" style="font-size:0.68rem;">Requête Note</span>
                         <h6 class="fw-bold text-dark mb-2">Réclamation de Note CC/SN</h6>
@@ -1086,7 +1096,7 @@ tech, etudiant informatique{% endblock %}
                         <a href="{% url 'request_documents' %}" class="btn btn-sm btn-outline-primary rounded-pill w-100 mt-auto" style="font-size:0.75rem;">Télécharger</a>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-3 hover-lift bg-white">
                         <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2 py-1 align-self-start mb-2" style="font-size:0.68rem;">Stage</span>
                         <h6 class="fw-bold text-dark mb-2">Demande de Stage Académique</h6>
@@ -1094,7 +1104,7 @@ tech, etudiant informatique{% endblock %}
                         <a href="{% url 'request_documents' %}" class="btn btn-sm btn-outline-secondary rounded-pill w-100 mt-auto" style="font-size:0.75rem;">Télécharger</a>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-3 hover-lift bg-white">
                         <span class="badge bg-dark bg-opacity-10 text-dark rounded-pill px-2 py-1 align-self-start mb-2" style="font-size:0.68rem;">Attestation</span>
                         <h6 class="fw-bold text-dark mb-2">Demande d'Attestation</h6>
@@ -1102,7 +1112,7 @@ tech, etudiant informatique{% endblock %}
                         <a href="{% url 'request_documents' %}" class="btn btn-sm btn-outline-dark rounded-pill w-100 mt-auto" style="font-size:0.75rem;">Télécharger</a>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-3 hover-lift bg-white">
                         <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 align-self-start mb-2" style="font-size:0.68rem;">Examen</span>
                         <h6 class="fw-bold text-dark mb-2">Annales & Archives PV</h6>
@@ -1120,17 +1130,17 @@ tech, etudiant informatique{% endblock %}
 ═══════════════════════════════════════════ -->
 <section class="py-5 bg-white" id="blog-section">
     <div class="container py-4">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3" data-aos="fade-up">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-end mb-4 gap-3" data-aos="fade-up">
             <div>
                 <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">
                     <i class="fas fa-newspaper me-1"></i>Articles, Tutos & Conseils
                 </span>
-                <h2 class="fw-bold text-dark mb-1">Le Blog COMSAS</h2>
+                <h2 class="fw-bold text-dark mb-1 fs-4 fs-sm-3">Le Blog COMSAS</h2>
                 <p class="text-muted mb-0 small">
                     Conseils pour réussir son parcours, tutoriels de programmation et astuces de carrière.
                 </p>
             </div>
-            <a href="{% url 'blog_list' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift flex-shrink-0">
+            <a href="{% url 'blog_list' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center flex-shrink-0">
                 Voir tous les articles <i class="fas fa-newspaper ms-2"></i>
             </a>
         </div>
@@ -1138,7 +1148,7 @@ tech, etudiant informatique{% endblock %}
         <div class="row g-4">
             {% if featured_blog %}
                 {% for article in featured_blog %}
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
                     <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-lift bg-light">
                         {% if article.image %}
                         <img src="{{ article.image.url }}" alt="{{ article.title }}" class="card-img-top object-fit-cover" style="height: 190px;">
@@ -1147,7 +1157,7 @@ tech, etudiant informatique{% endblock %}
                             <i class="fas fa-code fa-3x"></i>
                         </div>
                         {% endif %}
-                        <div class="card-body p-4 d-flex flex-column">
+                        <div class="card-body p-3 p-sm-4 d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-primary text-white rounded-pill px-2 py-1" style="font-size:0.68rem;">
                                     {{ article.get_category_display }}
@@ -1171,7 +1181,7 @@ tech, etudiant informatique{% endblock %}
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift bg-light">
                         <span class="badge bg-primary text-white rounded-pill px-2 py-1 align-self-start mb-2" style="font-size:0.68rem;">Conseil Académique</span>
                         <h5 class="fw-bold text-dark mb-2">Comment valider son semestre en Informatique à l'UY1</h5>
@@ -1179,7 +1189,7 @@ tech, etudiant informatique{% endblock %}
                         <a href="{% url 'blog_list' %}" class="btn btn-sm btn-outline-primary rounded-pill w-100 mt-auto">Lire l'article</a>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift bg-light">
                         <span class="badge bg-dark text-white rounded-pill px-2 py-1 align-self-start mb-2" style="font-size:0.68rem;">Tutoriel Dev</span>
                         <h5 class="fw-bold text-dark mb-2">Démarrer avec Git et GitHub en L1/L2</h5>
@@ -1187,7 +1197,7 @@ tech, etudiant informatique{% endblock %}
                         <a href="{% url 'blog_list' %}" class="btn btn-sm btn-outline-primary rounded-pill w-100 mt-auto">Lire l'article</a>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-lift bg-light">
                         <span class="badge bg-secondary text-white rounded-pill px-2 py-1 align-self-start mb-2" style="font-size:0.68rem;">Stage & Emploi</span>
                         <h5 class="fw-bold text-dark mb-2">Trouver son premier stage tech au Cameroun</h5>
@@ -1208,19 +1218,19 @@ tech, etudiant informatique{% endblock %}
         style="background-image: linear-gradient(0deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent); background-size: 50px 50px;">
     </div>
     <div class="container text-center position-relative z-1">
-        <h2 class="fw-bold mb-3 text-white">Prêt à rejoindre la communauté ?</h2>
-        <p class="text-white-50 mb-2 mx-auto" style="max-width: 600px;">
+        <h2 class="fw-bold mb-3 text-white fs-3 fs-sm-2">Prêt à rejoindre la communauté ?</h2>
+        <p class="text-white-50 mb-2 mx-auto" style="max-width: 600px; font-size: clamp(0.88rem, 2vw, 1rem);">
             Le COM.S.AS est ouvert à tout étudiant de la Faculté des Sciences de l'UY1 partageant une passion pour
             l'informatique, le numérique et l'innovation.
         </p>
-        <p class="text-white-50 mb-4 small">
+        <p class="text-white-50 mb-4 small" style="font-size: clamp(0.75rem, 1.8vw, 0.85rem);">
             <i class="fas fa-envelope text-primary me-1"></i> comsas@facsciences-uy1.cm &nbsp;·&nbsp;
             <i class="fas fa-phone text-primary ms-2 me-1"></i> +237 657 09 73 69 &nbsp;·&nbsp;
             <i class="fas fa-map-marker-alt text-primary ms-2 me-1"></i> Faculté des Sciences, UY1
         </p>
-        <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'member_registration' %}" class="btn btn-primary rounded-pill px-4">Devenir Membre</a>
-            <a href="{% url 'contact' %}" class="btn btn-outline-light rounded-pill px-4">Nous contacter</a>
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-2 gap-sm-3">
+            <a href="{% url 'member_registration' %}" class="btn btn-primary rounded-pill px-4 py-2 w-100 w-sm-auto fw-bold">Devenir Membre</a>
+            <a href="{% url 'contact' %}" class="btn btn-outline-light rounded-pill px-4 py-2 w-100 w-sm-auto">Nous contacter</a>
         </div>
     </div>
 </section>
