@@ -32,22 +32,22 @@ tech, etudiant informatique{% endblock %}
                     <span class="cursor">|</span>
                 </h1>
 
-                <!-- Boutons d'action clés (mobile first) -->
-                <div class="hero-actions-wrap d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 justify-content-center justify-content-lg-start my-4">
+                <!-- Boutons d'action clés (taille adaptée au contenu) -->
+                <div class="hero-actions-wrap d-flex flex-row flex-wrap gap-2 gap-sm-3 justify-content-center justify-content-lg-start my-4">
                     <a href="{% url 'member_registration' %}"
-                        class="btn btn-primary rounded-pill px-4 px-sm-5 shadow-sm hover-lift fw-bold w-100 w-sm-auto d-flex align-items-center justify-content-center gap-2"
-                        style="min-height: 48px;">
+                        class="btn btn-primary rounded-pill px-4 py-2 shadow-sm hover-lift fw-bold d-inline-flex align-items-center justify-content-center gap-2"
+                        style="min-height: 44px; width: auto;">
                         <i class="fas fa-user-plus"></i>
                         <span>Devenir Membre</span>
                     </a>
                     <a href="{% url 'donations' %}"
-                        class="btn rounded-pill px-4 px-sm-5 shadow-sm hover-lift fw-bold text-white w-100 w-sm-auto d-flex align-items-center justify-content-center gap-2"
-                        style="background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%); border: none; min-height: 48px;">
+                        class="btn rounded-pill px-4 py-2 shadow-sm hover-lift fw-bold text-white d-inline-flex align-items-center justify-content-center gap-2"
+                        style="background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%); border: none; min-height: 44px; width: auto;">
                         <i class="fas fa-heart"></i>
                         <span>Faire un Don</span>
                     </a>
-                    <a href="{% url 'projects' %}" class="btn btn-outline-dark rounded-pill px-4 hover-lift fw-semibold d-none d-md-inline-flex align-items-center gap-2"
-                        style="min-height: 48px;">
+                    <a href="{% url 'projects' %}" class="btn btn-outline-dark rounded-pill px-4 py-2 hover-lift fw-semibold d-none d-md-inline-flex align-items-center gap-2"
+                        style="min-height: 44px; width: auto;">
                         <i class="fas fa-code"></i>
                         <span>Nos Projets</span>
                     </a>
@@ -194,7 +194,7 @@ tech, etudiant informatique{% endblock %}
                 <h5 class="fw-bold text-dark mb-0 fs-6 fs-sm-5">
                     <i class="fas fa-layer-group text-primary me-2"></i>Modèles de Requêtes Fréquents
                 </h5>
-                <a href="{% url 'request_documents' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold text-nowrap w-100 w-sm-auto text-center">
+                <a href="{% url 'request_documents' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold text-nowrap d-inline-flex align-items-center">
                     Voir tous les modèles ({{ total_request_docs|default:'5' }}) <i class="fas fa-arrow-right ms-1"></i>
                 </a>
             </div>
@@ -253,7 +253,7 @@ tech, etudiant informatique{% endblock %}
             <p class="text-muted mb-4 mx-auto" style="max-width: 700px; font-size: clamp(0.9rem, 2.5vw, 1.05rem);">Le COM.S.AS accompagne les projets numériques
                 innovants portés par les étudiants de l'UY1. Ne laissez pas votre talent dormir, proposez-nous votre
                 vision !</p>
-            <a href="{% url 'project_submit' %}" class="btn btn-primary btn-lg rounded-pill px-4 px-sm-5 shadow-lg hover-lift w-100 w-sm-auto">
+            <a href="{% url 'project_submit' %}" class="btn btn-primary rounded-pill px-4 px-sm-5 py-2 shadow-lg hover-lift d-inline-flex align-items-center justify-content-center gap-2">
                 <i class="fas fa-paper-plane me-2"></i>Soumettre mon Projet
             </a>
         </div>
@@ -419,11 +419,11 @@ tech, etudiant informatique{% endblock %}
                     </div>
                 </div>
 
-                <div class="d-flex flex-column flex-sm-row gap-2">
-                    <a href="{% url 'about' %}" class="btn btn-outline-dark rounded-pill px-4 hover-lift w-100 w-sm-auto text-center">
+                <div class="d-flex flex-row flex-wrap gap-2">
+                    <a href="{% url 'about' %}" class="btn btn-outline-dark rounded-pill px-4 py-2 hover-lift text-center">
                         Notre histoire <i class="fas fa-arrow-right ms-2"></i>
                     </a>
-                    <a href="{% url 'club_commissions_list' %}" class="btn btn-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center">
+                    <a href="{% url 'club_commissions_list' %}" class="btn btn-primary rounded-pill px-4 py-2 hover-lift text-center">
                         Rejoindre une commission <i class="fas fa-users ms-2"></i>
                     </a>
                 </div>
@@ -469,11 +469,11 @@ tech, etudiant informatique{% endblock %}
                         Ensemble, nous transformons des étudiants passionnés en ingénieurs d'exception en codant, innovant
                         et entreprenant chaque jour au sein de la Faculté des Sciences de l'Université de Yaoundé I.
                     </p>
-                    <div class="d-flex flex-column flex-sm-row gap-2">
-                        <a href="{% url 'mandate' %}" class="btn btn-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center">
+                    <div class="d-flex flex-row flex-wrap gap-2">
+                        <a href="{% url 'mandate' %}" class="btn btn-primary rounded-pill px-4 py-2 hover-lift text-center">
                             Plan d'action & Bureau <i class="fas fa-arrow-right ms-2"></i>
                         </a>
-                        <a href="{% url 'president_list' %}" class="btn btn-outline-dark rounded-pill px-4 hover-lift w-100 w-sm-auto text-center">
+                        <a href="{% url 'president_list' %}" class="btn btn-outline-dark rounded-pill px-4 py-2 hover-lift text-center">
                             Galerie des Présidents <i class="fas fa-history ms-2"></i>
                         </a>
                     </div>
@@ -498,7 +498,7 @@ tech, etudiant informatique{% endblock %}
                     Vos interlocuteurs privilégiés pour chaque niveau au Département d'Informatique.
                 </p>
             </div>
-            <a href="{% url 'department_delegates' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center flex-shrink-0">
+            <a href="{% url 'department_delegates' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 hover-lift text-center flex-shrink-0">
                 Voir tous les délégués {% if total_delegates %}({{ total_delegates }}){% endif %} <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
@@ -620,13 +620,13 @@ tech, etudiant informatique{% endblock %}
                     <i class="fas fa-check-circle text-primary me-1"></i>Pitch contest &nbsp;·&nbsp;
                     <i class="fas fa-check-circle text-primary me-1"></i>Gala
                 </p>
-                <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+                <div class="d-flex flex-row flex-wrap gap-2 gap-sm-3">
                     <a href="{% url 'juin' %}"
-                        class="btn btn-primary rounded-pill px-4 py-2 shadow-sm hover-lift w-100 w-sm-auto text-center fw-bold">
+                        class="btn btn-primary rounded-pill px-4 py-2 shadow-sm hover-lift text-center fw-bold">
                         Découvrir le programme
                     </a>
                     <a href="{% url 'juin' %}#soutenir"
-                        class="btn btn-outline-light rounded-pill px-4 py-2 hover-lift w-100 w-sm-auto text-center fw-semibold">
+                        class="btn btn-outline-light rounded-pill px-4 py-2 hover-lift text-center fw-semibold">
                         Soutenir l'édition
                     </a>
                 </div>
@@ -855,7 +855,7 @@ tech, etudiant informatique{% endblock %}
                 <h2 class="fw-bold text-dark mb-1 fs-4 fs-sm-3">Activités & Prochains Événements</h2>
                 <p class="text-muted mb-0 small">Participez à nos ateliers de code, conférences d'experts et hackathons.</p>
             </div>
-            <a href="{% url 'events' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center flex-shrink-0">
+            <a href="{% url 'events' %}" class="btn btn-outline-primary rounded-pill px-3 py-2 hover-lift text-center flex-shrink-0">
                 Voir tous les événements <i class="fas fa-calendar-alt ms-2"></i>
             </a>
         </div>
@@ -976,7 +976,7 @@ tech, etudiant informatique{% endblock %}
                     Découvrez l'ambiance des hackathons, cérémonies de remise de prix, ateliers et journées J.U.IN.
                 </p>
             </div>
-            <a href="{% url 'gallery' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center flex-shrink-0">
+            <a href="{% url 'gallery' %}" class="btn btn-outline-primary rounded-pill px-3 py-2 hover-lift text-center flex-shrink-0">
                 Explorer la galerie <i class="fas fa-images ms-2"></i>
             </a>
         </div>
@@ -1051,11 +1051,11 @@ tech, etudiant informatique{% endblock %}
                     Téléchargez vos modèles de requêtes officielles, procès-verbaux et annales d'examens.
                 </p>
             </div>
-            <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-sm-auto">
-                <a href="{% url 'request_documents' %}" class="btn btn-outline-dark rounded-pill px-3 hover-lift small text-center">
+            <div class="d-flex flex-row flex-wrap gap-2">
+                <a href="{% url 'request_documents' %}" class="btn btn-outline-dark rounded-pill px-3 py-2 hover-lift small text-center">
                     <i class="fas fa-file-signature me-1"></i>Modèles de requêtes
                 </a>
-                <a href="{% url 'archives' %}" class="btn btn-primary rounded-pill px-3 hover-lift small text-center">
+                <a href="{% url 'archives' %}" class="btn btn-primary rounded-pill px-3 py-2 hover-lift small text-center">
                     <i class="fas fa-archive me-1"></i>Toutes les archives
                 </a>
             </div>
@@ -1140,7 +1140,7 @@ tech, etudiant informatique{% endblock %}
                     Conseils pour réussir son parcours, tutoriels de programmation et astuces de carrière.
                 </p>
             </div>
-            <a href="{% url 'blog_list' %}" class="btn btn-outline-primary rounded-pill px-4 hover-lift w-100 w-sm-auto text-center flex-shrink-0">
+            <a href="{% url 'blog_list' %}" class="btn btn-outline-primary rounded-pill px-3 py-2 hover-lift text-center flex-shrink-0">
                 Voir tous les articles <i class="fas fa-newspaper ms-2"></i>
             </a>
         </div>
@@ -1228,9 +1228,9 @@ tech, etudiant informatique{% endblock %}
             <i class="fas fa-phone text-primary ms-2 me-1"></i> +237 657 09 73 69 &nbsp;·&nbsp;
             <i class="fas fa-map-marker-alt text-primary ms-2 me-1"></i> Faculté des Sciences, UY1
         </p>
-        <div class="d-flex flex-column flex-sm-row justify-content-center gap-2 gap-sm-3">
-            <a href="{% url 'member_registration' %}" class="btn btn-primary rounded-pill px-4 py-2 w-100 w-sm-auto fw-bold">Devenir Membre</a>
-            <a href="{% url 'contact' %}" class="btn btn-outline-light rounded-pill px-4 py-2 w-100 w-sm-auto">Nous contacter</a>
+        <div class="d-flex flex-row flex-wrap justify-content-center gap-2 gap-sm-3">
+            <a href="{% url 'member_registration' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-bold hover-lift">Devenir Membre</a>
+            <a href="{% url 'contact' %}" class="btn btn-outline-light rounded-pill px-4 py-2 hover-lift">Nous contacter</a>
         </div>
     </div>
 </section>
