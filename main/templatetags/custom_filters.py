@@ -352,3 +352,22 @@ def is_today(date_value):
         return date_value == today
     except (ValueError, TypeError, AttributeError):
         return False
+
+@register.filter
+def is_youtube_url(url):
+    """Vérifie si une URL est une vidéo YouTube"""
+    if not url or not isinstance(url, str):
+        return False
+    return 'youtube.com' in url or 'youtu.be' in url
+
+@register.filter
+def youtube_embed_url(url):
+    """Transforme un lien YouTube en lien embed propre pour iframe"""
+    if not url or not isinstance(url, str):
+        return url
+    import re
+    match = re.search(r'(?:v=|\/embed\/|\/watch\?v=|\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})', url)
+    if match:
+        video_id = match.group(1)
+        return f"https://www.youtube.com/embed/{video_id}"
+    return url

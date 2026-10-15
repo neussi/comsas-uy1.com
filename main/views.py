@@ -401,7 +401,7 @@ def event_detail(request, pk):
             messages.error(request, "Les inscriptions pour cet événement sont closes car la date limite d'inscription est dépassée.")
             return redirect('event_detail', pk=pk)
 
-        form = EventRegistrationForm(request.POST, request.FILES)
+        form = EventRegistrationForm(request.POST, request.FILES, event=event)
         if form.is_valid():
             registration = form.save(commit=False)
             registration.event = event
@@ -416,7 +416,19 @@ def event_detail(request, pk):
                 messages.warning(request, _('Vous êtes déjà inscrit à cet événement.'))
             else:
                 registration.is_confirmed = True
-                registration.save()
+                
+                # Attribuer et consommer le code d'inscription à usage unique
+                if hasattr(form, 'cleaned_code_obj') and form.cleaned_code_obj:
+                    code_obj = form.cleaned_code_obj
+                    registration.registration_code_entered = code_obj.code
+                    registration.save()
+                    code_obj.is_used = True
+                    code_obj.used_by = registration
+                    code_obj.used_at = timezone.now()
+                    code_obj.save()
+                else:
+                    registration.save()
+
                 messages.success(request, _('Votre inscription a été enregistrée avec succès!'))
                 
                 # Générer le ticket
@@ -456,7 +468,7 @@ def event_detail(request, pk):
                 
                 return redirect('event_registration_success', uuid=registration.uuid)
     else:
-        form = EventRegistrationForm()
+        form = EventRegistrationForm(event=event)
     
     # Participants
     participants = event.eventregistration_set.filter(is_confirmed=True).order_by('nom_prenom')

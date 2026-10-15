@@ -5,6 +5,16 @@
 
 {% block title %}{{ event.title_fr }} - COMS.A.S{% endblock %}
 
+{% block meta_description %}{{ event.description_fr|striptags|truncatewords:30 }}{% endblock %}
+
+{% block og_title %}{{ event.title_fr }} — Club Informatique COMSAS{% endblock %}
+{% block og_description %}{{ event.description_fr|striptags|truncatewords:35 }}{% endblock %}
+{% block og_image %}{% if event.image %}{{ request.scheme }}://{{ request.get_host }}{{ event.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/comsas.png' %}{% endif %}{% endblock %}
+
+{% block twitter_title %}{{ event.title_fr }} — COMSAS{% endblock %}
+{% block twitter_description %}{{ event.description_fr|striptags|truncatewords:35 }}{% endblock %}
+{% block twitter_image %}{% if event.image %}{{ request.scheme }}://{{ request.get_host }}{{ event.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/comsas.png' %}{% endif %}{% endblock %}
+
 {% block extra_css %}
 <style>
     .event-hero {
@@ -73,7 +83,7 @@
         
         <div class="row align-items-center g-4">
             <div class="col-lg-7">
-                <div class="mb-3">
+                <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
                     {% if event.is_registration_open %}
                     <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
                         <i class="fas fa-check-circle me-1"></i>Inscriptions Ouvertes
@@ -81,6 +91,18 @@
                     {% else %}
                     <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
                         <i class="fas fa-lock me-1"></i>Inscriptions Closes
+                    </span>
+                    {% endif %}
+
+                    {% if event.requires_registration_code %}
+                    <span class="badge bg-warning bg-opacity-10 text-dark border border-warning px-3 py-2 rounded-pill fw-semibold">
+                        <i class="fas fa-key me-1 text-warning"></i>Sur code présentiel
+                    </span>
+                    {% endif %}
+
+                    {% if event.duration_days > 1 %}
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
+                        <i class="fas fa-calendar-week me-1"></i>{{ event.duration_days }} jours
                     </span>
                     {% endif %}
                 </div>
@@ -104,6 +126,17 @@
                             <strong class="text-dark">{{ event.date_event|date:"d F Y" }}</strong>
                         </div>
                     </div>
+                    {% if event.duration_days > 1 %}
+                    <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 border border-light shadow-sm">
+                        <div class="icon-box-rose me-2">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Durée</small>
+                            <strong class="text-dark">{{ event.duration_days }} jours consécutifs</strong>
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 border border-light shadow-sm">
                         <div class="icon-box-rose me-2">
                             <i class="fas fa-clock"></i>
@@ -158,16 +191,88 @@
                     </div>
                 </div>
 
+                <!-- Section Photos & Vidéos explicatives de l'événement -->
+                {% if gallery_media %}
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid #F3E8EE !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h4 class="h5 fw-bold mb-0 text-dark">
+                            <i class="fas fa-photo-video me-2 text-rose-dark"></i>Photos & Vidéos Explicatives
+                        </h4>
+                        <span class="badge badge-rose px-3 py-1 rounded-pill">{{ gallery_media|length }} média(s)</span>
+                    </div>
+                    <p class="small text-muted mb-3">Consultez ces images et vidéos officielles pour mieux comprendre le déroulement et les objectifs de cette activité.</p>
+
+                    <div class="row g-4">
+                        {% for media in gallery_media %}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm rounded-3 overflow-hidden h-100 bg-light">
+                                {% if media.media_type == 'image' and media.image %}
+                                <div style="height: 220px; overflow: hidden; background: #000;">
+                                    <a href="{{ media.image.url }}" target="_blank" title="{{ media.title_fr }}">
+                                        <img src="{{ media.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.3s;" alt="{{ media.title_fr }}">
+                                    </a>
+                                </div>
+                                {% elif media.media_type == 'video' %}
+                                <div style="min-height: 220px; background: #000; display: flex; align-items: center; justify-content: center;">
+                                    {% if media.video_url %}
+                                        {% if media.video_url|is_youtube_url %}
+                                        <div class="ratio ratio-16x9 w-100">
+                                            <iframe src="{{ media.video_url|youtube_embed_url }}" title="{{ media.title_fr }}" allowfullscreen></iframe>
+                                        </div>
+                                        {% else %}
+                                        <div class="p-4 text-center">
+                                            <i class="fas fa-play-circle fa-3x text-white mb-2"></i>
+                                            <a href="{{ media.video_url }}" target="_blank" class="btn btn-sm btn-rose rounded-pill px-3 d-block mt-2">
+                                                Voir la vidéo externe
+                                            </a>
+                                        </div>
+                                        {% endif %}
+                                    {% elif media.video_file %}
+                                    <div class="ratio ratio-16x9 w-100">
+                                        <video src="{{ media.video_file.url }}" controls class="w-100 h-100" style="object-fit: cover;"></video>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                <div class="p-3 bg-white">
+                                    <h6 class="fw-bold text-dark mb-1">{{ media.title_fr }}</h6>
+                                    {% if media.description_fr %}
+                                    <p class="small text-muted mb-0">{{ media.description_fr }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- Registration Block -->
                 {% if can_register %}
                 <div id="registration-form" class="card border-0 shadow-sm rounded-4 p-4" style="border-top: 4px solid #E91E63 !important;">
                     <h3 class="h4 fw-bold mb-2 text-dark">Inscription à l'activité</h3>
                     <p class="text-muted small mb-3">Complétez vos coordonnées pour confirmer votre participation.</p>
                     
-                    <div class="p-3 rounded-3 mb-4" style="background: #FFF0F5; border: 1px solid #FCE4EC;">
+                    <div class="p-3 rounded-3 mb-3" style="background: #FFF0F5; border: 1px solid #FCE4EC;">
                         <i class="fas fa-clock text-rose-dark me-2"></i>
                         <span class="small text-dark">Date limite d'inscription : <strong>{{ event.registration_deadline|date:"d F Y à H:i" }}</strong></span>
                     </div>
+
+                    {% if event.requires_registration_code %}
+                    <div class="p-3 rounded-3 mb-4" style="background: #FFFBEB; border: 1px solid #FCD34D;">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 p-2 rounded-circle bg-warning bg-opacity-25 text-warning d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="fas fa-key fa-lg"></i>
+                            </div>
+                            <div>
+                                <strong class="text-dark d-block">Code d'accès présentiel requis</strong>
+                                <span class="small text-muted">
+                                    Cet événement nécessite un code unique à 6 caractères qui vous a été remis lors des inscriptions physiques. Chaque code est à <strong>usage unique</strong>.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
 
                     <form method="post" action="{% url 'event_detail' event.id %}" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -197,56 +302,6 @@
                     </p>
                 </div>
                 {% endif %}
-
-                <!-- Section Galerie Médias (Photos et Vidéos) de l'événement -->
-                <div class="card border-0 shadow-sm rounded-4 p-4 mt-4" style="border: 1px solid #F3E8EE !important;">
-                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                        <h4 class="h5 fw-bold mb-0 text-dark">
-                            <i class="fas fa-camera-retro me-2 text-rose-dark"></i>Galerie Photos & Vidéos de l'Activité
-                        </h4>
-                        {% if gallery_media %}
-                        <span class="badge badge-rose px-3 py-1 rounded-pill">{{ gallery_media|length }} média(s)</span>
-                        {% endif %}
-                    </div>
-
-                    {% if gallery_media %}
-                    <div class="row g-3">
-                        {% for media in gallery_media %}
-                        <div class="col-md-6 col-lg-4">
-                            {% if media.media_type == 'image' and media.image %}
-                            <div class="rounded-3 overflow-hidden shadow-sm position-relative" style="height: 180px; background: #000;">
-                                <a href="{{ media.image.url }}" target="_blank" title="{{ media.title_fr }}">
-                                    <img src="{{ media.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.25s;" alt="{{ media.title_fr }}">
-                                </a>
-                            </div>
-                            <div class="small text-dark fw-semibold mt-1 text-truncate">{{ media.title_fr }}</div>
-                            {% elif media.media_type == 'video' %}
-                            <div class="rounded-3 overflow-hidden shadow-sm position-relative" style="height: 180px; background: #1A0A10;">
-                                {% if media.video_file %}
-                                <video src="{{ media.video_file.url }}" controls class="w-100 h-100" style="object-fit: cover;"></video>
-                                {% elif media.video_url %}
-                                <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center p-3">
-                                    <i class="fas fa-play-circle fa-3x text-white mb-2"></i>
-                                    <a href="{{ media.video_url }}" target="_blank" class="btn btn-sm btn-rose rounded-pill px-3">
-                                        Voir la vidéo
-                                    </a>
-                                </div>
-                                {% endif %}
-                            </div>
-                            <div class="small text-dark fw-semibold mt-1 text-truncate">{{ media.title_fr }}</div>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <div class="text-center py-4 bg-light rounded-3">
-                        <i class="fas fa-images fa-2x text-muted mb-2 opacity-50"></i>
-                        <p class="small text-muted mb-0">
-                            Les photos et vidéos officielles de cette activité sont ajoutées au fur et à mesure par les organisateurs.
-                        </p>
-                    </div>
-                    {% endif %}
-                </div>
             </div>
 
             <!-- Right Column: Sidebar Info -->

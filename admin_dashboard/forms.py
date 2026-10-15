@@ -114,8 +114,8 @@ class EventForm(forms.ModelForm):
         model = Event
         fields = [
             'title_fr', 'title_en', 'description_fr', 'description_en',
-            'image', 'date_event', 'location', 'max_participants',
-            'registration_deadline', 'is_featured', 'is_active',
+            'image', 'date_event', 'duration_days', 'location', 'max_participants',
+            'registration_deadline', 'requires_registration_code', 'is_featured', 'is_active',
             'certificate_enabled', 'certificate_title', 'certificate_main_text', 'certificate_description',
             'certificate_president_name', 'certificate_president_title',
             'president_signature',
@@ -124,6 +124,7 @@ class EventForm(forms.ModelForm):
         widgets = {
             'date_event': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'registration_deadline': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'duration_days': forms.NumberInput(attrs={'min': 1, 'class': 'form-control'}),
             'certificate_main_text': forms.Textarea(attrs={'rows': 4}),
             'certificate_description': forms.Textarea(attrs={'rows': 3}),
         }
@@ -163,6 +164,30 @@ class GalleryForm(forms.ModelForm):
             'title_fr', 'title_en', 'description_fr', 'description_en',
             'media_type', 'image', 'video_url', 'video_file', 'is_featured'
         ]
+
+class EventMediaForm(forms.ModelForm):
+    """Formulaire d'ajout de médias (images et vidéos explicatives) pour un événement"""
+    class Meta:
+        model = Gallery
+        fields = ['title_fr', 'media_type', 'image', 'video_url', 'video_file', 'description_fr']
+        widgets = {
+            'description_fr': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Explication ou légende du média...'}),
+            'video_url': forms.URLInput(attrs={'placeholder': 'Ex: https://www.youtube.com/watch?v=...'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if name != 'media_type':
+                field.widget.attrs.setdefault('class', 'form-control')
+            else:
+                field.widget.attrs.setdefault('class', 'form-select')
+        self.fields['title_fr'].label = "Titre / Légende du média"
+        self.fields['title_fr'].required = True
+        self.fields['description_fr'].required = False
+        self.fields['image'].required = False
+        self.fields['video_url'].required = False
+        self.fields['video_file'].required = False
 
 class SiteSettingsForm(forms.ModelForm):
     """Formulaire pour les paramètres du site"""

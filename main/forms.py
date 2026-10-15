@@ -3,10 +3,11 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Row, Column, HTML
 from .models import (
-    Member, EventRegistration, Contact, 
+    Member, EventRegistration, EventRegistrationCode, Contact, 
     ProjectSubmission, ClubCommission, ClubCommissionApplication,
     AcademicResource, JobOffer, Candidate, JUINTeam
 )
+from django.utils import timezone
 
 
 
@@ -112,7 +113,20 @@ class MemberRegistrationForm(forms.ModelForm):
 
 class EventRegistrationForm(forms.ModelForm):
     """Formulaire d'inscription aux événements"""
-    
+    registration_code = forms.CharField(
+        max_length=10,
+        required=False,
+        label=_("Code d'inscription (remis en présentiel)"),
+        help_text=_("Code unique à 6 caractères qui vous a été remis physiquement."),
+        widget=forms.TextInput(attrs={
+            'class': 'form-control font-monospace text-uppercase fw-bold',
+            'placeholder': 'Ex: A9X2B4',
+            'maxlength': '10',
+            'autocomplete': 'off',
+            'style': 'letter-spacing: 3px; text-transform: uppercase;'
+        })
+    )
+
     class Meta:
         model = EventRegistration
         fields = ['nom_prenom', 'email', 'telephone', 'promotion', 'message', 'photo']
@@ -121,40 +135,72 @@ class EventRegistrationForm(forms.ModelForm):
             'photo': forms.FileInput(attrs={'accept': 'image/*'}),
         }
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, event=None, **kwargs):
+        self.event = event
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_enctype = 'multipart/form-data'
+        
+        requires_code = bool(self.event and getattr(self.event, 'requires_registration_code', False))
+        self.fields['registration_code'].required = requires_code
+
+        # Éléments du formulaire
+        fieldset_elements = [
+            Row(
+                Column('nom_prenom', css_class='form-group col-md-6 mb-3'),
+                Column('promotion', css_class='form-group col-md-6 mb-3'),
+            ),
+            Row(
+                Column('email', css_class='form-group col-md-6 mb-3'),
+                Column('telephone', css_class='form-group col-md-6 mb-3'),
+            ),
+        ]
+
+        if requires_code:
+            fieldset_elements.append(
+                Row(
+                    Column('registration_code', css_class='form-group col-md-12 mb-3'),
+                )
+            )
+        else:
+            self.fields['registration_code'].widget = forms.HiddenInput()
+
+        fieldset_elements.extend(['photo', 'message'])
+
         self.helper.layout = Layout(
             Fieldset(
                 _('Inscription à l\'événement'),
-                Row(
-                    Column('nom_prenom', css_class='form-group col-md-6 mb-3'),
-                    Column('promotion', css_class='form-group col-md-6 mb-3'),
-                ),
-                Row(
-                    Column('email', css_class='form-group col-md-6 mb-3'),
-                    Column('telephone', css_class='form-group col-md-6 mb-3'),
-                ),
-                'photo',  # Champ photo ajouté
-                'message',
+                *fieldset_elements
             ),
             Submit('submit', _('S\'inscrire à l\'événement'), css_class='btn btn-success btn-lg')
         )
         
         # Ajouter des classes CSS
         for field_name, field in self.fields.items():
-            if field_name != 'photo':
+            if field_name not in ['photo', 'registration_code']:
                 field.widget.attrs.update({
                     'class': 'form-control',
                     'placeholder': field.label
                 })
-            else:
+            elif field_name == 'photo':
                 field.widget.attrs.update({
                     'class': 'form-control'
                 })
                 
         self.fields['photo'].required = True
+
+    def clean_registration_code(self):
+        code = self.cleaned_data.get('registration_code', '').strip().upper()
+        if self.event and getattr(self.event, 'requires_registration_code', False):
+            if not code:
+                raise forms.ValidationError(_("Le code d'inscription remis en présentiel est obligatoire pour cet événement."))
+            code_obj = EventRegistrationCode.objects.filter(event=self.event, code__iexact=code).first()
+            if not code_obj:
+                raise forms.ValidationError(_("Ce code d'inscription n'est pas valide pour cet événement. Veuillez vérifier la saisie."))
+            if code_obj.is_used:
+                raise forms.ValidationError(_("Ce code d'inscription a déjà été utilisé. Chaque code est à usage unique et n'est plus valable."))
+            self.cleaned_code_obj = code_obj
+        return code
 
     def clean_photo(self):
         """Validation de la photo"""

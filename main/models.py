@@ -166,6 +166,18 @@ class Event(models.Model):
         help_text="Nombre effectif de participants ayant assisté à l'activité"
     )
 
+    # Registration Code & Duration
+    requires_registration_code = models.BooleanField(
+        default=False,
+        verbose_name="Code d'inscription requis (Présentiel)",
+        help_text="Si activé, l'inscription requiert obligatoirement un code unique à 6 caractères distribué en présentiel"
+    )
+    duration_days = models.PositiveIntegerField(
+        default=1,
+        verbose_name="Durée de l'événement (en jours)",
+        help_text="Nombre de jours de l'événement pour la feuille d'appel et de présence (ex: 1, 2, 3...)"
+    )
+
     class Meta:
         verbose_name = "Événement"
         verbose_name_plural = "Événements"
@@ -183,6 +195,18 @@ class Event(models.Model):
         if self.custom_registered_count is not None:
             return self.custom_registered_count
         return self.eventregistration_set.filter(is_confirmed=True).count()
+
+    @property
+    def total_codes_count(self):
+        return self.registration_codes.count()
+
+    @property
+    def used_codes_count(self):
+        return self.registration_codes.filter(is_used=True).count()
+
+    @property
+    def available_codes_count(self):
+        return self.registration_codes.filter(is_used=False).count()
 
 class EventRegistration(models.Model):
     """Modèle pour les inscriptions aux événements"""
@@ -207,6 +231,14 @@ class EventRegistration(models.Model):
     # Badge
     badge_pdf = models.FileField(upload_to='badges/', blank=True, null=True, verbose_name="Badge PDF")
     
+    # Code d'inscription présentiel utilisé
+    registration_code_entered = models.CharField(max_length=20, blank=True, null=True, verbose_name="Code d'inscription utilisé")
+    
+    # Présence & Participation finale validée
+    has_participated = models.BooleanField(default=False, verbose_name="A effectivement participé")
+    participation_validated_at = models.DateTimeField(null=True, blank=True, verbose_name="Date de validation de présence")
+    congratulations_email_sent = models.BooleanField(default=False, verbose_name="Email de félicitations envoyé")
+
     class Meta:
         verbose_name = "Inscription à l'événement"
         verbose_name_plural = "Inscriptions aux événements"
@@ -215,6 +247,53 @@ class EventRegistration(models.Model):
     
     def __str__(self):
         return f"{self.nom_prenom} - {self.event.title_fr}"
+
+    def is_present_on_day(self, day_number):
+        att = self.attendances.filter(day_number=day_number).first()
+        return att.is_present if att else False
+
+class EventRegistrationCode(models.Model):
+    """Codes d'inscription à usage unique pour les événements avec code présentiel"""
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='registration_codes', verbose_name="Événement")
+    code = models.CharField(max_length=10, db_index=True, verbose_name="Code d'inscription (6 caractères)")
+    is_used = models.BooleanField(default=False, db_index=True, verbose_name="Est utilisé")
+    used_by = models.OneToOneField(
+        EventRegistration,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='used_registration_code',
+        verbose_name="Utilisé par"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
+    used_at = models.DateTimeField(null=True, blank=True, verbose_name="Utilisé le")
+
+    class Meta:
+        verbose_name = "Code d'inscription"
+        verbose_name_plural = "Codes d'inscription"
+        unique_together = ['event', 'code']
+        ordering = ['is_used', '-created_at']
+
+    def __str__(self):
+        status = "Utilisé" if self.is_used else "Disponible"
+        return f"{self.code} ({status}) - {self.event.title_fr}"
+
+class EventAttendance(models.Model):
+    """Feuille d'émargement et d'appel par jour pour chaque participant"""
+    registration = models.ForeignKey(EventRegistration, on_delete=models.CASCADE, related_name='attendances', verbose_name="Inscription")
+    day_number = models.PositiveIntegerField(default=1, verbose_name="Jour de l'événement")
+    is_present = models.BooleanField(default=False, verbose_name="Présent")
+    marked_at = models.DateTimeField(auto_now=True, verbose_name="Marqué le")
+
+    class Meta:
+        verbose_name = "Émargement / Présence"
+        verbose_name_plural = "Émargements / Présences"
+        unique_together = ['registration', 'day_number']
+        ordering = ['day_number', 'registration__nom_prenom']
+
+    def __str__(self):
+        status = "Présent" if self.is_present else "Absent"
+        return f"{self.registration.nom_prenom} - Jour {self.day_number}: {status}"
 
 class News(models.Model):
     """Modèle pour les actualités"""

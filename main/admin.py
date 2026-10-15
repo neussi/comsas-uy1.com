@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (
-    Member, Project, Event, EventRegistration, 
+    Member, Project, Event, EventRegistration, EventRegistrationCode, EventAttendance,
     Professor, Classroom, Delegate, News, Gallery, GalleryAlbum, 
     Contact, SiteSettings, SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote, Archive, ArchiveComment,
@@ -516,9 +516,9 @@ class GalleryInline(admin.TabularInline):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title_fr', 'date_event', 'custom_registered_count', 'attendees_count', 'is_active', 'is_featured', 'certificates_sent')
-    list_filter = ('is_active', 'is_featured', 'certificates_sent')
-    list_editable = ('custom_registered_count', 'attendees_count', 'is_active', 'is_featured')
+    list_display = ('title_fr', 'date_event', 'duration_days', 'requires_registration_code', 'custom_registered_count', 'attendees_count', 'is_active', 'is_featured', 'certificates_sent')
+    list_filter = ('requires_registration_code', 'is_active', 'is_featured', 'certificates_sent')
+    list_editable = ('duration_days', 'requires_registration_code', 'custom_registered_count', 'attendees_count', 'is_active', 'is_featured')
     search_fields = ('title_fr', 'location')
     inlines = [GalleryInline]
     actions = ['send_event_certificates']
@@ -578,12 +578,13 @@ class EventAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Informations Générales', {
             'fields': ('title_fr', 'title_en', 'description_fr', 'description_en', 'image', 'date_event', 
-                       'location', 'max_participants', 'registration_deadline', 'is_featured', 'is_active')
+                       'duration_days', 'location', 'max_participants', 'registration_deadline', 
+                       'requires_registration_code', 'is_featured', 'is_active')
         }),
         ('Configuration des Attestations', {
             'fields': ('certificate_enabled', 'certificate_title', 'certificate_main_text', 'certificate_description', 
                        'certificate_president_name', 'certificate_president_title', 
-                       'certificate_dept_head_name', 'certificate_dept_head_title', 'president_signature', 'certificates_sent'),
+                       'president_signature', 'certificates_sent'),
             'classes': ('collapse',)
         }),
         ('Partenaires', {
@@ -598,10 +599,23 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(EventRegistration)
 class EventRegistrationAdmin(admin.ModelAdmin):
-    list_display = ('nom_prenom', 'event', 'email', 'telephone', 'is_confirmed', 'registration_date')
-    list_filter = ('is_confirmed', 'event')
-    search_fields = ('nom_prenom', 'email', 'telephone')
-    list_editable = ('is_confirmed',)
+    list_display = ('nom_prenom', 'event', 'email', 'telephone', 'registration_code_entered', 'has_participated', 'congratulations_email_sent', 'is_confirmed', 'registration_date')
+    list_filter = ('is_confirmed', 'has_participated', 'congratulations_email_sent', 'event')
+    search_fields = ('nom_prenom', 'email', 'telephone', 'registration_code_entered')
+    list_editable = ('is_confirmed', 'has_participated')
+
+@admin.register(EventRegistrationCode)
+class EventRegistrationCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'event', 'is_used', 'used_by', 'created_at', 'used_at')
+    list_filter = ('is_used', 'event')
+    search_fields = ('code', 'used_by__nom_prenom', 'used_by__email')
+
+@admin.register(EventAttendance)
+class EventAttendanceAdmin(admin.ModelAdmin):
+    list_display = ('registration', 'day_number', 'is_present', 'marked_at')
+    list_filter = ('day_number', 'is_present', 'registration__event')
+    search_fields = ('registration__nom_prenom', 'registration__email')
+    list_editable = ('is_present',)
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):

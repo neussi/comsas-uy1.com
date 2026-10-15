@@ -1,0 +1,279 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Codes d'inscription — {{ event.title_fr }}{% endblock %}
+{% block page_icon %}key{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{% url 'admin_events_list' %}" class="text-decoration-none">Événements</a></li>
+                <li class="breadcrumb-item active">Codes d'inscription</li>
+            </ol>
+        </nav>
+        <h4 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-key text-primary me-2"></i>Codes d'inscription présentiel
+        </h4>
+        <p class="text-muted small mb-0">
+            Événement : <strong>{{ event.title_fr }}</strong>
+        </p>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'admin_events_list' %}" class="btn btn-outline-secondary me-2 shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
+        <a href="{% url 'admin_event_codes_download_txt' event.pk %}?filter=available" class="btn btn-success me-2 shadow-sm">
+            <i class="fas fa-file-alt me-1"></i>Télécharger TXT (Disponibles)
+        </a>
+        <a href="{% url 'admin_event_codes_download_csv' event.pk %}" class="btn btn-outline-primary shadow-sm">
+            <i class="fas fa-file-csv me-1"></i>Exporter CSV
+        </a>
+    </div>
+</div>
+
+<!-- Mode d'emploi & alerte de configuration -->
+{% if not event.requires_registration_code %}
+<div class="alert alert-warning border-0 rounded-4 shadow-sm mb-4 d-flex align-items-center justify-content-between p-3">
+    <div class="d-flex align-items-center">
+        <i class="fas fa-exclamation-triangle fa-2x me-3 text-warning"></i>
+        <div>
+            <h6 class="fw-bold mb-1">Attention : Le code d'inscription n'est pas encore activé sur cet événement</h6>
+            <p class="small mb-0">Pour obliger les étudiants à saisir un code lors de leur inscription, cochez l'option <em>"Code d'inscription requis (Présentiel)"</em> dans les paramètres de l'événement.</p>
+        </div>
+    </div>
+    <a href="{% url 'admin_event_edit' event.pk %}" class="btn btn-sm btn-dark rounded-pill px-3">
+        Activer maintenant
+    </a>
+</div>
+{% endif %}
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-4">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Total Codes</h6>
+                <h3 class="mb-0 fw-bold text-dark">{{ total_codes }}</h3>
+            </div>
+            <div class="bg-light text-primary rounded-circle p-3">
+                <i class="fas fa-barcode fa-lg"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-4">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Codes Disponibles</h6>
+                <h3 class="mb-0 fw-bold text-success">{{ available_codes }}</h3>
+            </div>
+            <div class="bg-light text-success rounded-circle p-3">
+                <i class="fas fa-check-circle fa-lg"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-4">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Codes Utilisés</h6>
+                <h3 class="mb-0 fw-bold text-secondary">{{ used_codes }}</h3>
+            </div>
+            <div class="bg-light text-secondary rounded-circle p-3">
+                <i class="fas fa-user-check fa-lg"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Colonne Génération -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="fw-bold mb-1 text-dark">
+                    <i class="fas fa-magic text-primary me-2"></i>Générer des codes
+                </h5>
+                <p class="text-muted small">Créez un nouveau lot de codes à 6 caractères à distribuer en présentiel.</p>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="generate">
+                    <div class="mb-3">
+                        <label for="quantityInput" class="form-label small fw-bold text-muted text-uppercase">Nombre de codes à générer</label>
+                        <select name="quantity" id="quantityInput" class="form-select">
+                            <option value="10">10 codes</option>
+                            <option value="20" selected>20 codes</option>
+                            <option value="50">50 codes</option>
+                            <option value="100">100 codes</option>
+                            <option value="200">200 codes</option>
+                            <option value="500">500 codes</option>
+                        </select>
+                        <small class="text-muted">Chaque code est unique, aléatoire (lettres + chiffres) et à usage unique.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-semibold">
+                        <i class="fas fa-plus-circle me-1"></i>Générer les codes
+                    </button>
+                </form>
+
+                <hr class="my-4">
+
+                <h6 class="fw-bold text-dark small text-uppercase mb-2">Options de téléchargement</h6>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'admin_event_codes_download_txt' event.pk %}?filter=available" class="btn btn-outline-success btn-sm rounded-pill text-start py-2 px-3">
+                        <i class="fas fa-file-download me-2"></i>Télécharger les codes <strong>disponibles</strong> (.txt)
+                    </a>
+                    <a href="{% url 'admin_event_codes_download_txt' event.pk %}?filter=all" class="btn btn-outline-secondary btn-sm rounded-pill text-start py-2 px-3">
+                        <i class="fas fa-file-alt me-2"></i>Télécharger la liste complète (.txt)
+                    </a>
+                </div>
+
+                {% if available_codes > 0 %}
+                <hr class="my-4">
+                <form method="post" onsubmit="return confirm('Attention : cette action supprimera tous les codes qui n\'ont pas encore été utilisés. Continuer ?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_unused">
+                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 rounded-pill">
+                        <i class="fas fa-trash-alt me-1"></i>Supprimer les codes inutilisés
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Colonne Liste des codes -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-3">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">Liste des Codes Générés</h5>
+                        <small class="text-muted">{{ total_codes }} code(s) enregistré(s)</small>
+                    </div>
+
+                    <!-- Filtres rapides -->
+                    <div class="btn-group btn-group-sm">
+                        <a href="?status=" class="btn btn-outline-secondary {% if not status_filter %}active{% endif %}">Tous</a>
+                        <a href="?status=available" class="btn btn-outline-secondary {% if status_filter == 'available' %}active{% endif %}">Disponibles</a>
+                        <a href="?status=used" class="btn btn-outline-secondary {% if status_filter == 'used' %}active{% endif %}">Utilisés</a>
+                    </div>
+                </div>
+
+                <!-- Formulaire recherche -->
+                <form method="get" class="mt-3">
+                    {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Rechercher un code (ex: A9X2)...">
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        {% if search_query %}
+                        <a href="?{% if status_filter %}status={{ status_filter }}{% endif %}" class="btn btn-outline-danger">
+                            <i class="fas fa-times"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            <div class="card-body p-0">
+                {% if codes_page.object_list %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 text-nowrap">
+                        <thead class="bg-light text-uppercase text-muted small">
+                            <tr>
+                                <th class="ps-4 border-0">Code d'accès</th>
+                                <th class="border-0">Statut</th>
+                                <th class="border-0">Participant / Utilisateur</th>
+                                <th class="border-0 text-end pe-4">Date utilisation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in codes_page.object_list %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-light text-dark font-monospace px-3 py-2 border rounded-pill fs-6 fw-bold text-uppercase" style="letter-spacing: 2px;">
+                                            {{ c.code }}
+                                        </span>
+                                        <button type="button" class="btn btn-sm btn-link text-muted p-1 ms-1" onclick="navigator.clipboard.writeText('{{ c.code }}'); alert('Code copié : {{ c.code }}');" title="Copier">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if c.is_used %}
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3">
+                                        <i class="fas fa-times-circle me-1"></i>Utilisé
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
+                                        <i class="fas fa-check-circle me-1"></i>Disponible
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if c.used_by %}
+                                    <div>
+                                        <strong class="text-dark">{{ c.used_by.nom_prenom }}</strong>
+                                        <div class="small text-muted">{{ c.used_by.email }}</div>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted small">— Non attribué —</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4">
+                                    {% if c.used_at %}
+                                    <small class="text-dark fw-semibold">{{ c.used_at|date:"d/m/Y H:i" }}</small>
+                                    {% else %}
+                                    <small class="text-muted">Créé le {{ c.created_at|date:"d/m/Y" }}</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if codes_page.has_other_pages %}
+                <div class="card-footer bg-white border-0 py-3">
+                    <nav>
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            {% if codes_page.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ codes_page.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ codes_page.number }} / {{ codes_page.paginator.num_pages }}</span>
+                            </li>
+                            {% if codes_page.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ codes_page.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-barcode fa-3x text-muted opacity-50 mb-3"></i>
+                    <h6 class="text-muted">Aucun code trouvé</h6>
+                    <p class="small text-muted mb-0">Générez un premier lot de codes via le formulaire à gauche.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

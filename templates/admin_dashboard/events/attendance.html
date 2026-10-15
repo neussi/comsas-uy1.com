@@ -1,0 +1,314 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Feuille d'émargement & Appel — {{ event.title_fr }}{% endblock %}
+{% block page_icon %}clipboard-check{% endblock %}
+
+{% block extra_css %}
+<style>
+    .day-badge {
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .check-present {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+    }
+    .participant-card:hover {
+        background-color: #F8FAFC;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="row mb-4 align-items-center">
+    <div class="col-md-7">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{% url 'admin_events_list' %}" class="text-decoration-none">Événements</a></li>
+                <li class="breadcrumb-item active">Feuille d'émargement & Appel</li>
+            </ol>
+        </nav>
+        <h4 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-clipboard-check text-success me-2"></i>Feuille d'émargement & Appel
+        </h4>
+        <p class="text-muted small mb-0">
+            Événement : <strong>{{ event.title_fr }}</strong> &bull; Durée : <strong>{{ duration_days }} jour{{ duration_days|pluralize }}</strong>
+        </p>
+    </div>
+    <div class="col-md-5 text-end">
+        <a href="{% url 'admin_events_list' %}" class="btn btn-outline-secondary me-2 shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
+        <a href="{% url 'admin_event_attendance_export_csv' event.pk %}" class="btn btn-outline-primary me-2 shadow-sm">
+            <i class="fas fa-file-csv me-1"></i>Exporter Présence
+        </a>
+        <a href="{% url 'admin_event_certificates' event.pk %}" class="btn btn-outline-success shadow-sm">
+            <i class="fas fa-certificate me-1"></i>Attestations
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-4">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Total Inscrits</h6>
+                <h3 class="mb-0 fw-bold text-dark">{{ total_registrations }}</h3>
+            </div>
+            <div class="bg-light text-primary rounded-circle p-3">
+                <i class="fas fa-users fa-lg"></i>
+            </div>
+        </div>
+    </div>
+    {% for stat in stats_per_day %}
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-4">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Présents Jour {{ stat.day }}</h6>
+                <h3 class="mb-0 fw-bold text-info">{{ stat.present_count }} <span class="small text-muted fw-normal">/ {{ total_registrations }}</span></h3>
+            </div>
+            <div class="bg-light text-info rounded-circle p-3">
+                <i class="fas fa-calendar-day fa-lg"></i>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-4">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Participation Validée</h6>
+                <h3 class="mb-0 fw-bold text-success">{{ total_participated }}</h3>
+                <small class="text-muted">{{ total_emails_sent }} email(s) félicitations</small>
+            </div>
+            <div class="bg-light text-success rounded-circle p-3">
+                <i class="fas fa-award fa-lg"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Information Banner -->
+<div class="alert alert-info border-0 rounded-4 shadow-sm mb-4 d-flex align-items-center p-3">
+    <i class="fas fa-info-circle fa-2x me-3 text-info"></i>
+    <div class="small">
+        <strong>Comment fonctionne l'émargement ?</strong>
+        <ul class="mb-0 ps-3 mt-1">
+            <li>Cochez les présences chaque jour (Jour 1, Jour 2...) puis cliquez sur <strong>"Enregistrer l'appel"</strong>.</li>
+            <li>À la fin de l'activité, cochez <strong>"Valider la participation"</strong> pour les étudiants assidus : ils recevront automatiquement un email officiel de félicitations leur confirmant la validation et l'arrivée de leur attestation !</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Formulaire d'émargement -->
+<form method="post" id="attendanceForm">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="save_attendance" id="formActionInput">
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-0 pt-4 pb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="fas fa-list-check me-2 text-primary"></i>Liste des Participants & Émargement Journalier
+                    </h5>
+                    <small class="text-muted">{{ participants_data|length }} participant(s) confirmé(s)</small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold">
+                        <i class="fas fa-save me-2"></i>Enregistrer l'appel
+                    </button>
+                    <button type="button" class="btn btn-outline-success rounded-pill px-3 fw-semibold" onclick="submitBulkValidation()">
+                        <i class="fas fa-check-double me-1"></i>Valider la sélection & Féliciter
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            {% if participants_data %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="bg-light text-uppercase text-muted small">
+                        <tr>
+                            <th class="ps-4 border-0" style="width: 40px;">
+                                <input type="checkbox" id="selectAllRegs" class="form-check-input cursor-pointer" onchange="toggleSelectAll(this)">
+                            </th>
+                            <th class="border-0">Participant</th>
+                            <th class="border-0">Promo & Contact</th>
+                            {% if event.requires_registration_code %}
+                            <th class="border-0">Code Utilisé</th>
+                            {% endif %}
+                            
+                            <!-- Colonnes Présence par jour -->
+                            {% for day in days_list %}
+                            <th class="border-0 text-center" style="min-width: 90px;">
+                                <span class="badge bg-primary bg-opacity-10 text-primary day-badge px-2 py-1 rounded-pill">
+                                    Jour {{ day }}
+                                </span>
+                            </th>
+                            {% endfor %}
+
+                            <th class="border-0 text-center">Participation Validée</th>
+                            <th class="border-0 text-end pe-4">Action Clôture</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in participants_data %}
+                        {% with reg=item.registration %}
+                        <tr class="participant-card">
+                            <td class="ps-4">
+                                <input type="checkbox" name="selected_reg_ids" value="{{ reg.id }}" class="form-check-input reg-checkbox cursor-pointer">
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                        style="width: 40px; height: 40px; font-weight: bold;">
+                                        {{ reg.nom_prenom|first|upper }}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark">{{ reg.nom_prenom }}</h6>
+                                        <small class="text-muted">{{ reg.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small">
+                                    <span class="badge bg-light text-dark border">{{ reg.promotion|default:"—" }}</span>
+                                    <span class="text-muted ms-1">{{ reg.telephone }}</span>
+                                </div>
+                            </td>
+
+                            {% if event.requires_registration_code %}
+                            <td>
+                                {% if reg.registration_code_entered %}
+                                <span class="badge bg-secondary bg-opacity-10 text-dark font-monospace px-2 py-1 border">
+                                    {{ reg.registration_code_entered }}
+                                </span>
+                                {% else %}
+                                <span class="text-muted small">—</span>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+
+                            <!-- Checkboxes pour chaque jour -->
+                            {% for day_presence in item.days_presence %}
+                            <td class="text-center">
+                                <div class="form-check d-flex justify-content-center m-0">
+                                    <input type="checkbox" 
+                                           name="att_{{ reg.id }}_{{ day_presence.day }}" 
+                                           class="form-check-input check-present" 
+                                           {% if day_presence.present %}checked{% endif %}
+                                           title="Présence Jour {{ day_presence.day }}">
+                                </div>
+                            </td>
+                            {% endfor %}
+
+                            <!-- Statut de validation finale -->
+                            <td class="text-center">
+                                {% if reg.has_participated %}
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1">
+                                    <i class="fas fa-check-circle me-1"></i>Validée
+                                </span>
+                                {% if reg.congratulations_email_sent %}
+                                <div class="small text-muted mt-1" style="font-size: 0.7rem;">
+                                    <i class="fas fa-paper-plane text-success me-1"></i>Email envoyé
+                                </div>
+                                {% endif %}
+                                {% else %}
+                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-1">
+                                    <i class="fas fa-clock me-1"></i>En attente
+                                </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Bouton action individuelle -->
+                            <td class="text-end pe-4">
+                                {% if not reg.has_participated %}
+                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3" 
+                                        onclick="validateSingleParticipant('{{ reg.id }}', '{{ reg.nom_prenom|escapejs }}', true)">
+                                    <i class="fas fa-award me-1"></i>Valider & Féliciter
+                                </button>
+                                {% else %}
+                                {% if not reg.congratulations_email_sent %}
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" 
+                                        onclick="validateSingleParticipant('{{ reg.id }}', '{{ reg.nom_prenom|escapejs }}', true)">
+                                    <i class="fas fa-paper-plane me-1"></i>Envoyer félicitations
+                                </button>
+                                {% else %}
+                                <span class="badge bg-light text-muted border rounded-pill px-2 py-1" style="font-size: 0.75rem;">
+                                    <i class="fas fa-check me-1"></i>Clôturé
+                                </span>
+                                {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-users-slash fa-3x text-muted opacity-50 mb-3"></i>
+                <h6 class="text-muted">Aucun participant confirmé pour le moment</h6>
+                <p class="small text-muted mb-0">Les étudiants inscrits apparaîtront ici dès confirmation de leur inscription.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if participants_data %}
+        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+            <span class="small text-muted">
+                Pensez à cliquer sur <strong>"Enregistrer l'appel"</strong> après avoir coché les présences.
+            </span>
+            <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold">
+                <i class="fas fa-save me-2"></i>Enregistrer l'appel
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</form>
+
+<!-- Modal / Formulaire caché pour validation individuelle -->
+<form id="singleValidateForm" method="post" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="validate_single">
+    <input type="hidden" name="registration_id" id="singleRegId">
+    <input type="hidden" name="send_email" id="singleSendEmail" value="1">
+</form>
+
+<script>
+function toggleSelectAll(master) {
+    const checkboxes = document.querySelectorAll('.reg-checkbox');
+    checkboxes.forEach(cb => cb.checked = master.checked);
+}
+
+function submitBulkValidation() {
+    const checked = document.querySelectorAll('.reg-checkbox:checked');
+    if (checked.length === 0) {
+        alert("Veuillez sélectionner au moins un participant avec la case à cocher à gauche.");
+        return;
+    }
+    if (confirm(`Confirmez-vous la validation de participation pour les ${checked.length} participant(s) sélectionné(s) ? Un email officiel de félicitations leur confirmant l'arrivée de leur attestation leur sera envoyé.`)) {
+        const form = document.getElementById('attendanceForm');
+        document.getElementById('formActionInput').value = 'bulk_validate_and_email';
+        form.submit();
+    }
+}
+
+function validateSingleParticipant(regId, name, sendEmail) {
+    if (confirm(`Valider la participation de ${name} et lui envoyer un email officiel de félicitations ?`)) {
+        document.getElementById('singleRegId').value = regId;
+        document.getElementById('singleSendEmail').value = sendEmail ? '1' : '0';
+        document.getElementById('singleValidateForm').submit();
+    }
+}
+</script>
+{% endblock %}

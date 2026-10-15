@@ -137,14 +137,26 @@
                                 {% endif %}
                                 <div>
                                     <h6 class="mb-1 text-dark fw-bold text-wrap" style="max-width: 200px;">{{ event.title_fr }}</h6>
-                                    {% now "Y-m-d H:i" as current_time %}
-                                    {% if event.registration_deadline|date:"Y-m-d H:i" < current_time %} <span
-                                        class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.65rem;">
-                                        Clos</span>
+                                    <div class="d-flex flex-wrap gap-1 align-items-center">
+                                        {% now "Y-m-d H:i" as current_time %}
+                                        {% if event.registration_deadline|date:"Y-m-d H:i" < current_time %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.65rem;">Clos</span>
                                         {% else %}
-                                        <span class="badge bg-success bg-opacity-10 text-success"
-                                            style="font-size: 0.65rem;">Ouvert</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.65rem;">Ouvert</span>
                                         {% endif %}
+
+                                        {% if event.requires_registration_code %}
+                                        <span class="badge bg-warning bg-opacity-10 text-dark border border-warning" style="font-size: 0.65rem;" title="Inscription sur code présentiel">
+                                            <i class="fas fa-key me-1"></i>Code Requis
+                                        </span>
+                                        {% endif %}
+
+                                        {% if event.duration_days > 1 %}
+                                        <span class="badge bg-info bg-opacity-10 text-dark border border-info" style="font-size: 0.65rem;">
+                                            {{ event.duration_days }} jours
+                                        </span>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -195,6 +207,18 @@
                         </td>
                         <td class="text-end pe-4">
                             <div class="btn-group">
+                                <a href="{% url 'admin_event_attendance' event.pk %}"
+                                    class="btn btn-sm btn-light text-success rounded-circle me-1" title="Feuille d'émargement & Appel">
+                                    <i class="fas fa-clipboard-check"></i>
+                                </a>
+                                <a href="{% url 'admin_event_codes' event.pk %}"
+                                    class="btn btn-sm btn-light text-warning rounded-circle me-1" title="Codes d'inscription">
+                                    <i class="fas fa-key"></i>
+                                </a>
+                                <a href="{% url 'admin_event_media' event.pk %}"
+                                    class="btn btn-sm btn-light text-primary rounded-circle me-1" title="Photos & Vidéos explicatives">
+                                    <i class="fas fa-photo-video"></i>
+                                </a>
                                 <a href="{% url 'admin_event_registrations' event.pk %}"
                                     class="btn btn-sm btn-light text-info rounded-circle me-1" title="Inscriptions">
                                     <i class="fas fa-users"></i>

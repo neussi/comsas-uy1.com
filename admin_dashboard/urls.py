@@ -5,6 +5,7 @@ from . import auth_views
 from . import certificate_views
 from . import badge_views
 from . import archive_views
+from . import event_features_views
 
 urlpatterns = [
 
@@ -63,6 +64,19 @@ urlpatterns = [
     path('events/<int:pk>/registrations/export/', views.event_registrations_export_excel, name='admin_export_registrations'),
     path('registrations/<int:pk>/confirm/', views.confirm_registration, name='admin_confirm_registration'),
     path('events/<int:pk>/send-certificates/', views.admin_send_event_certificates, name='admin_send_event_certificates'),
+    
+    # Codes d'inscription présentiels
+    path('events/<int:pk>/codes/', event_features_views.event_codes_manage, name='admin_event_codes'),
+    path('events/<int:pk>/codes/download/txt/', event_features_views.event_codes_download_txt, name='admin_event_codes_download_txt'),
+    path('events/<int:pk>/codes/download/csv/', event_features_views.event_codes_download_csv, name='admin_event_codes_download_csv'),
+    
+    # Feuille d'émargement / Appel & Présence
+    path('events/<int:pk>/attendance/', event_features_views.event_attendance_sheet, name='admin_event_attendance'),
+    path('events/<int:pk>/attendance/export/csv/', event_features_views.event_attendance_export_csv, name='admin_event_attendance_export_csv'),
+
+    # Photos & Vidéos explicatives de l'événement
+    path('events/<int:pk>/media/', event_features_views.event_media_manage, name='admin_event_media'),
+    path('events/<int:pk>/media/<int:media_id>/delete/', event_features_views.event_media_delete, name='admin_event_media_delete'),
     
     # ============= GESTION DES ACTUALITÉS =============
     path('news/', views.news_list, name='admin_news_list'),

@@ -15,21 +15,29 @@
     </div>
     <div class="col-md-6 text-end">
         <a href="{% url 'admin_events_list' %}" class="btn btn-outline-secondary me-2 shadow-sm">
-            <i class="fas fa-arrow-left me-2"></i>Retour
+            <i class="fas fa-arrow-left me-1"></i>Retour
         </a>
+        <a href="{% url 'admin_event_attendance' event.pk %}" class="btn btn-outline-success me-2 shadow-sm hover-lift">
+            <i class="fas fa-clipboard-check me-1"></i>Feuille d'émargement
+        </a>
+        {% if event.requires_registration_code %}
+        <a href="{% url 'admin_event_codes' event.pk %}" class="btn btn-outline-warning me-2 shadow-sm hover-lift">
+            <i class="fas fa-key me-1"></i>Codes d'accès
+        </a>
+        {% endif %}
         <a href="{% url 'admin_event_certificates' event.pk %}" class="btn btn-success me-2 shadow-sm hover-lift">
-            <i class="fas fa-certificate me-2"></i>Attestations
+            <i class="fas fa-certificate me-1"></i>Attestations
         </a>
         <a href="{% url 'admin_event_badges' event.pk %}" class="btn btn-warning me-2 shadow-sm hover-lift text-white">
-            <i class="fas fa-id-badge me-2"></i>Badges
+            <i class="fas fa-id-badge me-1"></i>Badges
         </a>
         <a href="{% url 'admin_export_registrations' event.pk %}"
             class="btn btn-info me-2 shadow-sm hover-lift text-white">
-            <i class="fas fa-file-excel me-2"></i>Exporter Excel
+            <i class="fas fa-file-excel me-1"></i>Exporter
         </a>
         <a href="{% url 'admin_send_event_certificates' event.pk %}" class="btn btn-danger shadow-sm hover-lift"
             onclick="return confirm('Générer et envoyer par email l\'attestation et le badge à tous les participants confirmés ? Cette action peut prendre du temps.')">
-            <i class="fas fa-paper-plane me-2"></i>Envoyer Certificats
+            <i class="fas fa-paper-plane me-1"></i>Envoyer Certificats
         </a>
     </div>
 </div>

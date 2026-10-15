@@ -1,0 +1,35 @@
+{% extends 'emails/base_email.html' %}
+
+{% block title %}Félicitations pour votre participation - {{ event_title }}{% endblock %}
+
+{% block content %}
+<h1>🎓 Félicitations pour votre participation !</h1>
+
+<p>Bonjour <strong>{{ participant_name }}</strong>,</p>
+
+<p>Le comité d'organisation du <strong>Club Informatique COMSAS</strong> tient à vous féliciter chaleureusement pour votre assiduité et votre participation active à l'événement :</p>
+
+<div class="info-box" style="background-color: #F8FAFC; border-left: 4px solid #E91E63; padding: 15px; margin: 20px 0; border-radius: 6px;">
+    <p style="margin: 5px 0;"><strong>📅 Événement :</strong> {{ event_title }}</p>
+    <p style="margin: 5px 0;"><strong>📍 Lieu :</strong> {{ event_location }}</p>
+    <p style="margin: 5px 0;"><strong>🗓️ Date :</strong> {{ event_date|date:"d F Y" }}</p>
+    <p style="margin: 5px 0;"><strong>✅ Statut :</strong> Présence validée avec succès</p>
+</div>
+
+<h2>Votre Attestation de Participation</h2>
+<p>Votre présence effective ayant été confirmée par nos équipes organisatrices, nous avons le plaisir de vous informer que votre <strong>attestation officielle de participation</strong> est en cours d'établissement et de signature.</p>
+
+<div style="background-color: #ECFDF5; padding: 16px; border-radius: 8px; border-left: 4px solid #10B981; margin: 20px 0;">
+    <p style="margin: 0; color: #065F46; font-size: 15px;">
+        <strong>📜 Information Attestation :</strong> Votre attestation officielle signée vous sera transmise par e-mail dans les plus brefs délais dès la fin des opérations de validation.
+    </p>
+</div>
+
+<p>Nous vous remercions pour votre dynamisme et votre confiance au sein de la communauté technologique du COMSAS.</p>
+
+<p style="margin-top: 30px;">
+    Cordialement,<br>
+    <strong>L'équipe COM.S.AS</strong><br>
+    <span style="color: #64748B; font-size: 13px;">Computer Science Association — Université de Yaoundé 1</span>
+</p>
+{% endblock %}
