@@ -116,26 +116,36 @@ class EventForm(forms.ModelForm):
             'title_fr', 'title_en', 'description_fr', 'description_en',
             'image', 'date_event', 'duration_days', 'location', 'max_participants',
             'registration_deadline', 'requires_registration_code', 'is_featured', 'is_active',
-            'certificate_enabled', 'certificate_title', 'certificate_main_text', 'certificate_description',
-            'certificate_president_name', 'certificate_president_title',
-            'president_signature',
-            'partner_logo_1', 'partner_logo_2', 'partner_logo_3', 'badge_enabled'
+            # Certificate fields
+            'certificate_enabled', 'certificate_title', 'certificate_subtitle', 'certificate_main_text', 
+            'certificate_description', 'certificate_location_text',
+            'certificate_president_name', 'certificate_president_title', 'president_signature', 'signatory1_is_digital',
+            'second_signatory_enabled', 'signatory2_name', 'signatory2_title', 'signatory2_signature', 'signatory2_is_digital',
+            'signatories_position',
+            # Badge & Ticket fields
+            'badge_enabled', 'badge_header_title', 'badge_role_default',
+            'ticket_note',
+            # Partner logos
+            'partner_logo_1', 'partner_logo_2', 'partner_logo_3'
         ]
         widgets = {
             'date_event': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'registration_deadline': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'duration_days': forms.NumberInput(attrs={'min': 1, 'class': 'form-control'}),
-            'certificate_main_text': forms.Textarea(attrs={'rows': 4}),
-            'certificate_description': forms.Textarea(attrs={'rows': 3}),
+            'certificate_main_text': forms.Textarea(attrs={'rows': 3, 'placeholder': "Laissez vide pour le texte officiel standard..."}),
+            'certificate_description': forms.Textarea(attrs={'rows': 2}),
+            'ticket_note': forms.TextInput(attrs={'placeholder': "Ex: Billet officiel d'accès - Présentez ce ticket et votre pièce d'identité à l'entrée"}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Tous les champs optionnels — valeurs par défaut du modèle s'appliquent
         optional_fields = [
-            'certificate_title', 'certificate_main_text', 'certificate_description',
-            'certificate_president_name', 'certificate_president_title',
-            'president_signature', 'partner_logo_1', 'partner_logo_2', 'partner_logo_3',
+            'certificate_title', 'certificate_subtitle', 'certificate_main_text', 'certificate_description',
+            'certificate_location_text', 'certificate_president_name', 'certificate_president_title',
+            'president_signature', 'signatory2_name', 'signatory2_title', 'signatory2_signature',
+            'badge_header_title', 'badge_role_default', 'ticket_note',
+            'partner_logo_1', 'partner_logo_2', 'partner_logo_3',
             'image', 'max_participants',
         ]
         for f in optional_fields:

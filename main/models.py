@@ -132,23 +132,48 @@ class Event(models.Model):
     
     # Certificate Configuration
     certificate_enabled = models.BooleanField(default=True, verbose_name="Activer les attestations")
-    certificate_title = models.CharField(max_length=200, blank=True, verbose_name="Titre de l'attestation")
+    certificate_title = models.CharField(max_length=200, default="CERTIFICAT", blank=True, verbose_name="Titre de l'attestation")
+    certificate_subtitle = models.CharField(max_length=200, default="DE PARTICIPATION ET D'EXCELLENCE", blank=True, verbose_name="Sous-titre / Ruban de l'attestation")
     certificate_main_text = models.TextField(blank=True, verbose_name="Texte principal personnalisé", help_text="Texte central de l'attestation. Laissez vide pour utiliser le texte par défaut.")
     certificate_description = models.TextField(blank=True, verbose_name="Description pour l'attestation")
-    certificate_president_name = models.CharField(max_length=100, default="Président COMS.A.S", verbose_name="Nom du président")
-    certificate_president_title = models.CharField(max_length=100, default="Président du COMS.A.S", verbose_name="Titre du président")
+    certificate_location_text = models.CharField(max_length=150, default="Fait à Yaoundé, le", blank=True, verbose_name="Mention de date/lieu")
+    
+    # 1er Signataire (ex: Président COMSAS)
+    certificate_president_name = models.CharField(max_length=100, default="Borel Henri NGUIMEZAP", verbose_name="Nom 1er signataire (Président COMSAS)")
+    certificate_president_title = models.CharField(max_length=100, default="Le Président du COMS.A.S", verbose_name="Titre 1er signataire")
+    president_signature = models.ImageField(upload_to='events/signatures/', blank=True, null=True, verbose_name="Signature/Cachet du Président")
+    signatory1_is_digital = models.BooleanField(default=True, verbose_name="1er signataire numérique (avec signature et cachet)")
+    
+    # 2ème Signataire (ex: Chef de Département d'Informatique)
+    second_signatory_enabled = models.BooleanField(default=False, verbose_name="Activer un 2ème signataire (ex: Chef de Département)")
+    signatory2_name = models.CharField(max_length=100, default="", blank=True, verbose_name="Nom 2ème signataire")
+    signatory2_title = models.CharField(max_length=100, default="Le Chef de Département d'Informatique", blank=True, verbose_name="Titre 2ème signataire")
+    signatory2_signature = models.ImageField(upload_to='events/signatures/', blank=True, null=True, verbose_name="Signature 2ème signataire (optionnel)")
+    signatory2_is_digital = models.BooleanField(default=False, verbose_name="Signature numérique pour le 2ème signataire", help_text="Décocher si la signature se fait en présentiel manuellement")
+    
+    # Disposition des signataires
+    SIGNATORIES_LAYOUT = [
+        ('sig1_left_sig2_right', '1er signataire à GAUCHE, 2ème à DROITE'),
+        ('sig1_right_sig2_left', '1er signataire à DROITE, 2ème à GAUCHE'),
+        ('centered', 'Centré (pour un seul signataire)'),
+    ]
+    signatories_position = models.CharField(max_length=30, choices=SIGNATORIES_LAYOUT, default='sig1_left_sig2_right', verbose_name="Disposition des signataires")
     
     # New: Partner Logos & Signature
     partner_logo_1 = models.ImageField(upload_to='events/partners/', blank=True, null=True, verbose_name="Logo Partenaire 1")
     partner_logo_2 = models.ImageField(upload_to='events/partners/', blank=True, null=True, verbose_name="Logo Partenaire 2")
     partner_logo_3 = models.ImageField(upload_to='events/partners/', blank=True, null=True, verbose_name="Logo Partenaire 3")
-    president_signature = models.ImageField(upload_to='events/signatures/', blank=True, null=True, verbose_name="Signature/Cachet du Président")
     
     # New: Status tracking for automated dispatch
     certificates_sent = models.BooleanField(default=False, verbose_name="Attestations envoyées par mail")
     
     # Badge Configuration
     badge_enabled = models.BooleanField(default=True, verbose_name="Activer les badges")
+    badge_header_title = models.CharField(max_length=100, default="PASS OFFICIEL", blank=True, verbose_name="En-tête du badge")
+    badge_role_default = models.CharField(max_length=50, default="PARTICIPANT", blank=True, verbose_name="Rôle par défaut sur le badge")
+
+    # Ticket Configuration
+    ticket_note = models.CharField(max_length=250, default="Billet officiel d'accès - Présentez ce ticket et votre pièce d'identité à l'entrée", blank=True, verbose_name="Consigne / Note sur le ticket")
     
     # Galerie
     gallery_album = models.ForeignKey('GalleryAlbum', on_delete=models.SET_NULL, null=True, blank=True,

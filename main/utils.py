@@ -207,135 +207,265 @@ def send_member_card_email(member, pdf_buffer):
         return False
 
 
-def generate_ticket(registration):
+def render_ticket_pdf(event, participant_data):
     """
-    Generates a premium event ticket (admit one style) with pink/white COMS.A.S branding.
+    Rendu graphique du Billet VIP officiel (Format Boarding Pass de prestige).
+    Comprend une souche détachable avec encoches d'arrachage, logos UY1 et COMSAS,
+    titre percutant, informations précises, consignes d'accès et QR code de sécurité.
     """
-    # 1. Generate QR Code
-    verification_url = settings.SITE_URL + reverse('ticket_verify', kwargs={'uuid': registration.uuid})
+    from reportlab.lib.units import inch, mm
     
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_H,
-        box_size=8,
-        border=2,
-    )
-    qr.add_data(verification_url)
-    qr.make(fit=True)
-    
-    img = qr.make_image(fill_color="black", back_color="white")
-    blob = BytesIO()
-    img.save(blob, 'PNG')
-    
-    # Save QR code image
-    registration.qr_code.save(f'qr_{registration.uuid}.png', File(blob), save=False)
-    
-    # 2. Generate PDF Ticket (Landscape orientation for ticket style)
     buffer = BytesIO()
-    ticket_width, ticket_height = 8.5 * inch, 3.5 * inch
+    ticket_width, ticket_height = 8.5 * inch, 3.4 * inch  # ~216mm x 86.4mm
     p = canvas.Canvas(buffer, pagesize=(ticket_width, ticket_height))
-    
-    # Orange Mandat Theme
-    ORANGE_MANDAT = colors.Color(243/255, 146/255, 0/255) # #F39200
-    TECH_GRAY = colors.Color(45/255, 45/255, 45/255)
-    
+
+    # Palette
+    C_NAVY_DARK = colors.HexColor('#0A1128')
+    C_BLUE_ROYAL = colors.HexColor('#0052D4')
+    C_BLUE_CYAN = colors.HexColor('#00D2FF')
+    C_GOLD_MAIN = colors.HexColor('#D4AF37')
+    C_GOLD_LIGHT = colors.HexColor('#F9D776')
+    C_TEXT_NAVY = colors.HexColor('#0F172A')
+    C_TEXT_MUTED = colors.HexColor('#64748B')
+    C_BG_OFFWHITE = colors.HexColor('#F8FAFC')
+
+    # 1. Fond général du billet
     p.setFillColor(colors.white)
     p.rect(0, 0, ticket_width, ticket_height, fill=1, stroke=0)
-    
-    # Stub background (Orange)
-    stub_width = 1.8*inch
-    p.setFillColor(ORANGE_MANDAT)
-    p.rect(0, 0, stub_width, ticket_height, fill=1, stroke=0)
-    
-    # Tech accents on stub
-    p.setStrokeColor(colors.white)
-    p.setLineWidth(0.5)
-    for i in range(12):
-        p.line(0.2*inch, 0.4*inch + i*0.2*inch, stub_width - 0.2*inch, 0.4*inch + i*0.2*inch)
 
+    # 2. Souche détachable à gauche (Stub)
+    stub_width = 2.1 * inch
+    p.setFillColor(C_NAVY_DARK)
+    p.rect(0, 0, stub_width, ticket_height, fill=1, stroke=0)
+
+    # Accent doré sur la tranche gauche
+    p.setFillColor(C_GOLD_MAIN)
+    p.rect(0, 0, 3 * mm, ticket_height, fill=1, stroke=0)
+
+    # Motifs géométriques subtils sur la souche
+    p.setStrokeColor(colors.HexColor('#1E293B'))
+    p.setLineWidth(0.5)
+    for i in range(8):
+        p.line(8 * mm, 10 * mm + i * 8 * mm, stub_width - 8 * mm, 10 * mm + i * 8 * mm)
+
+    # Code-barres décoratif vertical sur la souche (Partie basse)
     p.saveState()
-    p.translate(stub_width/2 + 0.1*inch, ticket_height/2)
+    barcode_x = 9 * mm
+    barcode_y = 11 * mm
+    barcode_h = 13 * mm
+    p.setFillColor(colors.white)
+    bar_widths = [1.2, 0.6, 2.0, 0.8, 1.5, 0.5, 1.8, 0.7, 2.2, 0.6, 1.0, 1.6, 0.5, 1.4, 0.9, 2.1, 0.6, 1.1]
+    cur_bx = barcode_x
+    for bw in bar_widths:
+        p.rect(cur_bx, barcode_y, bw, barcode_h, fill=1, stroke=0)
+        cur_bx += bw + 1.2 * mm
+    p.restoreState()
+
+    # ID court sous le code-barres
+    p.setFont("Helvetica", 6.5)
+    p.setFillColor(colors.HexColor('#94A3B8'))
+    uuid_str = str(participant_data.get('uuid', 'TICKET-2026'))
+    p.drawCentredString(stub_width / 2 + 1 * mm, 5 * mm, f"N° {uuid_str[:15]}")
+
+    # Texte pivoté à 90° sur la souche (Partie haute)
+    p.saveState()
+    p.translate(stub_width / 2 + 2.5 * mm, ticket_height * 0.62)
     p.rotate(90)
     p.setFillColor(colors.white)
-    p.setFont("Helvetica-Bold", 18)
-    p.drawCentredString(0, 0, "ADMIT ONE")
-    p.setFont("Helvetica", 10)
-    p.drawCentredString(0, -0.3*inch, registration.event.date_event.strftime('%d.%m.%Y'))
+    p.setFont("Helvetica-Bold", 10.5)
+    p.drawCentredString(0, 0, "BILLET D'ACCÈS • PASS VIP")
+    p.setFont("Helvetica-Bold", 8.5)
+    p.setFillColor(C_GOLD_LIGHT)
+    date_formatted = event.date_event.strftime('%d.%m.%Y • %H:%M') if getattr(event, 'date_event', None) else "DATE À DÉFINIR"
+    p.drawCentredString(0, -4.2 * mm, date_formatted)
     p.restoreState()
+
+    # Ligne de perforation (tirets) et encoches de découpe
+    p.setStrokeColor(colors.HexColor('#CBD5E1'))
+    p.setLineWidth(1)
+    p.setDash(3, 3)
+    p.line(stub_width, 0, stub_width, ticket_height)
+    p.setDash()  # reset dash
+
+    # Encoches semi-circulaires d'arrachage au haut et au bas de la ligne de découpe
+    p.setFillColor(colors.white)
+    p.circle(stub_width, ticket_height, 4 * mm, fill=1, stroke=0)
+    p.circle(stub_width, 0, 4 * mm, fill=1, stroke=0)
+    p.setStrokeColor(colors.HexColor('#E2E8F0'))
+    p.setLineWidth(0.6)
+    p.circle(stub_width, ticket_height, 4 * mm, fill=0, stroke=1)
+    p.circle(stub_width, 0, 4 * mm, fill=0, stroke=1)
+
+    # 3. Corps Principal du Billet (Main Content)
+    main_x = stub_width + 8 * mm
+    main_top = ticket_height - 8 * mm
+
+    # Logos : UY1 EN PREMIER et Agrandit, puis COMSAS
+    uy1_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'uy1.png')
+    comsas_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'comsas.png')
     
-    # --- Main Content ---
-    content_x = stub_width + 0.4*inch
+    logo_size = 13 * mm
+    if os.path.exists(uy1_path):
+        try:
+            p.drawImage(ImageReader(uy1_path), main_x, main_top - logo_size + 1 * mm, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
+        except Exception:
+            pass
+
+    if os.path.exists(comsas_path):
+        try:
+            p.drawImage(ImageReader(comsas_path), main_x + logo_size + 3 * mm, main_top - logo_size + 1 * mm, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
+        except Exception:
+            pass
+
+    # Titre institutionnel
+    inst_x = main_x + logo_size * 2 + 6 * mm
+    p.setFont("Helvetica-Bold", 8)
+    p.setFillColor(C_TEXT_NAVY)
+    p.drawString(inst_x, main_top - 3 * mm, "UNIVERSITÉ DE YAOUNDÉ 1 • FACULTÉ DES SCIENCES")
+    p.setFont("Helvetica", 6.8)
+    p.setFillColor(C_TEXT_MUTED)
+    p.drawString(inst_x, main_top - 7 * mm, "Département d'Informatique • Computer Science Association (COMSAS)")
+
+    # Badge Pilule "OFFICIEL" en haut à droite
+    pill_w = 32 * mm
+    pill_h = 5.5 * mm
+    pill_rx = ticket_width - pill_w - 7 * mm
+    pill_ry = main_top - 6 * mm
+    p.setFillColor(C_BLUE_ROYAL)
+    p.roundRect(pill_rx, pill_ry, pill_w, pill_h, 2 * mm, fill=1, stroke=0)
+    p.setFont("Helvetica-Bold", 6.5)
+    p.setFillColor(colors.white)
+    p.drawCentredString(pill_rx + pill_w / 2, pill_ry + 1.6 * mm, "BILLET OFFICIEL D'ACCÈS")
+
+    # Filet fin de séparation sous l'en-tête
+    sep_y = main_top - logo_size - 2 * mm
+    p.setStrokeColor(colors.HexColor('#E2E8F0'))
+    p.setLineWidth(0.8)
+    p.line(main_x, sep_y, ticket_width - 7 * mm, sep_y)
+
+    # 4. Titre de l'événement (En grand)
+    event_title = getattr(event, 'title_fr', "Événement Officiel").upper()
+    p.setFont("Helvetica-Bold", 12.5)
+    p.setFillColor(C_BLUE_ROYAL)
     
-    # Logos
-    logo_size, ly = 0.7*inch, ticket_height - 1.1*inch
-    logos = []
-    comsas_path = os.path.join(settings.BASE_DIR, 'static/images/comsas.png')
-    if os.path.exists(comsas_path): logos.append(comsas_path)
-    if registration.event.partner_logo_1: logos.append(registration.event.partner_logo_1.path)
-    if registration.event.partner_logo_2: logos.append(registration.event.partner_logo_2.path)
+    # Adaptation du titre si long
+    max_title_w = ticket_width - main_x - 38 * mm
+    if stringWidth(event_title, "Helvetica-Bold", 12.5) > max_title_w:
+        p.setFont("Helvetica-Bold", 10.5)
     
-    for i, lp in enumerate(logos[:3]):
-        try: p.drawImage(ImageReader(lp), content_x + i*0.8*inch, ly, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
-        except: pass
-        
-    p.setFillColor(TECH_GRAY)
-    p.setFont("Helvetica-Bold", 34)
-    p.drawRightString(ticket_width - 0.5*inch, ticket_height - 0.95*inch, "TICKET")
+    p.drawString(main_x, sep_y - 6 * mm, event_title)
+
+    # 5. Détails du Participant & Événement (Grille élégante)
+    details_y = sep_y - 12 * mm
+
+    # Nom du Participant
+    p.setFont("Helvetica-Bold", 7.5)
+    p.setFillColor(C_GOLD_MAIN)
+    p.drawString(main_x, details_y, "PARTICIPANT")
     
-    # Title
-    y_title = ly - 0.6*inch
-    p.setFillColor(ORANGE_MANDAT)
-    p.setFont("Helvetica-Bold", 16)
-    title = registration.event.title_fr.upper()
-    max_w = ticket_width - content_x - 1.8*inch
-    
-    if stringWidth(title, "Helvetica-Bold", 16) > max_w:
-        p.setFont("Helvetica-Bold", 12)
-        if stringWidth(title, "Helvetica-Bold", 12) > max_w:
-            words = title.split()
-            l1, l2 = "", ""
-            for w in words:
-                if stringWidth(l1 + " " + w, "Helvetica-Bold", 12) < max_w: l1 += " " + w if l1 else w
-                else: l2 += " " + w if l2 else w
-            p.drawString(content_x, y_title, l1)
-            p.drawString(content_x, y_title - 0.2*inch, l2)
-            y_title -= 0.3*inch
-        else: p.drawString(content_x, y_title, title)
-    else: p.drawString(content_x, y_title, title)
-    
-    # QR Code
-    qr_s = 1.1*inch
-    qx, qy = ticket_width - qr_s - 0.4*inch, 0.6*inch
-    if 'blob' in locals():
-        blob.seek(0)
-        p.drawImage(ImageReader(blob), qx, qy, width=qr_s, height=qr_s)
-    
-    p.setFont("Helvetica", 7)
-    p.setFillColor(colors.gray)
-    p.drawCentredString(qx + qr_s/2, qy - 0.15*inch, "SCAN & VERIFY")
-    
-    # Info
-    y_info = y_title - 0.6*inch
-    p.setFont("Helvetica", 10)
-    p.setFillColor(TECH_GRAY)
-    p.drawString(content_x, y_info, f"DATE: {registration.event.date_event.strftime('%d %B %Y • %H:%M')}")
-    p.drawString(content_x, y_info - 0.2*inch, f"LIEU: {registration.event.location[:50]}")
-    
-    y_part = y_info - 0.5*inch
     p.setFont("Helvetica-Bold", 11)
-    p.setFillColor(ORANGE_MANDAT)
-    p.drawString(content_x, y_part, "PARTICIPANT:")
-    p.setFillColor(TECH_GRAY)
-    p.drawString(content_x + 1.1*inch, y_part, registration.nom_prenom.upper())
+    p.setFillColor(C_TEXT_NAVY)
+    nom_part = participant_data.get('nom_prenom', 'Patrice Nguekam Dassi').upper()
+    p.drawString(main_x, details_y - 4.5 * mm, nom_part)
+
+    # Date et Lieu
+    p.setFont("Helvetica-Bold", 7)
+    p.setFillColor(C_TEXT_MUTED)
+    p.drawString(main_x, details_y - 10.5 * mm, "DATE & HEURE :")
+    p.setFont("Helvetica-Bold", 8)
+    p.setFillColor(C_TEXT_NAVY)
+    date_val = event.date_event.strftime('%d %B %Y à %H:%M') if getattr(event, 'date_event', None) else "À confirmer"
+    p.drawString(main_x + 24 * mm, details_y - 10.5 * mm, date_val)
+
+    p.setFont("Helvetica-Bold", 7)
+    p.setFillColor(C_TEXT_MUTED)
+    p.drawString(main_x, details_y - 15.5 * mm, "LIEU / SALLE :")
+    p.setFont("Helvetica-Bold", 8)
+    p.setFillColor(C_TEXT_NAVY)
+    loc_val = getattr(event, 'location', 'Campus UY1') or "Campus Universitaire de Yaoundé 1"
+    p.drawString(main_x + 24 * mm, details_y - 15.5 * mm, loc_val[:48])
+
+    # Consigne personnalisable (ticket_note)
+    ticket_note = getattr(event, 'ticket_note', '') or "Billet officiel d'accès - Présentez ce ticket et votre pièce d'identité à l'entrée."
+    p.setFont("Helvetica-Oblique", 6.2)
+    p.setFillColor(C_TEXT_MUTED)
+    p.drawString(main_x, 6 * mm, ticket_note[:90])
+
+    # 6. QR Code de Sécurité & Validation à droite
+    qr_s = 25 * mm
+    qx = ticket_width - qr_s - 7 * mm
+    qy = 12 * mm
+
+    verify_url = participant_data.get('verify_url') or f"{getattr(settings, 'SITE_URL', 'https://comsas-uy1.com')}/verify/{uuid_str}"
+
+    qr = qrcode.QRCode(box_size=6, border=0)
+    qr.add_data(verify_url)
+    qr.make(fit=True)
+    qr_buf = BytesIO()
+    qr.make_image(fill_color="#0A1128", back_color="white").save(qr_buf, 'PNG')
+    qr_buf.seek(0)
+
+    # Cadre fin autour du QR
+    p.setStrokeColor(colors.HexColor('#E2E8F0'))
+    p.setLineWidth(0.6)
+    p.rect(qx - 1.5 * mm, qy - 1.5 * mm, qr_s + 3 * mm, qr_s + 3 * mm, fill=0, stroke=1)
     
-    # Footer
-    p.setFont("Helvetica", 7)
-    p.setFillColor(colors.gray)
-    p.drawString(0.2*inch, 0.15*inch, f"ID: {str(registration.uuid)[:13]}")
-    p.drawRightString(ticket_width - 0.2*inch, 0.15*inch, "COMS.A.S • Université de Yaoundé 1")
-    
+    p.drawImage(ImageReader(qr_buf), qx, qy, width=qr_s, height=qr_s)
+
+    p.setFont("Helvetica-Bold", 5.5)
+    p.setFillColor(C_BLUE_ROYAL)
+    p.drawCentredString(qx + qr_s / 2, qy - 4.5 * mm, "SCAN POUR ACCÈS EN SALLE")
+
+    # Bordure générale extérieure fine
+    p.setStrokeColor(colors.HexColor('#CBD5E1'))
+    p.setLineWidth(0.8)
+    p.rect(1 * mm, 1 * mm, ticket_width - 2 * mm, ticket_height - 2 * mm, fill=0, stroke=1)
+
     p.showPage()
     p.save()
     buffer.seek(0)
+    return buffer
+
+
+def generate_ticket(registration):
+    """
+    Génère et sauvegarde le billet officiel pour une inscription.
+    """
+    event = registration.event
+    verify_url = f"{getattr(settings, 'SITE_URL', 'https://comsas-uy1.com')}{reverse('ticket_verify', kwargs={'uuid': registration.uuid})}"
+
+    # Sauvegarde du QR code image pour le modèle
+    qr = qrcode.QRCode(version=1, box_size=8, border=2)
+    qr.add_data(verify_url)
+    qr.make(fit=True)
+    blob = BytesIO()
+    qr.make_image(fill_color="black", back_color="white").save(blob, 'PNG')
+    registration.qr_code.save(f'qr_{registration.uuid}.png', File(blob), save=False)
+
+    participant_data = {
+        'nom_prenom': registration.nom_prenom,
+        'promotion': getattr(registration, 'promotion', ''),
+        'uuid': registration.uuid,
+        'verify_url': verify_url,
+    }
+
+    buffer = render_ticket_pdf(event, participant_data)
+    
+    if registration.ticket_pdf:
+        registration.ticket_pdf.delete(save=False)
+
     registration.ticket_pdf.save(f'ticket_{registration.uuid}.pdf', File(buffer), save=True)
     return registration.ticket_pdf.url
+
+
+def generate_preview_ticket(event):
+    """
+    Génère un billet PDF de démonstration pour la prévisualisation dans l'admin.
+    """
+    participant_data = {
+        'nom_prenom': 'Patrice Nguekam Dassi',
+        'promotion': 'Master 1 Génie Logiciel',
+        'uuid': 'PREVIEW-TICKET-2026',
+        'verify_url': f"{getattr(settings, 'SITE_URL', 'https://comsas-uy1.com')}/verify/preview",
+    }
+    return render_ticket_pdf(event, participant_data)

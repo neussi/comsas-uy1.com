@@ -98,3 +98,37 @@ def regenerate_certificate(request, registration_id):
         messages.error(request, f"Erreur: {str(e)}")
     
     return redirect('admin_event_certificates', pk=registration.event.pk)
+
+
+@custom_staff_member_required
+def preview_certificate_view(request, pk):
+    """Prévisualisation en direct de l'attestation de prestige pour un événement"""
+    from django.http import HttpResponse
+    from main.certificate_utils import generate_preview_certificate
+    
+    event = get_object_or_404(Event, pk=pk)
+    try:
+        pdf_buffer = generate_preview_certificate(event)
+        response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="apercu_attestation_{event.pk}.pdf"'
+        return response
+    except Exception as e:
+        messages.error(request, f"Erreur lors de la prévisualisation de l'attestation : {str(e)}")
+        return redirect('admin_event_certificates', pk=pk)
+
+
+@custom_staff_member_required
+def preview_ticket_view(request, pk):
+    """Prévisualisation en direct du billet officiel VIP pour un événement"""
+    from django.http import HttpResponse
+    from main.utils import generate_preview_ticket
+    
+    event = get_object_or_404(Event, pk=pk)
+    try:
+        pdf_buffer = generate_preview_ticket(event)
+        response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="apercu_billet_{event.pk}.pdf"'
+        return response
+    except Exception as e:
+        messages.error(request, f"Erreur lors de la prévisualisation du billet : {str(e)}")
+        return redirect('admin_events_list')

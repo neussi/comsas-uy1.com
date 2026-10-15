@@ -13,15 +13,20 @@ urlpatterns = [
 
     # Certificate Management
     path('events/<int:pk>/certificates/', certificate_views.event_certificates_manage, name='admin_event_certificates'),
+    path('events/<int:pk>/certificates/preview/', certificate_views.preview_certificate_view, name='admin_preview_certificate'),
     path('events/<int:pk>/certificates/generate-all/', certificate_views.generate_all_certificates, name='admin_generate_all_certificates'),
     path('events/<int:pk>/certificates/download-zip/', certificate_views.download_certificates_zip, name='admin_download_certificates_zip'),
     path('registrations/<int:registration_id>/regenerate-certificate/', certificate_views.regenerate_certificate, name='admin_regenerate_certificate'),
     
     # Badge Management
     path('events/<int:pk>/badges/', badge_views.event_badges_manage, name='admin_event_badges'),
+    path('events/<int:pk>/badges/preview/', badge_views.preview_badge_view, name='admin_preview_badge'),
     path('events/<int:pk>/badges/generate-all/', badge_views.generate_all_badges, name='admin_generate_all_badges'),
     path('events/<int:pk>/badges/download-zip/', badge_views.download_badges_zip, name='admin_download_badges_zip'),
     path('registrations/<int:registration_id>/regenerate-badge/', badge_views.regenerate_badge, name='admin_regenerate_badge'),
+
+    # Ticket Management & Preview
+    path('events/<int:pk>/ticket/preview/', certificate_views.preview_ticket_view, name='admin_preview_ticket'),
 
     # ============= DASHBOARD =============
     # Dashboard home (nécessite une connexion)
