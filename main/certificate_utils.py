@@ -14,6 +14,23 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
+from PIL import Image
+
+def get_trimmed_signature_reader(image_path):
+    """Rogne les marges transparentes de la signature/cachet pour un rendu grand, net et parfaitement centré"""
+    try:
+        if not image_path or not os.path.exists(image_path):
+            return None
+        im = Image.open(image_path)
+        bbox = im.getbbox()
+        if bbox:
+            im = im.crop(bbox)
+        buf = BytesIO()
+        im.save(buf, format='PNG')
+        buf.seek(0)
+        return ImageReader(buf)
+    except Exception:
+        return ImageReader(image_path) if image_path and os.path.exists(image_path) else None
 
 # Enregistrement de la police calligraphique GreatVibes
 FONT_REGISTERED = False
@@ -395,8 +412,11 @@ def render_certificate_pdf(event, participant_data):
     date_str = participant_data.get('date_str', timezone.now().strftime('%d/%m/%Y'))
     location_prefix = getattr(event, 'certificate_location_text', 'Fait à Yaoundé, le') or "Fait à Yaoundé, le"
 
-    # Hauteur de référence de la ligne de signature
-    sig_line_y = 42 * mm
+    # Hauteur de référence du bloc signature
+    sig_title_y = 52 * mm
+    sig_line_y = 47 * mm
+    sig_cachet_w = 60 * mm
+    sig_cachet_h = 34 * mm
 
     if second_enabled and pos_mode != 'centered':
         # --- 2 SIGNATAIRES (Gauche & Droite) ---
@@ -407,57 +427,51 @@ def render_certificate_pdf(event, participant_data):
             left_info = (sig1_name, sig1_title, sig1_digital, sig1_img_path)
             right_info = (sig2_name, sig2_title, sig2_digital, sig2_img_path)
 
-        # GAUCHE : Ligne de signature
+        # GAUCHE : Titre AU-DESSUS du trait
         left_x = 72 * mm
+        p.setFont("Helvetica-Bold", 10.5)
+        p.setFillColor(C_TEXT_NAVY)
+        p.drawCentredString(left_x, sig_title_y, left_info[1])
+
+        # Trait de signature
         p.setStrokeColor(C_TEXT_NAVY)
         p.setLineWidth(1)
         p.line(left_x - 30 * mm, sig_line_y, left_x + 30 * mm, sig_line_y)
 
-        # Le cachet / signature est posé AU-DESSUS de la ligne
+        # En dessous du trait : Cachet numérique agrandi OU Espace libre pour signature/cachet manuscrits
         if left_info[2] and left_info[3] and os.path.exists(left_info[3]):
             try:
-                p.drawImage(ImageReader(left_info[3]), left_x - 22 * mm, sig_line_y + 1 * mm, width=44 * mm, height=22 * mm, mask='auto', preserveAspectRatio=True)
+                reader = get_trimmed_signature_reader(left_info[3])
+                if reader:
+                    # Cachet nominatif agrandi EN DESSOUS du trait
+                    p.drawImage(reader, left_x - sig_cachet_w / 2, sig_line_y - sig_cachet_h - 1 * mm, width=sig_cachet_w, height=sig_cachet_h, mask='auto', preserveAspectRatio=True)
             except Exception:
                 pass
-        elif not left_info[2]:
-            p.setFont("Helvetica-Oblique", 7.5)
-            p.setFillColor(C_TEXT_MUTED)
-            p.drawCentredString(left_x, sig_line_y + 4 * mm, "(Signature et Cachet manuscrits)")
+        # (Si en présentiel, l'espace en dessous reste propre et vierge pour signer et cacheter, sans nom texte)
 
-        # Titre et Nom sous la ligne
-        p.setFont("Helvetica-Bold", 9.5)
-        p.setFillColor(C_TEXT_NAVY)
-        p.drawCentredString(left_x, sig_line_y - 6 * mm, left_info[1])
-        p.setFont("Helvetica", 8.5)
-        p.setFillColor(C_TEXT_MUTED)
-        p.drawCentredString(left_x, sig_line_y - 11 * mm, left_info[0])
-
-        # DROITE : Ligne de signature
+        # DROITE : Titre AU-DESSUS du trait
         right_x = page_width - 72 * mm
+        p.setFont("Helvetica-Bold", 10.5)
+        p.setFillColor(C_TEXT_NAVY)
+        p.drawCentredString(right_x, sig_title_y, right_info[1])
+
+        # Trait de signature
         p.setStrokeColor(C_TEXT_NAVY)
         p.setLineWidth(1)
         p.line(right_x - 30 * mm, sig_line_y, right_x + 30 * mm, sig_line_y)
 
-        # Le cachet / signature est posé AU-DESSUS de la ligne
+        # En dessous du trait : Cachet numérique agrandi OU Espace libre pour signature/cachet manuscrits
         if right_info[2] and right_info[3] and os.path.exists(right_info[3]):
             try:
-                p.drawImage(ImageReader(right_info[3]), right_x - 22 * mm, sig_line_y + 1 * mm, width=44 * mm, height=22 * mm, mask='auto', preserveAspectRatio=True)
+                reader = get_trimmed_signature_reader(right_info[3])
+                if reader:
+                    # Cachet nominatif agrandi EN DESSOUS du trait
+                    p.drawImage(reader, right_x - sig_cachet_w / 2, sig_line_y - sig_cachet_h - 1 * mm, width=sig_cachet_w, height=sig_cachet_h, mask='auto', preserveAspectRatio=True)
             except Exception:
                 pass
-        elif not right_info[2]:
-            p.setFont("Helvetica-Oblique", 7.5)
-            p.setFillColor(C_TEXT_MUTED)
-            p.drawCentredString(right_x, sig_line_y + 4 * mm, "(Signature et Cachet manuscrits)")
+        # (Si en présentiel, l'espace en dessous reste propre et vierge pour signer et cacheter, sans nom texte)
 
-        # Titre et Nom sous la ligne
-        p.setFont("Helvetica-Bold", 9.5)
-        p.setFillColor(C_TEXT_NAVY)
-        p.drawCentredString(right_x, sig_line_y - 6 * mm, right_info[1])
-        p.setFont("Helvetica", 8.5)
-        p.setFillColor(C_TEXT_MUTED)
-        p.drawCentredString(right_x, sig_line_y - 11 * mm, right_info[0])
-
-        # Date & Lieu bien alignés sous le sceau central
+        # Date & Lieu sous le sceau central
         p.setFont("Helvetica-Bold", 9)
         p.setFillColor(C_TEXT_NAVY)
         p.drawCentredString(seal_x, 26 * mm, f"{location_prefix} {date_str}")
@@ -468,11 +482,11 @@ def render_certificate_pdf(event, participant_data):
 
     else:
         # --- 1 SEUL SIGNATAIRE ---
-        # Date & Lieu à gauche avec trait de présentation
+        # Date & Lieu à gauche
         left_x = 72 * mm
         p.setFont("Helvetica-Bold", 9.5)
         p.setFillColor(C_TEXT_NAVY)
-        p.drawString(left_x - 30 * mm, sig_line_y + 7 * mm, f"{location_prefix} {date_str}")
+        p.drawString(left_x - 30 * mm, sig_title_y, f"{location_prefix} {date_str}")
         p.setStrokeColor(C_GOLD_MAIN)
         p.setLineWidth(1)
         p.line(left_x - 30 * mm, sig_line_y, left_x + 30 * mm, sig_line_y)
@@ -485,30 +499,24 @@ def render_certificate_pdf(event, participant_data):
         p.setFillColor(C_BLUE_ROYAL)
         p.drawString(left_x - 30 * mm, sig_line_y - 11 * mm, f"Vérifiable en ligne • ID: {str(uuid_val)[:18]}")
 
-        # Signataire à droite
+        # Signataire à droite : Titre au-dessus du trait
         right_x = page_width - 72 * mm
+        p.setFont("Helvetica-Bold", 10.5)
+        p.setFillColor(C_TEXT_NAVY)
+        p.drawCentredString(right_x, sig_title_y, sig1_title)
+
         p.setStrokeColor(C_TEXT_NAVY)
         p.setLineWidth(1)
         p.line(right_x - 30 * mm, sig_line_y, right_x + 30 * mm, sig_line_y)
 
-        # Cachet/Signature AU-DESSUS de la ligne
+        # Cachet nominatif agrandi EN DESSOUS du trait
         if sig1_digital and sig1_img_path and os.path.exists(sig1_img_path):
             try:
-                p.drawImage(ImageReader(sig1_img_path), right_x - 22 * mm, sig_line_y + 1 * mm, width=44 * mm, height=22 * mm, mask='auto', preserveAspectRatio=True)
+                reader = get_trimmed_signature_reader(sig1_img_path)
+                if reader:
+                    p.drawImage(reader, right_x - sig_cachet_w / 2, sig_line_y - sig_cachet_h - 1 * mm, width=sig_cachet_w, height=sig_cachet_h, mask='auto', preserveAspectRatio=True)
             except Exception:
                 pass
-        elif not sig1_digital:
-            p.setFont("Helvetica-Oblique", 7.5)
-            p.setFillColor(C_TEXT_MUTED)
-            p.drawCentredString(right_x, sig_line_y + 4 * mm, "(Signature et Cachet manuscrits)")
-
-        # Titre et Nom sous la ligne (SANS doublon !)
-        p.setFont("Helvetica-Bold", 9.5)
-        p.setFillColor(C_TEXT_NAVY)
-        p.drawCentredString(right_x, sig_line_y - 6 * mm, sig1_title)
-        p.setFont("Helvetica", 8.5)
-        p.setFillColor(C_TEXT_MUTED)
-        p.drawCentredString(right_x, sig_line_y - 11 * mm, sig1_name)
 
     p.showPage()
     p.save()

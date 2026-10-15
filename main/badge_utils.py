@@ -30,6 +30,23 @@ def create_circular_mask(image_path, size=(500, 500)):
         return None
 
 
+def get_trimmed_signature_reader(image_path):
+    """Rogne les marges transparentes de la signature/cachet pour un rendu grand, net et parfaitement positionné"""
+    try:
+        if not image_path or not os.path.exists(image_path):
+            return None
+        im = Image.open(image_path)
+        bbox = im.getbbox()
+        if bbox:
+            im = im.crop(bbox)
+        buf = BytesIO()
+        im.save(buf, format='PNG')
+        buf.seek(0)
+        return ImageReader(buf)
+    except Exception:
+        return ImageReader(image_path) if image_path and os.path.exists(image_path) else None
+
+
 def render_badge_pdf(event, participant_data):
     """
     Rendu du Badge A6 Portrait officiel ultra-soigné.
@@ -197,17 +214,22 @@ def render_badge_pdf(event, participant_data):
         p.drawCentredString(center_content_x, photo_y - 20.5 * mm, f"Prom : {promo}")
 
     # 8. Pied du Badge : Signature à gauche, QR Code à droite
-    # Ligne de signature nette
-    sig_line_y = 20 * mm
+    sig_line_y = 22 * mm
     sig_line_x = content_start_x
-    sig_line_w = 40 * mm
+    sig_line_w = 38 * mm
 
-    # Titre du signataire AU-DESSUS de la signature
-    p.setFont("Helvetica-Bold", 7.5)
+    # Titre du signataire AU-DESSUS du trait
+    pres_title = getattr(event, 'certificate_president_title', 'Le Président du COMS.A.S') or "Le Président du COMS.A.S"
+    p.setFont("Helvetica-Bold", 8)
     p.setFillColor(C_TEXT_DARK)
-    p.drawString(sig_line_x, sig_line_y + 16 * mm, "Le Président du COMS.A.S")
+    p.drawString(sig_line_x, sig_line_y + 2.8 * mm, pres_title)
 
-    # Image du cachet et signature : posée SUR la ligne (au-dessus du trait !)
+    # Ligne de séparation
+    p.setStrokeColor(C_BORDER_LIGHT)
+    p.setLineWidth(0.8)
+    p.line(sig_line_x, sig_line_y, sig_line_x + sig_line_w, sig_line_y)
+
+    # Image du cachet et signature : EN DESSOUS du trait et agrandie (contient déjà signature + nom nominatif)
     sig_path = None
     if getattr(event, 'president_signature', None) and hasattr(event.president_signature, 'path') and os.path.exists(event.president_signature.path):
         sig_path = event.president_signature.path
@@ -218,21 +240,12 @@ def render_badge_pdf(event, participant_data):
 
     if sig_path and os.path.exists(sig_path):
         try:
-            # Placé entre sig_line_y et sig_line_y + 15mm pour reposer sur la ligne
-            p.drawImage(ImageReader(sig_path), sig_line_x, sig_line_y + 0.5 * mm, width=34 * mm, height=16 * mm, mask='auto', preserveAspectRatio=True)
+            reader = get_trimmed_signature_reader(sig_path)
+            if reader:
+                p.drawImage(reader, sig_line_x, sig_line_y - 18.5 * mm, width=36 * mm, height=17.5 * mm, mask='auto', preserveAspectRatio=True)
         except Exception:
             pass
-
-    # Ligne de signature
-    p.setStrokeColor(C_BORDER_LIGHT)
-    p.setLineWidth(0.8)
-    p.line(sig_line_x, sig_line_y, sig_line_x + sig_line_w, sig_line_y)
-
-    # Nom du signataire sous la ligne
-    pres_name = getattr(event, 'certificate_president_name', 'Borel Henri NGUIMEZAP') or "Borel Henri NGUIMEZAP"
-    p.setFont("Helvetica", 6.8)
-    p.setFillColor(C_TEXT_MUTED)
-    p.drawString(sig_line_x, sig_line_y - 4.5 * mm, pres_name)
+    # Pas de nom texte en dessous car le cachet contient déjà le nominatif complet
 
     # QR Code haute définition à droite
     qr_size = 22 * mm
