@@ -32,127 +32,116 @@ def create_circular_mask(image_path, size=(500, 500)):
 
 def render_badge_pdf(event, participant_data):
     """
-    Rendu du Badge A6 Portrait ultra-prestige.
-    En-tête avec UY1 agrandi avant COMSAS, cadre or et bleu royal,
-    photo en anneau doré, rôle personnalisable et signature officielle.
+    Rendu du Badge A6 Portrait officiel ultra-soigné.
+    Reprend la structure professionnelle acclamée :
+    - Bandeau latéral gauche sombre avec typographie verticale
+    - Logos officiels (UY1 et COMSAS)
+    - Titre percutant et cadre photo à anneau doré
+    - Rôle et nom dynamiquement calibrés
+    - Signature officielle posée SUR la ligne et QR Code haute fidélité
     """
     buffer = BytesIO()
     width, height = A6  # 105mm x 148mm
     p = canvas.Canvas(buffer, pagesize=A6)
 
-    # Palette Prestige
-    C_NAVY_DARK = colors.HexColor('#0A1128')
-    C_BLUE_ROYAL = colors.HexColor('#0052D4')
-    C_BLUE_CYAN = colors.HexColor('#00D2FF')
-    C_GOLD_MAIN = colors.HexColor('#D4AF37')
-    C_GOLD_LIGHT = colors.HexColor('#F9D776')
-    C_BG_LIGHT = colors.HexColor('#F8FAFC')
+    # Couleurs du Badge Officiel COMSAS
+    C_SIDEBAR_DARK = colors.HexColor('#0F172A')
+    C_ACCENT_ORANGE = colors.HexColor('#F39200')
+    C_TEXT_DARK = colors.HexColor('#0F172A')
     C_TEXT_MUTED = colors.HexColor('#64748B')
+    C_BORDER_LIGHT = colors.HexColor('#E2E8F0')
 
-    # 1. Fond général
-    p.setFillColor(C_BG_LIGHT)
+    # 1. Fond blanc pur
+    p.setFillColor(colors.white)
     p.rect(0, 0, width, height, fill=1, stroke=0)
 
-    # 2. Bandeau supérieur géométrique Prestige
-    top_h = 32 * mm
+    # 2. Barre latérale gauche iconique (Spine Brandée)
+    sidebar_w = 12 * mm
+    p.setFillColor(C_SIDEBAR_DARK)
+    p.rect(0, 0, sidebar_w, height, fill=1, stroke=0)
+
+    # Liseré vertical orange/or
+    accent_w = 1.2 * mm
+    p.setFillColor(C_ACCENT_ORANGE)
+    p.rect(sidebar_w - accent_w, 0, accent_w, height, fill=1, stroke=0)
+
+    # Texte vertical pivoté à 90° dans la barre latérale
     p.saveState()
-    # Gradient simulant Royal Blue -> Navy
-    p.setFillColor(C_NAVY_DARK)
-    p.rect(0, height - top_h, width, top_h, fill=1, stroke=0)
-
-    # Triangle cyan d'accent en haut à droite
-    t_path = p.beginPath()
-    t_path.moveTo(width, height)
-    t_path.lineTo(width - 35 * mm, height)
-    t_path.lineTo(width, height - 25 * mm)
-    t_path.close()
-    p.setFillColor(C_BLUE_ROYAL)
-    p.drawPath(t_path, fill=1, stroke=0)
-
-    # Liseré doré de séparation
-    p.setStrokeColor(C_GOLD_MAIN)
-    p.setLineWidth(1.8)
-    p.line(0, height - top_h, width, height - top_h)
-    p.setStrokeColor(C_GOLD_LIGHT)
-    p.setLineWidth(0.6)
-    p.line(0, height - top_h - 1 * mm, width, height - top_h - 1 * mm)
+    p.translate(sidebar_w / 2 - 0.5 * mm, height / 2)
+    p.rotate(90)
+    p.setFillColor(colors.white)
+    p.setFont("Helvetica-Bold", 8.5)
+    p.drawCentredString(0, 0, "COMPUTER SCIENCE ASSOCIATION • UY1")
     p.restoreState()
 
-    # 3. Logos en-tête (UY1 Agrandit et placé EN PREMIER à gauche, COMSAS à droite)
+    # Zone de contenu principal
+    content_start_x = sidebar_w + 5 * mm
+    content_w = width - content_start_x - 5 * mm
+    center_content_x = content_start_x + content_w / 2
+
+    # 3. En-tête : Logos UY1 (Premier) & COMSAS
     uy1_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'uy1.png')
     comsas_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'comsas.png')
+    
+    logo_size = 13.5 * mm
+    top_logo_y = height - 19 * mm
 
-    logo_h = 16 * mm
-    logo_y = height - 20 * mm
-
-    # Logo UY1 (Premier, agrandi et net)
-    if os.path.exists(uy1_path):
-        try:
-            p.drawImage(ImageReader(uy1_path), 8 * mm, logo_y - 2 * mm, width=16 * mm, height=16 * mm, mask='auto', preserveAspectRatio=True)
-        except Exception:
-            pass
-
-    # Logo COMSAS (À droite)
+    # Logo COMSAS à droite
     if os.path.exists(comsas_path):
         try:
-            p.drawImage(ImageReader(comsas_path), width - 24 * mm, logo_y - 2 * mm, width=16 * mm, height=16 * mm, mask='auto', preserveAspectRatio=True)
+            p.drawImage(ImageReader(comsas_path), width - 6 * mm - logo_size, top_logo_y, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
         except Exception:
             pass
 
-    # Titre institutionnel au centre du bandeau
-    p.setFont("Helvetica-Bold", 7.5)
-    p.setFillColor(colors.white)
-    p.drawCentredString(width / 2, height - 10 * mm, "UNIVERSITÉ DE YAOUNDÉ 1")
-    p.setFont("Helvetica", 6)
-    p.setFillColor(C_GOLD_LIGHT)
-    p.drawCentredString(width / 2, height - 14 * mm, "FACULTÉ DES SCIENCES • DÉPARTEMENT D'INFORMATIQUE")
+    # Logo UY1 à gauche du logo COMSAS
+    if os.path.exists(uy1_path):
+        try:
+            p.drawImage(ImageReader(uy1_path), width - 6 * mm - logo_size * 2 - 2 * mm, top_logo_y, width=logo_size, height=logo_size, mask='auto', preserveAspectRatio=True)
+        except Exception:
+            pass
 
-    # En-tête Badge (ex: PASS OFFICIEL)
-    badge_header = getattr(event, 'badge_header_title', 'PASS OFFICIEL') or "PASS OFFICIEL"
-    p.setFont("Helvetica-Bold", 10)
-    p.setFillColor(C_BLUE_CYAN)
-    p.drawCentredString(width / 2, height - 24 * mm, badge_header.upper())
+    # En-tête "PASS OFFICIEL"
+    badge_header = (getattr(event, 'badge_header_title', '') or "PASS OFFICIEL").upper()
+    p.setFont("Helvetica-Bold", 12.5)
+    p.setFillColor(C_TEXT_DARK)
+    p.drawString(content_start_x, height - 12 * mm, badge_header)
 
-    # 4. Titre de l'événement (Sous le bandeau)
+    # 4. Titre de l'événement (En orange/ambre, élégant et lisible)
     event_title = getattr(event, 'title_fr', "Événement Officiel").upper()
-    p.setFont("Helvetica-Bold", 10.5)
-    p.setFillColor(C_NAVY_DARK)
-    
-    # Wrapping du titre sur 2 lignes max
+    p.setFont("Helvetica-Bold", 8.5)
+    p.setFillColor(C_ACCENT_ORANGE)
+
     words = event_title.split()
-    l1, l2 = "", ""
-    max_tw = width - 18 * mm
-    for w in words:
-        if stringWidth(l1 + " " + w, "Helvetica-Bold", 10.5) < max_tw and not l2:
-            l1 += (" " + w if l1 else w)
-        else:
-            if stringWidth(l2 + " " + w, "Helvetica-Bold", 10.5) < max_tw:
-                l2 += (" " + w if l2 else w)
+    t_lines, cur_line = [], ""
+    max_title_w = content_w - (logo_size * 2 + 5 * mm)  # Dégagé des logos
     
-    p.drawCentredString(width / 2, height - 37 * mm, l1)
-    if l2:
-        p.drawCentredString(width / 2, height - 41.5 * mm, l2)
-        photo_top_y = height - 48 * mm
-    else:
-        photo_top_y = height - 45 * mm
+    for w in words:
+        if stringWidth(cur_line + " " + w, "Helvetica-Bold", 8.5) < max_title_w:
+            cur_line += (" " + w if cur_line else w)
+        else:
+            t_lines.append(cur_line)
+            cur_line = w
+    if cur_line:
+        t_lines.append(cur_line)
 
-    # 5. Cadre Photo Circulaire avec Anneau Doré Double
-    photo_diameter = 38 * mm
-    photo_x = (width - photo_diameter) / 2
-    photo_y = photo_top_y - photo_diameter
-    center_x = width / 2
-    center_y = photo_y + photo_diameter / 2
+    title_y = height - 17.5 * mm
+    for line in t_lines[:3]:
+        p.drawString(content_start_x, title_y, line)
+        title_y -= 3.8 * mm
 
-    # Double anneau d'or
+    # 5. Cadre Photo Circulaire au centre
+    photo_diameter = 44 * mm
+    photo_x = center_content_x - photo_diameter / 2
+    photo_y = height - 76 * mm
+
+    # Double anneau d'or élégant
     p.saveState()
-    p.setStrokeColor(C_GOLD_MAIN)
-    p.setLineWidth(2.5)
-    p.circle(center_x, center_y, photo_diameter / 2 + 1.8 * mm, fill=0, stroke=1)
-    p.setStrokeColor(C_BLUE_ROYAL)
-    p.setLineWidth(0.8)
-    p.circle(center_x, center_y, photo_diameter / 2 + 3.2 * mm, fill=0, stroke=1)
+    p.setStrokeColor(C_ACCENT_ORANGE)
+    p.setLineWidth(2.2)
+    p.circle(center_content_x, photo_y + photo_diameter / 2, photo_diameter / 2 + 1.5 * mm, fill=0, stroke=1)
+    p.restoreState()
 
-    # Affichage de la photo du participant
+    # Rendu de la photo
     photo_rendered = False
     img_path = participant_data.get('photo_path')
     if img_path and os.path.exists(img_path):
@@ -168,54 +157,57 @@ def render_badge_pdf(event, participant_data):
             pass
 
     if not photo_rendered:
-        # Fallback élégant : cercle stylisé avec monogramme
-        p.setFillColor(colors.HexColor('#E2E8F0'))
-        p.circle(center_x, center_y, photo_diameter / 2, fill=1, stroke=0)
-        p.setFillColor(C_BLUE_ROYAL)
-        p.setFont("Helvetica-Bold", 18)
-        initials = "".join([part[0] for part in participant_data.get('nom_prenom', 'P N').split()[:2]]).upper()
-        p.drawCentredString(center_x, center_y - 6 * mm, initials or "VIP")
+        # Silhouette neutre élégante
+        p.saveState()
+        p.setFillColor(colors.HexColor('#F1F5F9'))
+        p.circle(center_content_x, photo_y + photo_diameter / 2, photo_diameter / 2, fill=1, stroke=0)
+        
+        # Icône tête et buste vectorielle stylisée
+        p.setFillColor(colors.HexColor('#CBD5E1'))
+        # Tête
+        p.circle(center_content_x, photo_y + photo_diameter / 2 + 5 * mm, 7 * mm, fill=1, stroke=0)
+        # Épaules
+        shoulder = p.beginPath()
+        shoulder.arc(photo_x + 5 * mm, photo_y, photo_x + photo_diameter - 5 * mm, photo_y + 24 * mm, 0, 180)
+        shoulder.close()
+        p.drawPath(shoulder, fill=1, stroke=0)
+        p.restoreState()
 
-    p.restoreState()
-
-    # 6. Pastille de Rôle (VIP / PARTICIPANT / ORGANISATEUR)
+    # 6. Rôle du Participant (Badge / Pillule dorée)
     role_text = (participant_data.get('role') or getattr(event, 'badge_role_default', 'PARTICIPANT') or "PARTICIPANT").upper()
-    pill_w = max(45 * mm, stringWidth(role_text, "Helvetica-Bold", 9) + 16 * mm)
-    pill_h = 6.5 * mm
-    pill_x = (width - pill_w) / 2
-    pill_y = photo_y - 9 * mm
+    p.setFont("Helvetica-Bold", 10.5)
+    p.setFillColor(C_ACCENT_ORANGE)
+    p.drawCentredString(center_content_x, photo_y - 8 * mm, role_text)
 
-    # Pilule dorée
-    p.setFillColor(C_GOLD_MAIN)
-    p.roundRect(pill_x, pill_y, pill_w, pill_h, 3 * mm, fill=1, stroke=0)
-    p.setFont("Helvetica-Bold", 8.5)
-    p.setFillColor(colors.white)
-    p.drawCentredString(width / 2, pill_y + 1.8 * mm, role_text)
-
-    # 7. Nom et Promotion du Participant
-    name_y = pill_y - 8 * mm
+    # 7. Nom et Prénom du Participant
     nom = participant_data.get('nom_prenom', 'Patrice Nguekam Dassi').upper()
-    p.setFillColor(C_NAVY_DARK)
-
-    # Auto-scaling du nom pour ne jamais déborder
-    name_fs = 14
-    while stringWidth(nom, "Helvetica-Bold", name_fs) > (width - 16 * mm) and name_fs > 9:
-        name_fs -= 1
+    name_fs = 14.5
+    while stringWidth(nom, "Helvetica-Bold", name_fs) > (content_w - 4 * mm) and name_fs > 9:
+        name_fs -= 0.5
 
     p.setFont("Helvetica-Bold", name_fs)
-    p.drawCentredString(width / 2, name_y, nom)
+    p.setFillColor(C_TEXT_DARK)
+    p.drawCentredString(center_content_x, photo_y - 15 * mm, nom)
 
-    # Promotion / Niveau
+    # Promotion / Affiliation
     promo = participant_data.get('promotion')
     if promo:
-        p.setFont("Helvetica-Bold", 8.5)
+        p.setFont("Helvetica", 9)
         p.setFillColor(C_TEXT_MUTED)
-        p.drawCentredString(width / 2, name_y - 4.5 * mm, f"Promotion : {promo}")
+        p.drawCentredString(center_content_x, photo_y - 20.5 * mm, f"Prom : {promo}")
 
-    # 8. Pied du Badge : Signature Président & QR Code
-    foot_y = 7 * mm
-    
-    # Signature à gauche
+    # 8. Pied du Badge : Signature à gauche, QR Code à droite
+    # Ligne de signature nette
+    sig_line_y = 20 * mm
+    sig_line_x = content_start_x
+    sig_line_w = 40 * mm
+
+    # Titre du signataire AU-DESSUS de la signature
+    p.setFont("Helvetica-Bold", 7.5)
+    p.setFillColor(C_TEXT_DARK)
+    p.drawString(sig_line_x, sig_line_y + 16 * mm, "Le Président du COMS.A.S")
+
+    # Image du cachet et signature : posée SUR la ligne (au-dessus du trait !)
     sig_path = None
     if getattr(event, 'president_signature', None) and hasattr(event.president_signature, 'path') and os.path.exists(event.president_signature.path):
         sig_path = event.president_signature.path
@@ -224,39 +216,43 @@ def render_badge_pdf(event, participant_data):
         if os.path.exists(def_sig):
             sig_path = def_sig
 
-    p.setFont("Helvetica-Bold", 7)
-    p.setFillColor(C_NAVY_DARK)
-    p.drawString(10 * mm, foot_y + 19 * mm, "Le Président COMSAS")
-    
-    p.setStrokeColor(C_GOLD_MAIN)
-    p.setLineWidth(0.6)
-    p.line(10 * mm, foot_y + 17.5 * mm, 45 * mm, foot_y + 17.5 * mm)
-
     if sig_path and os.path.exists(sig_path):
         try:
-            p.drawImage(ImageReader(sig_path), 10 * mm, foot_y + 2 * mm, width=32 * mm, height=15 * mm, mask='auto', preserveAspectRatio=True)
+            # Placé entre sig_line_y et sig_line_y + 15mm pour reposer sur la ligne
+            p.drawImage(ImageReader(sig_path), sig_line_x, sig_line_y + 0.5 * mm, width=34 * mm, height=16 * mm, mask='auto', preserveAspectRatio=True)
         except Exception:
             pass
 
-    # QR Code officiel à droite
-    qr_size = 19 * mm
-    qr_x = width - qr_size - 9 * mm
-    qr_y = foot_y + 2 * mm
+    # Ligne de signature
+    p.setStrokeColor(C_BORDER_LIGHT)
+    p.setLineWidth(0.8)
+    p.line(sig_line_x, sig_line_y, sig_line_x + sig_line_w, sig_line_y)
+
+    # Nom du signataire sous la ligne
+    pres_name = getattr(event, 'certificate_president_name', 'Borel Henri NGUIMEZAP') or "Borel Henri NGUIMEZAP"
+    p.setFont("Helvetica", 6.8)
+    p.setFillColor(C_TEXT_MUTED)
+    p.drawString(sig_line_x, sig_line_y - 4.5 * mm, pres_name)
+
+    # QR Code haute définition à droite
+    qr_size = 22 * mm
+    qr_x = width - qr_size - 6 * mm
+    qr_y = 9 * mm
 
     uuid_val = participant_data.get('uuid', 'BADGE-2026-COMSAS')
     verify_url = participant_data.get('verify_url') or f"{getattr(settings, 'SITE_URL', 'https://comsas-uy1.com')}/verify/{uuid_val}"
 
-    qr = qrcode.QRCode(box_size=5, border=0)
+    qr = qrcode.QRCode(box_size=6, border=0)
     qr.add_data(verify_url)
     qr.make(fit=True)
     qr_buf = BytesIO()
-    qr.make_image(fill_color="#0A1128", back_color="white").save(qr_buf, 'PNG')
+    qr.make_image(fill_color="#0F172A", back_color="white").save(qr_buf, 'PNG')
     qr_buf.seek(0)
 
     p.drawImage(ImageReader(qr_buf), qr_x, qr_y, width=qr_size, height=qr_size)
-    p.setFont("Helvetica-Bold", 5)
-    p.setFillColor(C_BLUE_ROYAL)
-    p.drawCentredString(qr_x + qr_size / 2, qr_y - 2.5 * mm, "SCAN POUR ACCÈS")
+    p.setFont("Helvetica-Bold", 5.5)
+    p.setFillColor(C_ACCENT_ORANGE)
+    p.drawCentredString(qr_x + qr_size / 2, qr_y - 3.5 * mm, "SCAN POUR ACCÈS")
 
     # Logos partenaires additionnels (si existants)
     partners = []
@@ -267,14 +263,9 @@ def render_badge_pdf(event, participant_data):
 
     for i, plogo in enumerate(partners[:2]):
         try:
-            p.drawImage(ImageReader(plogo), 45 * mm + i * 8 * mm, foot_y + 3 * mm, width=7 * mm, height=7 * mm, mask='auto', preserveAspectRatio=True)
+            p.drawImage(ImageReader(plogo), sig_line_x + sig_line_w + 3 * mm + i * 8 * mm, 12 * mm, width=7 * mm, height=7 * mm, mask='auto', preserveAspectRatio=True)
         except Exception:
             pass
-
-    # Bordure générale fine du badge
-    p.setStrokeColor(C_GOLD_MAIN)
-    p.setLineWidth(0.8)
-    p.rect(3 * mm, 3 * mm, width - 6 * mm, height - 6 * mm, fill=0, stroke=1)
 
     p.showPage()
     p.save()
@@ -283,14 +274,11 @@ def render_badge_pdf(event, participant_data):
 
 
 def generate_badge(registration):
-    """
-    Génère et sauvegarde le PDF du badge pour une inscription.
-    """
+    """Génère et sauvegarde le badge pour une inscription"""
     event = registration.event
     if not getattr(event, 'badge_enabled', True):
         return None
 
-    # Recherche photo du participant ou membre
     photo_path = None
     if registration.photo and hasattr(registration.photo, 'path') and os.path.exists(registration.photo.path):
         photo_path = registration.photo.path
@@ -321,12 +309,10 @@ def generate_badge(registration):
 
 
 def generate_preview_badge(event):
-    """
-    Génère un PDF de badge de démonstration pour la prévisualisation dans l'admin.
-    """
+    """Génère un badge de démonstration pour la prévisualisation dans l'admin"""
     participant_data = {
         'nom_prenom': 'Patrice Nguekam Dassi',
-        'promotion': 'Master 1 Génie Logiciel',
+        'promotion': 'Master 2 - Sécurité Informatique',
         'photo_path': None,
         'uuid': 'PREVIEW-BADGE-2026',
         'verify_url': f"{getattr(settings, 'SITE_URL', 'https://comsas-uy1.com')}/verify/preview",
