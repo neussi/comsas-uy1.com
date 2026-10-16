@@ -15,8 +15,11 @@ urlpatterns = [
     path('events/<int:pk>/certificates/', certificate_views.event_certificates_manage, name='admin_event_certificates'),
     path('events/<int:pk>/certificates/preview/', certificate_views.preview_certificate_view, name='admin_preview_certificate'),
     path('events/<int:pk>/certificates/generate-all/', certificate_views.generate_all_certificates, name='admin_generate_all_certificates'),
+    path('events/<int:pk>/certificates/generate-present/', certificate_views.generate_present_certificates, name='admin_generate_present_certificates'),
+    path('events/<int:pk>/certificates/send-present/', certificate_views.send_present_certificates, name='admin_send_present_certificates'),
     path('events/<int:pk>/certificates/download-zip/', certificate_views.download_certificates_zip, name='admin_download_certificates_zip'),
     path('registrations/<int:registration_id>/regenerate-certificate/', certificate_views.regenerate_certificate, name='admin_regenerate_certificate'),
+    path('registrations/<int:registration_id>/send-certificate/', certificate_views.send_single_certificate, name='admin_send_single_certificate'),
     
     # Badge Management
     path('events/<int:pk>/badges/', badge_views.event_badges_manage, name='admin_event_badges'),
@@ -68,6 +71,7 @@ urlpatterns = [
     path('registrations/<int:pk>/delete/', views.delete_registration, name='admin_delete_registration'),
     path('events/<int:pk>/registrations/export/', views.event_registrations_export_excel, name='admin_export_registrations'),
     path('registrations/<int:pk>/confirm/', views.confirm_registration, name='admin_confirm_registration'),
+    path('registrations/<int:pk>/edit/', views.admin_edit_registration, name='admin_edit_registration'),
     path('events/<int:pk>/send-certificates/', views.admin_send_event_certificates, name='admin_send_event_certificates'),
     
     # Codes d'inscription présentiels

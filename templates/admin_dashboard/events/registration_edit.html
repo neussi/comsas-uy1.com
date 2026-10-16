@@ -1,0 +1,250 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Modifier le participant — {{ registration.nom_prenom }}{% endblock %}
+{% block page_icon %}user-edit{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-7">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{% url 'admin_events_list' %}" class="text-decoration-none">Événements</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'admin_event_registrations' event.pk %}" class="text-decoration-none">Inscriptions</a></li>
+                <li class="breadcrumb-item active">Modifier un inscrit</li>
+            </ol>
+        </nav>
+        <h4 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-user-edit text-primary me-2"></i>Modifier l'inscription de {{ registration.nom_prenom }}
+        </h4>
+        <p class="text-muted small mb-0">
+            Événement : <strong>{{ event.title_fr }}</strong> &bull; Inscrit le {{ registration.registration_date|date:"d F Y à H:i" }}
+        </p>
+    </div>
+    <div class="col-md-5 text-end">
+        <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-secondary shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i>Retour aux inscriptions
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Formulaire d'édition -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="fw-bold text-dark mb-1">
+                    <i class="fas fa-id-card text-primary me-2"></i>Coordonnées & Statut du Participant
+                </h5>
+                <p class="text-muted small mb-0">Toutes les modifications sauvegardées peuvent automatiquement régénérer le ticket, le badge et l'attestation.</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger border-0 rounded-3 mb-4">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Erreurs détectées :</h6>
+                        <ul class="mb-0 small">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                <li><strong>{{ field }}</strong> : {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Nom & Promotion -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold text-dark">Nom et Prénom <span class="text-danger">*</span></label>
+                            {{ form.nom_prenom }}
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold text-dark">Promotion / Niveau</label>
+                            {{ form.promotion }}
+                        </div>
+                    </div>
+
+                    <!-- Email & Téléphone -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold text-dark">Adresse e-mail <span class="text-danger">*</span></label>
+                            {{ form.email }}
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold text-dark">Téléphone</label>
+                            {{ form.telephone }}
+                        </div>
+                    </div>
+
+                    <!-- Code d'inscription -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark">Code d'inscription physique (6 car.)</label>
+                        {{ form.registration_code_entered }}
+                        <small class="text-muted">Code remis en présentiel pour cet événement.</small>
+                    </div>
+
+                    <!-- Statuts & Présence -->
+                    <div class="card bg-light border-0 rounded-3 p-3 mb-4">
+                        <h6 class="fw-bold text-dark mb-3"><i class="fas fa-toggle-on text-primary me-2"></i>Statuts de l'inscription</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    {{ form.is_confirmed }}
+                                    <label class="form-check-label fw-semibold ms-2" for="{{ form.is_confirmed.id_for_label }}">
+                                        Inscription Confirmée
+                                    </label>
+                                    <small class="text-muted d-block ms-2">Permet d'accéder à l'activité et de recevoir les billets.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    {{ form.has_participated }}
+                                    <label class="form-check-label fw-semibold ms-2" for="{{ form.has_participated.id_for_label }}">
+                                        Présence & Participation Validée
+                                    </label>
+                                    <small class="text-muted d-block ms-2">Ouvre droit à la génération et l'envoi de l'attestation de participation.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Photo du participant -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark">Photo du participant (pour le badge)</label>
+                        {% if registration.photo %}
+                        <div class="d-flex align-items-center mb-2 p-2 bg-light rounded-3">
+                            <img src="{{ registration.photo.url }}" class="rounded-circle me-3 border" style="width: 50px; height: 50px; object-fit: cover;" alt="Photo">
+                            <div>
+                                <small class="text-muted d-block">Photo actuelle enregistrée</small>
+                                <a href="{{ registration.photo.url }}" target="_blank" class="small text-decoration-none">
+                                    <i class="fas fa-external-link-alt me-1"></i>Voir l'image en grand
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {{ form.photo }}
+                    </div>
+
+                    <!-- Message / Commentaire -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-dark">Message / Commentaire</label>
+                        {{ form.message }}
+                    </div>
+
+                    <!-- Option régénération auto -->
+                    <div class="alert alert-info border-0 rounded-3 d-flex align-items-center p-3 mb-4">
+                        <div class="form-check form-switch m-0">
+                            {{ form.regenerate_documents }}
+                            <label class="form-check-label fw-bold ms-2 text-dark" for="{{ form.regenerate_documents.id_for_label }}">
+                                {{ form.regenerate_documents.label }}
+                            </label>
+                            <small class="text-muted d-block ms-2">{{ form.regenerate_documents.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-semibold shadow-sm">
+                            <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                        </button>
+                        <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                            Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panneau latéral : aperçu des documents & statuts -->
+    <div class="col-lg-4">
+        <!-- Carte Documents -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white border-0 pt-4 pb-2">
+                <h6 class="fw-bold text-dark mb-0"><i class="fas fa-file-alt text-success me-2"></i>Documents Associés</h6>
+            </div>
+            <div class="card-body p-3">
+                <ul class="list-group list-group-flush">
+                    <!-- Ticket PDF -->
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong class="d-block small">Billet / Ticket officiel</strong>
+                            <small class="text-muted">UUID : {{ registration.uuid|stringformat:"s"|slice:":8" }}...</small>
+                        </div>
+                        {% if registration.ticket_pdf %}
+                        <a href="{{ registration.ticket_pdf.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-download me-1"></i>Voir PDF
+                        </a>
+                        {% else %}
+                        <span class="badge bg-secondary bg-opacity-10 text-muted">Non généré</span>
+                        {% endif %}
+                    </li>
+
+                    <!-- Badge PDF -->
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong class="d-block small">Badge participant</strong>
+                            <small class="text-muted">Statut badge événement</small>
+                        </div>
+                        {% if registration.badge_pdf %}
+                        <a href="{{ registration.badge_pdf.url }}" target="_blank" class="btn btn-sm btn-outline-warning">
+                            <i class="fas fa-id-badge me-1"></i>Voir Badge
+                        </a>
+                        {% else %}
+                        <span class="badge bg-secondary bg-opacity-10 text-muted">Non généré</span>
+                        {% endif %}
+                    </li>
+
+                    <!-- Attestation PDF -->
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong class="d-block small">Attestation de participation</strong>
+                            <small class="text-muted">
+                                {% if registration.is_marked_present %}
+                                <span class="text-success"><i class="fas fa-check-circle me-1"></i>Présent</span>
+                                {% else %}
+                                <span class="text-muted"><i class="fas fa-times-circle me-1"></i>Non marqué</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                        {% if registration.certificate_pdf %}
+                        <a href="{{ registration.certificate_pdf.url }}" target="_blank" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-certificate me-1"></i>Attestation
+                        </a>
+                        {% else %}
+                        <span class="badge bg-secondary bg-opacity-10 text-muted">En attente</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Carte Présence & Historique -->
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-2">
+                <h6 class="fw-bold text-dark mb-0"><i class="fas fa-clipboard-check text-info me-2"></i>Émargement & Appel</h6>
+            </div>
+            <div class="card-body p-3">
+                <p class="small text-muted mb-2">Historique d'émargement de ce participant :</p>
+                {% if registration.attendances.all %}
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    {% for att in registration.attendances.all %}
+                    <span class="badge {% if att.is_present %}bg-success{% else %}bg-secondary{% endif %} px-2 py-1">
+                        Jour {{ att.day_number }} : {% if att.is_present %}Présent{% else %}Absent{% endif %}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="small text-muted fst-italic mb-3">Aucun émargement journalier saisi.</p>
+                {% endif %}
+
+                <a href="{% url 'admin_event_attendance' event.pk %}" class="btn btn-outline-info btn-sm w-100 rounded-pill">
+                    <i class="fas fa-list-check me-1"></i>Ouvrir la feuille d'appel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

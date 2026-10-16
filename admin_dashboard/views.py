@@ -35,7 +35,8 @@ from main.models import (
 from .forms import (
     ProjectForm, EventForm, NewsForm, GalleryForm, SiteSettingsForm, MemberForm,
     SponsorshipSessionForm, ContestForm, CandidateForm,
-    RequestDocumentForm, ProfessorForm, ClassroomForm, DelegateForm, BlogArticleForm
+    RequestDocumentForm, ProfessorForm, ClassroomForm, DelegateForm, BlogArticleForm,
+    EventRegistrationAdminForm
 )
 from main.utils import send_member_card_email
 
@@ -422,6 +423,64 @@ def confirm_registration(request, pk):
     
     messages.success(request, f'Inscription de {registration.nom_prenom} confirmée.')
     return redirect('admin_event_registrations', pk=registration.event.pk)
+
+@custom_staff_member_required
+def admin_edit_registration(request, pk):
+    """Modifier les informations d'un participant inscrit"""
+    registration = get_object_or_404(EventRegistration, pk=pk)
+    event = registration.event
+    
+    if request.method == 'POST':
+        form = EventRegistrationAdminForm(request.POST, request.FILES, instance=registration)
+        if form.is_valid():
+            reg = form.save(commit=False)
+            
+            # Gestion de la date de présence si cochée
+            if reg.has_participated and not reg.participation_validated_at:
+                reg.participation_validated_at = timezone.now()
+            elif not reg.has_participated and not reg.attendances.filter(is_present=True).exists():
+                reg.participation_validated_at = None
+                
+            reg.save()
+            
+            # Régénération automatique des documents si demandé
+            regenerate = form.cleaned_data.get('regenerate_documents', False)
+            if regenerate:
+                # 1. Billet / Ticket
+                try:
+                    from main.utils import generate_ticket
+                    generate_ticket(reg)
+                except Exception as e:
+                    print(f"Erreur régénération ticket: {e}")
+                    
+                # 2. Badge
+                if event.badge_enabled and (reg.badge_pdf or True):
+                    try:
+                        from main.badge_utils import generate_badge
+                        generate_badge(reg)
+                    except Exception as e:
+                        print(f"Erreur régénération badge: {e}")
+                        
+                # 3. Attestation
+                if event.certificate_enabled and (reg.certificate_pdf or reg.is_marked_present):
+                    try:
+                        from main.certificate_utils import generate_certificate
+                        generate_certificate(reg)
+                    except Exception as e:
+                        print(f"Erreur régénération attestation: {e}")
+                        
+            messages.success(request, f"Les informations de {reg.nom_prenom} ont été mises à jour avec succès.")
+            return redirect('admin_event_registrations', pk=event.pk)
+    else:
+        form = EventRegistrationAdminForm(instance=registration)
+        
+    context = {
+        'registration': registration,
+        'event': event,
+        'form': form,
+    }
+    return render(request, 'admin_dashboard/events/registration_edit.html', context)
+
 
 @custom_staff_member_required
 def event_registrations_export_excel(request, pk):
@@ -2043,58 +2102,10 @@ def club_application_delete(request, pk):
 @custom_staff_member_required
 def admin_send_event_certificates(request, pk):
     """
-    Génère et envoie les attestations par email pour tous les participants confirmés d'un événement.
+    Génère et envoie les attestations par email uniquement aux participants marqués présents d'un événement.
     """
-    event = get_object_or_404(Event, pk=pk)
-    registrations = EventRegistration.objects.filter(event=event, is_confirmed=True)
-    count = 0
-    
-    from main.certificate_utils import generate_certificate
-    from main.badge_utils import generate_badge
-    from django.core.mail import EmailMessage
-    from django.conf import settings
-    
-    for reg in registrations:
-        try:
-            # 1. Générer l'attestation si activée
-            if event.certificate_enabled:
-                generate_certificate(reg)
-            
-            # 2. Générer le badge si activé
-            if event.badge_enabled:
-                generate_badge(reg)
-                
-            # 3. Envoyer l'email
-            subject = f"Votre attestation : {event.title_fr}"
-            message = f"Bonjour {reg.nom_prenom},\n\nFélicitations pour votre participation à l'événement '{event.title_fr}'.\n\nVous trouverez ci-joint votre attestation de participation (si applicable) ainsi que votre badge.\n\nCordialement,\nL'équipe COM.S.AS"
-            
-            email = EmailMessage(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [reg.email],
-            )
-            
-            # Re-fetch registration to get updated PDF paths
-            reg.refresh_from_db()
-            
-            # Attach certificate
-            if reg.certificate_pdf and reg.certificate_pdf.name:
-                email.attach_file(reg.certificate_pdf.path)
-            
-            # Attach badge
-            if reg.badge_pdf and reg.badge_pdf.name:
-                email.attach_file(reg.badge_pdf.path)
-                
-            email.send(fail_silently=True)
-            count += 1
-        except Exception as e:
-            messages.error(request, f"Erreur pour {reg.email}: {str(e)}")
-    
-    event.certificates_sent = True
-    event.save()
-    messages.success(request, f"{count} attestations/badges envoyés pour '{event.title_fr}'.")
-    return redirect('admin_event_registrations', pk=event.pk)
+    from . import certificate_views
+    return certificate_views.send_present_certificates(request, pk)
 
 # ============================================================
 # MISS & MISTER J.U.IN 2026 ADMIN

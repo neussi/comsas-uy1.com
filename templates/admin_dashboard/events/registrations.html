@@ -35,9 +35,9 @@
             class="btn btn-info me-2 shadow-sm hover-lift text-white">
             <i class="fas fa-file-excel me-1"></i>Exporter
         </a>
-        <a href="{% url 'admin_send_event_certificates' event.pk %}" class="btn btn-danger shadow-sm hover-lift"
-            onclick="return confirm('Générer et envoyer par email l\'attestation et le badge à tous les participants confirmés ? Cette action peut prendre du temps.')">
-            <i class="fas fa-paper-plane me-1"></i>Envoyer Certificats
+        <a href="{% url 'admin_send_present_certificates' event.pk %}" class="btn btn-primary shadow-sm hover-lift"
+            onclick="return confirm('Générer et envoyer par email l\'attestation (et badge) uniquement aux participants marqués présents ?')">
+            <i class="fas fa-paper-plane me-1"></i>Envoyer Attestations (Présents)
         </a>
     </div>
 </div>
@@ -132,6 +132,10 @@
                         </td>
                         <td class="text-end pe-4">
                             <div class="btn-group">
+                                <a href="{% url 'admin_edit_registration' registration.pk %}"
+                                    class="btn btn-sm btn-light text-primary rounded-circle me-1" title="Modifier l'inscrit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 {% if not registration.is_confirmed %}
                                 <a href="{% url 'admin_confirm_registration' registration.pk %}"
                                     class="btn btn-sm btn-light text-success rounded-circle me-1" title="Confirmer">

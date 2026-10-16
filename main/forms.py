@@ -198,6 +198,13 @@ class EventRegistrationForm(forms.ModelForm):
             if not code_obj:
                 raise forms.ValidationError(_("Ce code d'inscription n'est pas valide pour cet événement. Veuillez vérifier la saisie."))
             if code_obj.is_used:
+                input_email = (self.data.get('email') or '').strip().lower()
+                # Si le code a déjà été utilisé par cette même personne (cas d'un double-clic ou rechargement)
+                if (code_obj.used_by and code_obj.used_by.email.strip().lower() == input_email) or \
+                   (EventRegistration.objects.filter(event=self.event, email__iexact=input_email, registration_code_entered__iexact=code).exists()):
+                    self.cleaned_code_obj = code_obj
+                    self.is_duplicate_submission = True
+                    return code
                 raise forms.ValidationError(_("Ce code d'inscription a déjà été utilisé. Chaque code est à usage unique et n'est plus valable."))
             self.cleaned_code_obj = code_obj
         return code

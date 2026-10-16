@@ -277,6 +277,14 @@ class EventRegistration(models.Model):
         att = self.attendances.filter(day_number=day_number).first()
         return att.is_present if att else False
 
+    @property
+    def is_marked_present(self):
+        """Vérifie si le participant a été marqué comme présent (émargé ou participation validée)"""
+        if self.has_participated:
+            return True
+        return self.attendances.filter(is_present=True).exists()
+
+
 class EventRegistrationCode(models.Model):
     """Codes d'inscription à usage unique pour les événements avec code présentiel"""
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='registration_codes', verbose_name="Événement")

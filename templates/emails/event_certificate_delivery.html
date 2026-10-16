@@ -1,0 +1,35 @@
+{% extends 'emails/base_email.html' %}
+
+{% block title %}Votre Attestation Officielle de Participation - {{ event_title }}{% endblock %}
+
+{% block content %}
+<h1>🎓 Attestation Officielle de Participation</h1>
+
+<p>Bonjour <strong>{{ participant_name }}</strong>,</p>
+
+<p>Le comité d'organisation du <strong>Club Informatique COMSAS (Université de Yaoundé 1)</strong> a le plaisir de vous transmettre votre <strong>attestation officielle de participation</strong> suite à votre présence active à l'événement :</p>
+
+<div class="info-box" style="background-color: #F8FAFC; border-left: 4px solid #10B981; padding: 16px; margin: 20px 0; border-radius: 8px;">
+    <p style="margin: 5px 0;"><strong>📅 Événement :</strong> {{ event_title }}</p>
+    <p style="margin: 5px 0;"><strong>📍 Lieu :</strong> {{ event_location }}</p>
+    <p style="margin: 5px 0;"><strong>🗓️ Date :</strong> {{ event_date|date:"d F Y" }}</p>
+    <p style="margin: 5px 0;"><strong>✅ Présence :</strong> Confirmée et validée par les organisateurs</p>
+</div>
+
+<div style="background-color: #ECFDF5; padding: 18px; border-radius: 8px; border-left: 4px solid #059669; margin: 20px 0;">
+    <h3 style="margin-top: 0; color: #065F46; font-size: 16px;">
+        📎 Document joint à ce message
+    </h3>
+    <p style="margin: 0; color: #047857; font-size: 14px;">
+        Votre attestation officielle signée au format <strong>PDF haute définition</strong> est attachée en pièce jointe à cet email. Vous pouvez la télécharger, l'imprimer ou l'ajouter à votre CV et profil professionnel.
+    </p>
+</div>
+
+<p>Nous vous remercions chaleureusement pour votre assiduité et votre engagement au sein de la communauté informatique universitaire.</p>
+
+<p style="margin-top: 30px;">
+    Très cordialement,<br>
+    <strong>Le Comité d'Organisation COMS.A.S</strong><br>
+    <span style="color: #64748B; font-size: 13px;">Computer Science Association &bull; Département d'Informatique &bull; Faculté des Sciences &bull; Université de Yaoundé 1</span>
+</p>
+{% endblock %}

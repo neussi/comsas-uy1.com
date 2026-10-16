@@ -274,11 +274,11 @@
                     </div>
                     {% endif %}
 
-                    <form method="post" action="{% url 'event_detail' event.id %}" enctype="multipart/form-data">
+                    <form method="post" action="{% url 'event_detail' event.id %}" enctype="multipart/form-data" id="eventRegistrationForm">
                         {% csrf_token %}
                         {{ form|crispy }}
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-rose rounded-pill px-5 py-2 fw-bold">
+                            <button type="submit" id="btnSubmitRegistration" class="btn btn-rose rounded-pill px-5 py-2 fw-bold">
                                 Valider mon inscription
                             </button>
                         </div>
@@ -364,7 +364,7 @@
                                 <small class="text-muted d-block">Attestation</small>
                                 <strong class="text-dark">
                                     {% if event.certificate_enabled %}
-                                    Délivrée aux participants confirmés
+                                    Délivrée aux participants présents
                                     {% else %}
                                     Non applicable
                                     {% endif %}
@@ -387,4 +387,27 @@
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const regForm = document.getElementById('eventRegistrationForm');
+    if (regForm) {
+        let isSubmitting = false;
+        regForm.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+            isSubmitting = true;
+            const submitBtn = document.getElementById('btnSubmitRegistration');
+            if (submitBtn) {
+                setTimeout(function() {
+                    submitBtn.disabled = true;
+                }, 20);
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Inscription en cours...';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

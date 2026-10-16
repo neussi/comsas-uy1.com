@@ -24,3 +24,13 @@ env/
 .DS_Store
 Thumbs.db
 .env
+
+# Scratch
+scratch/
+preview_docs/*.png
+preview_docs/current*
+preview_docs/*test*
+preview_docs/*final*
+preview_docs/*v2*
+preview_docs/*v3*
+preview_docs/*dual*

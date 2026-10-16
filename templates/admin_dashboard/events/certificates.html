@@ -1,200 +1,343 @@
 {% extends 'admin_dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Gestion des Attestations - {{ event.title_fr }}{% endblock %}
+{% block title %}Gestion des Attestations — {{ event.title_fr }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid px-0">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div>
-            <h2><i class="fas fa-certificate text-primary"></i> Attestations de Participation</h2>
-            <p class="text-muted mb-0">{{ event.title_fr }}</p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_events_list' %}" class="text-decoration-none">Événements</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_event_registrations' event.pk %}" class="text-decoration-none">Inscriptions</a></li>
+                    <li class="breadcrumb-item active">Attestations</li>
+                </ol>
+            </nav>
+            <h3 class="fw-bold text-dark mb-0">
+                <i class="fas fa-certificate text-primary me-2"></i>Attestations de Participation
+            </h3>
+            <p class="text-muted small mb-0">{{ event.title_fr }}</p>
         </div>
-        <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> Retour aux inscriptions
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_event_attendance' event.pk %}" class="btn btn-outline-success shadow-sm">
+                <i class="fas fa-clipboard-check me-1"></i>Feuille d'émargement
+            </a>
+            <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-secondary shadow-sm">
+                <i class="fas fa-arrow-left me-1"></i>Retour aux inscriptions
+            </a>
+        </div>
+    </div>
+
+    <!-- Notice : règle d'attribution des attestations -->
+    <div class="alert alert-info border-0 rounded-4 shadow-sm mb-4 d-flex align-items-center p-3">
+        <div class="me-3 p-3 bg-white text-info rounded-circle shadow-sm">
+            <i class="fas fa-info-circle fa-2x"></i>
+        </div>
+        <div>
+            <h6 class="fw-bold mb-1 text-dark">Règle d'attribution des attestations</h6>
+            <p class="mb-0 small text-muted">
+                Les attestations de participation sont <strong>strictement réservées aux participants ayant été marqués présents</strong> (via la feuille d'émargement ou validés par l'administration). Les boutons ci-dessous ciblent automatiquement et exclusivement les participants présents.
+            </p>
+        </div>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="row mb-4">
+    <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-users"></i> Participants</h5>
-                    <h2 class="mb-0">{{ total_participants }}</h2>
+            <div class="card border-0 shadow-sm p-3 rounded-4 bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-white-50 text-uppercase fw-bold">Inscrits Confirmés</small>
+                        <h2 class="fw-bold mb-0 mt-1">{{ total_participants }}</h2>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-check-circle"></i> Attestations Générées</h5>
-                    <h2 class="mb-0">{{ certificates_generated }}</h2>
+            <div class="card border-0 shadow-sm p-3 rounded-4 bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-white-50 text-uppercase fw-bold">Présents Émargés</small>
+                        <h2 class="fw-bold mb-0 mt-1">{{ present_count }}</h2>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                        <i class="fas fa-user-check fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-md-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-clock"></i> En Attente</h5>
-                    <h2 class="mb-0">{{ total_participants|add:"-"|add:certificates_generated }}</h2>
+            <div class="card border-0 shadow-sm p-3 rounded-4 bg-info text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-white-50 text-uppercase fw-bold">Attestations Présents</small>
+                        <h2 class="fw-bold mb-0 mt-1">{{ present_certificates_generated }} <span class="fs-6 fw-normal text-white-50">/ {{ present_count }}</span></h2>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                        <i class="fas fa-award fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-md-3">
-            <div class="card {% if event.certificate_enabled %}bg-info{% else %}bg-secondary{% endif %} text-white">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-toggle-on"></i> Statut</h5>
-                    <h3 class="mb-0">{% if event.certificate_enabled %}Activé{% else %}Désactivé{% endif %}</h3>
+            <div class="card border-0 shadow-sm p-3 rounded-4 {% if event.certificate_enabled %}bg-dark text-white{% else %}bg-secondary text-white{% endif %}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-white-50 text-uppercase fw-bold">Module Attestation</small>
+                        <h3 class="fw-bold mb-0 mt-1">{% if event.certificate_enabled %}Activé{% else %}Désactivé{% endif %}</h3>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                        <i class="fas fa-toggle-on fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Actions -->
-    <div class="card mb-4">
-        <div class="card-header bg-light">
-            <h5 class="mb-0"><i class="fas fa-cogs"></i> Actions Rapides</h5>
+    <!-- Actions Principales (Présents uniquement) -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-0 pt-4 pb-2">
+            <h5 class="fw-bold text-dark mb-0"><i class="fas fa-bolt text-warning me-2"></i>Actions sur les Présents</h5>
+            <small class="text-muted">Générez et distribuez les attestations pour tous les participants ayant effectivement répondu présents.</small>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             {% if event.certificate_enabled %}
-            <div class="btn-group flex-wrap" role="group">
-                <a href="{% url 'admin_preview_certificate' event.pk %}" target="_blank" class="btn btn-outline-primary btn-lg me-2">
-                    <i class="fas fa-eye"></i> Prévisualiser le Modèle d'Attestation
-                </a>
-                <a href="{% url 'admin_generate_all_certificates' event.pk %}" class="btn btn-primary btn-lg me-2"
-                    onclick="return confirm('Générer les attestations pour tous les participants confirmés?')">
-                    <i class="fas fa-magic"></i> Générer Toutes les Attestations
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+                <!-- Bouton 1 : Générer pour les présents uniquement -->
+                <a href="{% url 'admin_generate_present_certificates' event.pk %}" class="btn btn-success btn-lg rounded-pill px-4 shadow-sm fw-bold"
+                    onclick="return confirm('Générer les attestations UNIQUEMENT pour les {{ present_count }} participant(s) marqué(s) présent(s) ?')">
+                    <i class="fas fa-magic me-2"></i>Générer les attestations des présents ({{ present_count }})
                 </a>
 
-                {% if certificates_generated > 0 %}
-                <a href="{% url 'admin_download_certificates_zip' event.pk %}" class="btn btn-success btn-lg">
-                    <i class="fas fa-download"></i> Télécharger ZIP ({{ certificates_generated }} fichiers)
+                <!-- Bouton 2 : Envoyer par mail aux présents uniquement -->
+                <a href="{% url 'admin_send_present_certificates' event.pk %}" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm fw-bold"
+                    onclick="return confirm('Envoyer par e-mail officiel les attestations UNIQUEMENT aux {{ present_count }} participant(s) marqué(s) présent(s) ?')">
+                    <i class="fas fa-paper-plane me-2"></i>Envoyer par email aux présents ({{ present_count }})
                 </a>
-                {% endif %}
+
+                <!-- Actions secondaires -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-lg rounded-pill px-4 dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog me-1"></i> Plus d'options
+                    </button>
+                    <ul class="dropdown-menu shadow rounded-3 border-0">
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'admin_preview_certificate' event.pk %}" target="_blank">
+                                <i class="fas fa-eye me-2 text-primary"></i>Prévisualiser le modèle officiel
+                            </a>
+                        </li>
+                        {% if present_certificates_generated > 0 %}
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'admin_download_certificates_zip' event.pk %}?only_present=1">
+                                <i class="fas fa-file-archive me-2 text-success"></i>Télécharger ZIP (Présents : {{ present_certificates_generated }} fichiers)
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if certificates_generated > 0 %}
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'admin_download_certificates_zip' event.pk %}">
+                                <i class="fas fa-download me-2 text-secondary"></i>Télécharger ZIP complet ({{ certificates_generated }} fichiers)
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item py-2 text-warning" href="{% url 'admin_generate_all_certificates' event.pk %}"
+                                onclick="return confirm('Attention : cette action génère les attestations pour TOUS les inscrits (même absents). Êtes-vous sûr ?')">
+                                <i class="fas fa-users me-2"></i>Générer pour tous les confirmés ({{ total_participants }})
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
             {% else %}
-            <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                Les attestations sont désactivées pour cet événement.
-                <a href="{% url 'admin_event_edit' event.pk %}" class="alert-link">Modifier l'événement</a> pour les
-                activer.
+            <div class="alert alert-warning border-0 rounded-3 mb-0 d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x me-3 text-warning"></i>
+                <div>
+                    <strong>Les attestations sont désactivées pour cet événement.</strong>
+                    <div class="small mt-1">
+                        Activez l'option dans les paramètres de l'événement pour pouvoir générer et envoyer les attestations.
+                        <a href="{% url 'admin_event_edit' event.pk %}" class="alert-link ms-2">Modifier l'événement &rarr;</a>
+                    </div>
+                </div>
             </div>
             {% endif %}
         </div>
     </div>
 
-    <!-- Certificate Configuration -->
-    <div class="card mb-4">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="fas fa-sliders-h me-2"></i> Configuration & Signataires de l'Attestation</h5>
+    <!-- Certificate Configuration & Signataires -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-0 pt-4 pb-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-dark mb-0"><i class="fas fa-signature text-primary me-2"></i>Configuration & Signataires Officiels</h5>
             <div class="btn-group">
-                <a href="{% url 'admin_preview_certificate' event.pk %}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
-                    <i class="fas fa-eye me-1"></i> Aperçu
+                <a href="{% url 'admin_preview_certificate' event.pk %}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill me-2">
+                    <i class="fas fa-eye me-1"></i> Aperçu PDF
                 </a>
-                <a href="{% url 'admin_event_edit' event.pk %}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-edit me-1"></i> Configurer
+                <a href="{% url 'admin_event_edit' event.pk %}" class="btn btn-sm btn-primary rounded-pill">
+                    <i class="fas fa-edit me-1"></i> Modifier signataires
                 </a>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body px-4 pb-4 pt-0">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <p class="mb-1 text-muted small text-uppercase fw-bold">Titre & Sous-titre :</p>
-                    <h6 class="fw-bold text-dark">{{ event.certificate_title|default:"CERTIFICAT" }}</h6>
-                    <small class="text-primary fw-bold">{{ event.certificate_subtitle|default:"DE PARTICIPATION ET D'EXCELLENCE" }}</small>
-                    <div class="mt-2 text-muted small">
-                        <i class="fas fa-map-marker-alt me-1"></i> {{ event.certificate_location_text|default:"Fait à Yaoundé, le" }} [Date]
+                    <div class="p-3 bg-light rounded-3 h-100">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Titre de l'Attestation</small>
+                        <h6 class="fw-bold text-dark mb-1">{{ event.certificate_title|default:"CERTIFICAT" }}</h6>
+                        <span class="small text-primary fw-semibold">{{ event.certificate_subtitle|default:"DE PARTICIPATION ET D'EXCELLENCE" }}</span>
+                        <div class="mt-2 text-muted small">
+                            <i class="fas fa-map-marker-alt me-1 text-danger"></i> {{ event.certificate_location_text|default:"Fait à Yaoundé, le" }}
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <p class="mb-1 text-muted small text-uppercase fw-bold">1er Signataire (Président COMSAS) :</p>
-                    <h6 class="fw-bold mb-1">{{ event.certificate_president_name|default:"Borel Henri NGUIMEZAP" }}</h6>
-                    <small class="text-muted d-block">{{ event.certificate_president_title|default:"Le Président du COMS.A.S" }}</small>
-                    <span class="badge {% if event.signatory1_is_digital %}bg-success{% else %}bg-secondary{% endif %} mt-1">
-                        {% if event.signatory1_is_digital %}Numérique (Signature & Cachet){% else %}Présentiel{% endif %}
-                    </span>
+                    <div class="p-3 bg-light rounded-3 h-100">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">1er Signataire (Président COMSAS)</small>
+                        <h6 class="fw-bold mb-1 text-dark">{{ event.certificate_president_name|default:"Borel Henri NGUIMEZAP" }}</h6>
+                        <small class="text-muted d-block">{{ event.certificate_president_title|default:"Le Président du COMS.A.S" }}</small>
+                        <span class="badge {% if event.signatory1_is_digital %}bg-success{% else %}bg-secondary{% endif %} mt-2">
+                            {% if event.signatory1_is_digital %}Signature & Cachet Numériques{% else %}Signature Manuscrite Présentielle{% endif %}
+                        </span>
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <p class="mb-1 text-muted small text-uppercase fw-bold">2ème Signataire :</p>
-                    {% if event.second_signatory_enabled %}
-                    <h6 class="fw-bold mb-1">{{ event.signatory2_name|default:"Chef de Département" }}</h6>
-                    <small class="text-muted d-block">{{ event.signatory2_title|default:"Le Chef de Département d'Informatique" }}</small>
-                    <span class="badge {% if event.signatory2_is_digital %}bg-success{% else %}bg-warning text-dark{% endif %} mt-1">
-                        {% if event.signatory2_is_digital %}Signature Numérique{% else %}Signature Manuscrite en Présentiel{% endif %}
-                    </span>
-                    <div class="mt-1 small text-muted">
-                        Disposition : {{ event.get_signatories_position_display }}
+                    <div class="p-3 bg-light rounded-3 h-100">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">2ème Signataire</small>
+                        {% if event.second_signatory_enabled %}
+                        <h6 class="fw-bold mb-1 text-dark">{{ event.signatory2_name|default:"Chef de Département" }}</h6>
+                        <small class="text-muted d-block">{{ event.signatory2_title|default:"Le Chef de Département d'Informatique" }}</small>
+                        <span class="badge {% if event.signatory2_is_digital %}bg-success{% else %}bg-warning text-dark{% endif %} mt-2">
+                            {% if event.signatory2_is_digital %}Signature Numérique{% else %}Signature Manuscrite Présentielle{% endif %}
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary bg-opacity-25 text-muted mt-2">Désactivé (1 seul signataire)</span>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <span class="badge bg-light text-muted border">Désactivé (1 seul signataire)</span>
-                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Participants List -->
-    <div class="card">
-        <div class="card-header bg-light">
-            <h5 class="mb-0"><i class="fas fa-list"></i> Liste des Participants</h5>
+    <!-- Participants List with Presence Status -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pt-4 pb-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-dark mb-0">
+                <i class="fas fa-list text-primary me-2"></i>Liste des Participants & Statuts des Attestations
+            </h5>
+            <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                {{ registrations.count }} participant(s) au total
+            </span>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="bg-light text-uppercase text-muted small">
                         <tr>
-                            <th>#</th>
-                            <th>Nom et Prénom</th>
-                            <th>Email</th>
-                            <th>Téléphone</th>
-                            <th>Attestation</th>
-                            <th>Actions</th>
+                            <th class="ps-4 border-0">#</th>
+                            <th class="border-0">Participant</th>
+                            <th class="border-0">Contact</th>
+                            <th class="border-0 text-center">Présence</th>
+                            <th class="border-0 text-center">Attestation</th>
+                            <th class="border-0 text-center">Email</th>
+                            <th class="border-0 text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for registration in registrations %}
                         <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td><strong>{{ registration.nom_prenom }}</strong></td>
-                            <td>{{ registration.email }}</td>
-                            <td>{{ registration.telephone }}</td>
+                            <td class="ps-4 text-muted small">{{ forloop.counter }}</td>
                             <td>
-                                {% if registration.certificate_pdf %}
-                                <span class="badge bg-success">
-                                    <i class="fas fa-check"></i> Générée
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                        style="width: 38px; height: 38px; font-weight: bold;">
+                                        {{ registration.nom_prenom|first|upper }}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark">{{ registration.nom_prenom }}</h6>
+                                        <small class="text-muted">{{ registration.promotion|default:"—" }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small">
+                                    <span class="text-dark d-block">{{ registration.email }}</span>
+                                    <span class="text-muted">{{ registration.telephone }}</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if registration.is_marked_present %}
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1">
+                                    <i class="fas fa-check-circle me-1"></i>Présent
                                 </span>
                                 {% else %}
-                                <span class="badge bg-warning">
-                                    <i class="fas fa-clock"></i> En attente
+                                <span class="badge bg-secondary bg-opacity-10 text-muted border rounded-pill px-3 py-1">
+                                    <i class="fas fa-times-circle me-1"></i>Non marqué
                                 </span>
                                 {% endif %}
                             </td>
-                            <td>
+                            <td class="text-center">
                                 {% if registration.certificate_pdf %}
-                                <a href="{{ registration.certificate_pdf.url }}" class="btn btn-sm btn-success"
-                                    target="_blank">
-                                    <i class="fas fa-download"></i> Télécharger
-                                </a>
-                                <a href="{% url 'admin_regenerate_certificate' registration.id %}"
-                                    class="btn btn-sm btn-outline-primary"
-                                    onclick="return confirm('Régénérer cette attestation?')">
-                                    <i class="fas fa-sync"></i> Régénérer
-                                </a>
+                                <span class="badge bg-success rounded-pill px-3 py-1">
+                                    <i class="fas fa-check me-1"></i>Générée
+                                </span>
                                 {% else %}
-                                <a href="{% url 'admin_regenerate_certificate' registration.id %}"
-                                    class="btn btn-sm btn-primary">
-                                    <i class="fas fa-magic"></i> Générer
-                                </a>
+                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-1">
+                                    <i class="fas fa-clock me-1"></i>En attente
+                                </span>
                                 {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if registration.congratulations_email_sent %}
+                                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-2 py-1 small">
+                                    <i class="fas fa-paper-plane me-1"></i>Transmise
+                                </span>
+                                {% else %}
+                                <span class="text-muted small">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group">
+                                    {% if registration.certificate_pdf %}
+                                    <a href="{{ registration.certificate_pdf.url }}" class="btn btn-sm btn-outline-success" target="_blank" title="Télécharger le PDF">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    <a href="{% url 'admin_regenerate_certificate' registration.id %}" class="btn btn-sm btn-outline-primary"
+                                        onclick="return confirm('Régénérer l\'attestation de {{ registration.nom_prenom|escapejs }} ?')" title="Régénérer l'attestation">
+                                        <i class="fas fa-sync"></i>
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'admin_regenerate_certificate' registration.id %}" class="btn btn-sm btn-outline-primary" title="Générer l'attestation">
+                                        <i class="fas fa-magic"></i>
+                                    </a>
+                                    {% endif %}
+
+                                    <!-- Bouton envoi email individuel -->
+                                    <a href="{% url 'admin_send_single_certificate' registration.id %}" class="btn btn-sm btn-outline-info"
+                                        onclick="return confirm('Envoyer l\'attestation par e-mail à {{ registration.nom_prenom|escapejs }} ({{ registration.email }}) ?')"
+                                        title="Envoyer l'attestation par email">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </a>
+
+                                    <!-- Bouton modifier infos de l'inscrit -->
+                                    <a href="{% url 'admin_edit_registration' registration.pk %}" class="btn btn-sm btn-outline-secondary" title="Modifier les infos de l'inscrit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                <i class="fas fa-inbox fa-3x mb-3"></i>
-                                <p>Aucun participant confirmé pour cet événement.</p>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="fas fa-users-slash fa-3x mb-3 opacity-50"></i>
+                                <h6 class="text-muted">Aucun participant confirmé pour cet événement.</h6>
                             </td>
                         </tr>
                         {% endfor %}

@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 import json
 import uuid
 import logging
+import threading
+from django.db import transaction
 from django.contrib import messages
 
 logger = logging.getLogger(__name__)
@@ -403,31 +405,48 @@ def event_detail(request, pk):
 
         form = EventRegistrationForm(request.POST, request.FILES, event=event)
         if form.is_valid():
+            # Si le code a déjà été consommé par ce même participant (double-clic ou actualisation)
+            if getattr(form, 'is_duplicate_submission', False):
+                existing_reg = None
+                if getattr(form, 'cleaned_code_obj', None) and form.cleaned_code_obj.used_by:
+                    existing_reg = form.cleaned_code_obj.used_by
+                else:
+                    input_email = (request.POST.get('email') or '').strip()
+                    existing_reg = EventRegistration.objects.filter(
+                        event=event,
+                        email__iexact=input_email
+                    ).first()
+                if existing_reg:
+                    messages.success(request, _('Votre inscription est déjà enregistrée et validée !'))
+                    return redirect('event_registration_success', uuid=existing_reg.uuid)
+
             registration = form.save(commit=False)
             registration.event = event
             
             # Vérifier si pas déjà inscrit
             existing = EventRegistration.objects.filter(
                 event=event,
-                email=registration.email
+                email__iexact=registration.email.strip()
             ).first()
             
             if existing:
-                messages.warning(request, _('Vous êtes déjà inscrit à cet événement.'))
+                messages.info(request, _('Vous êtes déjà inscrit à cet événement.'))
+                return redirect('event_registration_success', uuid=existing.uuid)
             else:
                 registration.is_confirmed = True
                 
-                # Attribuer et consommer le code d'inscription à usage unique
-                if hasattr(form, 'cleaned_code_obj') and form.cleaned_code_obj:
-                    code_obj = form.cleaned_code_obj
-                    registration.registration_code_entered = code_obj.code
-                    registration.save()
-                    code_obj.is_used = True
-                    code_obj.used_by = registration
-                    code_obj.used_at = timezone.now()
-                    code_obj.save()
-                else:
-                    registration.save()
+                # Attribuer et consommer le code d'inscription à usage unique de manière atomique
+                with transaction.atomic():
+                    if hasattr(form, 'cleaned_code_obj') and form.cleaned_code_obj:
+                        code_obj = form.cleaned_code_obj
+                        registration.registration_code_entered = code_obj.code
+                        registration.save()
+                        code_obj.is_used = True
+                        code_obj.used_by = registration
+                        code_obj.used_at = timezone.now()
+                        code_obj.save()
+                    else:
+                        registration.save()
 
                 messages.success(request, _('Votre inscription a été enregistrée avec succès!'))
                 
@@ -437,34 +456,46 @@ def event_detail(request, pk):
                 except Exception as e:
                     print(f"Erreur génération ticket: {e}")
 
-                # Envoyer notification HTML avec pièces jointes
-                try:
-                    from django.template.loader import render_to_string
-                    from django.core.mail import EmailMultiAlternatives
-                    
-                    html_content = render_to_string('emails/event_registration_confirmation.html', {
-                        'participant_name': registration.nom_prenom,
-                        'event_title': event.title_fr,
-                        'event_date': event.date_event,
-                        'event_location': event.location,
-                    })
-                    
-                    subject = f'Confirmation inscription - {event.title_fr}'
-                    text_content = f'Bonjour {registration.nom_prenom},\n\nVotre inscription à l\'événement "{event.title_fr}" a bien été enregistrée.\n\nVous trouverez votre ticket en pièce jointe.\n\nCordialement,\nL\'équipe COMS.A.S'
-                    
-                    email = EmailMultiAlternatives(
-                        subject,
-                        text_content,
-                        settings.EMAIL_HOST_USER,
-                        [registration.email],
-                    )
-                    email.attach_alternative(html_content, "text/html")
-                    
-                    if registration.ticket_pdf:
-                        email.attach_file(registration.ticket_pdf.path)
-                    email.send(fail_silently=True)
-                except Exception as e:
-                    print(f"Erreur envoi email: {e}")
+                # Envoyer notification HTML avec pièces jointes en tâche de fond (asynchrone)
+                def _send_reg_email_async(reg_id, ev_id):
+                    try:
+                        from django.db import connection
+                        connection.close()
+                        reg = EventRegistration.objects.get(id=reg_id)
+                        ev = Event.objects.get(id=ev_id)
+                        
+                        from django.template.loader import render_to_string
+                        from django.core.mail import EmailMultiAlternatives
+                        
+                        html_content = render_to_string('emails/event_registration_confirmation.html', {
+                            'participant_name': reg.nom_prenom,
+                            'event_title': ev.title_fr,
+                            'event_date': ev.date_event,
+                            'event_location': ev.location,
+                        })
+                        
+                        subject = f'Confirmation inscription - {ev.title_fr}'
+                        text_content = f"Bonjour {reg.nom_prenom},\n\nVotre inscription à l'événement \"{ev.title_fr}\" a bien été enregistrée.\n\nVous trouverez votre ticket en pièce jointe.\n\nCordialement,\nL'équipe COMS.A.S"
+                        
+                        from_email = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
+                        email = EmailMultiAlternatives(
+                            subject,
+                            text_content,
+                            from_email,
+                            [reg.email],
+                        )
+                        email.attach_alternative(html_content, "text/html")
+                        
+                        if reg.ticket_pdf and reg.ticket_pdf.name:
+                            try:
+                                email.attach_file(reg.ticket_pdf.path)
+                            except Exception as file_err:
+                                print(f"Ticket file attach error: {file_err}")
+                        email.send(fail_silently=True)
+                    except Exception as e:
+                        print(f"Erreur envoi email async: {e}")
+
+                threading.Thread(target=_send_reg_email_async, args=(registration.id, event.id), daemon=True).start()
                 
                 return redirect('event_registration_success', uuid=registration.uuid)
     else:

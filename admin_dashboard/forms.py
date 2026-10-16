@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Row, Column, HTML
-from main.models import Project, Event, News, Gallery, SiteSettings, Member, SponsorshipSession, Contest, Candidate
+from main.models import Project, Event, EventRegistration, News, Gallery, SiteSettings, Member, SponsorshipSession, Contest, Candidate
 
 class MemberForm(forms.ModelForm):
     """Formulaire pour les membres"""
@@ -810,3 +810,32 @@ class JUINCandidateForm(forms.ModelForm):
             ),
             Submit('submit', _('Enregistrer le candidat'), css_class='btn btn-primary btn-lg w-100')
         )
+
+
+class EventRegistrationAdminForm(forms.ModelForm):
+    """Formulaire de modification d'un inscrit par l'administrateur"""
+    regenerate_documents = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Régénérer automatiquement les documents (Ticket, Badge, Attestation)"),
+        help_text=_("Si coché, le billet PDF, le badge PDF et l'attestation PDF existants seront immédiatement mis à jour avec les nouvelles informations modifiées (nom, promo, photo).")
+    )
+
+    class Meta:
+        model = EventRegistration
+        fields = [
+            'nom_prenom', 'email', 'telephone', 'promotion',
+            'is_confirmed', 'has_participated', 'registration_code_entered',
+            'photo', 'message'
+        ]
+        widgets = {
+            'nom_prenom': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'telephone': forms.TextInput(attrs={'class': 'form-control'}),
+            'promotion': forms.TextInput(attrs={'class': 'form-control'}),
+            'registration_code_entered': forms.TextInput(attrs={'class': 'form-control font-monospace'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'is_confirmed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'has_participated': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }

@@ -45,10 +45,15 @@
             <i class="fas fa-arrow-left me-1"></i>Retour
         </a>
         <a href="{% url 'admin_event_attendance_export_csv' event.pk %}" class="btn btn-outline-primary me-2 shadow-sm">
-            <i class="fas fa-file-csv me-1"></i>Exporter Présence
+            <i class="fas fa-file-csv me-1"></i>Exporter
         </a>
-        <a href="{% url 'admin_event_certificates' event.pk %}" class="btn btn-outline-success shadow-sm">
-            <i class="fas fa-certificate me-1"></i>Attestations
+        <a href="{% url 'admin_generate_present_certificates' event.pk %}" class="btn btn-outline-success me-2 shadow-sm"
+            onclick="return confirm('Générer les attestations pour les participants présents ?')">
+            <i class="fas fa-magic me-1"></i>Générer Attestations
+        </a>
+        <a href="{% url 'admin_send_present_certificates' event.pk %}" class="btn btn-primary shadow-sm"
+            onclick="return confirm('Envoyer les attestations par email uniquement aux participants présents ?')">
+            <i class="fas fa-paper-plane me-1"></i>Envoyer Attestations (Présents)
         </a>
     </div>
 </div>
@@ -173,7 +178,12 @@
                                         {{ reg.nom_prenom|first|upper }}
                                     </div>
                                     <div>
-                                        <h6 class="mb-0 fw-bold text-dark">{{ reg.nom_prenom }}</h6>
+                                        <div class="d-flex align-items-center">
+                                            <h6 class="mb-0 fw-bold text-dark">{{ reg.nom_prenom }}</h6>
+                                            <a href="{% url 'admin_edit_registration' reg.pk %}" class="text-primary ms-2 text-decoration-none" title="Modifier cet inscrit">
+                                                <i class="fas fa-edit small"></i>
+                                            </a>
+                                        </div>
                                         <small class="text-muted">{{ reg.email }}</small>
                                     </div>
                                 </div>
