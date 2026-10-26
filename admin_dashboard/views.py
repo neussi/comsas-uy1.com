@@ -22,7 +22,7 @@ def custom_staff_member_required(view_func):
     return actual_decorator(view_func)
 
 from main.models import (
-    Member, Project, Event, EventRegistration, 
+    Member, Project, Event, EventRegistration, EventRegistrationCode,
     News, Gallery, Contact, SiteSettings,
     SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote,
@@ -36,7 +36,7 @@ from .forms import (
     ProjectForm, EventForm, NewsForm, GalleryForm, SiteSettingsForm, MemberForm,
     SponsorshipSessionForm, ContestForm, CandidateForm,
     RequestDocumentForm, ProfessorForm, ClassroomForm, DelegateForm, BlogArticleForm,
-    EventRegistrationAdminForm
+    EventRegistrationAdminForm, EventRegistrationCreateAdminForm
 )
 from main.utils import send_member_card_email
 
@@ -387,32 +387,232 @@ def events_bulk_delete(request):
 
 @custom_staff_member_required
 def event_registrations(request, pk):
-    """Liste des inscriptions pour un événement"""
+    """Liste des inscriptions pour un événement avec recherche avancée, filtres et tri"""
     event = get_object_or_404(Event, pk=pk)
-    registrations = event.eventregistration_set.all().order_by('-registration_date')
+    base_registrations = event.eventregistration_set.all()
     
-    paginator = Paginator(registrations, 20)
+    # Paramètres GET de recherche, filtrage et tri
+    q = request.GET.get('q', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    attendance_filter = request.GET.get('attendance', '').strip()
+    photo_filter = request.GET.get('photo', '').strip()
+    sort_by = request.GET.get('sort', 'date_desc').strip()
+
+    registrations = base_registrations
+
+    # Recherche multi-critères (nom, email, téléphone, promo, code)
+    if q:
+        registrations = registrations.filter(
+            Q(nom_prenom__icontains=q) |
+            Q(email__icontains=q) |
+            Q(telephone__icontains=q) |
+            Q(promotion__icontains=q) |
+            Q(registration_code_entered__icontains=q) |
+            Q(used_registration_code__code__icontains=q)
+        ).distinct()
+
+    # Filtre statut de confirmation / paiement
+    if status_filter in ['paid', 'confirmed']:
+        registrations = registrations.filter(is_confirmed=True)
+    elif status_filter in ['pending', 'unpaid']:
+        registrations = registrations.filter(is_confirmed=False)
+
+    # Filtre présence
+    if attendance_filter == 'present':
+        registrations = registrations.filter(
+            Q(has_participated=True) | Q(attendances__is_present=True)
+        ).distinct()
+    elif attendance_filter == 'absent':
+        registrations = registrations.exclude(
+            Q(has_participated=True) | Q(attendances__is_present=True)
+        ).distinct()
+
+    # Filtre présence d'une photo (utile pour la génération de badges)
+    if photo_filter == 'with':
+        registrations = registrations.exclude(Q(photo='') | Q(photo__isnull=True))
+    elif photo_filter == 'without':
+        registrations = registrations.filter(Q(photo='') | Q(photo__isnull=True))
+
+    # Tri
+    if sort_by == 'date_asc':
+        registrations = registrations.order_by('registration_date')
+    elif sort_by == 'name_asc':
+        registrations = registrations.order_by('nom_prenom')
+    elif sort_by == 'name_desc':
+        registrations = registrations.order_by('-nom_prenom')
+    elif sort_by == 'code_asc':
+        registrations = registrations.order_by('registration_code_entered')
+    else:  # 'date_desc' par défaut
+        registrations = registrations.order_by('-registration_date')
+
+    # Statistiques globales de l'événement
+    total_count = base_registrations.count()
+    confirmed_count = base_registrations.filter(is_confirmed=True).count()
+    pending_count = base_registrations.filter(is_confirmed=False).count()
+    present_count = base_registrations.filter(Q(has_participated=True) | Q(attendances__is_present=True)).distinct().count()
+    badges_count = base_registrations.exclude(Q(badge_pdf='') | Q(badge_pdf__isnull=True)).count()
+    photos_count = base_registrations.exclude(Q(photo='') | Q(photo__isnull=True)).count()
+
+    # Pagination (25 par page)
+    paginator = Paginator(registrations, 25)
     page_number = request.GET.get('page')
     registrations_page = paginator.get_page(page_number)
-    
+
+    # Conserver tous les filtres actifs dans les liens de pagination
+    query_params = request.GET.copy()
+    if 'page' in query_params:
+        del query_params['page']
+    filter_querystring = query_params.urlencode()
+
+    create_form = EventRegistrationCreateAdminForm(event=event)
+
     context = {
         'event': event,
         'registrations_page': registrations_page,
         'registrations': registrations,
-        'confirmed_count': registrations.filter(is_confirmed=True).count(),
-        'pending_count': registrations.filter(is_confirmed=False).count(),
+        'total_count': total_count,
+        'confirmed_count': confirmed_count,
+        'pending_count': pending_count,
+        'present_count': present_count,
+        'badges_count': badges_count,
+        'photos_count': photos_count,
+        'filtered_count': registrations.count(),
+        'q': q,
+        'status_filter': status_filter,
+        'attendance_filter': attendance_filter,
+        'photo_filter': photo_filter,
+        'sort_by': sort_by,
+        'filter_querystring': filter_querystring,
+        'create_form': create_form,
     }
-    
     return render(request, 'admin_dashboard/events/registrations.html', context)
+
+
+@custom_staff_member_required
+def admin_create_registration(request, pk):
+    """Ajouter un nouveau participant à un événement depuis le dashboard admin"""
+    event = get_object_or_404(Event, pk=pk)
+
+    if request.method == 'POST':
+        form = EventRegistrationCreateAdminForm(request.POST, request.FILES, event=event)
+        if form.is_valid():
+            registration = form.save(commit=False)
+            registration.event = event
+
+            # Gestion du code d'inscription
+            raw_code = form.cleaned_data.get('registration_code_entered', '')
+            if raw_code:
+                raw_code = raw_code.strip().upper()
+            auto_gen = form.cleaned_data.get('auto_generate_code', False)
+
+            if not raw_code and (auto_gen or event.requires_registration_code):
+                # Trouver un code existant libre ou en générer un nouveau
+                available_code = event.registration_codes.filter(is_used=False).first()
+                if available_code:
+                    raw_code = available_code.code
+                else:
+                    from .event_features_views import generate_code_string
+                    for _ in range(50):
+                        cand = generate_code_string(6)
+                        if not EventRegistrationCode.objects.filter(event=event, code=cand).exists():
+                            raw_code = cand
+                            break
+
+            if raw_code:
+                registration.registration_code_entered = raw_code
+
+            # Présence validée
+            if registration.has_participated and not registration.participation_validated_at:
+                registration.participation_validated_at = timezone.now()
+
+            registration.save()
+
+            # Lier / marquer le code comme utilisé dans EventRegistrationCode
+            if raw_code:
+                code_obj, _ = EventRegistrationCode.objects.get_or_create(
+                    event=event,
+                    code=raw_code,
+                    defaults={'is_used': True, 'used_by': registration, 'used_at': timezone.now()}
+                )
+                if not code_obj.is_used or code_obj.used_by != registration:
+                    code_obj.is_used = True
+                    code_obj.used_by = registration
+                    code_obj.used_at = timezone.now()
+                    code_obj.save()
+
+            # Génération automatique des documents si demandée
+            if form.cleaned_data.get('generate_documents', True):
+                # 1. Billet / Ticket officiel
+                try:
+                    from main.utils import generate_ticket
+                    generate_ticket(registration)
+                except Exception as e:
+                    print(f"Erreur ticket lors de l'ajout manuel: {e}")
+
+                # 2. Badge officiel
+                if event.badge_enabled:
+                    try:
+                        from main.badge_utils import generate_badge
+                        generate_badge(registration)
+                    except Exception as e:
+                        print(f"Erreur badge lors de l'ajout manuel: {e}")
+
+                # 3. Attestation si marqué présent
+                if event.certificate_enabled and registration.is_marked_present:
+                    try:
+                        from main.certificate_utils import generate_certificate
+                        generate_certificate(registration)
+                    except Exception as e:
+                        print(f"Erreur attestation lors de l'ajout manuel: {e}")
+
+            messages.success(request, f"Le participant {registration.nom_prenom} a été inscrit avec succès !")
+            return redirect('admin_event_registrations', pk=event.pk)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field} : {error}")
+    else:
+        form = EventRegistrationCreateAdminForm(event=event)
+
+    context = {
+        'event': event,
+        'form': form,
+    }
+    return render(request, 'admin_dashboard/events/registration_create.html', context)
+
+
+@custom_staff_member_required
+def toggle_registration_payment(request, pk):
+    """Basculer l'état de confirmation / paiement d'un participant (Payé <-> En attente)"""
+    registration = get_object_or_404(EventRegistration, pk=pk)
+    registration.is_confirmed = not registration.is_confirmed
+    registration.save()
+
+    status_str = "confirmée / payée" if registration.is_confirmed else "mise en attente / non payée"
+    messages.success(request, f"L'inscription de {registration.nom_prenom} est désormais {status_str}.")
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('admin_event_registrations', pk=registration.event.pk)
+
 
 @custom_staff_member_required
 def delete_registration(request, pk):
     """Supprimer une inscription"""
     registration = get_object_or_404(EventRegistration, pk=pk)
     event_pk = registration.event.pk
+    # Libérer le code si associé
+    if hasattr(registration, 'used_registration_code') and registration.used_registration_code:
+        code_obj = registration.used_registration_code
+        code_obj.is_used = False
+        code_obj.used_by = None
+        code_obj.used_at = None
+        code_obj.save()
     registration.delete()
     messages.success(request, "Inscription supprimée avec succès.")
     return redirect('admin_event_registrations', pk=event_pk)
+
 
 @custom_staff_member_required
 def confirm_registration(request, pk):
@@ -421,8 +621,12 @@ def confirm_registration(request, pk):
     registration.is_confirmed = True
     registration.save()
     
-    messages.success(request, f'Inscription de {registration.nom_prenom} confirmée.')
+    messages.success(request, f"Inscription de {registration.nom_prenom} confirmée.")
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
     return redirect('admin_event_registrations', pk=registration.event.pk)
+
 
 @custom_staff_member_required
 def admin_edit_registration(request, pk):
@@ -443,6 +647,20 @@ def admin_edit_registration(request, pk):
                 
             reg.save()
             
+            # Synchroniser le code si modifié
+            code_str = (reg.registration_code_entered or '').strip().upper()
+            if code_str:
+                code_obj, _ = EventRegistrationCode.objects.get_or_create(
+                    event=event,
+                    code=code_str,
+                    defaults={'is_used': True, 'used_by': reg, 'used_at': timezone.now()}
+                )
+                if not code_obj.is_used or code_obj.used_by != reg:
+                    code_obj.is_used = True
+                    code_obj.used_by = reg
+                    code_obj.used_at = timezone.now()
+                    code_obj.save()
+
             # Régénération automatique des documents si demandé
             regenerate = form.cleaned_data.get('regenerate_documents', False)
             if regenerate:
@@ -454,7 +672,7 @@ def admin_edit_registration(request, pk):
                     print(f"Erreur régénération ticket: {e}")
                     
                 # 2. Badge
-                if event.badge_enabled and (reg.badge_pdf or True):
+                if event.badge_enabled:
                     try:
                         from main.badge_utils import generate_badge
                         generate_badge(reg)
@@ -484,22 +702,58 @@ def admin_edit_registration(request, pk):
 
 @custom_staff_member_required
 def event_registrations_export_excel(request, pk):
-    """Exporter les inscriptions à un événement en CSV"""
+    """Exporter les inscriptions à un événement en CSV avec encodage UTF-8 Excel et filtres"""
     event = get_object_or_404(Event, pk=pk)
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="inscriptions_{event.title_fr}_{timezone.now().strftime("%Y%m%d")}.csv"'
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="participants_{event.id}_{timezone.now().strftime("%Y%m%d_%H%M")}.csv"'
     
-    writer = csv.writer(response)
-    writer.writerow(['Nom Prénom', 'Email', 'Téléphone', 'Date Inscription', 'Statut'])
+    # BOM pour compatibilité Excel
+    response.write('\ufeff'.encode('utf8'))
     
-    registrations = event.eventregistration_set.all().order_by('nom_prenom')
+    writer = csv.writer(response, delimiter=';')
+    writer.writerow([
+        'Nom et Prénom', 'Email', 'Téléphone', 'Promotion / Niveau',
+        'Code Inscription', 'Statut Paiement / Inscription', 'Présence',
+        'Date Inscription', 'Badge Généré', 'Attestation Générée'
+    ])
+    
+    registrations = event.eventregistration_set.all()
+    q = request.GET.get('q', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    attendance_filter = request.GET.get('attendance', '').strip()
+    
+    if q:
+        registrations = registrations.filter(
+            Q(nom_prenom__icontains=q) |
+            Q(email__icontains=q) |
+            Q(telephone__icontains=q) |
+            Q(promotion__icontains=q) |
+            Q(registration_code_entered__icontains=q) |
+            Q(used_registration_code__code__icontains=q)
+        ).distinct()
+    if status_filter in ['paid', 'confirmed']:
+        registrations = registrations.filter(is_confirmed=True)
+    elif status_filter in ['pending', 'unpaid']:
+        registrations = registrations.filter(is_confirmed=False)
+    if attendance_filter == 'present':
+        registrations = registrations.filter(Q(has_participated=True) | Q(attendances__is_present=True)).distinct()
+    elif attendance_filter == 'absent':
+        registrations = registrations.exclude(Q(has_participated=True) | Q(attendances__is_present=True)).distinct()
+        
+    registrations = registrations.order_by('nom_prenom')
+    
     for reg in registrations:
         writer.writerow([
             reg.nom_prenom,
             reg.email,
             reg.telephone,
-            reg.registration_date.strftime("%d/%m/%Y %H:%M"),
-            "Confirmé" if reg.is_confirmed else "En attente"
+            reg.promotion or '',
+            reg.registration_code_entered or '',
+            "Payé / Confirmé" if reg.is_confirmed else "En attente / Non payé",
+            "Présent" if reg.is_marked_present else "Non émargé",
+            reg.registration_date.strftime("%d/%m/%Y %H:%M") if reg.registration_date else "",
+            "Oui" if reg.badge_pdf else "Non",
+            "Oui" if reg.certificate_pdf else "Non",
         ])
     return response
 

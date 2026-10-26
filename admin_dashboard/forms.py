@@ -839,3 +839,58 @@ class EventRegistrationAdminForm(forms.ModelForm):
             'is_confirmed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'has_participated': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+
+class EventRegistrationCreateAdminForm(forms.ModelForm):
+    """Formulaire de création d'un nouveau participant par l'administrateur"""
+    auto_generate_code = forms.BooleanField(
+        required=False,
+        initial=False,
+        label=_("Générer un code automatiquement"),
+        help_text=_("Si coché et aucun code saisi, un code unique de 6 caractères sera généré pour le participant.")
+    )
+    generate_documents = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Générer immédiatement le ticket et le badge"),
+        help_text=_("Génère immédiatement le ticket avec QR code ainsi que le badge officiel dès l'enregistrement.")
+    )
+
+    class Meta:
+        model = EventRegistration
+        fields = [
+            'nom_prenom', 'email', 'telephone', 'promotion',
+            'registration_code_entered', 'is_confirmed', 'has_participated',
+            'photo', 'message'
+        ]
+        widgets = {
+            'nom_prenom': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Jean Dupont', 'required': True}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'exemple@domaine.com', 'required': True}),
+            'telephone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: +237 6XX XX XX XX'}),
+            'promotion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Informatique L3, Master 1...'}),
+            'registration_code_entered': forms.TextInput(attrs={'class': 'form-control font-monospace text-uppercase', 'placeholder': 'Code à 6 car. (ex: COMS24)'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Notes ou informations complémentaires...'}),
+            'photo': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'is_confirmed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'has_participated': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.event = kwargs.pop('event', None)
+        super().__init__(*args, **kwargs)
+        # Par défaut lors de l'ajout manuel par l'admin, l'inscription est confirmée (payée)
+        self.fields['is_confirmed'].initial = True
+        if self.event and self.event.requires_registration_code:
+            self.fields['auto_generate_code'].initial = True
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip().lower()
+        if self.event and EventRegistration.objects.filter(event=self.event, email__iexact=email).exists():
+            raise forms.ValidationError(_("Un participant avec cette adresse e-mail est déjà inscrit à cet événement."))
+        return email
+
+    def clean_registration_code_entered(self):
+        code = self.cleaned_data.get('registration_code_entered', '')
+        if code:
+            code = code.strip().upper()
+        return code

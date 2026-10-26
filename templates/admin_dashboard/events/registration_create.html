@@ -1,0 +1,228 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block page_title %}Ajouter un participant — {{ event.title_fr }}{% endblock %}
+{% block page_icon %}user-plus{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-7">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{% url 'admin_events_list' %}" class="text-decoration-none">Événements</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'admin_event_registrations' event.pk %}" class="text-decoration-none">Inscriptions</a></li>
+                <li class="breadcrumb-item active">Nouveau participant</li>
+            </ol>
+        </nav>
+        <h4 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-user-plus text-primary me-2"></i>Ajouter un participant
+        </h4>
+        <p class="text-muted small mb-0">
+            Événement : <strong>{{ event.title_fr }}</strong> &bull; Date : {{ event.date_event|date:"d F Y à H:i" }}
+        </p>
+    </div>
+    <div class="col-md-5 text-end">
+        <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-secondary shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 pt-4 pb-2">
+                <h5 class="fw-bold text-dark mb-1">
+                    <i class="fas fa-id-card text-primary me-2"></i>Fiche d'inscription du participant
+                </h5>
+                <p class="text-muted small mb-0">Remplissez les informations ci-dessous. Le billet officiel et le badge peuvent être générés directement à l'enregistrement.</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data" id="createParticipantForm">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger border-0 rounded-3 mb-4 shadow-sm">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Erreurs détectées :</h6>
+                        <ul class="mb-0 small ps-3">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                <li><strong>{{ field|title }}</strong> : {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Nom & Promotion -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold text-dark">
+                                Nom et Prénom <span class="text-danger">*</span>
+                            </label>
+                            {{ form.nom_prenom }}
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold text-dark">Promotion / Niveau</label>
+                            {{ form.promotion }}
+                        </div>
+                    </div>
+
+                    <!-- Email & Téléphone -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold text-dark">
+                                Adresse e-mail <span class="text-danger">*</span>
+                            </label>
+                            {{ form.email }}
+                            <small class="text-muted">Utilisée pour l'envoi du ticket et de l'attestation.</small>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold text-dark">Téléphone</label>
+                            {{ form.telephone }}
+                        </div>
+                    </div>
+
+                    <!-- Code d'inscription & Génération -->
+                    <div class="card bg-light border-0 rounded-3 p-3 mb-4">
+                        <label class="form-label fw-semibold text-dark mb-2">
+                            <i class="fas fa-key text-warning me-1"></i> Code d'accès / Inscription physique
+                        </label>
+                        <div class="input-group mb-2">
+                            {{ form.registration_code_entered }}
+                            <button type="button" class="btn btn-primary" id="btnGenCodePage" title="Générer un code aléatoire">
+                                <i class="fas fa-magic me-1"></i> Générer un code
+                            </button>
+                        </div>
+                        <div class="form-check form-switch mt-2">
+                            {{ form.auto_generate_code }}
+                            <label class="form-check-label small fw-semibold text-muted ms-2" for="{{ form.auto_generate_code.id_for_label }}">
+                                {{ form.auto_generate_code.label }}
+                            </label>
+                        </div>
+                        <small class="text-muted d-block mt-1">
+                            Laissez vide avec l'option cochée pour que le système sélectionne ou crée automatiquement un code unique à 6 caractères.
+                        </small>
+                    </div>
+
+                    <!-- Photo du participant -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-dark">
+                            <i class="fas fa-camera text-primary me-1"></i> Photo du participant (pour le badge)
+                        </label>
+                        <div class="row align-items-center g-3">
+                            <div class="col-auto">
+                                <div id="photoPreviewContainer" class="rounded-circle border d-flex align-items-center justify-content-center bg-light text-muted" style="width: 70px; height: 70px; overflow: hidden;">
+                                    <i class="fas fa-user fa-2x" id="photoPlaceholderIcon"></i>
+                                    <img id="photoPreviewImg" src="#" alt="Aperçu" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                            </div>
+                            <div class="col">
+                                {{ form.photo }}
+                                <small class="text-muted d-block mt-1">Format JPG, PNG. Recommandé : photo de face cadrée carrée.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statut Paiement & Présence -->
+                    <div class="card bg-light border-0 rounded-3 p-3 mb-4">
+                        <h6 class="fw-bold text-dark mb-3">
+                            <i class="fas fa-toggle-on text-primary me-2"></i>Statuts & Validation
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    {{ form.is_confirmed }}
+                                    <label class="form-check-label fw-semibold ms-2" for="{{ form.is_confirmed.id_for_label }}">
+                                        Paiement Effectué / Confirmé
+                                    </label>
+                                    <small class="text-muted d-block ms-2">Marque le participant comme ayant réglé sa participation.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    {{ form.has_participated }}
+                                    <label class="form-check-label fw-semibold ms-2" for="{{ form.has_participated.id_for_label }}">
+                                        Présence & Participation Validée
+                                    </label>
+                                    <small class="text-muted d-block ms-2">Permet la délivrance de l'attestation de présence.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents automatiques -->
+                    <div class="alert alert-info border-0 rounded-3 p-3 mb-4 d-flex align-items-center">
+                        <div class="form-check form-switch m-0">
+                            {{ form.generate_documents }}
+                            <label class="form-check-label fw-bold ms-2 text-dark" for="{{ form.generate_documents.id_for_label }}">
+                                {{ form.generate_documents.label }}
+                            </label>
+                            <small class="text-muted d-block ms-2">{{ form.generate_documents.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <!-- Note / Commentaire -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-dark">Notes ou commentaire interne (optionnel)</label>
+                        {{ form.message }}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-semibold shadow-sm">
+                            <i class="fas fa-check-circle me-2"></i>Inscrire le participant
+                        </button>
+                        <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                            Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Générateur de code JS
+    const btnGen = document.getElementById('btnGenCodePage');
+    const inputCode = document.querySelector('input[name="registration_code_entered"]');
+    if (btnGen && inputCode) {
+        btnGen.addEventListener('click', function() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let res = '';
+            for (let i = 0; i < 6; i++) {
+                res += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            inputCode.value = res;
+            inputCode.classList.add('is-valid');
+            setTimeout(() => inputCode.classList.remove('is-valid'), 1200);
+        });
+    }
+
+    // Aperçu instantané de l'image
+    const photoInput = document.querySelector('input[type="file"][name="photo"]');
+    const previewImg = document.getElementById('photoPreviewImg');
+    const placeholderIcon = document.getElementById('photoPlaceholderIcon');
+
+    if (photoInput && previewImg && placeholderIcon) {
+        photoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = 'block';
+                    placeholderIcon.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewImg.src = '#';
+                previewImg.style.display = 'none';
+                placeholderIcon.style.display = 'block';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

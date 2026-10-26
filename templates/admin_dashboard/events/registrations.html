@@ -7,85 +7,194 @@
 {% block content %}
 <!-- Header -->
 <div class="row mb-4 align-items-center">
-    <div class="col-md-6">
-        <h4 class="fw-bold mb-0 text-dark">Inscriptions à l'événement</h4>
+    <div class="col-lg-5 col-md-12 mb-3 mb-lg-0">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{% url 'admin_events_list' %}" class="text-decoration-none">Événements</a></li>
+                <li class="breadcrumb-item active">Participants</li>
+            </ol>
+        </nav>
+        <h4 class="fw-bold mb-0 text-dark">
+            <i class="fas fa-users text-primary me-2"></i>Participants & Inscriptions
+        </h4>
         <p class="text-muted small mb-0">
-            <i class="fas fa-calendar me-1"></i> {{ event.title_fr }}
+            <i class="fas fa-calendar-alt me-1"></i> {{ event.title_fr }} &bull; {{ event.date_event|date:"d M Y à H:i" }}
         </p>
     </div>
-    <div class="col-md-6 text-end">
-        <a href="{% url 'admin_events_list' %}" class="btn btn-outline-secondary me-2 shadow-sm">
+    <div class="col-lg-7 col-md-12 text-lg-end">
+        <a href="{% url 'admin_events_list' %}" class="btn btn-outline-secondary me-2 shadow-sm mb-1">
             <i class="fas fa-arrow-left me-1"></i>Retour
         </a>
-        <a href="{% url 'admin_event_attendance' event.pk %}" class="btn btn-outline-success me-2 shadow-sm hover-lift">
-            <i class="fas fa-clipboard-check me-1"></i>Feuille d'émargement
+
+        <!-- Bouton Ajouter un Participant -->
+        <button type="button" class="btn btn-primary me-2 shadow-sm mb-1 hover-lift" data-bs-toggle="modal" data-bs-target="#addParticipantModal">
+            <i class="fas fa-user-plus me-1"></i>Ajouter un participant
+        </button>
+
+        <a href="{% url 'admin_event_attendance' event.pk %}" class="btn btn-outline-success me-2 shadow-sm mb-1 hover-lift">
+            <i class="fas fa-clipboard-check me-1"></i>Émargement
         </a>
+
         {% if event.requires_registration_code %}
-        <a href="{% url 'admin_event_codes' event.pk %}" class="btn btn-outline-warning me-2 shadow-sm hover-lift">
-            <i class="fas fa-key me-1"></i>Codes d'accès
+        <a href="{% url 'admin_event_codes' event.pk %}" class="btn btn-outline-warning me-2 shadow-sm mb-1 hover-lift">
+            <i class="fas fa-key me-1"></i>Codes
         </a>
         {% endif %}
-        <a href="{% url 'admin_event_certificates' event.pk %}" class="btn btn-success me-2 shadow-sm hover-lift">
-            <i class="fas fa-certificate me-1"></i>Attestations
-        </a>
-        <a href="{% url 'admin_event_badges' event.pk %}" class="btn btn-warning me-2 shadow-sm hover-lift text-white">
+
+        <a href="{% url 'admin_event_badges' event.pk %}" class="btn btn-warning text-white me-2 shadow-sm mb-1 hover-lift">
             <i class="fas fa-id-badge me-1"></i>Badges
         </a>
-        <a href="{% url 'admin_export_registrations' event.pk %}"
-            class="btn btn-info me-2 shadow-sm hover-lift text-white">
+
+        <a href="{% url 'admin_event_certificates' event.pk %}" class="btn btn-success me-2 shadow-sm mb-1 hover-lift">
+            <i class="fas fa-certificate me-1"></i>Attestations
+        </a>
+
+        <a href="{% url 'admin_export_registrations' event.pk %}{% if filter_querystring %}?{{ filter_querystring }}{% endif %}"
+            class="btn btn-info text-white shadow-sm mb-1 hover-lift" title="Exporter au format CSV / Excel">
             <i class="fas fa-file-excel me-1"></i>Exporter
         </a>
-        <a href="{% url 'admin_send_present_certificates' event.pk %}" class="btn btn-primary shadow-sm hover-lift"
-            onclick="return confirm('Générer et envoyer par email l\'attestation (et badge) uniquement aux participants marqués présents ?')">
-            <i class="fas fa-paper-plane me-1"></i>Envoyer Attestations (Présents)
-        </a>
     </div>
 </div>
 
-<!-- Stats -->
+<!-- Stats Bar -->
 <div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-3 h-100">
             <div>
                 <h6 class="text-muted text-uppercase small fw-bold mb-1">Total Inscrits</h6>
-                <h4 class="mb-0 fw-bold text-dark">{{ registrations.count }}</h4>
+                <h3 class="mb-0 fw-bold text-dark">{{ total_count }}</h3>
+                <small class="text-muted">Inscriptions globales</small>
             </div>
-            <div class="bg-light text-primary rounded-circle p-3">
-                <i class="fas fa-users"></i>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
-            <div>
-                <h6 class="text-muted text-uppercase small fw-bold mb-1">Confirmés</h6>
-                <h4 class="mb-0 fw-bold text-success">{{ confirmed_count }}</h4>
-            </div>
-            <div class="bg-light text-success rounded-circle p-3">
-                <i class="fas fa-check-circle"></i>
+            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3">
+                <i class="fas fa-users fa-lg"></i>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-3 h-100">
             <div>
-                <h6 class="text-muted text-uppercase small fw-bold mb-1">En Attente</h6>
-                <h4 class="mb-0 fw-bold text-warning">{{ pending_count }}</h4>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Payés / Confirmés</h6>
+                <h3 class="mb-0 fw-bold text-success">{{ confirmed_count }}</h3>
+                <small class="text-success fw-semibold">
+                    {% if total_count > 0 %}
+                        {{ confirmed_count|floatformat:0 }} participants validés
+                    {% else %}0%{% endif %}
+                </small>
             </div>
-            <div class="bg-light text-warning rounded-circle p-3">
-                <i class="fas fa-clock"></i>
+            <div class="bg-success bg-opacity-10 text-success rounded-circle p-3">
+                <i class="fas fa-check-circle fa-lg"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-3 h-100">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">En Attente / Non Payés</h6>
+                <h3 class="mb-0 fw-bold text-warning">{{ pending_count }}</h3>
+                <small class="text-muted">À valider</small>
+            </div>
+            <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3">
+                <i class="fas fa-clock fa-lg"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between rounded-3 h-100">
+            <div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-1">Badges Prêts</h6>
+                <h3 class="mb-0 fw-bold text-info">{{ badges_count }}</h3>
+                <small class="text-muted">{{ photos_count }} avec photo</small>
+            </div>
+            <div class="bg-info bg-opacity-10 text-info rounded-circle p-3">
+                <i class="fas fa-id-badge fa-lg"></i>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Registrations List -->
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white border-0 py-4 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold text-dark">Liste des Participants</h5>
-        <span class="badge bg-light text-dark rounded-pill border">Page {{ registrations_page.number }} sur {{
-            registrations_page.paginator.num_pages }}</span>
+<!-- Filtres, Recherche & Tri -->
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <!-- Recherche par nom ou code -->
+            <div class="col-lg-4 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" name="q" class="form-control bg-light border-start-0" 
+                           placeholder="Rechercher par nom, email, tél ou code..." value="{{ q }}">
+                    {% if q %}
+                    <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-secondary" title="Effacer la recherche">
+                        <i class="fas fa-times"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Filtre Statut Paiement -->
+            <div class="col-lg-2 col-md-3 col-sm-6">
+                <select name="status" class="form-select bg-light" onchange="this.form.submit()">
+                    <option value="" {% if not status_filter %}selected{% endif %}>Statut: Tous</option>
+                    <option value="paid" {% if status_filter == 'paid' or status_filter == 'confirmed' %}selected{% endif %}>✓ Payé / Confirmé</option>
+                    <option value="pending" {% if status_filter == 'pending' or status_filter == 'unpaid' %}selected{% endif %}>⏳ En attente (Non payé)</option>
+                </select>
+            </div>
+
+            <!-- Tri -->
+            <div class="col-lg-3 col-md-3 col-sm-6">
+                <select name="sort" class="form-select bg-light" onchange="this.form.submit()">
+                    <option value="date_desc" {% if sort_by == 'date_desc' %}selected{% endif %}>Tri : Date (Récents d'abord)</option>
+                    <option value="date_asc" {% if sort_by == 'date_asc' %}selected{% endif %}>Tri : Date (Anciens d'abord)</option>
+                    <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Tri : Nom (A &rarr; Z)</option>
+                    <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Tri : Nom (Z &rarr; A)</option>
+                    <option value="code_asc" {% if sort_by == 'code_asc' %}selected{% endif %}>Tri : Par Code d'inscription</option>
+                </select>
+            </div>
+
+            <!-- Filtre Présence -->
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <select name="attendance" class="form-select bg-light" onchange="this.form.submit()">
+                    <option value="" {% if not attendance_filter %}selected{% endif %}>Présence: Tous</option>
+                    <option value="present" {% if attendance_filter == 'present' %}selected{% endif %}>Présents (émargés)</option>
+                    <option value="absent" {% if attendance_filter == 'absent' %}selected{% endif %}>Non émargés</option>
+                </select>
+            </div>
+
+            <!-- Boutons Actions Filtre -->
+            <div class="col-lg-1 col-md-2 col-sm-6 d-flex gap-1">
+                <button type="submit" class="btn btn-primary w-100" title="Filtrer">
+                    <i class="fas fa-filter"></i>
+                </button>
+                {% if q or status_filter or attendance_filter or sort_by != 'date_desc' or photo_filter %}
+                <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-danger" title="Réinitialiser les filtres">
+                    <i class="fas fa-undo"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
     </div>
+</div>
+
+<!-- Table des Participants -->
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="mb-0 fw-bold text-dark">
+                Liste des Participants
+                <span class="badge bg-primary bg-opacity-10 text-primary ms-2">{{ filtered_count }}</span>
+            </h5>
+            {% if q or status_filter or attendance_filter %}
+            <small class="text-muted">Résultats filtrés sur {{ total_count }} inscrit(s)</small>
+            {% endif %}
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-dark rounded-pill border px-3 py-2">
+                Page {{ registrations_page.number }} / {{ registrations_page.paginator.num_pages|default:1 }}
+            </span>
+        </div>
+    </div>
+
     <div class="card-body p-0">
         {% if registrations_page %}
         <div class="table-responsive">
@@ -94,57 +203,173 @@
                     <tr>
                         <th class="ps-4 border-0">Participant</th>
                         <th class="border-0">Email & Téléphone</th>
+                        <th class="border-0 text-center">Code d'accès</th>
+                        <th class="border-0 text-center">Paiement / Statut</th>
+                        <th class="border-0 text-center">Présence</th>
+                        <th class="border-0 text-center">Documents</th>
                         <th class="border-0">Date Inscription</th>
-                        <th class="border-0">Statut</th>
                         <th class="border-0 text-end pe-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for registration in registrations_page %}
                     <tr>
+                        <!-- Participant & Photo -->
                         <td class="ps-4">
                             <div class="d-flex align-items-center">
-                                <div class="avatar-sm bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px; font-weight: bold;">
-                                    {{ registration.nom_prenom|first|upper }}
+                                {% if registration.photo %}
+                                <img src="{{ registration.photo.url }}" 
+                                     alt="{{ registration.nom_prenom }}" 
+                                     class="rounded-circle me-3 border shadow-sm" 
+                                     style="width: 42px; height: 42px; object-fit: cover;">
+                                {% else %}
+                                <div class="avatar-sm rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
+                                     style="width: 42px; height: 42px; font-weight: bold; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); color: white;">
+                                    {{ registration.nom_prenom|slice:":2"|upper }}
                                 </div>
+                                {% endif %}
                                 <div>
                                     <h6 class="mb-0 fw-bold text-dark">{{ registration.nom_prenom }}</h6>
+                                    {% if registration.promotion %}
+                                    <small class="text-muted"><i class="fas fa-graduation-cap me-1"></i>{{ registration.promotion }}</small>
+                                    {% else %}
+                                    <small class="text-muted fst-italic">Participant</small>
+                                    {% endif %}
                                 </div>
                             </div>
                         </td>
+
+                        <!-- Contact -->
                         <td>
                             <div class="d-flex flex-column small">
-                                <span class="text-dark">{{ registration.email }}</span>
-                                <span class="text-muted">{{ registration.telephone }}</span>
+                                <span class="text-dark fw-semibold">
+                                    <i class="fas fa-envelope text-muted me-1"></i>{{ registration.email }}
+                                </span>
+                                {% if registration.telephone %}
+                                <span class="text-muted">
+                                    <i class="fas fa-phone text-muted me-1"></i>{{ registration.telephone }}
+                                </span>
+                                {% endif %}
                             </div>
                         </td>
-                        <td>
-                            <span class="text-muted small">{{ registration.created_at|date:"d M Y H:i" }}</span>
-                        </td>
-                        <td>
-                            {% if registration.is_confirmed %}
-                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Confirmé</span>
+
+                        <!-- Code d'accès -->
+                        <td class="text-center">
+                            {% if registration.registration_code_entered %}
+                            <span class="badge bg-dark bg-opacity-10 text-dark font-monospace px-3 py-2 border rounded-pill copy-code-badge" 
+                                  style="cursor: pointer; letter-spacing: 1px;" 
+                                  title="Cliquez pour copier le code"
+                                  onclick="copyCode('{{ registration.registration_code_entered }}', this)">
+                                <i class="fas fa-key text-warning me-1"></i>{{ registration.registration_code_entered }}
+                            </span>
+                            {% elif registration.used_registration_code %}
+                            <span class="badge bg-dark bg-opacity-10 text-dark font-monospace px-3 py-2 border rounded-pill" 
+                                  style="cursor: pointer; letter-spacing: 1px;"
+                                  onclick="copyCode('{{ registration.used_registration_code.code }}', this)">
+                                <i class="fas fa-key text-warning me-1"></i>{{ registration.used_registration_code.code }}
+                            </span>
                             {% else %}
-                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">En
-                                attente</span>
+                            <span class="text-muted small">&mdash;</span>
                             {% endif %}
                         </td>
+
+                        <!-- Statut Paiement (Cliquable pour basculer rapidement) -->
+                        <td class="text-center">
+                            {% if registration.is_confirmed %}
+                            <a href="{% url 'admin_toggle_registration_payment' registration.pk %}" 
+                               class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 text-decoration-none border border-success border-opacity-25 hover-shadow"
+                               title="Paiement validé. Cliquez pour basculer vers en attente.">
+                                <i class="fas fa-check-circle me-1"></i>Payé / Confirmé
+                            </a>
+                            {% else %}
+                            <a href="{% url 'admin_toggle_registration_payment' registration.pk %}" 
+                               class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2 text-decoration-none border border-warning border-opacity-25 hover-shadow"
+                               title="En attente de paiement. Cliquez pour valider le paiement.">
+                                <i class="fas fa-clock me-1"></i>En attente
+                            </a>
+                            {% endif %}
+                        </td>
+
+                        <!-- Présence -->
+                        <td class="text-center">
+                            {% if registration.is_marked_present %}
+                            <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-2 border border-info border-opacity-25">
+                                <i class="fas fa-user-check me-1"></i>Présent
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary bg-opacity-10 text-muted rounded-pill px-3 py-2">
+                                Non émargé
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Documents (Ticket / Badge / Attestation) -->
+                        <td class="text-center">
+                            <div class="d-inline-flex gap-1">
+                                <!-- Ticket -->
+                                {% if registration.ticket_pdf %}
+                                <a href="{{ registration.ticket_pdf.url }}" target="_blank" class="btn btn-sm btn-light text-primary rounded-circle" title="Voir le billet PDF">
+                                    <i class="fas fa-ticket-alt"></i>
+                                </a>
+                                {% else %}
+                                <span class="btn btn-sm btn-light text-muted opacity-25 rounded-circle" title="Ticket non généré">
+                                    <i class="fas fa-ticket-alt"></i>
+                                </span>
+                                {% endif %}
+
+                                <!-- Badge -->
+                                {% if registration.badge_pdf %}
+                                <a href="{{ registration.badge_pdf.url }}" target="_blank" class="btn btn-sm btn-light text-warning rounded-circle" title="Voir le badge PDF">
+                                    <i class="fas fa-id-badge"></i>
+                                </a>
+                                {% else %}
+                                <span class="btn btn-sm btn-light text-muted opacity-25 rounded-circle" title="Badge non généré">
+                                    <i class="fas fa-id-badge"></i>
+                                </span>
+                                {% endif %}
+
+                                <!-- Attestation -->
+                                {% if registration.certificate_pdf %}
+                                <a href="{{ registration.certificate_pdf.url }}" target="_blank" class="btn btn-sm btn-light text-success rounded-circle" title="Voir l'attestation PDF">
+                                    <i class="fas fa-certificate"></i>
+                                </a>
+                                {% else %}
+                                <span class="btn btn-sm btn-light text-muted opacity-25 rounded-circle" title="Attestation non disponible">
+                                    <i class="fas fa-certificate"></i>
+                                </span>
+                                {% endif %}
+                            </div>
+                        </td>
+
+                        <!-- Date Inscription -->
+                        <td>
+                            <span class="text-muted small">
+                                <i class="far fa-clock me-1"></i>{{ registration.registration_date|date:"d/m/Y H:i" }}
+                            </span>
+                        </td>
+
+                        <!-- Actions -->
                         <td class="text-end pe-4">
                             <div class="btn-group">
                                 <a href="{% url 'admin_edit_registration' registration.pk %}"
-                                    class="btn btn-sm btn-light text-primary rounded-circle me-1" title="Modifier l'inscrit">
+                                   class="btn btn-sm btn-light text-primary rounded-circle me-1" title="Modifier le participant">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 {% if not registration.is_confirmed %}
                                 <a href="{% url 'admin_confirm_registration' registration.pk %}"
-                                    class="btn btn-sm btn-light text-success rounded-circle me-1" title="Confirmer">
+                                   class="btn btn-sm btn-light text-success rounded-circle me-1" title="Confirmer le paiement">
                                     <i class="fas fa-check"></i>
                                 </a>
                                 {% endif %}
+                                {% if event.badge_enabled %}
+                                <a href="{% url 'admin_regenerate_badge' registration.pk %}"
+                                   class="btn btn-sm btn-light text-warning rounded-circle me-1" title="Régénérer le badge">
+                                    <i class="fas fa-sync-alt"></i>
+                                </a>
+                                {% endif %}
                                 <a href="{% url 'admin_delete_registration' registration.pk %}"
-                                    class="btn btn-sm btn-light text-danger rounded-circle" title="Supprimer"
-                                    onclick="return confirm('Supprimer cette inscription ?')">
+                                   class="btn btn-sm btn-light text-danger rounded-circle" title="Supprimer"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer l\'inscription de {{ registration.nom_prenom }} ?')">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
@@ -163,30 +388,30 @@
                     {% if registrations_page.has_previous %}
                     <li class="page-item">
                         <a class="page-link border-0 shadow-sm"
-                            href="?page={{ registrations_page.previous_page_number }}">
+                           href="?page={{ registrations_page.previous_page_number }}{% if filter_querystring %}&{{ filter_querystring }}{% endif %}">
                             <i class="fas fa-chevron-left"></i>
                         </a>
                     </li>
                     {% endif %}
 
                     {% for num in registrations_page.paginator.page_range %}
-                    {% if registrations_page.number == num %}
-                    <li class="page-item active"><span class="page-link shadow-sm">{{ num }}</span></li>
-                    {% elif num > registrations_page.number|add:'-3' and num < registrations_page.number|add:'3' %} <li
-                        class="page-item">
-                        <a class="page-link border-0 shadow-sm" href="?page={{ num }}">{{ num }}</a>
-                        </li>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% if registrations_page.has_next %}
+                        {% if registrations_page.number == num %}
+                        <li class="page-item active"><span class="page-link shadow-sm">{{ num }}</span></li>
+                        {% elif num > registrations_page.number|add:'-3' and num < registrations_page.number|add:'3' %}
                         <li class="page-item">
-                            <a class="page-link border-0 shadow-sm"
-                                href="?page={{ registrations_page.next_page_number }}">
-                                <i class="fas fa-chevron-right"></i>
-                            </a>
+                            <a class="page-link border-0 shadow-sm" href="?page={{ num }}{% if filter_querystring %}&{{ filter_querystring }}{% endif %}">{{ num }}</a>
                         </li>
                         {% endif %}
+                    {% endfor %}
+
+                    {% if registrations_page.has_next %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm"
+                           href="?page={{ registrations_page.next_page_number }}{% if filter_querystring %}&{{ filter_querystring }}{% endif %}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
@@ -197,10 +422,205 @@
             <div class="mb-3 opacity-25">
                 <i class="fas fa-users-slash fa-4x text-muted"></i>
             </div>
-            <h5 class="text-muted fw-bold">Aucune inscription</h5>
-            <p class="text-muted small">Personne ne s'est encore inscrit à cet événement.</p>
+            <h5 class="text-muted fw-bold">Aucun participant trouvé</h5>
+            {% if q or status_filter or attendance_filter %}
+            <p class="text-muted small mb-3">Aucun résultat ne correspond à vos critères de recherche.</p>
+            <a href="{% url 'admin_event_registrations' event.pk %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <i class="fas fa-undo me-1"></i>Effacer les filtres
+            </a>
+            {% else %}
+            <p class="text-muted small mb-3">Personne n'est encore inscrit à cet événement.</p>
+            <button type="button" class="btn btn-primary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#addParticipantModal">
+                <i class="fas fa-user-plus me-1"></i>Inscrire le premier participant
+            </button>
+            {% endif %}
         </div>
         {% endif %}
     </div>
 </div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: AJOUTER UN PARTICIPANT                                             -->
+<!-- ========================================================================= -->
+<div class="modal fade" id="addParticipantModal" tabindex="-1" aria-labelledby="addParticipantModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pt-4 px-4 pb-2">
+                <div>
+                    <h5 class="modal-title fw-bold text-dark" id="addParticipantModalLabel">
+                        <i class="fas fa-user-plus text-primary me-2"></i>Nouveau Participant
+                    </h5>
+                    <p class="text-muted small mb-0">{{ event.title_fr }}</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form action="{% url 'admin_create_registration' event.pk %}" method="post" enctype="multipart/form-data" id="modalParticipantForm">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <!-- Nom et Promotion -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold text-dark">Nom et Prénom <span class="text-danger">*</span></label>
+                            {{ create_form.nom_prenom }}
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold text-dark">Promotion / Niveau</label>
+                            {{ create_form.promotion }}
+                        </div>
+                    </div>
+
+                    <!-- Email et Téléphone -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold text-dark">Adresse e-mail <span class="text-danger">*</span></label>
+                            {{ create_form.email }}
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold text-dark">Téléphone</label>
+                            {{ create_form.telephone }}
+                        </div>
+                    </div>
+
+                    <!-- Code d'inscription & Bouton Générateur -->
+                    <div class="card bg-light border-0 rounded-3 p-3 mb-3">
+                        <label class="form-label fw-semibold text-dark mb-1">
+                            <i class="fas fa-key text-warning me-1"></i> Code d'accès physique (6 car.)
+                        </label>
+                        <div class="input-group mb-2">
+                            {{ create_form.registration_code_entered }}
+                            <button type="button" class="btn btn-primary" id="btnGenCodeModal">
+                                <i class="fas fa-magic me-1"></i> Générer un code
+                            </button>
+                        </div>
+                        <div class="form-check form-switch mt-1">
+                            {{ create_form.auto_generate_code }}
+                            <label class="form-check-label small fw-semibold text-muted ms-2" for="{{ create_form.auto_generate_code.id_for_label }}">
+                                {{ create_form.auto_generate_code.label }}
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Photo du participant avec prévisualisation -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark">
+                            <i class="fas fa-camera text-primary me-1"></i> Photo du participant (pour le badge)
+                        </label>
+                        <div class="row align-items-center g-3">
+                            <div class="col-auto">
+                                <div id="modalPhotoPreviewContainer" class="rounded-circle border d-flex align-items-center justify-content-center bg-light text-muted" style="width: 56px; height: 56px; overflow: hidden;">
+                                    <i class="fas fa-user fa-lg" id="modalPhotoPlaceholder"></i>
+                                    <img id="modalPhotoPreviewImg" src="#" alt="Aperçu" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                            </div>
+                            <div class="col">
+                                {{ create_form.photo }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statuts (Paiement & Présence) -->
+                    <div class="card bg-light border-0 rounded-3 p-3 mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    {{ create_form.is_confirmed }}
+                                    <label class="form-check-label fw-semibold ms-2" for="{{ create_form.is_confirmed.id_for_label }}">
+                                        Paiement Effectué / Confirmé
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    {{ create_form.has_participated }}
+                                    <label class="form-check-label fw-semibold ms-2" for="{{ create_form.has_participated.id_for_label }}">
+                                        Présence Validée
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Génération auto tickets et badges -->
+                    <div class="form-check form-switch mb-3">
+                        {{ create_form.generate_documents }}
+                        <label class="form-check-label small fw-semibold text-dark ms-2" for="{{ create_form.generate_documents.id_for_label }}">
+                            {{ create_form.generate_documents.label }}
+                        </label>
+                    </div>
+
+                    <!-- Message optionnel -->
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold text-dark small">Notes ou commentaire interne</label>
+                        {{ create_form.message }}
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                        <i class="fas fa-check-circle me-1"></i> Inscrire le participant
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Copier le code dans le presse-papier
+function copyCode(code, element) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(function() {
+            const originalHtml = element.innerHTML;
+            element.innerHTML = '<i class="fas fa-check text-success me-1"></i>Copié !';
+            setTimeout(function() {
+                element.innerHTML = originalHtml;
+            }, 1500);
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Génération de code dans la modale
+    const btnGenModal = document.getElementById('btnGenCodeModal');
+    const modalInputCode = document.querySelector('#modalParticipantForm input[name="registration_code_entered"]');
+    if (btnGenModal && modalInputCode) {
+        btnGenModal.addEventListener('click', function() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let res = '';
+            for (let i = 0; i < 6; i++) {
+                res += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            modalInputCode.value = res;
+            modalInputCode.classList.add('is-valid');
+            setTimeout(() => modalInputCode.classList.remove('is-valid'), 1200);
+        });
+    }
+
+    // Prévisualisation de la photo dans la modale
+    const modalPhotoInput = document.querySelector('#modalParticipantForm input[type="file"][name="photo"]');
+    const modalPreviewImg = document.getElementById('modalPhotoPreviewImg');
+    const modalPlaceholder = document.getElementById('modalPhotoPlaceholder');
+
+    if (modalPhotoInput && modalPreviewImg && modalPlaceholder) {
+        modalPhotoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    modalPreviewImg.src = e.target.result;
+                    modalPreviewImg.style.display = 'block';
+                    modalPlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                modalPreviewImg.src = '#';
+                modalPreviewImg.style.display = 'none';
+                modalPlaceholder.style.display = 'block';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

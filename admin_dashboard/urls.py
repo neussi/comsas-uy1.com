@@ -68,9 +68,11 @@ urlpatterns = [
     path('events/<int:pk>/delete/', views.EventDeleteView.as_view(), name='admin_event_delete'),
     path('events/bulk-delete/', views.events_bulk_delete, name='admin_events_bulk_delete'),
     path('events/<int:pk>/reservations/', views.event_registrations, name='admin_event_registrations'),
+    path('events/<int:pk>/reservations/add/', views.admin_create_registration, name='admin_create_registration'),
     path('registrations/<int:pk>/delete/', views.delete_registration, name='admin_delete_registration'),
     path('events/<int:pk>/registrations/export/', views.event_registrations_export_excel, name='admin_export_registrations'),
     path('registrations/<int:pk>/confirm/', views.confirm_registration, name='admin_confirm_registration'),
+    path('registrations/<int:pk>/toggle-payment/', views.toggle_registration_payment, name='admin_toggle_registration_payment'),
     path('registrations/<int:pk>/edit/', views.admin_edit_registration, name='admin_edit_registration'),
     path('events/<int:pk>/send-certificates/', views.admin_send_event_certificates, name='admin_send_event_certificates'),
     
