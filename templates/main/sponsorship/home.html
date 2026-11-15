@@ -228,7 +228,14 @@
                     </div>
                 </div>
                 <div class="col-lg-5 text-center">
-                    <img src="{% static 'images/cofesti/flyer_soiree_parrainage.webp' %}" alt="Flyer Gala Resto N°2" class="img-fluid rounded-4 shadow-sm" style="max-height: 280px; object-fit: cover;" onerror="this.src='{% static 'images/comsas.png' %}';">
+                    <picture>
+                        <source srcset="{% static 'images/cofesti/flyer_soiree_parrainage.webp' %}" type="image/webp">
+                        <img src="{% static 'images/cofesti/flyer_soiree_parrainage.jpg' %}" 
+                             alt="Flyer Gala Resto N°2" 
+                             class="img-fluid rounded-4 shadow-sm" 
+                             style="max-height: 380px; object-fit: contain;" 
+                             onerror="this.onerror=null; this.src='{% static 'images/cofesti/WhatsApp Image 2026-11-11 at 08.03.13.jpeg' %}';">
+                    </picture>
                 </div>
             </div>
         </div>

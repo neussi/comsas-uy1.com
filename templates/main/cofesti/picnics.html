@@ -107,6 +107,28 @@
             </p>
         </div>
 
+        <!-- Affiche Officielle Plein Air & Cinéma -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <div class="p-3 rounded-4" style="background: var(--blanc); border: 1px solid var(--rose-border); box-shadow: 0 8px 30px var(--rose-shadow);">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge rounded-pill fw-bold" style="background: var(--gradient); color: #fff;">
+                            <i class="fas fa-film me-1"></i> Affiche Officielle
+                        </span>
+                        <span class="small fw-bold text-muted">Projection Cinématographique & Pique-Nique Festi-Noël</span>
+                    </div>
+                    <picture>
+                        <source srcset="{% static 'images/cofesti/flyer_plein_air_piquenique.webp' %}" type="image/webp">
+                        <img src="{% static 'images/cofesti/flyer_plein_air_piquenique.jpg' %}" 
+                             onerror="this.onerror=null; this.src='{% static 'images/cofesti/WhatsApp Image 2026-11-11 at 08.03.33.jpeg' %}';" 
+                             alt="Affiche Officielle Pique-Nique et Cinéma Plein Air COFESTI" 
+                             class="img-fluid rounded-3 shadow-sm w-100" 
+                             style="max-height: 480px; object-fit: contain;">
+                    </picture>
+                </div>
+            </div>
+        </div>
+
         <!-- LISTE DES PIQUE-NIQUES -->
         <div class="row g-4">
             {% for p in picnics %}

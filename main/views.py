@@ -1128,6 +1128,158 @@ def sponsorship_download_pass(request, uuid):
         return FileResponse(participant.ticket_pdf.open('rb'), content_type='application/pdf', filename=f"Pass_Soiree_{participant.first_name}_{participant.last_name}.pdf")
     raise Http404(_("Fichier de pass introuvable."))
 
+    if participant.is_paid:
+        messages.info(request, _("Votre paiement est déjà validé et votre Pass Soirée est disponible."))
+        return redirect('sponsorship_success', uuid=participant.uuid)
+
+    amount = int(participant.amount) if participant.amount else (5000 if role == 'mentor' else 10000)
+
+    if request.method == 'POST':
+        phone = request.POST.get('phone', '').strip()
+        if phone:
+            participant.phone = phone
+            participant.save(update_fields=['phone'])
+        else:
+            phone = participant.phone
+
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
+        res = processor.process_sponsorship_payment(participant, phone=phone)
+
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', '')
+        if is_ajax:
+            return JsonResponse(res)
+
+        if res.get('success'):
+            messages.info(request, res.get('message', _("Une notification de paiement a été envoyée sur votre téléphone. Composez votre code secret.")))
+        else:
+            messages.warning(request, _("Échec de l'initialisation du paiement : %(err)s") % {'err': res.get('error', _("Erreur réseau"))})
+
+    context = {
+        'participant': participant,
+        'role': role,
+        'amount': amount,
+        'session': participant.session,
+    }
+    return render(request, 'main/sponsorship/payment.html', context)
+
+def sponsorship_payment_status(request, uuid):
+    """Vérification AJAX du statut de paiement de parrainage (Polling)"""
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant:
+        return JsonResponse({'success': False, 'error': 'Participant introuvable'}, status=404)
+
+    if not participant.is_paid and participant.payment_status in ('pending', 'processing') and participant.payment_reference:
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
+        vote_like = type('Obj', (object,), {
+            'transaction_id': participant.transaction_id,
+            'payment_reference': participant.payment_reference,
+            'phone': participant.phone
+        })()
+        check = processor.verify_payment_status(vote_like)
+        if check.get('success') and check.get('status') == 'completed':
+            processor.confirm_sponsorship_payment(participant)
+            participant.refresh_from_db()
+
+    redirect_url = reverse('sponsorship_success', kwargs={'uuid': participant.uuid}) if participant.is_paid else ''
+    
+    return JsonResponse({
+        'is_paid': participant.is_paid,
+        'payment_status': participant.payment_status,
+        'transaction_id': participant.transaction_id,
+        'name': f"{participant.first_name} {participant.last_name}",
+        'redirect_url': redirect_url,
+    })
+
+def sponsorship_payment_cancel(request, uuid):
+    """Annulation d'un paiement en attente"""
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant:
+        return redirect('sponsorship_home')
+    if not participant.is_paid:
+        participant.payment_status = 'cancelled'
+        participant.save(update_fields=['payment_status'])
+        messages.info(request, _("Le paiement a été annulé. Vous pouvez relancer la transaction à tout moment pour activer votre pass."))
+    return redirect('sponsorship_payment', uuid=participant.uuid)
+
+def sponsorship_success(request, uuid=None):
+    """Confirmation finale, affichage du Pass officiel avec QR Code et statut d'affectation"""
+    if not uuid:
+        return render(request, 'main/sponsorship/success.html', {})
+        
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant:
+        messages.error(request, _("Participant introuvable."))
+        return redirect('sponsorship_home')
+
+    if not participant.is_paid:
+        messages.warning(request, _("Veuillez d'abord finaliser votre paiement pour obtenir votre Pass officiel."))
+        return redirect('sponsorship_payment', uuid=participant.uuid)
+
+    match = None
+    matches = []
+    if role == 'mentor':
+        matches = Match.objects.filter(mentor=participant)
+    else:
+        match = Match.objects.filter(mentee=participant).first()
+
+    context = {
+        'participant': participant,
+        'role': role,
+        'match': match,
+        'matches': matches,
+        'session': participant.session,
+    }
+    return render(request, 'main/sponsorship/success.html', context)
+
+def sponsorship_my_match(request, uuid):
+    """Espace personnel pour voir son Parrain ou son/ses Filleul(s) (Maximum 2 filleuls par parrain)"""
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant:
+        messages.error(request, _("Participant introuvable."))
+        return redirect('sponsorship_home')
+
+    if not participant.is_paid:
+        messages.warning(request, _("Veuillez d'abord valider votre participation pour consulter votre binôme."))
+        return redirect('sponsorship_payment', uuid=participant.uuid)
+
+    matches = []
+    mentees = []
+    mentor = None
+
+    if role == 'mentor':
+        matches = Match.objects.filter(mentor=participant).select_related('mentee')
+        mentees = [m.mentee for m in matches]
+    else:
+        m = Match.objects.filter(mentee=participant).select_related('mentor').first()
+        if m:
+            matches = [m]
+            mentor = m.mentor
+
+    context = {
+        'participant': participant,
+        'role': role,
+        'matches': matches,
+        'mentees': mentees,
+        'mentor': mentor,
+        'session': participant.session,
+    }
+    return render(request, 'main/sponsorship/my_match.html', context)
+
+def sponsorship_download_pass(request, uuid):
+    """Téléchargement direct du PDF du Pass Soirée de Gala avec QR code"""
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant or not participant.is_paid:
+        raise Http404(_("Pass non disponible ou impayé."))
+    if not participant.ticket_pdf:
+        from .utils import generate_sponsorship_pass
+        generate_sponsorship_pass(participant)
+        participant.refresh_from_db()
+    if participant.ticket_pdf:
+        return FileResponse(participant.ticket_pdf.open('rb'), content_type='application/pdf', filename=f"Pass_Soiree_{participant.first_name}_{participant.last_name}.pdf")
+    raise Http404(_("Fichier de pass introuvable."))
+
 def list_mentors(request):
     """Liste publique des parrains"""
     active_session = SponsorshipSession.objects.filter(is_active=True).first()

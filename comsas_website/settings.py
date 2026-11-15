@@ -8,6 +8,16 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Chargement automatique du fichier .env local s'il existe
+_env_file = BASE_DIR / '.env'
+if _env_file.exists():
+    with open(_env_file, 'r', encoding='utf-8') as _ef:
+        for _l in _ef:
+            _l = _l.strip()
+            if _l and not _l.startswith('#') and '=' in _l:
+                _k, _v = _l.split('=', 1)
+                os.environ.setdefault(_k.strip(), _v.strip().strip("'\""))
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-s#06#%yxzr8w7inp@r#-7s3ie+43jx3g6w!_@4)qneruqdak$1"
 
@@ -408,11 +418,11 @@ CSRF_TRUSTED_ORIGINS = [
 # =============================================================================
 # PROPENTA PAY (V2) — Mobile Money Cameroun (Orange Money & MTN MoMo)
 # =============================================================================
-PROPENTA_CLIENT_ID = os.environ.get('PROPENTA_CLIENT_ID') or 'a6f1c793-7193-4859-b6c9-323e4c6e76ca'
-PROPENTA_CLIENT_SECRET = os.environ.get('PROPENTA_CLIENT_SECRET') or '4bT5nNhDWChrM9NwRZtHKj92qgK0qZWxoh-wI38kx64'
-PROPENTA_BASE_URL = os.environ.get('PROPENTA_BASE_URL') or 'https://app.pay.propentatech.com/api/v2'
-PROPENTA_WEBHOOK_URL = os.environ.get('PROPENTA_WEBHOOK_URL') or 'https://www.comsas-uy1.com/webhook'
-PROPENTA_WITHDRAWAL_NUMBER = os.environ.get('PROPENTA_WITHDRAWAL_NUMBER') or '237650970526'
+PROPENTA_CLIENT_ID = os.environ.get('PROPENTA_CLIENT_ID', '')
+PROPENTA_CLIENT_SECRET = os.environ.get('PROPENTA_CLIENT_SECRET', '')
+PROPENTA_BASE_URL = os.environ.get('PROPENTA_BASE_URL', 'https://app.pay.propentatech.com/api/v2')
+PROPENTA_WEBHOOK_URL = os.environ.get('PROPENTA_WEBHOOK_URL', 'https://www.comsas-uy1.com/webhook')
+PROPENTA_WITHDRAWAL_NUMBER = os.environ.get('PROPENTA_WITHDRAWAL_NUMBER', '237650970526')
 
 # Compatibilité transitoire Freemopay
 FREEMOPAY_APP_KEY = PROPENTA_CLIENT_ID

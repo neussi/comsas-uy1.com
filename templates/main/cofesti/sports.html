@@ -233,6 +233,51 @@
         </div>
 
         <!-- ═══════════════════════════════════════════
+             AFFICHES OFFICIELLES DES TOURNOIS
+        ═══════════════════════════════════════════ -->
+        <div class="row g-4 mb-5">
+            <!-- Affiche Sports de Terrain -->
+            <div class="col-md-6">
+                <div class="p-3 rounded-4 h-100 text-center" style="background: var(--blanc); border: 1px solid var(--rose-border); box-shadow: 0 8px 24px var(--rose-shadow);">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge rounded-pill fw-bold" style="background: var(--rose-pale); color: var(--rose);">
+                            <i class="fas fa-futbol me-1"></i> Affiche Officielle
+                        </span>
+                        <small class="fw-bold text-muted">Football · Basketball · Handball · Tennis</small>
+                    </div>
+                    <picture>
+                        <source srcset="{% static 'images/cofesti/flyer_sports_terrain.webp' %}" type="image/webp">
+                        <img src="{% static 'images/cofesti/flyer_sports_terrain.jpg' %}" 
+                             onerror="this.onerror=null; this.src='{% static 'images/cofesti/WhatsApp Image 2026-11-11 at 08.03.17.jpeg' %}';" 
+                             alt="Flyer Sports de Terrain COFESTI" 
+                             class="img-fluid rounded-3 shadow-sm w-100" 
+                             style="max-height: 380px; object-fit: contain;">
+                    </picture>
+                </div>
+            </div>
+
+            <!-- Affiche Jeux de Salle & E-Sport -->
+            <div class="col-md-6">
+                <div class="p-3 rounded-4 h-100 text-center" style="background: var(--blanc); border: 1px solid var(--rose-border); box-shadow: 0 8px 24px var(--rose-shadow);">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge rounded-pill fw-bold" style="background: var(--gradient); color: #fff;">
+                            <i class="fas fa-gamepad me-1"></i> E-Sport & Jeux de Salle
+                        </span>
+                        <small class="fw-bold text-muted">FC 25 · Naruto · Call of Duty · Échecs</small>
+                    </div>
+                    <picture>
+                        <source srcset="{% static 'images/cofesti/flyer_jeux_de_salle.webp' %}" type="image/webp">
+                        <img src="{% static 'images/cofesti/flyer_jeux_de_salle.jpg' %}" 
+                             onerror="this.onerror=null; this.src='{% static 'images/cofesti/WhatsApp Image 2026-11-11 at 08.03.22.jpeg' %}';" 
+                             alt="Flyer Jeux de Salle COFESTI" 
+                             class="img-fluid rounded-3 shadow-sm w-100" 
+                             style="max-height: 380px; object-fit: contain;">
+                    </picture>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
              ONGLETS DE SÉLECTION DES COMPÉTITIONS
         ═══════════════════════════════════════════ -->
         <ul class="nav nav-pills justify-content-center gap-2 mb-4" id="sportsTab" role="tablist">

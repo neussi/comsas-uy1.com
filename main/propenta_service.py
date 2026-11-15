@@ -29,8 +29,8 @@ class PropentaPayAPIClient:
     _token_expires_at = 0
 
     def __init__(self):
-        self.client_id = getattr(settings, 'PROPENTA_CLIENT_ID', 'a6f1c793-7193-4859-b6c9-323e4c6e76ca')
-        self.client_secret = getattr(settings, 'PROPENTA_CLIENT_SECRET', '4bT5nNhDWChrM9NwRZtHKj92qgK0qZWxoh-wI38kx64')
+        self.client_id = getattr(settings, 'PROPENTA_CLIENT_ID', '') or os.environ.get('PROPENTA_CLIENT_ID', '')
+        self.client_secret = getattr(settings, 'PROPENTA_CLIENT_SECRET', '') or os.environ.get('PROPENTA_CLIENT_SECRET', '')
         self.base_url = getattr(settings, 'PROPENTA_BASE_URL', 'https://app.pay.propentatech.com/api/v2').rstrip('/')
         self.webhook_url = getattr(settings, 'PROPENTA_WEBHOOK_URL', 'https://www.comsas-uy1.com/webhook')
         self.withdrawal_number = getattr(settings, 'PROPENTA_WITHDRAWAL_NUMBER', '237650970526')
@@ -710,3 +710,4 @@ class PropentaWebhookHandler:
 FreemopayPaymentProcessor = PropentaPaymentProcessor
 FreemopayWebhookHandler = PropentaWebhookHandler
 FreemopayService = PropentaPaymentProcessor
+

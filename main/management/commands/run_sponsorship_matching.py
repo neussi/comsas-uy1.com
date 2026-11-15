@@ -33,3 +33,4 @@ class Command(BaseCommand):
         self.stdout.write(f" - Filleuls traités : {res['mentees_processed_count']}")
         self.stdout.write(f" - Binômes créés : {res['matches_count']}")
         self.stdout.write(f" - Liste d'attente : {res['waiting_list_count']}")
+

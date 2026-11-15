@@ -38,8 +38,8 @@ def run_tests():
     # -------------------------------------------------------------------------
     print("\n--- [TEST 1] Client API & Signature HMAC ---")
     client = PropentaPayAPIClient()
-    assert client.client_id == 'a6f1c793-7193-4859-b6c9-323e4c6e76ca', "Client ID incorrect"
-    assert client.client_secret == '4bT5nNhDWChrM9NwRZtHKj92qgK0qZWxoh-wI38kx64', "Client Secret incorrect"
+    assert bool(client.client_id), "Client ID non configuré"
+    assert bool(client.client_secret), "Client Secret non configuré"
 
     # Test normalisation téléphone
     assert client.normalize_phone("+237699112233") == "237699112233"

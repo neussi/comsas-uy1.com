@@ -405,6 +405,18 @@
             <!-- Colonne Carte Compte à Rebours & Dates -->
             <div class="col-lg-5">
                 <div class="countdown-card">
+                    <!-- Affiche Officielle COFESTI -->
+                    <div class="text-center mb-3 p-2 rounded-4" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                        <picture>
+                            <source srcset="{% static 'images/cofesti/logo_cofesti.webp' %}" type="image/webp">
+                            <img src="{% static 'images/cofesti/logo_cofesti.jpg' %}" 
+                                 onerror="this.onerror=null; this.src='{% static 'images/cofesti/WhatsApp Image 2026-11-09 at 18.52.09.jpeg' %}';" 
+                                 alt="COFESTI Festi-Noël {{ edition.year }}" 
+                                 class="img-fluid rounded-3 shadow-sm w-100" 
+                                 style="max-height: 240px; object-fit: contain;">
+                        </picture>
+                    </div>
+
                     <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-rose-subtle">
                         <span class="badge" style="background: var(--rose-pale); color: var(--rose); font-size: 0.8rem; font-weight: 800;">
                             <i class="fas fa-calendar-alt me-1"></i> {{ edition.start_date|date:"d M" }} — {{ edition.end_date|date:"d M Y" }}

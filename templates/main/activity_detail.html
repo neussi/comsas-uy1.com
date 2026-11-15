@@ -122,7 +122,7 @@
                 <div class="activity-card mb-4">
                     {% if activity.image %}
                     <div style="height: 340px; overflow: hidden; background: #000;" class="position-relative">
-                        <img src="{{ activity.image.url }}" alt="{{ activity.title }}" class="w-100 h-100" style="object-fit: cover;">
+                        <img src="{{ activity.image.url }}" alt="{{ activity.title }}" class="w-100 h-100" style="object-fit: cover;" onerror="this.onerror=null; this.src='{% static 'images/cofesti/flyer_sports_terrain.jpg' %}';">
                         <div class="position-absolute bottom-0 start-0 w-100 p-4" style="background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);">
                             <span class="badge rounded-pill px-3 py-1.5 text-uppercase fw-bold small mb-2" style="background: var(--rose); color: #fff;">
                                 <i class="fas {% if activity.activity_type == 'team' %}fa-users{% elif activity.activity_type == 'gaming' %}fa-gamepad{% else %}fa-user{% endif %} me-1"></i>
