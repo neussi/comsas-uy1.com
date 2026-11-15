@@ -1,92 +1,152 @@
-<!-- MODAL UNIVERSELLE DE VOTE EN LIGNE (100 FCFA) -->
-<style>
-    #voteModal.hidden { display: none !important; }
-    #voteModal:not(.hidden) { display: flex !important; }
-</style>
-<div id="voteModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4" style="background: rgba(15, 23, 42, 0.75);">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
-        <button onclick="closeVoteModal()" type="button" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center transition-colors">
-            <i class="fas fa-times"></i>
-        </button>
-
-        <div class="text-center mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl mx-auto mb-3 font-bold">
-                <i class="fas fa-vote-yea"></i>
+<!-- MODAL BOOTSTRAP 5 DE VOTE EN LIGNE (BLANC & ROSE) -->
+<div class="modal fade" id="voteModal" tabindex="-1" aria-labelledby="voteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="border: 1px solid rgba(233, 30, 99, 0.2) !important;">
+            
+            <!-- Header Décoratif Rose -->
+            <div class="modal-header border-0 pb-0 pt-4 px-4 position-relative">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 font-outfit" id="modalCandidateTitle">Voter pour le candidat</h3>
-            <p class="text-xs text-slate-500 mt-1">Tarif officiel : <strong>{{ edition.vote_unit_price|floatformat:0 }} FCFA</strong> par voix</p>
-        </div>
 
-        <form id="cofestiVoteForm" onsubmit="handleVoteSubmit(event)" class="space-y-4">
-            {% csrf_token %}
-            <input type="hidden" name="candidate_id" id="modalCandidateId">
-
-            <!-- Nombre de voix -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Choisir le nombre de voix</label>
-                <div class="grid grid-cols-4 gap-2 mb-2">
-                    <button type="button" onclick="setVoteCount(1)" class="vote-qty-btn active py-2 rounded-xl text-xs font-bold border border-slate-200 bg-amber-500 text-white" data-qty="1">1 voix (100F)</button>
-                    <button type="button" onclick="setVoteCount(5)" class="vote-qty-btn py-2 rounded-xl text-xs font-bold border border-slate-200 bg-slate-50 text-slate-700" data-qty="5">5 (500F)</button>
-                    <button type="button" onclick="setVoteCount(10)" class="vote-qty-btn py-2 rounded-xl text-xs font-bold border border-slate-200 bg-slate-50 text-slate-700" data-qty="10">10 (1000F)</button>
-                    <button type="button" onclick="setVoteCount(20)" class="vote-qty-btn py-2 rounded-xl text-xs font-bold border border-slate-200 bg-slate-50 text-slate-700" data-qty="20">20 (2000F)</button>
+            <div class="modal-body px-4 pt-1 pb-4">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px; background: rgba(233, 30, 99, 0.08); color: #E91E63; font-size: 1.6rem;">
+                        <i class="fas fa-vote-yea"></i>
+                    </div>
+                    <h4 class="fw-extrabold mb-1" id="modalCandidateTitle" style="color: #1a0a10;">Voter pour un candidat</h4>
+                    <p class="small text-muted mb-0">
+                        Tarif officiel : <strong style="color: #E91E63;">{{ edition.vote_unit_price|floatformat:0 }} FCFA</strong> par voix
+                    </p>
                 </div>
-                <input type="number" id="modalVoteCount" name="vote_count" value="1" min="1" max="1000" oninput="updateVoteTotal()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-center focus:ring-2 focus:ring-amber-400">
+
+                <form id="cofestiVoteForm" onsubmit="handleVoteSubmit(event)">
+                    {% csrf_token %}
+                    <input type="hidden" name="candidate_id" id="modalCandidateId">
+
+                    <!-- Choix du nombre de voix -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase" style="color: #1a0a10; letter-spacing: 0.5px;">Nombre de voix</label>
+                        <div class="row g-2 mb-2">
+                            <div class="col-3">
+                                <button type="button" onclick="setVoteCount(1)" class="btn btn-sm w-100 fw-bold vote-qty-btn active py-2 rounded-3" style="background: linear-gradient(135deg, #E91E63, #f06292); color: #fff; border: 1px solid #E91E63;" data-qty="1">1 (100F)</button>
+                            </div>
+                            <div class="col-3">
+                                <button type="button" onclick="setVoteCount(5)" class="btn btn-sm w-100 fw-bold vote-qty-btn py-2 rounded-3" style="background: #fdf5f8; color: #1a0a10; border: 1px solid rgba(233, 30, 99, 0.2);" data-qty="5">5 (500F)</button>
+                            </div>
+                            <div class="col-3">
+                                <button type="button" onclick="setVoteCount(10)" class="btn btn-sm w-100 fw-bold vote-qty-btn py-2 rounded-3" style="background: #fdf5f8; color: #1a0a10; border: 1px solid rgba(233, 30, 99, 0.2);" data-qty="10">10 (1000F)</button>
+                            </div>
+                            <div class="col-3">
+                                <button type="button" onclick="setVoteCount(20)" class="btn btn-sm w-100 fw-bold vote-qty-btn py-2 rounded-3" style="background: #fdf5f8; color: #1a0a10; border: 1px solid rgba(233, 30, 99, 0.2);" data-qty="20">20 (2000F)</button>
+                            </div>
+                        </div>
+                        <input type="number" id="modalVoteCount" name="vote_count" value="1" min="1" max="1000" oninput="updateVoteTotal()" class="form-control text-center fw-bold rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                    </div>
+
+                    <!-- Numéro Mobile Money -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase" style="color: #1a0a10; letter-spacing: 0.5px;">Numéro Mobile Money (Orange / MTN)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white" style="border-color: rgba(233, 30, 99, 0.25); color: #E91E63;"><i class="fas fa-phone-alt"></i></span>
+                            <input type="tel" name="phone" id="modalPhone" required placeholder="Ex: 659471152 ou 670000000" class="form-control rounded-end-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+                    </div>
+
+                    <!-- Nom du votant (facultatif) -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase" style="color: #1a0a10; letter-spacing: 0.5px;">Votre Nom / Promo (Facultatif)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white" style="border-color: rgba(233, 30, 99, 0.25); color: #E91E63;"><i class="fas fa-user"></i></span>
+                            <input type="text" name="voter_name" id="modalVoterName" placeholder="Ex: Jean (Licence 2)" class="form-control rounded-end-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+                    </div>
+
+                    <!-- Total à régler -->
+                    <div class="p-3 rounded-3 mb-3 d-flex align-items-center justify-content-between" style="background: #fdf5f8; border: 1px solid rgba(233, 30, 99, 0.2);">
+                        <span class="small fw-bold text-uppercase" style="color: #1a0a10;">Total à régler :</span>
+                        <span class="h5 mb-0 fw-extrabold" id="modalVoteTotal" style="color: #E91E63;">{{ edition.vote_unit_price|floatformat:0 }} FCFA</span>
+                    </div>
+
+                    <!-- Statut du vote / alertes -->
+                    <div id="voteStatusBox" class="d-none p-3 rounded-3 small mb-3"></div>
+
+                    <!-- Bouton Valider -->
+                    <button type="submit" id="voteSubmitBtn" class="btn w-100 py-3 rounded-pill fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, #E91E63 0%, #f06292 100%); border: none; font-size: 0.95rem;">
+                        <i class="fas fa-lock me-2"></i> Valider le vote sécurisé
+                    </button>
+                </form>
             </div>
-
-            <!-- Téléphone de paiement -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Numéro Mobile Money (OM / MoMo)</label>
-                <input type="tel" name="phone" id="modalPhone" required placeholder="Ex: 659471152 ou 670000000" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
-            </div>
-
-            <!-- Nom du votant (facultatif) -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Votre Nom / Pseudo (Facultatif)</label>
-                <input type="text" name="voter_name" id="modalVoterName" placeholder="Ex: Jean Dupont" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
-            </div>
-
-            <!-- Total à payer -->
-            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between text-slate-800">
-                <span class="text-xs font-bold uppercase">Total à régler :</span>
-                <span class="text-lg font-black text-amber-600 font-outfit" id="modalVoteTotal">{{ edition.vote_unit_price|floatformat:0 }} FCFA</span>
-            </div>
-
-            <!-- Feedback / Statut -->
-            <div id="voteStatusBox" class="hidden p-3 rounded-xl text-xs font-medium"></div>
-
-            <button type="submit" id="voteSubmitBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
-                <i class="fas fa-lock"></i>
-                <span>Valider le vote sécurisé</span>
-            </button>
-        </form>
+        </div>
     </div>
 </div>
 
 <script>
     const unitPrice = {{ edition.vote_unit_price|default:100 }};
+    let bsVoteModal = null;
+
+    function getOrCreateVoteModal() {
+        if (!bsVoteModal) {
+            const modalEl = document.getElementById('voteModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                bsVoteModal = new bootstrap.Modal(modalEl);
+            }
+        }
+        return bsVoteModal;
+    }
 
     function openVoteModal(candidateId, candidateName, number, contestType) {
         document.getElementById('modalCandidateId').value = candidateId;
-        document.getElementById('modalCandidateTitle').textContent = `Voter pour #${number} ${candidateName} (${contestType})`;
+        document.getElementById('modalCandidateTitle').textContent = `Voter #${number} ${candidateName} (${contestType})`;
         setVoteCount(1);
-        document.getElementById('voteStatusBox').classList.add('hidden');
-        document.getElementById('voteSubmitBtn').disabled = false;
-        document.getElementById('voteModal').classList.remove('hidden');
+
+        const statusBox = document.getElementById('voteStatusBox');
+        if (statusBox) {
+            statusBox.className = 'd-none p-3 rounded-3 small mb-3';
+            statusBox.innerHTML = '';
+        }
+        const submitBtn = document.getElementById('voteSubmitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i> Valider le vote sécurisé';
+        }
+
+        const modal = getOrCreateVoteModal();
+        if (modal) {
+            modal.show();
+        } else {
+            // Fallback si bootstrap n'est pas encore initialisé
+            const modalEl = document.getElementById('voteModal');
+            if (modalEl) {
+                modalEl.classList.add('show');
+                modalEl.style.display = 'block';
+            }
+        }
     }
 
     function closeVoteModal() {
-        document.getElementById('voteModal').classList.add('hidden');
+        const modal = getOrCreateVoteModal();
+        if (modal) {
+            modal.hide();
+        } else {
+            const modalEl = document.getElementById('voteModal');
+            if (modalEl) {
+                modalEl.classList.remove('show');
+                modalEl.style.display = 'none';
+            }
+        }
     }
 
     function setVoteCount(qty) {
         document.getElementById('modalVoteCount').value = qty;
         document.querySelectorAll('.vote-qty-btn').forEach(btn => {
             if (parseInt(btn.getAttribute('data-qty')) === qty) {
-                btn.classList.add('bg-amber-500', 'text-white');
-                btn.classList.remove('bg-slate-50', 'text-slate-700');
+                btn.style.background = 'linear-gradient(135deg, #E91E63, #f06292)';
+                btn.style.color = '#fff';
+                btn.style.borderColor = '#E91E63';
             } else {
-                btn.classList.remove('bg-amber-500', 'text-white');
-                btn.classList.add('bg-slate-50', 'text-slate-700');
+                btn.style.background = '#fdf5f8';
+                btn.style.color = '#1a0a10';
+                btn.style.borderColor = 'rgba(233, 30, 99, 0.2)';
             }
         });
         updateVoteTotal();
@@ -105,8 +165,8 @@
         const statusBox = document.getElementById('voteStatusBox');
 
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion Mobile Money...';
-        statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 block';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Connexion Mobile Money...';
+        statusBox.className = 'p-3 rounded-3 small mb-3 alert alert-info d-block';
         statusBox.textContent = "Initiation du paiement via Freemopay en cours...";
 
         const formData = new FormData(form);
@@ -119,22 +179,22 @@
             const data = await resp.json();
 
             if (data.success) {
-                statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200 block';
-                statusBox.innerHTML = `<strong>Paiement en attente :</strong> ${data.message} <br>Vérification automatique en cours...`;
+                statusBox.className = 'p-3 rounded-3 small mb-3 alert alert-warning d-block';
+                statusBox.innerHTML = `<strong>Paiement initié :</strong> ${data.message} <br>Vérification automatique en cours...`;
 
-                // Polling
+                // Polling du statut
                 pollVoteStatus(data.transaction_id);
             } else {
-                statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200 block';
+                statusBox.className = 'p-3 rounded-3 small mb-3 alert alert-danger d-block';
                 statusBox.textContent = data.error || "Erreur lors de l'initiation du paiement.";
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-lock"></i> Réessayer';
+                submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i> Réessayer';
             }
         } catch (err) {
-            statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200 block';
-            statusBox.textContent = "Erreur réseau. Veuillez vérifier votre connexion.";
+            statusBox.className = 'p-3 rounded-3 small mb-3 alert alert-danger d-block';
+            statusBox.textContent = "Erreur réseau. Veuillez vérifier votre connexion internet.";
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-lock"></i> Réessayer';
+            submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i> Réessayer';
         }
     }
 
@@ -145,8 +205,8 @@
             if (attempts > 30) {
                 clearInterval(interval);
                 const statusBox = document.getElementById('voteStatusBox');
-                statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200 block';
-                statusBox.textContent = "Délai d'attente dépassé. Si vous avez composé votre code PIN, vos votes seront comptabilisés dans un instant.";
+                statusBox.className = 'p-3 rounded-3 small mb-3 alert alert-warning d-block';
+                statusBox.textContent = "Délai d'attente dépassé. Si vous avez validé votre code PIN, vos voix seront comptabilisées sous peu.";
                 return;
             }
 
@@ -160,13 +220,12 @@
                 } else if (data.status === 'failed') {
                     clearInterval(interval);
                     const statusBox = document.getElementById('voteStatusBox');
-                    statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200 block';
-                    statusBox.textContent = "Le paiement a échoué ou a été refusé.";
+                    statusBox.className = 'p-3 rounded-3 small mb-3 alert alert-danger d-block';
+                    statusBox.textContent = "Le paiement a échoué ou a été refusé par l'opérateur.";
                     document.getElementById('voteSubmitBtn').disabled = false;
-                    document.getElementById('voteSubmitBtn').innerHTML = '<i class="fas fa-lock"></i> Réessayer';
+                    document.getElementById('voteSubmitBtn').innerHTML = '<i class="fas fa-lock me-2"></i> Réessayer';
                 }
             } catch (e) {}
         }, 3000);
     }
 </script>
-

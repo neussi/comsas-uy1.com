@@ -594,93 +594,93 @@ tech, etudiant informatique{% endblock %}
      COFESTI 2026 TEASER (FESTI-NOËL)
 ═══════════════════════════════════════════ -->
 {% if cofesti_edition %}
-<section class="py-5 position-relative overflow-hidden text-white" style="background: linear-gradient(135deg, #064E3B 0%, #065F46 50%, #0F172A 100%);">
-    <div class="position-absolute top-0 end-0 p-5 pe-none opacity-10 d-none d-lg-block">
-        <i class="fas fa-holly-berry fa-10x text-warning"></i>
+<section class="py-5 position-relative overflow-hidden" style="background: radial-gradient(ellipse 70% 60% at 90% 10%, rgba(233, 30, 99, .08) 0%, transparent 55%), radial-gradient(ellipse 50% 50% at 5% 95%, rgba(233, 30, 99, .06) 0%, transparent 55%), #fdf5f8; border-top: 1px solid rgba(233, 30, 99, 0.12); border-bottom: 1px solid rgba(233, 30, 99, 0.12);">
+    <div class="position-absolute top-0 end-0 p-5 pe-none opacity-5 d-none d-lg-block">
+        <i class="fas fa-gift fa-10x" style="color: #E91E63;"></i>
     </div>
-    <div class="container position-relative z-1">
+    <div class="container position-relative z-1 py-3">
         <div class="row align-items-center g-4">
             <div class="col-lg-7" data-aos="fade-right">
-                <div class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-warning bg-opacity-20 border border-warning border-opacity-40 rounded-pill">
-                    <span class="text-warning fw-bold small text-uppercase ls-1">
-                        <i class="fas fa-gift me-1"></i> Événement de Fin d'Année · UY1
+                <div class="d-inline-flex align-items-center mb-3 px-3 py-1.5 rounded-pill" style="background: rgba(233, 30, 99, 0.08); border: 1px solid rgba(233, 30, 99, 0.25);">
+                    <span class="small text-uppercase fw-bold" style="color: #E91E63; letter-spacing: 1px;">
+                        <i class="fas fa-holly-berry me-1"></i> Événement Festif & Parrainage · UY1
                     </span>
                 </div>
-                <h2 class="fw-bold mb-2 text-white lh-sm" style="font-size: clamp(1.8rem, 4.5vw, 2.8rem);">
-                    COFESTI <span class="text-warning">{{ cofesti_edition.year }}</span>
-                    <span class="d-block text-white-50 h4 fw-normal mt-1">Le Festi-Noël & Parrainage du Département d'Informatique</span>
+                <h2 class="fw-extrabold mb-2 lh-sm" style="font-size: clamp(1.9rem, 4.5vw, 2.9rem); color: #1a0a10;">
+                    COFESTI <span style="background: linear-gradient(135deg, #E91E63 0%, #f06292 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ cofesti_edition.year }}</span>
+                    <span class="d-block h4 fw-normal mt-1" style="color: #8a6070;">Le Festi-Noël & Parrainage du Département d'Informatique</span>
                 </h2>
-                <p class="lead mb-3 text-white-50" style="font-size: clamp(0.9rem, 2vw, 1.05rem);">
-                    Rejoignez les grandes festivités de fin d'année du COM.S.AS : Tournois sportifs avec l'hymne officiel <em>Before the Whistle</em>, élection Miss & Master avec votes en ligne à 100 FCFA, 5 pique-niques de décembre et la Soirée de Parrainage & Gala au Restaurant N°2.
+                <p class="lead mb-4" style="font-size: clamp(0.95rem, 2vw, 1.08rem); color: #5a3c48; line-height: 1.7;">
+                    Rejoignez les grandes festivités de fin d'année du COM.S.AS : Tournois sportifs avec l'hymne officiel <em>Before the Whistle</em>, élection Miss & Master avec votes en ligne à 100 FCFA, 5 pique-niques de décembre et la prestigieuse Soirée de Parrainage & Gala au Restaurant N°2.
                 </p>
-                <div class="d-flex flex-wrap gap-2 gap-sm-3 pt-2">
-                    <a href="{% url 'cofesti_home' %}" class="btn btn-warning rounded-pill px-4 py-2.5 shadow-sm fw-bold text-dark">
-                        <i class="fas fa-star me-2"></i>Découvrir COFESTI {{ cofesti_edition.year }}
+                <div class="d-flex flex-wrap gap-2 gap-sm-3 pt-1">
+                    <a href="{% url 'cofesti_home' %}" class="btn rounded-pill px-4 py-2.5 shadow-sm fw-bold text-white" style="background: linear-gradient(135deg, #E91E63 0%, #f06292 100%); border: none;">
+                        <i class="fas fa-sparkles me-2"></i>Découvrir COFESTI {{ cofesti_edition.year }}
                     </a>
-                    <a href="{% url 'cofesti_miss_master' %}" class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-semibold">
-                        <i class="fas fa-crown me-2 text-warning"></i>Voter Miss & Master (100F)
+                    <a href="{% url 'cofesti_miss_master' %}" class="btn rounded-pill px-4 py-2.5 fw-bold" style="border: 2px solid #E91E63; color: #E91E63; background: #fff;">
+                        <i class="fas fa-crown me-2"></i>Voter Miss & Master (100F)
                     </a>
-                    <a href="{% url 'cofesti_sports' %}" class="btn btn-outline-warning rounded-pill px-4 py-2.5 fw-semibold">
-                        <i class="fas fa-futbol me-2"></i>Écouter l'Hymne Foot
+                    <a href="{% url 'cofesti_sports' %}" class="btn rounded-pill px-4 py-2.5 fw-semibold" style="border: 1px solid rgba(233, 30, 99, 0.35); color: #c2185b; background: rgba(233, 30, 99, 0.05);">
+                        <i class="fas fa-futbol me-2"></i>Hymne & Tournois Foot
                     </a>
                 </div>
             </div>
             <div class="col-lg-5" data-aos="fade-left">
-                <div class="card border border-white border-opacity-25 rounded-4 p-4 text-center shadow-lg" style="background: rgba(0,0,0,0.45); backdrop-filter: blur(10px);">
-                    <span class="badge bg-warning text-dark text-uppercase fw-bold py-1.5 px-3 rounded-pill align-self-center mb-3">
-                        <i class="fas fa-calendar-alt me-1"></i> {{ cofesti_edition.start_date|date:"d M" }} — {{ cofesti_edition.end_date|date:"d M Y" }}
-                    </span>
+                <div class="card rounded-4 p-4 text-center shadow-lg" style="background: #ffffff; border: 1px solid rgba(233, 30, 99, 0.2); box-shadow: 0 16px 40px rgba(233, 30, 99, 0.12);">
+                    <div class="d-inline-flex align-items-center justify-content-center mx-auto mb-3 px-3 py-1.5 rounded-pill" style="background: linear-gradient(135deg, #E91E63 0%, #f06292 100%); color: #fff; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.8px;">
+                        <i class="fas fa-calendar-alt me-1.5"></i> {{ cofesti_edition.start_date|date:"d M" }} — {{ cofesti_edition.end_date|date:"d M Y" }}
+                    </div>
 
                     <!-- Compte à rebours COFESTI (Festi-Noël) -->
-                    <div class="mb-4 p-3 rounded-3 bg-black bg-opacity-40 border border-warning border-opacity-30">
-                        <div class="d-flex align-items-center justify-content-center gap-2 mb-2 text-warning small fw-bold text-uppercase ls-1">
-                            <i class="fas fa-hourglass-half"></i> Compte à rebours avant Festi-Noël
+                    <div class="mb-4 p-3 rounded-4" style="background: #fdf5f8; border: 1px solid rgba(233, 30, 99, 0.18);">
+                        <div class="d-flex align-items-center justify-content-center gap-2 mb-2 small fw-bold text-uppercase" style="color: #c2185b; letter-spacing: 1px;">
+                            <i class="fas fa-hourglass-half"></i> Compte à rebours Festi-Noël
                         </div>
                         <div class="row g-2" id="home-cofesti-countdown" data-date="{{ cofesti_edition.start_date|date:'Y-m-d' }}">
                             <div class="col-3">
-                                <div class="p-2 bg-dark bg-opacity-75 rounded-3 border border-warning border-opacity-25">
-                                    <span class="d-block fw-bold text-warning" id="cofesti-days" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">00</span>
-                                    <small class="text-white-50" style="font-size: 0.68rem;">Jours</small>
+                                <div class="p-2 bg-white rounded-3 shadow-sm" style="border: 1px solid rgba(233, 30, 99, 0.15);">
+                                    <span class="d-block fw-bold" id="cofesti-days" style="font-size: clamp(1.2rem, 3vw, 1.8rem); background: linear-gradient(135deg, #E91E63 0%, #f06292 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">00</span>
+                                    <small class="text-muted fw-semibold" style="font-size: 0.68rem; text-transform: uppercase;">Jours</small>
                                 </div>
                             </div>
                             <div class="col-3">
-                                <div class="p-2 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
-                                    <span class="d-block fw-bold text-white" id="cofesti-hours" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">00</span>
-                                    <small class="text-white-50" style="font-size: 0.68rem;">Heures</small>
+                                <div class="p-2 bg-white rounded-3 shadow-sm" style="border: 1px solid rgba(233, 30, 99, 0.15);">
+                                    <span class="d-block fw-bold" id="cofesti-hours" style="font-size: clamp(1.2rem, 3vw, 1.8rem); color: #1a0a10;">00</span>
+                                    <small class="text-muted fw-semibold" style="font-size: 0.68rem; text-transform: uppercase;">Heures</small>
                                 </div>
                             </div>
                             <div class="col-3">
-                                <div class="p-2 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
-                                    <span class="d-block fw-bold text-white" id="cofesti-minutes" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">00</span>
-                                    <small class="text-white-50" style="font-size: 0.68rem;">Minutes</small>
+                                <div class="p-2 bg-white rounded-3 shadow-sm" style="border: 1px solid rgba(233, 30, 99, 0.15);">
+                                    <span class="d-block fw-bold" id="cofesti-minutes" style="font-size: clamp(1.2rem, 3vw, 1.8rem); color: #1a0a10;">00</span>
+                                    <small class="text-muted fw-semibold" style="font-size: 0.68rem; text-transform: uppercase;">Minutes</small>
                                 </div>
                             </div>
                             <div class="col-3">
-                                <div class="p-2 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
-                                    <span class="d-block fw-bold text-white" id="cofesti-seconds" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">00</span>
-                                    <small class="text-white-50" style="font-size: 0.68rem;">Secs</small>
+                                <div class="p-2 bg-white rounded-3 shadow-sm" style="border: 1px solid rgba(233, 30, 99, 0.15);">
+                                    <span class="d-block fw-bold" id="cofesti-seconds" style="font-size: clamp(1.2rem, 3vw, 1.8rem); color: #1a0a10;">00</span>
+                                    <small class="text-muted fw-semibold" style="font-size: 0.68rem; text-transform: uppercase;">Secs</small>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <h5 class="text-white fw-bold mb-3 font-outfit">5 Pôles au Programme</h5>
-                    <div class="text-start space-y-2 text-white-50 small">
-                        <div class="p-2 rounded-3 bg-white bg-opacity-10 mb-2 d-flex align-items-center justify-content-between">
-                            <span><i class="fas fa-crown text-warning me-2"></i>Miss, Master & The Voice</span>
-                            <span class="badge bg-light text-dark fw-bold">100F / vote</span>
+                    <h6 class="fw-bold mb-3 text-start" style="color: #1a0a10;">5 Pôles Majeurs au Programme</h6>
+                    <div class="text-start small">
+                        <div class="p-2.5 rounded-3 mb-2 d-flex align-items-center justify-content-between" style="background: #fdf5f8; border: 1px solid rgba(233, 30, 99, 0.1);">
+                            <span style="color: #1a0a10;"><i class="fas fa-crown me-2" style="color: #E91E63;"></i>Miss, Master & The Voice</span>
+                            <span class="badge fw-bold" style="background: rgba(233, 30, 99, 0.15); color: #c2185b;">100F / vote</span>
                         </div>
-                        <div class="p-2 rounded-3 bg-white bg-opacity-10 mb-2 d-flex align-items-center justify-content-between">
-                            <span><i class="fas fa-futbol text-success me-2"></i>Football, Basket, E-Sport</span>
-                            <span class="badge bg-light text-dark fw-bold">Dès 15 000F</span>
+                        <div class="p-2.5 rounded-3 mb-2 d-flex align-items-center justify-content-between" style="background: #fdf5f8; border: 1px solid rgba(233, 30, 99, 0.1);">
+                            <span style="color: #1a0a10;"><i class="fas fa-futbol me-2" style="color: #E91E63;"></i>Football, Basket, E-Sport</span>
+                            <span class="badge fw-bold" style="background: rgba(233, 30, 99, 0.15); color: #c2185b;">Hymne Officiel</span>
                         </div>
-                        <div class="p-2 rounded-3 bg-white bg-opacity-10 mb-2 d-flex align-items-center justify-content-between">
-                            <span><i class="fas fa-film text-info me-2"></i>5 Pique-Niques & Cinéma</span>
-                            <span class="badge bg-light text-dark fw-bold">3 500F à 5 000F</span>
+                        <div class="p-2.5 rounded-3 mb-2 d-flex align-items-center justify-content-between" style="background: #fdf5f8; border: 1px solid rgba(233, 30, 99, 0.1);">
+                            <span style="color: #1a0a10;"><i class="fas fa-utensils me-2" style="color: #E91E63;"></i>5 Pique-Niques de Décembre</span>
+                            <span class="badge fw-bold" style="background: rgba(233, 30, 99, 0.15); color: #c2185b;">Gastronomie</span>
                         </div>
-                        <div class="p-2 rounded-3 bg-white bg-opacity-10 d-flex align-items-center justify-content-between">
-                            <span><i class="fas fa-glass-cheers text-warning me-2"></i>Gala Parrainage Resto N°2</span>
-                            <span class="badge bg-light text-dark fw-bold">Filleul: 10 000F</span>
+                        <div class="p-2.5 rounded-3 d-flex align-items-center justify-content-between" style="background: #fdf5f8; border: 1px solid rgba(233, 30, 99, 0.1);">
+                            <span style="color: #1a0a10;"><i class="fas fa-glass-cheers me-2" style="color: #E91E63;"></i>Soirée de Parrainage & Gala</span>
+                            <span class="badge fw-bold" style="background: linear-gradient(135deg, #E91E63 0%, #f06292 100%); color: #fff;">Resto N°2</span>
                         </div>
                     </div>
                 </div>

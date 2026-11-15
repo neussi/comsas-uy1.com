@@ -1,82 +1,167 @@
 {% extends 'base.html' %}
 {% load static custom_filters %}
 
-{% block title %}Pique-Niques & Séances Cinéma — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
+{% block title %}Les 5 Pique-Niques & Cinéma — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
+
+{% block meta_description %}Participez aux 5 pique-niques thématiques et projections cinéma du COFESTI {{ edition.year }} organisés par le Département d'Informatique de l'UY1.{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-    .font-outfit { font-family: 'Outfit', sans-serif; }
-    .card-hover { transition: all 0.3s ease; }
-    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .14);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--text-dark);
+        background: var(--blanc-off);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 24px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    /* Picnic Card */
+    .picnic-card {
+        background: var(--blanc);
+        border-radius: 24px;
+        border: 1px solid var(--rose-border);
+        box-shadow: 0 8px 26px var(--rose-shadow);
+        overflow: hidden;
+        transition: all .35s cubic-bezier(.165, .84, .44, 1);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+    }
+
+    .picnic-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 48px rgba(233, 30, 99, .2);
+        border-color: var(--rose);
+    }
+
+    .picnic-header {
+        background: var(--blanc-off);
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--rose-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
+<div class="py-5">
+    <div class="container py-3">
 
-        <!-- Header -->
-        <div class="text-center max-w-3xl mx-auto mb-12">
-            <a href="{% url 'cofesti_home' %}" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-full transition-colors mb-4">
+        <!-- En-tête -->
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <a href="{% url 'cofesti_home' %}" class="d-inline-flex align-items-center gap-2 small fw-bold px-3 py-1.5 rounded-pill mb-3 text-decoration-none" style="background: var(--rose-pale); color: var(--rose); border: 1px solid var(--rose-border);">
                 <i class="fas fa-arrow-left"></i>
                 <span>Retour au Hub COFESTI {{ edition.year }}</span>
             </a>
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-outfit tracking-tight">
-                Pique-Niques Thématiques & Projections Cinéma
+
+            <h1 class="display-5 fw-extrabold mb-2" style="color: var(--text-dark);">
+                Les 5 Pique-Niques & <span class="text-gradient">Séances Cinéma</span>
             </h1>
-            <p class="text-slate-600 text-sm sm:text-base mt-3">
-                5 moments exclusifs de partage, de gastronomie et de divertissement tout au long du mois de décembre. Chaque inscription donne droit à une <strong>carte d'accès pour la projection cinématographique</strong> !
+            <p class="text-muted" style="font-size: 1.05rem;">
+                Cinq moments inoubliables de partage gastronomique, de détente et de cinéma en plein air sous les étoiles. Chaque réservation inclut un <strong>pass pour la projection cinématographique</strong> !
             </p>
         </div>
 
-        <!-- 5 THÈMES DES PIQUE-NIQUES -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <!-- LISTE DES PIQUE-NIQUES -->
+        <div class="row g-4">
             {% for p in picnics %}
-            <div class="bg-white rounded-3xl p-7 border border-slate-200/80 shadow-sm flex flex-col justify-between card-hover relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-sky-50 rounded-full pointer-events-none"></div>
-
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-black text-white bg-slate-900 px-3 py-1 rounded-xl">Sortie #{{ p.order }}</span>
-                        <span class="text-sm font-black text-sky-700 bg-sky-50 px-3 py-1 rounded-xl border border-sky-200/60 font-outfit">
+            <div class="col-md-6 col-lg-4">
+                <div class="picnic-card">
+                    <div class="picnic-header">
+                        <span class="badge rounded-pill fw-bold" style="background: var(--rose-pale); color: var(--rose); font-size: 0.8rem;">
+                            Sortie #{{ p.order }}
+                        </span>
+                        <span class="badge rounded-pill fw-bold" style="background: var(--gradient); color: #fff; font-size: 0.85rem;">
                             {{ p.price|floatformat:0 }} FCFA
                         </span>
                     </div>
 
-                    <h3 class="text-xl font-bold text-slate-900 font-outfit leading-snug">{{ p.theme }}</h3>
-                    
-                    <div class="mt-4 space-y-2.5 text-xs text-slate-600">
-                        <div class="flex items-start gap-2.5">
-                            <i class="fas fa-map-marker-alt text-amber-500 mt-0.5 text-sm"></i>
-                            <div>
-                                <span class="font-bold text-slate-800">Lieu :</span>
-                                <p>{{ p.location }}</p>
+                    <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
+                        <div>
+                            <h4 class="fw-bold mb-3" style="color: var(--text-dark);">{{ p.theme }}</h4>
+
+                            <div class="p-3 rounded-3 mb-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                <div class="d-flex align-items-center gap-2 mb-2 small">
+                                    <i class="fas fa-calendar-day" style="color: var(--rose); width: 16px;"></i>
+                                    <span class="fw-bold">{{ p.date|date:"l d F Y à H:i" }}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-2 small">
+                                    <i class="fas fa-map-marker-alt" style="color: var(--rose); width: 16px;"></i>
+                                    <span class="text-muted">{{ p.location }}</span>
+                                </div>
+                                {% if p.dress_code %}
+                                <div class="d-flex align-items-center gap-2 mb-2 small">
+                                    <i class="fas fa-tshirt" style="color: var(--rose); width: 16px;"></i>
+                                    <span class="text-muted">Dress code : <strong>{{ p.dress_code }}</strong></span>
+                                </div>
+                                {% endif %}
+                                <div class="d-flex align-items-center gap-2 small">
+                                    <i class="fas fa-film" style="color: var(--rose); width: 16px;"></i>
+                                    <span class="badge" style="background: rgba(233, 30, 99, 0.15); color: var(--rose); font-weight: 700;">Ticket Cinéma Inclus</span>
+                                </div>
                             </div>
+
+                            <p class="small text-muted mb-4" style="line-height: 1.6;">
+                                {{ p.description }}
+                            </p>
                         </div>
-                        <div class="flex items-start gap-2.5">
-                            <i class="fas fa-utensils text-emerald-600 mt-0.5 text-sm"></i>
-                            <div>
-                                <span class="font-bold text-slate-800">Date du pique-nique :</span>
-                                <p>{{ p.picnic_date|date:"l d F Y" }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-2.5">
-                            <i class="fas fa-film text-rose-500 mt-0.5 text-sm"></i>
-                            <div>
-                                <span class="font-bold text-slate-800">Date de la projection cinéma :</span>
-                                <p>{{ p.cinema_date|date:"l d F Y" }}</p>
-                            </div>
+
+                        <div>
+                            <button type="button" onclick="openPicnicModal('{{ p.id }}', '{{ p.theme|escapejs }}', '{{ p.price|floatformat:0 }}', '{{ p.location|escapejs }}')" class="btn-rose w-100 justify-content-center">
+                                <i class="fas fa-ticket-alt"></i> Réserver ma place
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                <div class="mt-6 pt-4 border-t border-slate-100 relative z-10">
-                    <button onclick="openBookingModal({{ p.id }}, '{{ p.theme|escapejs }}', '{{ p.location|escapejs }}', '{{ p.price|floatformat:0 }}')" type="button" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-bold text-xs transition-all shadow-md shadow-sky-600/20 flex items-center justify-center gap-2">
-                        <i class="fas fa-ticket-alt"></i>
-                        <span>Réserver son Pass Ciné-Pique-nique</span>
-                    </button>
-                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Aucun pique-nique programmé pour l'instant.</p>
             </div>
             {% endfor %}
         </div>
@@ -84,56 +169,62 @@
     </div>
 </div>
 
-<!-- MODAL RÉSERVATION PASS PIQUE-NIQUE -->
-<div id="bookingModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
-        <button onclick="closeBookingModal()" type="button" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
-            <i class="fas fa-times"></i>
-        </button>
-
-        <div class="text-center mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center text-2xl mx-auto mb-3 font-bold">
-                <i class="fas fa-film"></i>
+<!-- ═══════════════════════════════════════════
+     MODAL BOOTSTRAP 5 DE RÉSERVATION PIQUE-NIQUE
+═══════════════════════════════════════════ -->
+<div class="modal fade" id="picnicModal" tabindex="-1" aria-labelledby="picnicModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="border: 1px solid rgba(233, 30, 99, 0.2) !important;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 font-outfit" id="modalPicnicTheme">Réserver votre Pass</h3>
-            <p class="text-xs text-slate-500 mt-1" id="modalPicnicDetails">--</p>
+            <div class="modal-body px-4 pt-1 pb-4">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 60px; height: 60px; background: rgba(233, 30, 99, 0.08); color: #E91E63; font-size: 1.5rem;">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h4 class="fw-extrabold mb-1" id="picnicModalTitle">Réserver un Pique-Nique</h4>
+                    <p class="small text-muted mb-0" id="picnicModalSubtitle">Tarif unitaire : 0 FCFA</p>
+                </div>
+
+                <form id="picnicBookingForm" onsubmit="handlePicnicBooking(event)">
+                    {% csrf_token %}
+                    <input type="hidden" name="picnic_id" id="modalPicnicId">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Votre Nom Complet</label>
+                        <input type="text" name="name" required placeholder="Ex: Marie Kamga" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-uppercase">Téléphone (OM / MoMo)</label>
+                            <input type="tel" name="phone" required placeholder="659471152" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-uppercase">Nombre de places</label>
+                            <input type="number" name="seats" id="picnicSeatsCount" value="1" min="1" max="10" oninput="updatePicnicTotal()" class="form-control rounded-3 text-center fw-bold" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Adresse Email</label>
+                        <input type="email" name="email" required placeholder="marie@uy1.cm" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                    </div>
+
+                    <div class="p-3 rounded-3 mb-3 d-flex align-items-center justify-content-between" style="background: #fdf5f8; border: 1px solid rgba(233, 30, 99, 0.2);">
+                        <span class="small fw-bold text-uppercase">Total à régler :</span>
+                        <span class="h5 mb-0 fw-extrabold" id="picnicTotalAmount" style="color: #E91E63;">0 FCFA</span>
+                    </div>
+
+                    <div id="picnicStatusBox" class="d-none p-3 rounded-3 small mb-3"></div>
+
+                    <button type="submit" id="picnicSubmitBtn" class="btn w-100 py-3 rounded-pill fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, #E91E63 0%, #f06292 100%); border: none;">
+                        <i class="fas fa-lock me-2"></i> Valider ma réservation
+                    </button>
+                </form>
+            </div>
         </div>
-
-        <form action="{% url 'cofesti_picnic_book' %}" method="POST" class="space-y-4">
-            {% csrf_token %}
-            <input type="hidden" name="picnic_id" id="modalPicnicId">
-
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom et Prénom *</label>
-                <input type="text" name="full_name" required placeholder="Ex: Jean Paul Ndongo" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">WhatsApp *</label>
-                    <input type="tel" name="phone" required placeholder="Ex: 659471152" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Niveau d'étude</label>
-                    <input type="text" name="level" placeholder="Ex: L1, L2, M1..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email pour recevoir le billet</label>
-                <input type="email" name="email" placeholder="etudiant@domaine.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500">
-            </div>
-
-            <div class="bg-sky-50 rounded-2xl p-4 border border-sky-200/60 flex items-center justify-between text-slate-800">
-                <span class="text-xs font-bold uppercase">Tarif par personne :</span>
-                <span class="text-base font-black text-sky-700 font-outfit" id="modalPicnicPrice">-- FCFA</span>
-            </div>
-
-            <button type="submit" class="w-full py-3.5 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-bold text-sm transition-colors shadow-lg shadow-sky-800/20 flex items-center justify-center gap-2">
-                <i class="fas fa-check-circle"></i>
-                <span>Générer mon Pass d'accès</span>
-            </button>
-        </form>
     </div>
 </div>
 
@@ -141,17 +232,78 @@
 
 {% block extra_js %}
 <script>
-    function openBookingModal(id, theme, location, price) {
-        document.getElementById('modalPicnicId').value = id;
-        document.getElementById('modalPicnicTheme').textContent = theme;
-        document.getElementById('modalPicnicDetails').textContent = `Lieu : ${location}`;
-        document.getElementById('modalPicnicPrice').textContent = `${price} FCFA`;
-        document.getElementById('bookingModal').classList.remove('hidden');
+    let bsPicnicModal = null;
+    let currentPicnicPrice = 0;
+
+    function getPicnicModal() {
+        if (!bsPicnicModal) {
+            const el = document.getElementById('picnicModal');
+            if (el && typeof bootstrap !== 'undefined') {
+                bsPicnicModal = new bootstrap.Modal(el);
+            }
+        }
+        return bsPicnicModal;
     }
 
-    function closeBookingModal() {
-        document.getElementById('bookingModal').classList.add('hidden');
+    function openPicnicModal(picnicId, theme, price, location) {
+        currentPicnicPrice = parseInt(price) || 0;
+        document.getElementById('modalPicnicId').value = picnicId;
+        document.getElementById('picnicModalTitle').textContent = `Réservation : ${theme}`;
+        document.getElementById('picnicModalSubtitle').textContent = `Lieu : ${location} · Tarif unitaire : ${currentPicnicPrice.toLocaleString()} FCFA`;
+        document.getElementById('picnicSeatsCount').value = 1;
+        updatePicnicTotal();
+
+        const statusBox = document.getElementById('picnicStatusBox');
+        if (statusBox) statusBox.className = 'd-none';
+
+        const modal = getPicnicModal();
+        if (modal) modal.show();
+    }
+
+    function updatePicnicTotal() {
+        const qty = parseInt(document.getElementById('picnicSeatsCount').value) || 1;
+        const total = qty * currentPicnicPrice;
+        document.getElementById('picnicTotalAmount').textContent = `${total.toLocaleString()} FCFA`;
+    }
+
+    async function handlePicnicBooking(e) {
+        e.preventDefault();
+        const form = document.getElementById('picnicBookingForm');
+        const submitBtn = document.getElementById('picnicSubmitBtn');
+        const statusBox = document.getElementById('picnicStatusBox');
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Réservation...';
+        statusBox.className = 'alert alert-info d-block small';
+        statusBox.textContent = "Traitement de votre réservation de pique-nique...";
+
+        const formData = new FormData(form);
+
+        try {
+            const resp = await fetch("{% url 'cofesti_picnic_book' %}", {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                statusBox.className = 'alert alert-success d-block small';
+                statusBox.innerHTML = `<strong>Réservation confirmée !</strong> ${data.message}`;
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                statusBox.className = 'alert alert-danger d-block small';
+                statusBox.textContent = data.error || "Une erreur est survenue lors de la réservation.";
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i> Réessayer';
+            }
+        } catch (err) {
+            statusBox.className = 'alert alert-danger d-block small';
+            statusBox.textContent = "Erreur de connexion internet.";
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i> Réessayer';
+        }
     }
 </script>
 {% endblock %}
-

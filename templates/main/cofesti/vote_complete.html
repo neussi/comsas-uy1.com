@@ -3,59 +3,120 @@
 
 {% block title %}Merci pour votre vote ! — COFESTI {{ vote.edition.year }} | COMS.A.S{% endblock %}
 
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .14);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: #fff !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 24px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-rose {
+        border: 2px solid var(--rose);
+        color: var(--rose) !important;
+        background: transparent;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 11px 22px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--gradient);
+        border-color: transparent;
+        color: #fff !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="min-h-[80vh] flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full bg-white rounded-3xl p-8 border border-slate-200/80 shadow-2xl text-center space-y-6">
+<div class="py-5" style="min-height: 80vh; display: flex; align-items: center;">
+    <div class="container py-4">
+        <div class="card mx-auto rounded-4 p-4 p-md-5 text-center shadow-lg border-0" style="max-width: 520px; border: 1px solid var(--rose-border) !important;">
 
-        <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-4xl mx-auto shadow-inner animate-bounce">
-            <i class="fas fa-check"></i>
-        </div>
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; background: rgba(233, 30, 99, 0.1); color: var(--rose); font-size: 2.2rem;">
+                <i class="fas fa-check-circle"></i>
+            </div>
 
-        <div>
-            <span class="text-xs font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60">
-                Paiement Validé
+            <span class="badge rounded-pill px-3 py-1.5 align-self-center mb-2" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.75rem;">
+                PAIEMENT CONFIRMÉ
             </span>
-            <h1 class="text-2xl sm:text-3xl font-black text-slate-900 mt-3 font-outfit">
-                Merci pour votre soutien !
-            </h1>
-            <p class="text-sm text-slate-600 mt-2">
-                Votre vote de <strong>{{ vote.vote_count }} voix</strong> pour <strong>{{ vote.candidate.name }}</strong> a bien été enregistré avec succès.
+
+            <h3 class="fw-extrabold mb-2" style="color: #1a0a10;">Merci pour votre soutien !</h3>
+            <p class="text-muted small mb-4">
+                Votre vote de <strong>{{ vote.vote_count }} voix</strong> pour <strong>{{ vote.candidate.name }}</strong> a été comptabilisé avec succès.
             </p>
-        </div>
 
-        <div class="bg-slate-50 rounded-2xl p-4 text-xs text-slate-600 text-left space-y-2 border border-slate-200">
-            <div class="flex justify-between">
-                <span class="text-slate-400">Candidat :</span>
-                <span class="font-bold text-slate-800">#{{ vote.candidate.number }} {{ vote.candidate.name }}</span>
+            <div class="p-3.5 rounded-3 mb-4 text-start small" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Candidat soutenu :</span>
+                    <strong class="text-dark">#{{ vote.candidate.number }} {{ vote.candidate.name }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Nombre de voix :</span>
+                    <strong style="color: var(--rose);">+{{ vote.vote_count }} voix</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Montant réglé :</span>
+                    <strong class="text-dark">{{ vote.amount|floatformat:0 }} FCFA</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Référence de transaction :</span>
+                    <span class="font-monospace text-muted" style="font-size: 0.75rem;">{{ vote.transaction_id }}</span>
+                </div>
+                <div class="d-flex justify-content-between pt-2 border-top border-rose-subtle">
+                    <span class="text-muted fw-bold">Total voix du candidat :</span>
+                    <strong style="color: var(--rose); font-size: 0.95rem;">{{ vote.candidate.votes_count }} voix</strong>
+                </div>
             </div>
-            <div class="flex justify-between">
-                <span class="text-slate-400">Nombre de voix :</span>
-                <span class="font-bold text-emerald-600">+{{ vote.vote_count }} voix</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-slate-400">Montant payé :</span>
-                <span class="font-bold text-slate-800">{{ vote.amount|floatformat:0 }} FCFA</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-slate-400">ID Transaction :</span>
-                <span class="font-mono text-slate-500 text-[11px]">{{ vote.transaction_id }}</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-slate-400">Total voix candidat :</span>
-                <span class="font-black text-slate-900">{{ vote.candidate.votes_count }} voix</span>
-            </div>
-        </div>
 
-        <div class="pt-2 flex flex-col gap-2.5">
-            <a href="{% url 'cofesti_miss_master' %}" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold text-xs transition-all shadow-md">
-                Continuer à voter pour d'autres candidats
-            </a>
-            <a href="{% url 'cofesti_home' %}" class="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors">
-                Retour à l'accueil du COFESTI
-            </a>
-        </div>
+            <div class="d-flex flex-column gap-2">
+                <a href="{% url 'cofesti_miss_master' %}" class="btn-rose w-100">
+                    <i class="fas fa-crown"></i> Continuer à voter
+                </a>
+                <a href="{% url 'cofesti_home' %}" class="btn-outline-rose w-100">
+                    <i class="fas fa-home"></i> Retour au Hub COFESTI
+                </a>
+            </div>
 
+        </div>
     </div>
 </div>
 {% endblock %}
-

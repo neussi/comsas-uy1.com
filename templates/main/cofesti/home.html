@@ -5,768 +5,775 @@
 
 {% block meta_description %}{{ edition.description|default:"Participez au COFESTI, le Festi-Noël du Département d'Informatique de l'Université de Yaoundé 1 : Miss & Master, Tournois de Football avec hymne officiel, Jeux vidéo, Pique-niques et Soirée de Parrainage." }}{% endblock %}
 
+{% block meta_keywords %}cofesti 2026, festi noel comsas, miss master informatique yaounde, tournoi foot comsas, before the whistle, parrainage comsas{% endblock %}
+
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
     :root {
-        --c-emerald: #064E3B;
-        --c-emerald-light: #059669;
-        --c-gold: #D97706;
-        --c-gold-light: #F59E0B;
-        --c-gold-glow: rgba(245, 158, 11, 0.25);
-        --c-festive-red: #DC2626;
-        --c-dark: #0F172A;
-        --c-card-bg: #FFFFFF;
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .14);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+        --gradient-dark: linear-gradient(135deg, #c2185b 0%, #E91E63 100%);
+        --glass: rgba(255, 255, 255, 0.9);
+        --glass-border: rgba(233, 30, 99, 0.18);
     }
 
     body {
         font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--text-dark);
+        background: var(--blanc);
     }
 
-    .font-outfit {
-        font-family: 'Outfit', sans-serif;
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
     }
 
-    /* Festive Gradient Backgrounds */
-    .hero-gradient {
-        background: radial-gradient(circle at 20% 20%, rgba(5, 150, 105, 0.9) 0%, rgba(6, 78, 59, 0.98) 50%, rgba(15, 23, 42, 1) 100%);
+    .glass-card {
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: 0 10px 30px var(--rose-shadow);
+        transition: all .35s cubic-bezier(.165, .84, .44, 1);
     }
 
-    .card-hover {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .card-hover:hover {
+    .glass-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 20px 35px -10px rgba(6, 78, 59, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 20px 45px rgba(233, 30, 99, .18);
+        border-color: var(--rose);
     }
 
-    /* Waveform Animation for Anthem Player */
-    .bar-anim {
-        animation: pulseBar 1.2s ease-in-out infinite alternate;
-    }
-    .bar-anim:nth-child(2) { animation-delay: 0.2s; }
-    .bar-anim:nth-child(3) { animation-delay: 0.4s; }
-    .bar-anim:nth-child(4) { animation-delay: 0.1s; }
-    .bar-anim:nth-child(5) { animation-delay: 0.5s; }
-    .bar-anim:nth-child(6) { animation-delay: 0.3s; }
-
-    @keyframes pulseBar {
-        0% { height: 6px; }
-        100% { height: 26px; }
+    /* ── Hero ── */
+    .hero-cofesti {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        background:
+            radial-gradient(ellipse 70% 60% at 90% 10%, rgba(233, 30, 99, .08) 0%, transparent 55%),
+            radial-gradient(ellipse 50% 50% at 5% 95%, rgba(233, 30, 99, .06) 0%, transparent 55%),
+            var(--blanc);
+        overflow: hidden;
+        position: relative;
     }
 
-    .glass-pill {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.25);
+    .hero-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(233, 30, 99, .04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(233, 30, 99, .04) 1px, transparent 1px);
+        background-size: 52px 52px;
+        pointer-events: none;
+    }
+
+    .floating-icon {
+        animation: floatUpDown 7s ease-in-out infinite;
+        position: absolute;
+        opacity: .07;
+        z-index: 0;
+        color: var(--rose);
+    }
+
+    .floating-icon:nth-child(2) {
+        animation-delay: -3.5s;
+    }
+
+    @keyframes floatUpDown {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-22px) rotate(6deg); }
+    }
+
+    /* ── Section badge ── */
+    .section-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--rose-pale);
+        border: 1px solid var(--rose-border);
+        color: var(--rose);
+        padding: 6px 18px;
+        border-radius: 50px;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+    /* ── Countdown ── */
+    .countdown-card {
+        background: var(--blanc);
+        border-radius: 28px;
+        padding: 32px 28px;
+        box-shadow: 0 16px 45px var(--rose-shadow);
+        border: 1px solid var(--rose-border);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .countdown-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient);
+    }
+
+    .cd-box {
+        background: var(--blanc-off);
+        border-radius: 16px;
+        padding: 16px 12px;
+        text-align: center;
+        border: 1px solid var(--rose-border);
+        transition: transform .3s;
+    }
+
+    .cd-box:hover {
+        transform: translateY(-3px);
+        border-color: var(--rose);
+    }
+
+    .cd-box .num {
+        font-size: 2.2rem;
+        font-weight: 900;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+    }
+
+    .cd-box .lbl {
+        font-size: .62rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-top: 6px;
+        font-weight: 700;
+    }
+
+    /* ── Boutons ── */
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 28px;
+        transition: all .25s ease;
+        box-shadow: 0 6px 20px rgba(233, 30, 99, .25);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(233, 30, 99, .35);
+    }
+
+    .btn-outline-rose {
+        border: 2px solid var(--rose);
+        color: var(--rose) !important;
+        background: transparent;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 11px 26px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--gradient);
+        border-color: transparent;
+        color: var(--blanc) !important;
+        transform: translateY(-2px);
+    }
+
+    /* ── Audio Anthem Player ── */
+    .anthem-card {
+        background: linear-gradient(135deg, #fff 0%, #fdf5f8 100%);
+        border: 1px solid var(--rose-border);
+        border-radius: 24px;
+        box-shadow: 0 12px 36px var(--rose-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .anthem-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 6px;
+        background: var(--gradient);
+    }
+
+    .wave-bar {
+        width: 4px;
+        background: var(--rose);
+        border-radius: 4px;
+        animation: pulseWave 1.2s ease-in-out infinite alternate;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.35s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+    .wave-bar:nth-child(6) { animation-delay: 0.25s; }
+    .wave-bar:nth-child(7) { animation-delay: 0.45s; }
+
+    @keyframes pulseWave {
+        0% { height: 6px; opacity: 0.4; }
+        100% { height: 28px; opacity: 1; }
+    }
+
+    /* ── Pole Cards ── */
+    .pole-card {
+        background: var(--blanc);
+        border-radius: 24px;
+        padding: 32px 24px;
+        border: 1px solid var(--rose-border);
+        box-shadow: 0 8px 30px var(--rose-shadow);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all .35s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pole-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient);
+        opacity: 0;
+        transition: opacity .35s ease;
+    }
+
+    .pole-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px rgba(233, 30, 99, .2);
+        border-color: var(--rose);
+    }
+
+    .pole-card:hover::after {
+        opacity: 1;
+    }
+
+    .pole-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        background: var(--rose-pale);
+        color: var(--rose);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+    }
+
+    /* ── Stat Badge ── */
+    .stat-badge {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 20px;
+        padding: 24px 18px;
+        text-align: center;
+        box-shadow: 0 8px 24px var(--rose-shadow);
+        transition: transform .3s;
+    }
+
+    .stat-badge:hover {
+        transform: translateY(-5px);
+        border-color: var(--rose);
+    }
+
+    .stat-num {
+        font-size: 2.4rem;
+        font-weight: 900;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .stat-lbl {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 1px;
+    }
+
+    .section-alt {
+        background: var(--blanc-off);
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-slate-50 text-slate-800">
+<!-- ═══════════════════════════════════════════
+     HERO SECTION COFESTI
+═══════════════════════════════════════════ -->
+<section class="hero-cofesti position-relative py-5">
+    <div class="hero-grid"></div>
+    <i class="fas fa-holly-berry fa-7x floating-icon" style="top: 12%; left: 6%;"></i>
+    <i class="fas fa-crown fa-7x floating-icon" style="bottom: 12%; right: 8%;"></i>
 
-    <!-- HERO SECTION -->
-    <section class="relative hero-gradient text-white overflow-hidden pt-12 pb-20 px-4 sm:px-6 lg:px-8">
-        <!-- Background Decorative Elements -->
-        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div class="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="max-w-7xl mx-auto relative z-10">
-            <!-- Badges top -->
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-                <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full glass-pill text-emerald-200 text-xs sm:text-sm font-semibold tracking-wide">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                    <span>COMITÉ D'ORGANISATION DU FESTI-NOËL • COFESTI {{ edition.year }}</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-xs text-emerald-300 font-medium">Édition {{ edition.edition_number }}</span>
-                    {% if all_editions|length > 1 %}
-                    <select onchange="window.location.href=this.value" class="bg-emerald-900/60 border border-emerald-600/40 text-emerald-100 text-xs rounded-lg px-2.5 py-1 focus:ring-1 focus:ring-amber-400">
-                        {% for ed in all_editions %}
-                        <option value="{% url 'cofesti_home_year' ed.year %}" {% if ed.year == edition.year %}selected{% endif %}>Édition {{ ed.year }}</option>
-                        {% endfor %}
-                    </select>
-                    {% endif %}
-                </div>
+    <div class="container position-relative z-1 py-4">
+        <!-- Barre supérieure avec sélection d'édition -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div class="section-badge">
+                <i class="fas fa-gift"></i>
+                <span>COMITÉ D'ORGANISATION DU FESTI-NOËL · COFESTI {{ edition.year }}</span>
             </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <!-- Text Content -->
-                <div class="lg:col-span-7 space-y-6">
-                    <div class="inline-block bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-xs uppercase px-3 py-1 rounded-md tracking-wider shadow-sm">
-                        Département d'Informatique • Université de Yaoundé 1
-                    </div>
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black font-outfit tracking-tight leading-tight">
-                        COFESTI <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400">{{ edition.year }}</span>
-                        <span class="block text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-200 mt-2 font-sans">
-                            Le Festi-Noël & Parrainage Officiel
-                        </span>
-                    </h1>
-                    <p class="text-emerald-100 text-base sm:text-lg leading-relaxed max-w-2xl">
-                        {{ edition.description }}
-                    </p>
-
-                    <!-- Key Event Specs -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
-                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
-                            <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">
-                                <i class="fas fa-calendar-alt"></i> Période
-                            </div>
-                            <div class="text-white font-bold text-sm sm:text-base">
-                                {{ edition.start_date|date:"d M" }} au {{ edition.end_date|date:"d M Y" }}
-                            </div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
-                            <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">
-                                <i class="fas fa-map-marker-alt"></i> Lieux
-                            </div>
-                            <div class="text-white font-bold text-sm sm:text-base truncate" title="{{ edition.location }}">
-                                Campus UY1 & Extérieur
-                            </div>
-                        </div>
-                        <div class="col-span-2 sm:col-span-1 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
-                            <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">
-                                <i class="fas fa-vote-yea"></i> Vote Miss/Master
-                            </div>
-                            <div class="text-white font-bold text-sm sm:text-base">
-                                {{ edition.vote_unit_price|floatformat:0 }} FCFA / Voix
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Fast Action Buttons -->
-                    <div class="flex flex-wrap gap-3.5 pt-4">
-                        <a href="{% url 'cofesti_miss_master' %}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-sm hover:from-amber-300 hover:to-amber-400 transition-all shadow-lg shadow-amber-500/25">
-                            <i class="fas fa-crown"></i>
-                            <span>Voter Miss & Master (100F)</span>
-                        </a>
-                        <a href="{% url 'cofesti_sports' %}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700/80 text-white font-semibold text-sm border border-emerald-500/40 transition-all">
-                            <i class="fas fa-futbol"></i>
-                            <span>Tournois & Hymne Football</span>
-                        </a>
-                        <a href="{% url 'cofesti_sponsorship' %}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 transition-all">
-                            <i class="fas fa-user-friends"></i>
-                            <span>Soirée de Parrainage</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- HYMNE FOOTBALL AUDIO PLAYER CARD & STATS -->
-                <div class="lg:col-span-5 space-y-6">
-                    <!-- Audio Player Card -->
-                    <div class="bg-gradient-to-br from-slate-900/90 via-emerald-950/90 to-slate-900/95 rounded-3xl p-6 border border-emerald-500/30 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-                        <div class="absolute -right-12 -top-12 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                        
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="inline-flex items-center gap-2 text-xs font-bold text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">
-                                <i class="fas fa-music"></i> HYMNE OFFICIEL COFESTI 2026
-                            </span>
-                            <span class="text-xs text-emerald-400 font-mono">Football & Stades</span>
-                        </div>
-
-                        <div class="flex items-center gap-4 mb-5">
-                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-amber-500 flex items-center justify-center text-white text-2xl shadow-lg shrink-0">
-                                <i class="fas fa-trophy"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-outfit font-bold text-lg text-white leading-tight">
-                                    {{ edition.anthem_title }}
-                                </h3>
-                                <p class="text-xs text-emerald-300 mt-0.5">
-                                    L'hymne vibrant de la commission sportive du COMSAS
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Audio waveform simulation + Controls -->
-                        <div class="bg-slate-950/60 rounded-2xl p-4 border border-white/5 space-y-3">
-                            <audio id="cofestiAnthemAudio" preload="metadata">
-                                <source src="{% static 'audio/cofesti/before_the_whistle.mp3' %}" type="audio/mpeg">
-                                Votre navigateur ne supporte pas le lecteur audio.
-                            </audio>
-
-                            <!-- Wave visualizer bars -->
-                            <div class="flex items-center justify-center gap-1.5 h-10 px-4 py-1" id="waveVisualizer">
-                                <div class="w-1.5 bg-amber-400 rounded-full h-2 transition-all duration-200"></div>
-                                <div class="w-1.5 bg-emerald-400 rounded-full h-4 transition-all duration-200"></div>
-                                <div class="w-1.5 bg-amber-300 rounded-full h-6 transition-all duration-200"></div>
-                                <div class="w-1.5 bg-emerald-300 rounded-full h-8 transition-all duration-200"></div>
-                                <div class="w-1.5 bg-amber-400 rounded-full h-5 transition-all duration-200"></div>
-                                <div class="w-1.5 bg-emerald-400 rounded-full h-7 transition-all duration-200"></div>
-                                <div class="w-1.5 bg-amber-400 rounded-full h-3 transition-all duration-200"></div>
-                                <div class="w-1.5 bg-emerald-400 rounded-full h-6 transition-all duration-200"></div>
-                                <div class="w-1.5 bg-amber-300 rounded-full h-8 transition-all duration-200"></div>
-                                <div class="w-1.5 bg-emerald-300 rounded-full h-4 transition-all duration-200"></div>
-                            </div>
-
-                            <!-- Timeline and controls -->
-                            <div class="flex items-center justify-between text-xs text-emerald-400/80 font-mono">
-                                <span id="audioCurrentTime">00:00</span>
-                                <input type="range" id="audioSeekBar" value="0" min="0" step="0.1" class="w-full mx-3 accent-amber-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg">
-                                <span id="audioDuration">--:--</span>
-                            </div>
-
-                            <div class="flex items-center justify-between pt-1">
-                                <div class="flex items-center gap-3">
-                                    <button id="audioPlayBtn" type="button" class="w-11 h-11 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-all shadow-md">
-                                        <i class="fas fa-play" id="audioPlayIcon"></i>
-                                    </button>
-                                    <span class="text-xs text-white font-medium" id="audioPlayLabel">Lancer l'hymne</span>
-                                </div>
-                                <a href="{% static 'audio/cofesti/before_the_whistle.mp3' %}" download class="text-xs text-emerald-300 hover:text-amber-400 flex items-center gap-1.5 transition-colors">
-                                    <i class="fas fa-download"></i> Télécharger
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Numbers Grid -->
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/10 text-center">
-                            <div class="text-2xl font-black text-amber-400 font-outfit">{{ total_votes }}</div>
-                            <div class="text-[11px] text-emerald-200 uppercase font-medium">Votes En Ligne</div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/10 text-center">
-                            <div class="text-2xl font-black text-emerald-300 font-outfit">{{ total_candidates }}</div>
-                            <div class="text-[11px] text-emerald-200 uppercase font-medium">Candidats</div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/10 text-center">
-                            <div class="text-2xl font-black text-white font-outfit">{{ tournaments|length }}</div>
-                            <div class="text-[11px] text-emerald-200 uppercase font-medium">Disciplines</div>
-                        </div>
-                    </div>
-                </div>
+            {% if all_editions|length > 1 %}
+            <div class="d-flex align-items-center gap-2">
+                <small class="text-muted fw-bold">Édition :</small>
+                <select onchange="window.location.href=this.value" class="form-select form-select-sm rounded-pill border-rose px-3" style="width: auto; border-color: var(--rose); font-weight: 600;">
+                    {% for ed in all_editions %}
+                    <option value="{% url 'cofesti_home_year' ed.year %}" {% if ed.year == edition.year %}selected{% endif %}>COFESTI {{ ed.year }}</option>
+                    {% endfor %}
+                </select>
             </div>
-        </div>
-    </section>
-
-    <!-- LES 5 GRANDS PILIERS DU COFESTI -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 -mt-8 relative z-20">
-        <div class="text-center max-w-3xl mx-auto mb-12">
-            <span class="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-100 px-3.5 py-1 rounded-full">
-                Programme & Activités
-            </span>
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-3 font-outfit">
-                Les 5 Pôles Incontournables du COFESTI
-            </h2>
-            <p class="text-slate-600 mt-2 text-sm sm:text-base">
-                Découvrez toutes les activités officielles prévues par le comité d'organisation pour marquer la fin d'année.
-            </p>
+            {% endif %}
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="row align-items-center g-5">
+            <!-- Colonne texte -->
+            <div class="col-lg-7">
+                <div class="d-inline-block px-3 py-1 rounded-pill mb-3" style="background: var(--rose-pale); color: var(--rose); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.8px;">
+                    DÉPARTEMENT D'INFORMATIQUE · UNIVERSITÉ DE YAOUNDÉ 1
+                </div>
 
-            <!-- PÔLE 1: SOIRÉE DE PARRAINAGE & GALA -->
-            <div class="bg-white rounded-3xl p-7 border border-slate-200/80 card-hover flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold mb-5 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-glass-cheers"></i>
-                </div>
-                <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Restaurant N°2 UY1</span>
-                    <h3 class="text-xl font-bold text-slate-900 mt-1 font-outfit">Soirée de Parrainage & Gala</h3>
-                    <p class="text-slate-600 text-sm mt-2 leading-relaxed">
-                        Cérémonie solennelle de remise des certificats de parrainage, prestations artistiques, danses, cliché cinématographique et annonce des grands vainqueurs.
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span class="text-slate-500">Contribution :</span>
-                        <span class="font-bold text-slate-800">Filleuls: 10 000F • Parrains: 5 000F</span>
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <a href="{% url 'cofesti_sponsorship' %}" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-emerald-700 text-white font-semibold text-xs transition-colors">
-                        <span>Réserver sa place au Gala</span>
-                        <i class="fas fa-arrow-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- PÔLE 2: MISS & MASTER DÉPARTEMENT -->
-            <div class="bg-white rounded-3xl p-7 border border-slate-200/80 card-hover flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl font-bold mb-5 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-crown"></i>
-                </div>
-                <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-rose-600">Élection & Finale The Voice</span>
-                    <h3 class="text-xl font-bold text-slate-900 mt-1 font-outfit">Concours Miss & Master</h3>
-                    <p class="text-slate-600 text-sm mt-2 leading-relaxed">
-                        Soutenez vos ambassadeurs d'élégance et d'intelligence. Vote direct en ligne à 100 FCFA par voix via Orange Money & MTN MoMo avec mise à jour instantanée.
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span class="text-slate-500">Tarif par vote :</span>
-                        <span class="font-bold text-rose-600">100 FCFA / voix</span>
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <a href="{% url 'cofesti_miss_master' %}" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-semibold text-xs transition-all shadow-sm">
-                        <span>Accéder aux votes en direct</span>
-                        <i class="fas fa-vote-yea text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- PÔLE 3: TOURNOIS SPORTIFS & HYMNE -->
-            <div class="bg-white rounded-3xl p-7 border border-slate-200/80 card-hover flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold mb-5 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-futbol"></i>
-                </div>
-                <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Stade du Campus UY1</span>
-                    <h3 class="text-xl font-bold text-slate-900 mt-1 font-outfit">Grands Tournois Sportifs</h3>
-                    <p class="text-slate-600 text-sm mt-2 leading-relaxed">
-                        Football masculin (70 min) et féminin, Basketball, Handball, Volley-ball et Tennis. Vibrez au rythme de l'hymne officiel <em>Before the Whistle</em>.
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span class="text-slate-500">Inscription équipe :</span>
-                        <span class="font-bold text-emerald-700">Dès 15 000 FCFA</span>
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <a href="{% url 'cofesti_sports' %}" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-xs transition-colors">
-                        <span>Inscrire une équipe</span>
-                        <i class="fas fa-arrow-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- PÔLE 4: JEUX DE SALLE & E-SPORT -->
-            <div class="bg-white rounded-3xl p-7 border border-slate-200/80 card-hover flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl font-bold mb-5 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-gamepad"></i>
-                </div>
-                <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Gaming & Stratégie</span>
-                    <h3 class="text-xl font-bold text-slate-900 mt-1 font-outfit">Jeux de Salle & Tournois</h3>
-                    <p class="text-slate-600 text-sm mt-2 leading-relaxed">
-                        Compétitions consoles FIFA, Naruto Storm, Call of Duty, défis boxe & danse, et tournois de stratégie intellectuelle (Échecs, Ludo).
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span class="text-slate-500">Formule :</span>
-                        <span class="font-bold text-indigo-600">Parties 500F • Tournoi 2 000F</span>
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <a href="{% url 'cofesti_sports' %}#gaming" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-indigo-700 text-white font-semibold text-xs transition-colors">
-                        <span>Participer aux jeux</span>
-                        <i class="fas fa-arrow-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- PÔLE 5: PIQUE-NIQUES & CINÉMA DE DÉCEMBRE -->
-            <div class="bg-white rounded-3xl p-7 border border-slate-200/80 card-hover flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-xl font-bold mb-5 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-film"></i>
-                </div>
-                <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-sky-600">5 Thèmes & 5 Sorties</span>
-                    <h3 class="text-xl font-bold text-slate-900 mt-1 font-outfit">Pique-Niques & Séances Ciné</h3>
-                    <p class="text-slate-600 text-sm mt-2 leading-relaxed">
-                        Cité U, Musée National, Monument de la Réunification. Des moments inoubliables d'échanges avec carte projection cinéma offerte pour chaque inscrit.
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span class="text-slate-500">Pass complet :</span>
-                        <span class="font-bold text-sky-600">3 500F à 5 000 FCFA</span>
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <a href="{% url 'cofesti_picnics' %}" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-semibold text-xs transition-colors">
-                        <span>Réserver son Pass Sortie</span>
-                        <i class="fas fa-arrow-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- PÔLE 6: LE COMITÉ D'ORGANISATION OFFICIEL -->
-            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 rounded-3xl p-7 text-white card-hover flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                <div class="w-12 h-12 rounded-2xl bg-white/10 text-amber-300 flex items-center justify-center text-xl font-bold mb-5 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-users-cog"></i>
-                </div>
-                <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Décision N° 095/26/COMSAS</span>
-                    <h3 class="text-xl font-bold text-white mt-1 font-outfit">Le Comité d'Organisation</h3>
-                    <p class="text-emerald-100 text-sm mt-2 leading-relaxed">
-                        Sous la supervision de <strong>{{ edition.supervisor_name }}</strong> et la présidence de <strong>{{ edition.president_name }}</strong>, découvrez les équipes engagées.
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
-                        <span class="text-emerald-200">Bureau & Membres :</span>
-                        <span class="font-bold text-amber-400">{{ bureau_members|length }} bureau + {{ commission_members|length }} membres</span>
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <a href="{% url 'cofesti_committee' %}" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition-all">
-                        <span>Voir le trombinoscope officiel</span>
-                        <i class="fas fa-arrow-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- SHOWCASE MISS & MASTER CANDIDATS (AVEC VOTE RAPIDE) -->
-    <section class="bg-white py-16 border-y border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-                <div>
-                    <span class="text-amber-600 font-bold text-xs uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full border border-amber-200/60">
-                        Concours Officiel
+                <h1 class="display-4 fw-extrabold mb-3" style="line-height: 1.15; color: var(--text-dark);">
+                    COFESTI <span class="text-gradient">{{ edition.year }}</span>
+                    <span class="d-block h3 fw-normal mt-2" style="color: var(--text-muted);">
+                        Le Festi-Noël & Parrainage du Département d'Informatique
                     </span>
-                    <h2 class="text-3xl font-extrabold text-slate-900 mt-2 font-outfit">
-                        Candidats Miss & Master COFESTI {{ edition.year }}
-                    </h2>
-                    <p class="text-slate-600 text-sm mt-1">
-                        Chaque vote compte ! Soutenez vos favoris avec votre compte Orange Money ou MTN Mobile Money (100 FCFA).
-                    </p>
-                </div>
-                <a href="{% url 'cofesti_miss_master' %}" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-700 hover:text-emerald-800 transition-colors">
-                    <span>Voir tous les candidats</span>
-                    <i class="fas fa-arrow-right text-xs"></i>
-                </a>
-            </div>
+                </h1>
 
-            <!-- Grille des premiers candidats -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {% for c in candidates_miss %}
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 card-hover flex flex-col justify-between">
-                    <div>
-                        <div class="relative rounded-xl overflow-hidden aspect-[4/5] bg-slate-200 mb-3">
-                            {% if c.photo %}
-                            <img src="{{ c.photo.url }}" alt="{{ c.name }}" class="w-full h-full object-cover">
-                            {% else %}
-                            <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-gradient-to-tr from-rose-50 to-pink-100">
-                                <i class="fas fa-female text-4xl text-rose-300 mb-2"></i>
-                                <span class="text-xs font-semibold text-rose-500">Candidate Miss</span>
-                            </div>
-                            {% endif %}
-                            <div class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur-md text-amber-400 text-xs font-black px-2.5 py-1 rounded-lg">
-                                #{{ c.number }}
-                            </div>
-                            <div class="absolute bottom-2 right-2 bg-rose-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-sm">
-                                <i class="fas fa-heart text-[10px] mr-1"></i> {{ c.votes_count }} voix
-                            </div>
-                        </div>
-                        <h4 class="font-bold text-slate-900 text-base leading-snug">{{ c.name }}</h4>
-                        <p class="text-xs text-slate-500 font-medium mt-0.5">{{ c.level }} {% if c.specialty %}• {{ c.specialty }}{% endif %}</p>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-slate-200/60 flex gap-2">
-                        <button onclick="openVoteModal({{ c.id }}, '{{ c.name|escapejs }}', {{ c.number }}, 'Miss')" type="button" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold text-xs transition-all shadow-sm flex items-center justify-center gap-1.5">
-                            <i class="fas fa-vote-yea"></i> Voter (100F)
-                        </button>
-                    </div>
-                </div>
-                {% endfor %}
+                <p class="lead mb-4" style="color: #5a3c48; font-size: 1.05rem; line-height: 1.8;">
+                    {{ edition.description|default:"Célébrez la fin d'année universitaire dans la convivialité et l'excellence ! Au programme : Grand tournoi de football avec son hymne officiel, élection Miss & Master avec votes en ligne à 100 FCFA, 5 pique-niques gastronomiques de décembre, et la prestigieuse Soirée de Parrainage & Gala au Restaurant N°2." }}
+                </p>
 
-                {% for c in candidates_master %}
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 card-hover flex flex-col justify-between">
-                    <div>
-                        <div class="relative rounded-xl overflow-hidden aspect-[4/5] bg-slate-200 mb-3">
-                            {% if c.photo %}
-                            <img src="{{ c.photo.url }}" alt="{{ c.name }}" class="w-full h-full object-cover">
-                            {% else %}
-                            <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-gradient-to-tr from-blue-50 to-indigo-100">
-                                <i class="fas fa-male text-4xl text-blue-300 mb-2"></i>
-                                <span class="text-xs font-semibold text-blue-600">Candidat Master</span>
-                            </div>
-                            {% endif %}
-                            <div class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur-md text-amber-400 text-xs font-black px-2.5 py-1 rounded-lg">
-                                #{{ c.number }}
-                            </div>
-                            <div class="absolute bottom-2 right-2 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-sm">
-                                <i class="fas fa-heart text-[10px] mr-1"></i> {{ c.votes_count }} voix
-                            </div>
-                        </div>
-                        <h4 class="font-bold text-slate-900 text-base leading-snug">{{ c.name }}</h4>
-                        <p class="text-xs text-slate-500 font-medium mt-0.5">{{ c.level }} {% if c.specialty %}• {{ c.specialty }}{% endif %}</p>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-slate-200/60 flex gap-2">
-                        <button onclick="openVoteModal({{ c.id }}, '{{ c.name|escapejs }}', {{ c.number }}, 'Master')" type="button" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold text-xs transition-all shadow-sm flex items-center justify-center gap-1.5">
-                            <i class="fas fa-vote-yea"></i> Voter (100F)
-                        </button>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
-
-    <!-- CALENDRIER DES SORTIES PIQUE-NIQUES -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <span class="text-sky-700 font-bold text-xs uppercase tracking-widest bg-sky-100 px-3 py-1 rounded-full">
-                Décembre Festif
-            </span>
-            <h2 class="text-3xl font-extrabold text-slate-900 mt-2 font-outfit">
-                Programme des 5 Pique-Niques & Cinéma
-            </h2>
-            <p class="text-slate-600 text-sm mt-1">
-                Chaque réservation donne droit à l'accès au pique-nique et à la projection cinématographique.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for p in picnics %}
-            <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between card-hover">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-black text-white bg-slate-900 px-2.5 py-1 rounded-lg">Sortie #{{ p.order }}</span>
-                        <span class="text-xs font-bold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200/60">{{ p.price|floatformat:0 }} FCFA</span>
-                    </div>
-                    <h3 class="font-bold text-slate-900 text-lg font-outfit">{{ p.theme }}</h3>
-                    <div class="mt-3 space-y-2 text-xs text-slate-600">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-map-marker-alt text-amber-500 w-4"></i>
-                            <span>{{ p.location }}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-utensils text-emerald-600 w-4"></i>
-                            <span>Pique-nique : <strong>{{ p.picnic_date|date:"d F Y" }}</strong></span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-film text-rose-500 w-4"></i>
-                            <span>Séance Cinéma : <strong>{{ p.cinema_date|date:"d F Y" }}</strong></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-6 pt-4 border-t border-slate-100">
-                    <a href="{% url 'cofesti_picnics' %}" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold text-xs transition-colors">
-                        <span>Réserver cette date</span>
-                        <i class="fas fa-ticket-alt text-[10px]"></i>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'cofesti_miss_master' %}" class="btn-rose">
+                        <i class="fas fa-crown"></i>
+                        <span>Voter Miss & Master (100F)</span>
+                    </a>
+                    <a href="{% url 'cofesti_sports' %}" class="btn-outline-rose">
+                        <i class="fas fa-futbol"></i>
+                        <span>Hymne Foot & Tournois</span>
+                    </a>
+                    <a href="{% url 'cofesti_picnics' %}" class="btn-outline-rose" style="border-color: rgba(233, 30, 99, 0.4);">
+                        <i class="fas fa-utensils"></i>
+                        <span>Les 5 Pique-Niques</span>
                     </a>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </section>
 
-</div>
+            <!-- Colonne Carte Compte à Rebours & Dates -->
+            <div class="col-lg-5">
+                <div class="countdown-card">
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-rose-subtle">
+                        <span class="badge" style="background: var(--rose-pale); color: var(--rose); font-size: 0.8rem; font-weight: 800;">
+                            <i class="fas fa-calendar-alt me-1"></i> {{ edition.start_date|date:"d M" }} — {{ edition.end_date|date:"d M Y" }}
+                        </span>
+                        <span class="small text-muted fw-bold">
+                            <i class="fas fa-map-marker-alt me-1 text-primary"></i> {{ edition.location|default:"Campus UY1" }}
+                        </span>
+                    </div>
 
-<!-- MODAL UNIVERSELLE DE VOTE EN LIGNE (100 FCFA) -->
-<div id="voteModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
-        <button onclick="closeVoteModal()" type="button" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center transition-colors">
-            <i class="fas fa-times"></i>
-        </button>
+                    <div class="text-center mb-4">
+                        <div class="small text-uppercase fw-bold mb-2" style="color: var(--rose); letter-spacing: 1.2px;">
+                            <i class="fas fa-hourglass-half me-1"></i> Compte à Rebours Festi-Noël
+                        </div>
 
-        <div class="text-center mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl mx-auto mb-3 font-bold">
-                <i class="fas fa-vote-yea"></i>
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 font-outfit" id="modalCandidateTitle">Voter pour le candidat</h3>
-            <p class="text-xs text-slate-500 mt-1">Tarif officiel : <strong>{{ edition.vote_unit_price|floatformat:0 }} FCFA</strong> par voix</p>
-        </div>
+                        <div class="row g-2" id="cofesti-main-countdown" data-date="{{ edition.start_date|date:'Y-m-d' }}">
+                            <div class="col-3">
+                                <div class="cd-box">
+                                    <div class="num" id="cd-days">00</div>
+                                    <div class="lbl">Jours</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="cd-box">
+                                    <div class="num" id="cd-hours">00</div>
+                                    <div class="lbl">Heures</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="cd-box">
+                                    <div class="num" id="cd-mins">00</div>
+                                    <div class="lbl">Mins</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="cd-box">
+                                    <div class="num" id="cd-secs">00</div>
+                                    <div class="lbl">Secs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        <form id="cofestiVoteForm" onsubmit="handleVoteSubmit(event)" class="space-y-4">
-            {% csrf_token %}
-            <input type="hidden" name="candidate_id" id="modalCandidateId">
+                    <div class="p-3 rounded-4 mb-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold" style="color: var(--text-dark);"><i class="fas fa-coins me-1 text-primary"></i> Prix du vote Miss & Master</span>
+                            <span class="badge rounded-pill fw-bold" style="background: var(--gradient); color: #fff;">{{ edition.vote_unit_price|floatformat:0 }} FCFA</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="small fw-bold" style="color: var(--text-dark);"><i class="fas fa-music me-1 text-primary"></i> Hymne de Football</span>
+                            <span class="badge rounded-pill" style="background: var(--rose-pale); color: var(--rose); font-weight: 700;">Before the Whistle</span>
+                        </div>
+                    </div>
 
-            <!-- Nombre de voix -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Choisir le nombre de voix</label>
-                <div class="grid grid-cols-4 gap-2 mb-2">
-                    <button type="button" onclick="setVoteCount(1)" class="vote-qty-btn active py-2 rounded-xl text-xs font-bold border border-slate-200 bg-amber-500 text-white" data-qty="1">1 voix (100F)</button>
-                    <button type="button" onclick="setVoteCount(5)" class="vote-qty-btn py-2 rounded-xl text-xs font-bold border border-slate-200 bg-slate-50 text-slate-700" data-qty="5">5 (500F)</button>
-                    <button type="button" onclick="setVoteCount(10)" class="vote-qty-btn py-2 rounded-xl text-xs font-bold border border-slate-200 bg-slate-50 text-slate-700" data-qty="10">10 (1000F)</button>
-                    <button type="button" onclick="setVoteCount(20)" class="vote-qty-btn py-2 rounded-xl text-xs font-bold border border-slate-200 bg-slate-50 text-slate-700" data-qty="20">20 (2000F)</button>
+                    <a href="{% url 'cofesti_sponsorship' %}" class="btn-rose w-100 justify-content-center">
+                        <i class="fas fa-glass-cheers"></i>
+                        <span>Soirée de Parrainage & Gala (Resto N°2)</span>
+                    </a>
                 </div>
-                <input type="number" id="modalVoteCount" name="vote_count" value="1" min="1" max="1000" oninput="updateVoteTotal()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-center focus:ring-2 focus:ring-amber-400">
             </div>
-
-            <!-- Téléphone de paiement -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Numéro Mobile Money (OM / MoMo)</label>
-                <input type="tel" name="phone" id="modalPhone" required placeholder="Ex: 659471152 ou 670000000" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
-            </div>
-
-            <!-- Nom du votant (facultatif) -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Votre Nom / Pseudo (Facultatif)</label>
-                <input type="text" name="voter_name" id="modalVoterName" placeholder="Ex: Jean Dupont" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
-            </div>
-
-            <!-- Total à payer -->
-            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between text-slate-800">
-                <span class="text-xs font-bold uppercase">Total à régler :</span>
-                <span class="text-lg font-black text-amber-600 font-outfit" id="modalVoteTotal">100 FCFA</span>
-            </div>
-
-            <!-- Feedback / Statut -->
-            <div id="voteStatusBox" class="hidden p-3 rounded-xl text-xs font-medium"></div>
-
-            <button type="submit" id="voteSubmitBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
-                <i class="fas fa-lock"></i>
-                <span>Valider le vote sécurisé</span>
-            </button>
-        </form>
+        </div>
     </div>
-</div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     HYMNE OFFICIEL DU FOOTBALL (AUDIO PLAYER)
+═══════════════════════════════════════════ -->
+<section class="py-5 section-alt">
+    <div class="container">
+        <div class="anthem-card p-4 p-md-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge rounded-pill px-3 py-1" style="background: var(--rose); color: #fff; font-size: 0.75rem; font-weight: 800;">
+                            <i class="fas fa-star me-1"></i> EXCLUSIVITÉ COFESTI {{ edition.year }}
+                        </span>
+                        <span class="small text-muted fw-bold">Hymne Officiel du Tournoi de Football</span>
+                    </div>
+                    <h3 class="fw-extrabold mb-2" style="color: var(--text-dark);">
+                        "Before the Whistle" — L'Hymne Épique
+                    </h3>
+                    <p class="text-muted mb-3" style="font-size: 0.95rem; line-height: 1.7;">
+                        Composé spécialement pour le COFESTI, ce morceau accompagne l'entrée sur le terrain de nos équipes, les mi-temps vibrantes et la remise solennelle des trophées. Écoutez-le en ligne ou téléchargez-le pour soutenir votre promotion !
+                    </p>
+
+                    <!-- Lecteur audio HTML5 élégant -->
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <audio id="anthemAudioPlayer" preload="metadata" class="w-100 mb-2" controls style="accent-color: var(--rose); border-radius: 50px;">
+                            <source src="{% static 'audio/before_the_whistle.mp3' %}" type="audio/mpeg">
+                            Votre navigateur ne supporte pas la lecture audio.
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 text-center text-lg-end">
+                    <div class="p-4 rounded-4 bg-white d-inline-block text-center shadow-sm" style="border: 1px solid var(--rose-border); min-width: 260px;">
+                        <!-- Animation barres audio -->
+                        <div class="d-flex align-items-center justify-content-center gap-1 mb-3" style="height: 32px;">
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                        </div>
+                        <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Hymne COFESTI 2026</h6>
+                        <small class="text-muted d-block mb-3">Format MP3 · Haute Qualité</small>
+                        <a href="{% static 'audio/before_the_whistle.mp3' %}" download="Before_the_Whistle_COFESTI_2026.mp3" class="btn-rose btn-sm w-100 justify-content-center">
+                            <i class="fas fa-download"></i> Télécharger l'Hymne
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     LES 5 GRANDS PÔLES DU COFESTI
+═══════════════════════════════════════════ -->
+<section class="py-5">
+    <div class="container py-3">
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <div class="section-badge mb-2">
+                <i class="fas fa-cubes"></i> PROGRAMME DES FESTIVITÉS
+            </div>
+            <h2 class="display-6 fw-extrabold mb-3">
+                Les 5 Grands Pôles du <span class="text-gradient">COFESTI {{ edition.year }}</span>
+            </h2>
+            <p class="text-muted" style="font-size: 1.05rem;">
+                De la compétition sportive aux moments de détente et au grand gala de clôture, explorez toutes les dimensions de notre fête annuelle.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Pôle 1: Miss & Master -->
+            <div class="col-md-6 col-lg-4">
+                <div class="pole-card">
+                    <div>
+                        <div class="pole-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge rounded-pill" style="background: var(--rose-pale); color: var(--rose); font-weight: 800;">PÔLE 1</span>
+                            <span class="small text-muted fw-bold">Votes à {{ edition.vote_unit_price|floatformat:0 }} FCFA</span>
+                        </div>
+                        <h4 class="fw-bold mb-2">Miss, Master & The Voice</h4>
+                        <p class="text-muted small mb-4" style="line-height: 1.7;">
+                            Élection des ambassadeurs d'élégance et concours de chant du département. Les votes s'effectuent 100% en ligne via Orange Money et MTN Mobile Money.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'cofesti_miss_master' %}" class="btn-rose w-100 justify-content-center">
+                            <span>Voter pour un candidat</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pôle 2: Compétitions Sportives -->
+            <div class="col-md-6 col-lg-4">
+                <div class="pole-card">
+                    <div>
+                        <div class="pole-icon">
+                            <i class="fas fa-futbol"></i>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge rounded-pill" style="background: var(--rose-pale); color: var(--rose); font-weight: 800;">PÔLE 2</span>
+                            <span class="small text-muted fw-bold">Tournois & E-Sport</span>
+                        </div>
+                        <h4 class="fw-bold mb-2">Sports & Gaming</h4>
+                        <p class="text-muted small mb-4" style="line-height: 1.7;">
+                            Football inter-promotions avec l'hymne officiel <em>Before the Whistle</em>, Basketball 3x3, compétitions e-sport sur EA Sports FC 25, Naruto et Call of Duty Mobile.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'cofesti_sports' %}" class="btn-rose w-100 justify-content-center">
+                            <span>Inscrire une équipe</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pôle 3: Pique-niques de Décembre -->
+            <div class="col-md-6 col-lg-4">
+                <div class="pole-card">
+                    <div>
+                        <div class="pole-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge rounded-pill" style="background: var(--rose-pale); color: var(--rose); font-weight: 800;">PÔLE 3</span>
+                            <span class="small text-muted fw-bold">5 Dates en Décembre</span>
+                        </div>
+                        <h4 class="fw-bold mb-2">Les 5 Pique-Niques</h4>
+                        <p class="text-muted small mb-4" style="line-height: 1.7;">
+                            Cinq rencontres gastronomiques et conviviales : barbecue géant, cinéma sous les étoiles, jeux de société et partages festifs au Bois Sainte Anastasie et sur le campus.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'cofesti_picnics' %}" class="btn-rose w-100 justify-content-center">
+                            <span>Réserver sa place</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pôle 4: Soirée de Parrainage & Gala -->
+            <div class="col-md-6 col-lg-6">
+                <div class="pole-card">
+                    <div>
+                        <div class="pole-icon">
+                            <i class="fas fa-glass-cheers"></i>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge rounded-pill" style="background: var(--rose-pale); color: var(--rose); font-weight: 800;">PÔLE 4</span>
+                            <span class="small text-muted fw-bold">Restaurant Universitaire N°2</span>
+                        </div>
+                        <h4 class="fw-bold mb-2">Soirée de Parrainage & Grand Gala</h4>
+                        <p class="text-muted mb-4" style="line-height: 1.7;">
+                            L'apothéose du COFESTI ! Dîner prestige, intégration solennelle des nouveaux étudiants par leurs parrains professionnels et aînés, couronnement des Miss & Master, et finale live The Voice.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'cofesti_sponsorship' %}" class="btn-rose w-100 justify-content-center">
+                            <span>Découvrir le Gala & Réserver</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pôle 5: Comité d'Organisation -->
+            <div class="col-md-6 col-lg-6">
+                <div class="pole-card">
+                    <div>
+                        <div class="pole-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge rounded-pill" style="background: var(--rose-pale); color: var(--rose); font-weight: 800;">PÔLE 5</span>
+                            <span class="small text-muted fw-bold">Équipe Dévouée</span>
+                        </div>
+                        <h4 class="fw-bold mb-2">Comité d'Organisation Officiel</h4>
+                        <p class="text-muted mb-4" style="line-height: 1.7;">
+                            Rencontrez les étudiants et membres des différentes commissions (Sport, Miss & Master, Logistique, Sponsoring, Communication) qui œuvrent sans relâche pour la réussite de l'événement.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'cofesti_committee' %}" class="btn-rose w-100 justify-content-center">
+                            <span>Voir le Comité d'Organisation</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     STATISTIQUES CLÉS DU COFESTI
+═══════════════════════════════════════════ -->
+<section class="py-5 section-alt">
+    <div class="container py-2">
+        <div class="row g-4 text-center">
+            <div class="col-6 col-lg-3">
+                <div class="stat-badge">
+                    <div class="stat-num">5</div>
+                    <div class="stat-lbl">Pôles Festifs</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-badge">
+                    <div class="stat-num">{{ edition.vote_unit_price|floatformat:0 }} F</div>
+                    <div class="stat-lbl">Par Vote en Ligne</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-badge">
+                    <div class="stat-num">5</div>
+                    <div class="stat-lbl">Pique-Niques Décembre</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-badge">
+                    <div class="stat-num">1</div>
+                    <div class="stat-lbl">Grand Gala Resto N°2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CALL TO ACTION FINAL
+═══════════════════════════════════════════ -->
+<section class="py-5 position-relative overflow-hidden" style="background: var(--blanc);">
+    <div class="container py-4 text-center position-relative z-1">
+        <div class="p-5 rounded-5 shadow-lg position-relative overflow-hidden" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+            <div class="position-absolute top-0 end-0 p-4 opacity-10 pe-none d-none d-md-block">
+                <i class="fas fa-sparkles fa-8x" style="color: var(--rose);"></i>
+            </div>
+            <div class="max-w-700 mx-auto">
+                <div class="section-badge mb-3">
+                    <i class="fas fa-heart"></i> L'ESPRIT DE FAMILLE DU COMSAS
+                </div>
+                <h2 class="display-6 fw-extrabold mb-3" style="color: var(--text-dark);">
+                    Prêt à vivre un <span class="text-gradient">Festi-Noël Mémorable</span> ?
+                </h2>
+                <p class="text-muted mb-4" style="font-size: 1.05rem;">
+                    Participez aux compétitions, soutenez vos camarades au concours Miss & Master, ou rejoignez-nous pour la soirée de parrainage et gala au Restaurant N°2 !
+                </p>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{% url 'cofesti_miss_master' %}" class="btn-rose">
+                        <i class="fas fa-crown"></i> Voter Miss & Master
+                    </a>
+                    <a href="{% url 'cofesti_sports' %}" class="btn-outline-rose">
+                        <i class="fas fa-futbol"></i> Voir les Tournois
+                    </a>
+                    <a href="{% url 'cofesti_committee' %}" class="btn-outline-rose" style="border-color: rgba(233, 30, 99, 0.4);">
+                        <i class="fas fa-envelope"></i> Contacter le Comité
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // --- LECTEUR AUDIO HYMNE FOOTBALL ---
-    const audio = document.getElementById('cofestiAnthemAudio');
-    const playBtn = document.getElementById('audioPlayBtn');
-    const playIcon = document.getElementById('audioPlayIcon');
-    const playLabel = document.getElementById('audioPlayLabel');
-    const seekBar = document.getElementById('audioSeekBar');
-    const currentTimeEl = document.getElementById('audioCurrentTime');
-    const durationEl = document.getElementById('audioDuration');
-    const waveVisualizer = document.getElementById('waveVisualizer');
+    // Compte à rebours COFESTI
+    document.addEventListener('DOMContentLoaded', function() {
+        const cdContainer = document.getElementById('cofesti-main-countdown');
+        if (cdContainer) {
+            const dateStr = cdContainer.getAttribute('data-date');
+            const targetDate = new Date(dateStr + "T08:00:00").getTime();
 
-    function formatTime(sec) {
-        const m = Math.floor(sec / 60);
-        const s = Math.floor(sec % 60);
-        return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
-    }
+            function tick() {
+                const now = new Date().getTime();
+                const diff = targetDate - now;
 
-    if (audio) {
-        audio.addEventListener('loadedmetadata', () => {
-            durationEl.textContent = formatTime(audio.duration);
-            seekBar.max = audio.duration;
-        });
-
-        audio.addEventListener('timeupdate', () => {
-            currentTimeEl.textContent = formatTime(audio.currentTime);
-            seekBar.value = audio.currentTime;
-        });
-
-        seekBar.addEventListener('input', () => {
-            audio.currentTime = seekBar.value;
-        });
-
-        playBtn.addEventListener('click', () => {
-            if (audio.paused) {
-                audio.play();
-                playIcon.classList.replace('fa-play', 'fa-pause');
-                playLabel.textContent = "Pause l'hymne";
-                // Anime bars
-                waveVisualizer.querySelectorAll('div').forEach(bar => bar.classList.add('bar-anim'));
-            } else {
-                audio.pause();
-                playIcon.classList.replace('fa-pause', 'fa-play');
-                playLabel.textContent = "Lancer l'hymne";
-                waveVisualizer.querySelectorAll('div').forEach(bar => bar.classList.remove('bar-anim'));
-            }
-        });
-
-        audio.addEventListener('ended', () => {
-            playIcon.classList.replace('fa-pause', 'fa-play');
-            playLabel.textContent = "Relancer l'hymne";
-            waveVisualizer.querySelectorAll('div').forEach(bar => bar.classList.remove('bar-anim'));
-        });
-    }
-
-    // --- MODAL DE VOTE ---
-    const unitPrice = {{ edition.vote_unit_price|default:100 }};
-
-    function openVoteModal(candidateId, candidateName, number, contestType) {
-        document.getElementById('modalCandidateId').value = candidateId;
-        document.getElementById('modalCandidateTitle').textContent = `Voter pour #${number} ${candidateName} (${contestType})`;
-        setVoteCount(1);
-        document.getElementById('voteStatusBox').classList.add('hidden');
-        document.getElementById('voteSubmitBtn').disabled = false;
-        document.getElementById('voteModal').classList.remove('hidden');
-    }
-
-    function closeVoteModal() {
-        document.getElementById('voteModal').classList.add('hidden');
-    }
-
-    function setVoteCount(qty) {
-        document.getElementById('modalVoteCount').value = qty;
-        document.querySelectorAll('.vote-qty-btn').forEach(btn => {
-            if (parseInt(btn.getAttribute('data-qty')) === qty) {
-                btn.classList.add('bg-amber-500', 'text-white');
-                btn.classList.remove('bg-slate-50', 'text-slate-700');
-            } else {
-                btn.classList.remove('bg-amber-500', 'text-white');
-                btn.classList.add('bg-slate-50', 'text-slate-700');
-            }
-        });
-        updateVoteTotal();
-    }
-
-    function updateVoteTotal() {
-        const count = parseInt(document.getElementById('modalVoteCount').value) || 1;
-        const total = count * unitPrice;
-        document.getElementById('modalVoteTotal').textContent = `${total.toLocaleString()} FCFA`;
-    }
-
-    async function handleVoteSubmit(e) {
-        e.preventDefault();
-        const form = document.getElementById('cofestiVoteForm');
-        const submitBtn = document.getElementById('voteSubmitBtn');
-        const statusBox = document.getElementById('voteStatusBox');
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initiation du paiement...';
-        statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 block';
-        statusBox.textContent = "Connexion à la passerelle de paiement Mobile Money...";
-
-        const formData = new FormData(form);
-
-        try {
-            const resp = await fetch("{% url 'cofesti_vote_initiate' %}", {
-                method: 'POST',
-                body: formData
-            });
-            const data = await resp.json();
-
-            if (data.success) {
-                statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200 block';
-                statusBox.innerHTML = `<strong>Paiement en attente :</strong> ${data.message} <br>Vérification automatique en cours...`;
-
-                // Polling
-                pollVoteStatus(data.transaction_id);
-            } else {
-                statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200 block';
-                statusBox.textContent = data.error || "Erreur lors de l'initiation du paiement.";
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-lock"></i> Réessayer';
-            }
-        } catch (err) {
-            statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200 block';
-            statusBox.textContent = "Erreur réseau. Veuillez vérifier votre connexion.";
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-lock"></i> Réessayer';
-        }
-    }
-
-    function pollVoteStatus(txId) {
-        let attempts = 0;
-        const interval = setInterval(async () => {
-            attempts++;
-            if (attempts > 30) { // 30 x 3s = 90s
-                clearInterval(interval);
-                const statusBox = document.getElementById('voteStatusBox');
-                statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200 block';
-                statusBox.textContent = "Délai d'attente dépassé. Si vous avez validé le code secret, vos votes seront comptabilisés dans un instant.";
-                return;
-            }
-
-            try {
-                const resp = await fetch(`/api/cofesti/vote/status/${txId}/`);
-                const data = await resp.json();
-
-                if (data.is_confirmed) {
-                    clearInterval(interval);
-                    window.location.href = `/cofesti/vote/merci/${txId}/`;
-                } else if (data.status === 'failed') {
-                    clearInterval(interval);
-                    const statusBox = document.getElementById('voteStatusBox');
-                    statusBox.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200 block';
-                    statusBox.textContent = "Le paiement a échoué ou a été refusé par l'opérateur.";
-                    document.getElementById('voteSubmitBtn').disabled = false;
-                    document.getElementById('voteSubmitBtn').innerHTML = '<i class="fas fa-lock"></i> Réessayer';
+                if (diff <= 0) {
+                    document.getElementById('cd-days').textContent = '00';
+                    document.getElementById('cd-hours').textContent = '00';
+                    document.getElementById('cd-mins').textContent = '00';
+                    document.getElementById('cd-secs').textContent = '00';
+                    return;
                 }
-            } catch (e) {
-                // Ignore transient network errors
+
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('cd-days').textContent = d < 10 ? '0' + d : d;
+                document.getElementById('cd-hours').textContent = h < 10 ? '0' + h : h;
+                document.getElementById('cd-mins').textContent = m < 10 ? '0' + m : m;
+                document.getElementById('cd-secs').textContent = s < 10 ? '0' + s : s;
             }
-        }, 3000);
-    }
+
+            tick();
+            setInterval(tick, 1000);
+        }
+    });
 </script>
 {% endblock %}
-

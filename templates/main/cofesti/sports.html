@@ -3,265 +3,465 @@
 
 {% block title %}Sports, Jeux & Hymne Football — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
 
+{% block meta_description %}Participez aux tournois sportifs et compétitions E-Sport du COFESTI {{ edition.year }}. Écoutez l'hymne officiel de football 'Before the Whistle'.{% endblock %}
+
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-    .font-outfit { font-family: 'Outfit', sans-serif; }
-    .card-hover { transition: all 0.3s ease; }
-    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .14);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--text-dark);
+        background: var(--blanc-off);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .section-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--rose-pale);
+        border: 1px solid var(--rose-border);
+        color: var(--rose);
+        padding: 6px 18px;
+        border-radius: 50px;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 24px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .btn-outline-rose {
+        border: 2px solid var(--rose);
+        color: var(--rose) !important;
+        background: transparent;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 9px 22px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--gradient);
+        border-color: transparent;
+        color: var(--blanc) !important;
+    }
+
+    /* Anthem Banner */
+    .anthem-banner {
+        background: linear-gradient(135deg, #2d0617 0%, #1a0a10 100%);
+        border: 1px solid rgba(233, 30, 99, 0.3);
+        border-radius: 28px;
+        box-shadow: 0 16px 48px rgba(233, 30, 99, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .anthem-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient);
+    }
+
+    /* Tournament Card */
+    .tournament-card {
+        background: var(--blanc);
+        border-radius: 24px;
+        border: 1px solid var(--rose-border);
+        box-shadow: 0 8px 26px var(--rose-shadow);
+        overflow: hidden;
+        transition: all .35s cubic-bezier(.165, .84, .44, 1);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .tournament-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 48px rgba(233, 30, 99, .2);
+        border-color: var(--rose);
+    }
+
+    .tournament-header {
+        background: var(--blanc-off);
+        padding: 24px 24px 18px;
+        border-bottom: 1px solid var(--rose-border);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .tournament-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        background: var(--rose-pale);
+        color: var(--rose);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .nav-pills .nav-link {
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 8px 20px;
+        color: var(--text-dark);
+        background: #fff;
+        border: 1px solid var(--rose-border);
+        transition: all 0.25s ease;
+    }
+
+    .nav-pills .nav-link.active {
+        background: var(--gradient) !important;
+        color: #fff !important;
+        border-color: transparent !important;
+        box-shadow: 0 4px 14px var(--rose-shadow);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
+<div class="py-5">
+    <div class="container py-3">
 
-        <!-- Top Header & Back Link -->
-        <div class="text-center max-w-3xl mx-auto mb-12">
-            <a href="{% url 'cofesti_home' %}" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-full transition-colors mb-4">
+        <!-- En-tête -->
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <a href="{% url 'cofesti_home' %}" class="d-inline-flex align-items-center gap-2 small fw-bold px-3 py-1.5 rounded-pill mb-3 text-decoration-none" style="background: var(--rose-pale); color: var(--rose); border: 1px solid var(--rose-border);">
                 <i class="fas fa-arrow-left"></i>
                 <span>Retour au Hub COFESTI {{ edition.year }}</span>
             </a>
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-outfit tracking-tight">
-                Tournois Sportifs, E-Sport & Jeux de Salle
+
+            <h1 class="display-5 fw-extrabold mb-2" style="color: var(--text-dark);">
+                Tournois Sportifs, <span class="text-gradient">E-Sport & Jeux</span>
             </h1>
-            <p class="text-slate-600 text-sm sm:text-base mt-3">
-                Sous l'égide de la Commission Sportive du COMSAS. Les compétitions débutent avant le <strong>9 décembre 2026</strong> au Stade du campus de l'Université de Yaoundé 1.
+            <p class="text-muted" style="font-size: 1.05rem;">
+                Compétitions officielles du Département d'Informatique de l'Université de Yaoundé 1.
+                Football, Basketball 3x3, Gaming EA Sports FC 25, Naruto, Call of Duty Mobile et Jeux de réflexion.
             </p>
         </div>
 
-        <!-- HERO HYMNE FOOTBALL "BEFORE THE WHISTLE" -->
-        <div class="bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 rounded-3xl p-8 sm:p-10 text-white mb-16 shadow-2xl border border-emerald-500/30 relative overflow-hidden">
-            <div class="absolute -right-16 -top-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-                <div class="lg:col-span-7 space-y-4">
-                    <span class="inline-flex items-center gap-2 text-xs font-bold text-amber-400 bg-amber-400/15 px-3 py-1 rounded-full border border-amber-400/20">
-                        <i class="fas fa-music"></i> BANDE ORIGINALE & HYMNE OFFICIEL
-                    </span>
-                    <h2 class="text-3xl sm:text-4xl font-black font-outfit leading-tight">
-                        {{ edition.anthem_title }}
+        <!-- ═══════════════════════════════════════════
+             BANNIÈRE HYMNE DU FOOTBALL
+        ═══════════════════════════════════════════ -->
+        <div class="anthem-banner text-white p-4 p-md-5 mb-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(233, 30, 99, 0.25); border: 1px solid rgba(233, 30, 99, 0.4); color: #f06292; font-size: 0.75rem; font-weight: 800;">
+                        <i class="fas fa-music"></i> BANDE ORIGINALE OFFICIELLE DE FOOTBALL
+                    </div>
+                    <h2 class="fw-extrabold mb-2" style="color: #ffffff;">
+                        {{ edition.anthem_title|default:"Before the Whistle" }}
                     </h2>
-                    <p class="text-emerald-100 text-sm sm:text-base leading-relaxed">
-                        L'hymne officiel qui retentira avant chaque coup de sifflet et lors de l'entrée des équipes sur le terrain du campus. Plongez dans la ferveur sportive du COFESTI {{ edition.year }} !
+                    <p class="mb-4" style="color: rgba(255, 255, 255, 0.8); font-size: 0.98rem; line-height: 1.7;">
+                        L'hymne officiel qui retentira avant chaque coup de sifflet et lors de l'entrée solennelle des équipes sur le terrain du campus. Plongez dans la ferveur sportive du COFESTI {{ edition.year }} !
                     </p>
-                    <div class="flex flex-wrap gap-4 text-xs text-emerald-300 pt-2">
-                        <span><i class="fas fa-clock mr-1 text-amber-400"></i> Matchs : 2 mi-temps de 35 min (70 min)</span>
-                        <span><i class="fas fa-map-marker-alt mr-1 text-amber-400"></i> Stade Campus UY1</span>
+                    <div class="d-flex flex-wrap gap-3 small" style="color: rgba(255, 255, 255, 0.7);">
+                        <span><i class="fas fa-clock me-1" style="color: var(--rose-light);"></i> 2 mi-temps de 35 min (70 min)</span>
+                        <span><i class="fas fa-map-marker-alt me-1" style="color: var(--rose-light);"></i> Stade Campus UY1</span>
                     </div>
                 </div>
 
-                <div class="lg:col-span-5 bg-slate-950/80 rounded-2xl p-6 border border-emerald-500/30 shadow-inner">
-                    <audio id="sportsAnthemAudio" preload="metadata">
-                        <source src="{% static 'audio/cofesti/before_the_whistle.mp3' %}" type="audio/mpeg">
-                    </audio>
-
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-mono text-emerald-400">Fichier : before_the_whistle.mp3</span>
-                        <a href="{% static 'audio/cofesti/before_the_whistle.mp3' %}" download class="text-xs text-amber-400 hover:underline flex items-center gap-1">
-                            <i class="fas fa-download"></i> MP3
+                <div class="col-lg-5">
+                    <div class="p-4 rounded-4" style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(233, 30, 99, 0.25);">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small font-monospace" style="color: var(--rose-light);">before_the_whistle.mp3</span>
+                            <span class="badge" style="background: var(--rose); color: #fff;">AUDIO HQ</span>
+                        </div>
+                        <audio controls class="w-100 mb-3" style="accent-color: var(--rose);">
+                            <source src="{% static 'audio/before_the_whistle.mp3' %}" type="audio/mpeg">
+                            Votre navigateur ne supporte pas l'élément audio.
+                        </audio>
+                        <a href="{% static 'audio/before_the_whistle.mp3' %}" download="Before_the_Whistle_COFESTI_2026.mp3" class="btn-rose btn-sm w-100 justify-content-center">
+                            <i class="fas fa-download"></i> Télécharger l'Hymne MP3
                         </a>
                     </div>
-
-                    <!-- Audio Progress -->
-                    <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
-                        <span id="sportsTime">00:00</span>
-                        <input type="range" id="sportsSeek" value="0" min="0" step="0.1" class="w-full mx-3 accent-amber-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg">
-                        <span id="sportsDuration">--:--</span>
-                    </div>
-
-                    <div class="flex items-center gap-4 pt-2">
-                        <button id="sportsPlayBtn" type="button" class="w-12 h-12 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-amber-500/30">
-                            <i class="fas fa-play text-lg" id="sportsPlayIcon"></i>
-                        </button>
-                        <div>
-                            <span class="block text-sm font-bold text-white" id="sportsPlayLabel">Écouter l'hymne officiel</span>
-                            <span class="text-[11px] text-emerald-300">Commission Sportive COM.S.AS</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 1 : JEUX DE TERRAIN -->
-        <div class="mb-16">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg font-bold">
-                    <i class="fas fa-running"></i>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-black text-slate-900 font-outfit">Jeux de Terrain (Stade du Campus UY1)</h2>
-                    <p class="text-xs text-slate-500">Compétitions inter-promotions et inter-filières avec trophées et médailles</p>
+        <!-- ═══════════════════════════════════════════
+             ONGLETS DE SÉLECTION DES COMPÉTITIONS
+        ═══════════════════════════════════════════ -->
+        <ul class="nav nav-pills justify-content-center gap-2 mb-4" id="sportsTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#tab-all" type="button" role="tab">
+                    <i class="fas fa-th-large me-1"></i> Tous les Tournois ({{ tournaments|length }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="terrain-tab" data-bs-toggle="pill" data-bs-target="#tab-terrain" type="button" role="tab">
+                    <i class="fas fa-futbol me-1"></i> Sports de Terrain ({{ terrain_tournaments|length }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="gaming-tab" data-bs-toggle="pill" data-bs-target="#tab-gaming" type="button" role="tab">
+                    <i class="fas fa-gamepad me-1"></i> E-Sport & Console ({{ gaming_tournaments|length }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="strategy-tab" data-bs-toggle="pill" data-bs-target="#tab-strategy" type="button" role="tab">
+                    <i class="fas fa-chess me-1"></i> Stratégie & Réflexion ({{ strategy_tournaments|length }})
+                </button>
+            </li>
+        </ul>
+
+        <!-- CONTENU DES ONGLETS -->
+        <div class="tab-content" id="sportsTabContent">
+
+            <!-- TAB 1: TOUS -->
+            <div class="tab-pane fade show active" id="tab-all" role="tabpanel">
+                <div class="row g-4">
+                    {% for tournament in tournaments %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tournament-card">
+                            <div class="tournament-header">
+                                <div class="tournament-icon">
+                                    {% if 'football' in tournament.category %}<i class="fas fa-futbol"></i>
+                                    {% elif 'basketball' in tournament.category %}<i class="fas fa-basketball-ball"></i>
+                                    {% elif 'gaming' in tournament.category %}<i class="fas fa-gamepad"></i>
+                                    {% elif 'chess' in tournament.category %}<i class="fas fa-chess-knight"></i>
+                                    {% else %}<i class="fas fa-trophy"></i>{% endif %}
+                                </div>
+                                <div>
+                                    <span class="badge rounded-pill mb-1" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.7rem;">
+                                        {{ tournament.get_category_display }}
+                                    </span>
+                                    <h5 class="fw-bold mb-0" style="color: var(--text-dark);">{{ tournament.name }}</h5>
+                                </div>
+                            </div>
+
+                            <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
+                                <div>
+                                    <p class="small text-muted mb-3" style="line-height: 1.6;">
+                                        {{ tournament.description|default:"Compétition officielle avec remise de médailles et trophées lors de la Soirée de Gala." }}
+                                    </p>
+
+                                    <div class="p-3 rounded-3 mb-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                        <div class="d-flex align-items-center justify-content-between mb-1.5 small">
+                                            <span class="text-muted fw-semibold"><i class="fas fa-tag me-1" style="color: var(--rose);"></i> Inscription :</span>
+                                            <span class="fw-bold" style="color: var(--rose);">{{ tournament.registration_fee|floatformat:0 }} FCFA</span>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-between mb-1.5 small">
+                                            <span class="text-muted fw-semibold"><i class="fas fa-users me-1" style="color: var(--rose);"></i> Format d'équipe :</span>
+                                            <span class="fw-bold text-dark">{{ tournament.min_players }} à {{ tournament.max_players }} joueurs</span>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-between small">
+                                            <span class="text-muted fw-semibold"><i class="fas fa-shield-alt me-1" style="color: var(--rose);"></i> Équipes inscrites :</span>
+                                            <span class="badge rounded-pill" style="background: var(--rose); color: #fff;">{{ tournament.teams.count }} équipe{{ tournament.teams.count|pluralize }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <button type="button" onclick="openTeamModal('{{ tournament.id }}', '{{ tournament.name|escapejs }}', '{{ tournament.registration_fee|floatformat:0 }}', '{{ tournament.min_players }}', '{{ tournament.max_players }}')" class="btn-rose w-100 justify-content-center">
+                                        <i class="fas fa-user-plus"></i> Inscrire une équipe
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">Aucun tournoi disponible pour le moment.</p>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for t in terrain_tournaments %}
-                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between card-hover">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">
-                                {{ t.get_category_display|truncatewords:2 }}
-                            </span>
-                            <span class="text-sm font-black text-slate-900 font-outfit">
-                                {% if t.registration_fee > 0 %}{{ t.registration_fee|floatformat:0 }} FCFA{% else %}Gratuit{% endif %}
-                            </span>
-                        </div>
-                        <h3 class="font-bold text-slate-900 text-lg font-outfit">{{ t.title }}</h3>
-                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">
-                            {{ t.rules_summary|default:"Format officiel de compétition sous le contrôle des arbitres de la commission sportive." }}
-                        </p>
-                        <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex items-center gap-2">
-                            <i class="fas fa-map-marker-alt text-amber-500"></i>
-                            <span>{{ t.location }}</span>
+            <!-- TAB 2: SPORTS DE TERRAIN -->
+            <div class="tab-pane fade" id="tab-terrain" role="tabpanel">
+                <div class="row g-4">
+                    {% for tournament in terrain_tournaments %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tournament-card">
+                            <div class="tournament-header">
+                                <div class="tournament-icon"><i class="fas fa-futbol"></i></div>
+                                <div>
+                                    <span class="badge rounded-pill mb-1" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.7rem;">
+                                        {{ tournament.get_category_display }}
+                                    </span>
+                                    <h5 class="fw-bold mb-0">{{ tournament.name }}</h5>
+                                </div>
+                            </div>
+                            <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
+                                <p class="small text-muted mb-3">{{ tournament.description }}</p>
+                                <button type="button" onclick="openTeamModal('{{ tournament.id }}', '{{ tournament.name|escapejs }}', '{{ tournament.registration_fee|floatformat:0 }}', '{{ tournament.min_players }}', '{{ tournament.max_players }}')" class="btn-rose w-100 justify-content-center">
+                                    <i class="fas fa-user-plus"></i> Inscrire une équipe
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-6 pt-2">
-                        <button onclick="openTeamModal({{ t.id }}, '{{ t.title|escapejs }}', '{{ t.registration_fee|floatformat:0 }}')" type="button" class="w-full py-2.5 px-4 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-sm">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>Inscrire une équipe</span>
-                        </button>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- SECTION 2 : JEUX DE SALLE & E-SPORT -->
-        <div id="gaming" class="mb-16">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg font-bold">
-                    <i class="fas fa-gamepad"></i>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-black text-slate-900 font-outfit">Jeux de Salle & E-Sport (Consoles HD)</h2>
-                    <p class="text-xs text-slate-500">Parties simples à 500 FCFA • Inscription tournoi 2 000 FCFA • Cagnotte 5 000 FCFA avec badge officiel</p>
+                    {% endfor %}
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {% for t in gaming_tournaments %}
-                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between card-hover">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">
-                                Gaming E-Sport
-                            </span>
-                            <span class="text-sm font-black text-indigo-900 font-outfit">{{ t.registration_fee|floatformat:0 }} FCFA</span>
-                        </div>
-                        <h3 class="font-bold text-slate-900 text-lg font-outfit">{{ t.title }}</h3>
-                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">{{ t.rules_summary }}</p>
-                        <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex items-center gap-2">
-                            <i class="fas fa-tv text-indigo-500"></i>
-                            <span>2 joueurs max par console simultanée</span>
+            <!-- TAB 3: E-SPORT -->
+            <div class="tab-pane fade" id="tab-gaming" role="tabpanel">
+                <div class="row g-4">
+                    {% for tournament in gaming_tournaments %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tournament-card">
+                            <div class="tournament-header">
+                                <div class="tournament-icon"><i class="fas fa-gamepad"></i></div>
+                                <div>
+                                    <span class="badge rounded-pill mb-1" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.7rem;">
+                                        {{ tournament.get_category_display }}
+                                    </span>
+                                    <h5 class="fw-bold mb-0">{{ tournament.name }}</h5>
+                                </div>
+                            </div>
+                            <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
+                                <p class="small text-muted mb-3">{{ tournament.description }}</p>
+                                <button type="button" onclick="openTeamModal('{{ tournament.id }}', '{{ tournament.name|escapejs }}', '{{ tournament.registration_fee|floatformat:0 }}', '{{ tournament.min_players }}', '{{ tournament.max_players }}')" class="btn-rose w-100 justify-content-center">
+                                    <i class="fas fa-user-plus"></i> Inscrire une équipe / joueur
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-6 pt-2">
-                        <button onclick="openTeamModal({{ t.id }}, '{{ t.title|escapejs }}', '{{ t.registration_fee|floatformat:0 }}')" type="button" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-sm">
-                            <i class="fas fa-gamepad"></i>
-                            <span>S'inscrire au tournoi</span>
-                        </button>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- SECTION 3 : JEUX DE STRATÉGIE -->
-        <div>
-            <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg font-bold">
-                    <i class="fas fa-chess"></i>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-black text-slate-900 font-outfit">Jeux de Stratégie & Défis</h2>
-                    <p class="text-xs text-slate-500">Échecs (3 tours par personne), Ludo, et activités interactives</p>
+                    {% endfor %}
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for t in strategy_tournaments %}
-                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between card-hover">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md">
-                                Réflexion
-                            </span>
-                            <span class="text-sm font-black text-amber-900 font-outfit">{{ t.registration_fee|floatformat:0 }} FCFA</span>
+            <!-- TAB 4: STRATÉGIE -->
+            <div class="tab-pane fade" id="tab-strategy" role="tabpanel">
+                <div class="row g-4">
+                    {% for tournament in strategy_tournaments %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tournament-card">
+                            <div class="tournament-header">
+                                <div class="tournament-icon"><i class="fas fa-chess"></i></div>
+                                <div>
+                                    <span class="badge rounded-pill mb-1" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.7rem;">
+                                        {{ tournament.get_category_display }}
+                                    </span>
+                                    <h5 class="fw-bold mb-0">{{ tournament.name }}</h5>
+                                </div>
+                            </div>
+                            <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
+                                <p class="small text-muted mb-3">{{ tournament.description }}</p>
+                                <button type="button" onclick="openTeamModal('{{ tournament.id }}', '{{ tournament.name|escapejs }}', '{{ tournament.registration_fee|floatformat:0 }}', '{{ tournament.min_players }}', '{{ tournament.max_players }}')" class="btn-rose w-100 justify-content-center">
+                                    <i class="fas fa-user-plus"></i> Inscrire un joueur
+                                </button>
+                            </div>
                         </div>
-                        <h3 class="font-bold text-slate-900 text-lg font-outfit">{{ t.title }}</h3>
-                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">{{ t.rules_summary }}</p>
                     </div>
-                    <div class="mt-6 pt-2">
-                        <button onclick="openTeamModal({{ t.id }}, '{{ t.title|escapejs }}', '{{ t.registration_fee|floatformat:0 }}')" type="button" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-amber-600 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-sm">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Participer</span>
-                        </button>
-                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
 
     </div>
 </div>
 
-<!-- MODAL INSCRIPTION ÉQUIPE -->
-<div id="teamModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
-        <button onclick="closeTeamModal()" type="button" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
-            <i class="fas fa-times"></i>
-        </button>
-
-        <div class="text-center mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl mx-auto mb-3 font-bold">
-                <i class="fas fa-futbol"></i>
+<!-- ═══════════════════════════════════════════
+     MODAL BOOTSTRAP 5 D'INSCRIPTION ÉQUIPE
+═══════════════════════════════════════════ -->
+<div class="modal fade" id="teamModal" tabindex="-1" aria-labelledby="teamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="border: 1px solid rgba(233, 30, 99, 0.2) !important;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 font-outfit" id="modalTournamentTitle">Inscription Équipe</h3>
-            <p class="text-xs text-slate-500 mt-1">Frais d'engagement : <strong id="modalTournamentFee">--</strong> FCFA</p>
+            <div class="modal-body px-4 pt-1 pb-4">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 60px; height: 60px; background: rgba(233, 30, 99, 0.08); color: #E91E63; font-size: 1.5rem;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4 class="fw-extrabold mb-1" id="teamModalTitle">Inscrire une Équipe</h4>
+                    <p class="small text-muted mb-0" id="teamModalSubtitle">Frais d'engagement : 0 FCFA</p>
+                </div>
+
+                <form id="teamRegisterForm" onsubmit="handleTeamRegister(event)">
+                    {% csrf_token %}
+                    <input type="hidden" name="tournament_id" id="modalTournamentId">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Nom de l'équipe / Pseudo</label>
+                        <input type="text" name="name" required placeholder="Ex: FC Licence 2 ou CyberWarriors" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-uppercase">Nom du Capitaine</label>
+                            <input type="text" name="captain_name" required placeholder="Nom complet" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-uppercase">Téléphone Capitaine</label>
+                            <input type="tel" name="captain_phone" required placeholder="659471152" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Email du Capitaine</label>
+                        <input type="email" name="captain_email" required placeholder="capitaine@uy1.cm" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Composition / Liste des Joueurs</label>
+                        <textarea name="players_list" rows="3" placeholder="Indiquez les noms et matricules des joueurs..." class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);"></textarea>
+                    </div>
+
+                    <div id="teamStatusBox" class="d-none p-3 rounded-3 small mb-3"></div>
+
+                    <button type="submit" id="teamSubmitBtn" class="btn w-100 py-3 rounded-pill fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, #E91E63 0%, #f06292 100%); border: none;">
+                        <i class="fas fa-check-circle me-2"></i> Confirmer l'inscription
+                    </button>
+                </form>
+            </div>
         </div>
-
-        <form action="{% url 'cofesti_team_register' %}" method="POST" class="space-y-4">
-            {% csrf_token %}
-            <input type="hidden" name="tournament_id" id="modalTournamentId">
-
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom de l'équipe ou du joueur *</label>
-                <input type="text" name="name" required placeholder="Ex: FC Cyber-L2 ou Team Python" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Promotion / Niveau *</label>
-                    <input type="text" name="level_or_class" required placeholder="Ex: L1 Info ou M1 GL" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Capitaine / Responsable *</label>
-                    <input type="text" name="captain_name" required placeholder="Ex: Alex Nguemo" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">WhatsApp Capitaine *</label>
-                    <input type="tel" name="captain_phone" required placeholder="Ex: 659471152" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Capitaine</label>
-                    <input type="email" name="captain_email" placeholder="contact@domaine.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Composition de l'équipe / Joueurs</label>
-                <textarea name="players_list" rows="3" placeholder="Noms des titulaires et remplaçants..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500"></textarea>
-            </div>
-
-            <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-sm transition-colors shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2">
-                <i class="fas fa-check-circle"></i>
-                <span>Enregistrer la préinscription</span>
-            </button>
-        </form>
     </div>
 </div>
 
@@ -269,64 +469,68 @@
 
 {% block extra_js %}
 <script>
-    // Audio Player for Sports Page
-    const sportsAudio = document.getElementById('sportsAnthemAudio');
-    const sportsPlayBtn = document.getElementById('sportsPlayBtn');
-    const sportsPlayIcon = document.getElementById('sportsPlayIcon');
-    const sportsPlayLabel = document.getElementById('sportsPlayLabel');
-    const sportsSeek = document.getElementById('sportsSeek');
-    const sportsTime = document.getElementById('sportsTime');
-    const sportsDuration = document.getElementById('sportsDuration');
+    let bsTeamModal = null;
 
-    function fmt(s) {
-        const m = Math.floor(s / 60);
-        const sec = Math.floor(s % 60);
-        return `${m < 10 ? '0' : ''}${m}:${sec < 10 ? '0' : ''}${sec}`;
-    }
-
-    if (sportsAudio) {
-        sportsAudio.addEventListener('loadedmetadata', () => {
-            sportsDuration.textContent = fmt(sportsAudio.duration);
-            sportsSeek.max = sportsAudio.duration;
-        });
-
-        sportsAudio.addEventListener('timeupdate', () => {
-            sportsTime.textContent = fmt(sportsAudio.currentTime);
-            sportsSeek.value = sportsAudio.currentTime;
-        });
-
-        sportsSeek.addEventListener('input', () => {
-            sportsAudio.currentTime = sportsSeek.value;
-        });
-
-        sportsPlayBtn.addEventListener('click', () => {
-            if (sportsAudio.paused) {
-                sportsAudio.play();
-                sportsPlayIcon.classList.replace('fa-play', 'fa-pause');
-                sportsPlayLabel.textContent = "Pause de l'hymne";
-            } else {
-                sportsAudio.pause();
-                sportsPlayIcon.classList.replace('fa-pause', 'fa-play');
-                sportsPlayLabel.textContent = "Écouter l'hymne officiel";
+    function getTeamModal() {
+        if (!bsTeamModal) {
+            const el = document.getElementById('teamModal');
+            if (el && typeof bootstrap !== 'undefined') {
+                bsTeamModal = new bootstrap.Modal(el);
             }
-        });
-
-        sportsAudio.addEventListener('ended', () => {
-            sportsPlayIcon.classList.replace('fa-pause', 'fa-play');
-            sportsPlayLabel.textContent = "Relancer l'hymne";
-        });
+        }
+        return bsTeamModal;
     }
 
-    function openTeamModal(id, title, fee) {
-        document.getElementById('modalTournamentId').value = id;
-        document.getElementById('modalTournamentTitle').textContent = `Inscription: ${title}`;
-        document.getElementById('modalTournamentFee').textContent = fee;
-        document.getElementById('teamModal').classList.remove('hidden');
+    function openTeamModal(tournamentId, name, fee, minPlayers, maxPlayers) {
+        document.getElementById('modalTournamentId').value = tournamentId;
+        document.getElementById('teamModalTitle').textContent = `Inscription : ${name}`;
+        document.getElementById('teamModalSubtitle').textContent = `Frais d'engagement : ${fee} FCFA · Effectif : ${minPlayers} à ${maxPlayers} joueurs`;
+
+        const statusBox = document.getElementById('teamStatusBox');
+        if (statusBox) statusBox.className = 'd-none';
+
+        const modal = getTeamModal();
+        if (modal) modal.show();
     }
 
-    function closeTeamModal() {
-        document.getElementById('teamModal').classList.add('hidden');
+    async function handleTeamRegister(e) {
+        e.preventDefault();
+        const form = document.getElementById('teamRegisterForm');
+        const submitBtn = document.getElementById('teamSubmitBtn');
+        const statusBox = document.getElementById('teamStatusBox');
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Enregistrement...';
+        statusBox.className = 'alert alert-info d-block small';
+        statusBox.textContent = "Validation de l'inscription auprès du comité...";
+
+        const formData = new FormData(form);
+
+        try {
+            const resp = await fetch("{% url 'cofesti_team_register' %}", {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                statusBox.className = 'alert alert-success d-block small';
+                statusBox.innerHTML = `<strong>Félicitations !</strong> ${data.message}`;
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                statusBox.className = 'alert alert-danger d-block small';
+                statusBox.textContent = data.error || "Une erreur est survenue lors de l'inscription.";
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Réessayer';
+            }
+        } catch (err) {
+            statusBox.className = 'alert alert-danger d-block small';
+            statusBox.textContent = "Erreur de connexion. Veuillez réessayer.";
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Réessayer';
+        }
     }
 </script>
 {% endblock %}
-

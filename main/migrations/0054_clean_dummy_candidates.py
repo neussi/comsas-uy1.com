@@ -17,3 +17,4 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(remove_dummy_candidates, rollback_clean),
     ]
+

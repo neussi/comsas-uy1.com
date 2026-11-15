@@ -3,166 +3,281 @@
 
 {% block title %}Soirée de Parrainage & Gala — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
 
+{% block meta_description %}Participez à la Soirée de Parrainage et Grand Gala du COFESTI {{ edition.year }} au Restaurant N°2 de l'Université de Yaoundé 1.{% endblock %}
+
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-    .font-outfit { font-family: 'Outfit', sans-serif; }
-    .card-hover { transition: all 0.3s ease; }
-    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .14);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--text-dark);
+        background: var(--blanc-off);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 28px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .gala-card {
+        background: var(--blanc);
+        border-radius: 24px;
+        border: 1px solid var(--rose-border);
+        box-shadow: 0 8px 26px var(--rose-shadow);
+        padding: 32px;
+    }
+
+    .step-num {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--rose-pale);
+        color: var(--rose);
+        font-weight: 900;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-5xl mx-auto">
+<div class="py-5">
+    <div class="container py-3">
 
-        <!-- Header -->
-        <div class="text-center max-w-3xl mx-auto mb-12">
-            <a href="{% url 'cofesti_home' %}" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-full transition-colors mb-4">
+        <!-- En-tête -->
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <a href="{% url 'cofesti_home' %}" class="d-inline-flex align-items-center gap-2 small fw-bold px-3 py-1.5 rounded-pill mb-3 text-decoration-none" style="background: var(--rose-pale); color: var(--rose); border: 1px solid var(--rose-border);">
                 <i class="fas fa-arrow-left"></i>
                 <span>Retour au Hub COFESTI {{ edition.year }}</span>
             </a>
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-outfit tracking-tight">
-                Soirée de Parrainage & Grand Gala Festi-Noël
+
+            <h1 class="display-5 fw-extrabold mb-2" style="color: var(--text-dark);">
+                Soirée de Parrainage & <span class="text-gradient">Grand Gala</span>
             </h1>
-            <p class="text-slate-600 text-sm sm:text-base mt-3">
-                L'événement de prestige réunissant nouveaux étudiants (filleuls) et aînés académiques (parrains) dans le cadre chaleureux du <strong>Restaurant N° 2 de l'Université de Yaoundé I</strong>.
+            <p class="text-muted" style="font-size: 1.05rem;">
+                Le couronnement prestigieux des festivités de fin d'année du Département d'Informatique.
+                Rendez-vous au <strong>Restaurant Universitaire N° 2 de l'Université de Yaoundé I</strong> !
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
+        <div class="row g-4 align-items-start mb-5">
+            <!-- Colonne Gauche: Programme & Prestige -->
+            <div class="col-lg-7">
+                <div class="gala-card mb-4">
+                    <h3 class="fw-bold mb-4 d-flex align-items-center gap-2" style="color: var(--text-dark);">
+                        <i class="fas fa-star" style="color: var(--rose);"></i>
+                        <span>Programme d'Exception de la Soirée</span>
+                    </h3>
 
-            <!-- Présentation & Programme -->
-            <div class="lg:col-span-7 space-y-6">
-                <div class="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm space-y-5">
-                    <h2 class="text-2xl font-bold text-slate-900 font-outfit flex items-center gap-3">
-                        <i class="fas fa-star text-amber-500"></i>
-                        <span>Au Programme de la Soirée</span>
-                    </h2>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                            <span class="step-num">1</span>
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Cérémonie Solennelle de Parrainage</h6>
+                                <p class="small text-muted mb-0">Signature et remise des chartes de parrainage reliant officiellement les étudiants aux diplômés et professionnels.</p>
+                            </div>
+                        </div>
 
-                    <ul class="space-y-3.5 text-sm text-slate-700">
-                        <li class="flex items-start gap-3">
-                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
-                            <span><strong>Cérémonie officielle de Parrainage</strong> : Attribution et remise des certificats solennels de parrainage signés.</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
-                            <span><strong>Couronnement Miss & Master</strong> : Révélation et sacre des ambassadeurs du Département d'Informatique.</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</span>
-                            <span><strong>Grande Finale The Voice</strong> : Prestations vocales en direct et vote du public.</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</span>
-                            <span><strong>Cliché Cinématographique</strong> : Projection vidéo rétrospective et artistique de la vie étudiante.</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">5</span>
-                            <span><strong>Remise des Trophées Sportifs</strong> : Récompenses des vainqueurs football, basket, e-sport et échecs.</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">6</span>
-                            <span><strong>Banquet & Soirée Dansante</strong> : Gastronomie, cocktails, animation DJ et networking.</span>
-                        </li>
-                    </ul>
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                            <span class="step-num">2</span>
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Couronnement Miss & Master</h6>
+                                <p class="small text-muted mb-0">Proclamation des résultats du vote en ligne et sacre des ambassadeurs d'élégance du département.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                            <span class="step-num">3</span>
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Grande Finale The Voice en Live</h6>
+                                <p class="small text-muted mb-0">Prestations des finalistes sur scène accompagnés de musiciens live, avec vote du public présent.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                            <span class="step-num">4</span>
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Remise des Prix & Trophées Sportifs</h6>
+                                <p class="small text-muted mb-0">Cérémonie de remise des coupes pour le Football, Basketball et les vainqueurs E-Sport au son de <em>Before the Whistle</em>.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                            <span class="step-num">5</span>
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Buffet Gastronomique & Soirée Dansante</h6>
+                                <p class="small text-muted mb-0">Cocktail de gala, dégustation et célébration festive entre étudiants, professeurs et partenaires.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Tarifs Officiels Box -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-gradient-to-br from-amber-50 to-amber-100/60 rounded-2xl p-6 border border-amber-200">
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-800">Filleuls (Nouveaux L1/ICT)</span>
-                        <div class="text-3xl font-black text-amber-600 font-outfit mt-1">{{ edition.mentee_gala_fee|floatformat:0 }} FCFA</div>
-                        <p class="text-xs text-amber-900 mt-2">Comprend le repas, le cocktail, le kit et le certificat officiel de parrainage.</p>
-                    </div>
-
-                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/60 rounded-2xl p-6 border border-emerald-200">
-                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Parrains (Aînés L2 à Doctorat)</span>
-                        <div class="text-3xl font-black text-emerald-700 font-outfit mt-1">{{ edition.mentor_gala_fee|floatformat:0 }} FCFA</div>
-                        <p class="text-xs text-emerald-900 mt-2">Accès complet à la soirée de gala, cocktail de prestige et networking.</p>
+                <!-- Informations pratiques -->
+                <div class="p-4 rounded-4" style="background: var(--blanc); border: 1px solid var(--rose-border);">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="small fw-bold text-uppercase mb-1" style="color: var(--rose);"><i class="fas fa-map-marker-alt me-1"></i> Lieu de la soirée</div>
+                            <div class="fw-bold text-dark">Restaurant Universitaire N°2</div>
+                            <small class="text-muted">Campus Principal UY1 — Ngoa-Ekellé</small>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="small fw-bold text-uppercase mb-1" style="color: var(--rose);"><i class="fas fa-tshirt me-1"></i> Code Vestimentaire</div>
+                            <div class="fw-bold text-dark">Chic & Élégant / Tenue Traditionnelle</div>
+                            <small class="text-muted">Tenue de soirée exigée à l'entrée</small>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Formulaire d'inscription -->
-            <div class="lg:col-span-5 bg-white rounded-3xl p-8 border border-slate-200 shadow-xl relative">
-                <div class="text-center mb-6">
-                    <div class="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center text-xl mx-auto mb-2 font-bold">
-                        <i class="fas fa-ticket-alt"></i>
+            <!-- Colonne Droite: Billetterie & Inscription -->
+            <div class="col-lg-5">
+                <div class="gala-card">
+                    <div class="text-center mb-4">
+                        <span class="badge rounded-pill px-3 py-1.5 mb-2" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.75rem;">
+                            RÉSERVATION OFFICIELLE
+                        </span>
+                        <h4 class="fw-extrabold mb-1" style="color: var(--text-dark);">Prendre son Pass Gala</h4>
+                        <p class="small text-muted mb-0">Accès garanti au buffet, animations et cocktail</p>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-900 font-outfit">Réserver ma participation</h3>
-                    <p class="text-xs text-slate-500 mt-1">Inscription individuelle nominative</p>
+
+                    <form id="sponsorshipRegisterForm" onsubmit="handleSponsorshipSubmit(event)">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase">Formule d'Accès</label>
+                            <select name="tier" id="sponsorshipTier" onchange="updateSponsorshipPrice()" class="form-select rounded-3 fw-bold" style="border-color: rgba(233, 30, 99, 0.25);">
+                                <option value="filleul" data-price="10000">Pass Filleul / Étudiant (10 000 FCFA)</option>
+                                <option value="parrain" data-price="15000">Pass Parrain / Aîné (15 000 FCFA)</option>
+                                <option value="invite" data-price="20000">Pass VIP / Invité Externe (20 000 FCFA)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase">Votre Nom & Prénom</label>
+                            <input type="text" name="name" required placeholder="Ex: Alexandre Ngono" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase">Numéro Téléphone (OM / MoMo)</label>
+                            <input type="tel" name="phone" required placeholder="659471152" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase">Adresse Email</label>
+                            <input type="email" name="email" required placeholder="alex@uy1.cm" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase">Niveau ou Organisation</label>
+                            <input type="text" name="company" placeholder="Ex: Licence 1 Informatique ou Entreprise X" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
+                        </div>
+
+                        <div class="p-3 rounded-3 mb-3 d-flex align-items-center justify-content-between" style="background: #fdf5f8; border: 1px solid rgba(233, 30, 99, 0.2);">
+                            <span class="small fw-bold text-uppercase">Montant à régler :</span>
+                            <span class="h4 mb-0 fw-extrabold" id="sponsorshipPriceDisplay" style="color: #E91E63;">10 000 FCFA</span>
+                        </div>
+
+                        <div id="sponsorshipStatusBox" class="d-none p-3 rounded-3 small mb-3"></div>
+
+                        <button type="submit" id="sponsorshipSubmitBtn" class="btn-rose w-100 justify-content-center py-3">
+                            <i class="fas fa-ticket-alt"></i> Confirmer ma réservation Gala
+                        </button>
+                    </form>
                 </div>
-
-                <form action="{% url 'cofesti_sponsorship_register' %}" method="POST" class="space-y-4">
-                    {% csrf_token %}
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Votre Rôle au Parrainage *</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="border-2 border-slate-200 rounded-2xl p-3 text-center cursor-pointer hover:border-amber-400 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 transition-all">
-                                <input type="radio" name="role_type" value="mentee" checked class="hidden" onchange="updateRoleFee('10 000 FCFA')">
-                                <span class="block text-xs font-bold text-slate-900">Filleul (Nouveau)</span>
-                                <span class="text-[11px] text-amber-600 font-bold">10 000 FCFA</span>
-                            </label>
-                            <label class="border-2 border-slate-200 rounded-2xl p-3 text-center cursor-pointer hover:border-emerald-500 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50 transition-all">
-                                <input type="radio" name="role_type" value="mentor" class="hidden" onchange="updateRoleFee('5 000 FCFA')">
-                                <span class="block text-xs font-bold text-slate-900">Parrain (Aîné)</span>
-                                <span class="text-[11px] text-emerald-600 font-bold">5 000 FCFA</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom et Prénom complets *</label>
-                        <input type="text" name="full_name" required placeholder="Ex: Paul Alain Biya" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Niveau d'étude *</label>
-                            <input type="text" name="level" required placeholder="Ex: L1 Info ou M2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Téléphone WhatsApp *</label>
-                            <input type="tel" name="phone" required placeholder="Ex: 659471152" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email pour recevoir le billet *</label>
-                        <input type="email" name="email" required placeholder="etudiant@domaine.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Spécialité / Filière souhaitée</label>
-                        <input type="text" name="specialty_or_wish" placeholder="Ex: Génie Logiciel, Data Science, Sécurité..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
-                    </div>
-
-                    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex items-center justify-between text-slate-800">
-                        <span class="text-xs font-bold uppercase">Contribution à régler :</span>
-                        <span class="text-base font-black text-slate-900 font-outfit" id="roleContributionDisplay">10 000 FCFA</span>
-                    </div>
-
-                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Confirmer mon inscription au Gala</span>
-                    </button>
-                </form>
             </div>
-
         </div>
 
     </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    function updateRoleFee(fee) {
-        document.getElementById('roleContributionDisplay').textContent = fee;
+    function updateSponsorshipPrice() {
+        const select = document.getElementById('sponsorshipTier');
+        const price = select.options[select.selectedIndex].getAttribute('data-price');
+        document.getElementById('sponsorshipPriceDisplay').textContent = `${parseInt(price).toLocaleString()} FCFA`;
+    }
+
+    async function handleSponsorshipSubmit(e) {
+        e.preventDefault();
+        const form = document.getElementById('sponsorshipRegisterForm');
+        const submitBtn = document.getElementById('sponsorshipSubmitBtn');
+        const statusBox = document.getElementById('sponsorshipStatusBox');
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Traitement...';
+        statusBox.className = 'alert alert-info d-block small';
+        statusBox.textContent = "Validation de votre réservation de Gala...";
+
+        const formData = new FormData(form);
+
+        try {
+            const resp = await fetch("{% url 'cofesti_sponsorship_register' %}", {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                statusBox.className = 'alert alert-success d-block small';
+                statusBox.innerHTML = `<strong>Réservation confirmée !</strong> ${data.message}`;
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                statusBox.className = 'alert alert-danger d-block small';
+                statusBox.textContent = data.error || "Une erreur est survenue lors de l'enregistrement.";
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-ticket-alt me-2"></i> Réessayer';
+            }
+        } catch (err) {
+            statusBox.className = 'alert alert-danger d-block small';
+            statusBox.textContent = "Erreur de connexion internet.";
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-ticket-alt me-2"></i> Réessayer';
+        }
     }
 </script>
 {% endblock %}
-
