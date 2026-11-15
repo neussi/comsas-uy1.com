@@ -315,32 +315,48 @@ def validate_portrait_photo(photo):
 
 
 class MentorRegistrationForm(forms.ModelForm):
-    """Formulaire d'inscription des parrains professionnels et académiques"""
+    """Formulaire d'inscription des parrains professionnels et académiques (Tarif: 5 000 FCFA)"""
     photo = forms.ImageField(
         required=True,
-        label=_("Photo Portrait Officielle *"),
-        help_text=_("Photo nette et professionnelle (JPEG, PNG, WEBP, max 5 Mo). Un outil de recadrage est à votre disposition ci-dessous."),
+        label=_("Photo Portrait Officielle * (Obligatoire)"),
+        help_text=_("Photo nette et professionnelle (JPEG, PNG, WEBP, max 5 Mo). Un outil de recadrage et aperçu en direct est disponible ci-dessous."),
         validators=[validate_portrait_photo]
+    )
+    cycle = forms.ChoiceField(
+        choices=Mentor.CYCLE_CHOICES,
+        required=True,
+        label=_("Cycle d'études ou Statut *"),
+        help_text=_("Sélectionnez votre profil (Professionnel, MIS, Master ou Licence 3)")
+    )
+    filiere_option = forms.CharField(
+        max_length=150,
+        required=True,
+        label=_("Filière / Option / Spécialisation *"),
+        widget=forms.TextInput(attrs={'placeholder': _('Ex: Génie Logiciel, MIS, Data Science & IA, Sécurité, Systèmes & Cloud...')})
     )
     profession = forms.CharField(
         max_length=150,
         required=True,
         label=_("Profession / Poste actuel *"),
-        widget=forms.TextInput(attrs={'placeholder': _('Ex: Ingénieur DevOps, Data Scientist, Tech Lead...')})
+        widget=forms.TextInput(attrs={'placeholder': _('Ex: Ingénieur Logiciel, Architecte Cloud, Étudiant Chercheur...')})
     )
     company = forms.CharField(
         max_length=150,
         required=False,
-        label=_("Entreprise / Organisation"),
-        widget=forms.TextInput(attrs={'placeholder': _('Ex: Google, MTN, Orange, Startup, Freelance...')})
+        label=_("Entreprise / Organisation / Université"),
+        widget=forms.TextInput(attrs={'placeholder': _('Ex: Entreprise X, Startup Y, UY1, Indépendant...')})
     )
     years_of_experience = forms.IntegerField(
         min_value=0,
         max_value=60,
         initial=1,
         required=True,
-        label=_("Années d'expérience *"),
+        label=_("Années d'expérience ou d'ancienneté *"),
         widget=forms.NumberInput(attrs={'min': 0, 'max': 60})
+    )
+    skills_with_levels_json = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
     )
     bio = forms.CharField(
         required=False,
@@ -356,7 +372,10 @@ class MentorRegistrationForm(forms.ModelForm):
     
     class Meta:
         model = Mentor
-        fields = ['first_name', 'last_name', 'phone', 'email', 'level', 'specialty', 'profession', 'company', 'years_of_experience', 'bio', 'photo', 'max_mentees']
+        fields = [
+            'first_name', 'last_name', 'phone', 'email', 'cycle', 'level', 'filiere_option',
+            'specialty', 'profession', 'company', 'years_of_experience', 'bio', 'photo', 'max_mentees'
+        ]
 
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')
@@ -367,27 +386,54 @@ class MentorRegistrationForm(forms.ModelForm):
         domains = cleaned_data.get('expertise_domains_list')
         if domains:
             self.instance.expertise_domains = ", ".join(domains)
+            
+        skills_json = cleaned_data.get('skills_with_levels_json')
+        if skills_json:
+            import json
+            try:
+                parsed = json.loads(skills_json)
+                if isinstance(parsed, list):
+                    self.instance.skills_with_levels = parsed
+            except Exception:
+                pass
         return cleaned_data
 
 
 class MenteeRegistrationForm(forms.ModelForm):
-    """Formulaire d'inscription des filleuls"""
+    """Formulaire d'inscription des filleuls (Tarif: 10 000 FCFA)"""
     photo = forms.ImageField(
         required=True,
-        label=_("Photo Portrait Officielle *"),
-        help_text=_("Photo nette (JPEG, PNG, WEBP, max 5 Mo). Un outil de recadrage est à votre disposition ci-dessous."),
+        label=_("Photo Portrait Officielle * (Obligatoire)"),
+        help_text=_("Photo nette (JPEG, PNG, WEBP, max 5 Mo). Un outil de recadrage et aperçu en direct est disponible ci-dessous."),
         validators=[validate_portrait_photo]
+    )
+    cycle = forms.ChoiceField(
+        choices=Mentee.CYCLE_CHOICES,
+        required=True,
+        label=_("Cycle d'études *"),
+        help_text=_("Licence, MIS (Master Spécialisé) ou Master Recherche")
+    )
+    filiere_option = forms.CharField(
+        max_length=150,
+        required=True,
+        label=_("Filière / Option actuelle *"),
+        widget=forms.TextInput(attrs={'placeholder': _('Ex: Informatique Fondamentale, MIS, ICT4D, Génie Logiciel...')})
     )
     desired_specialty = forms.CharField(
         max_length=100,
         required=True,
-        label=_("Spécialité visée *"),
-        widget=forms.TextInput(attrs={'placeholder': _('Ex: Génie Logiciel, Data Science, Cybersécurité, Systèmes & Cloud...')})
+        label=_("Spécialité ou métier visé *"),
+        widget=forms.TextInput(attrs={'placeholder': _('Ex: Développeur Full-Stack, Data Scientist, Ingénieur Cyber, DevOps...')})
     )
     skills_to_acquire = forms.CharField(
         required=True,
         label=_("Compétences que vous souhaitez acquérir *"),
         widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('Listez les technologies, outils ou compétences précises que vous souhaitez développer avec votre parrain (ex: Docker, Architecture Microservices, Machine Learning...)...')})
+    )
+    desired_mentor_type = forms.CharField(
+        required=True,
+        label=_("Description du type de parrain souhaité *"),
+        widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('Décrivez le profil idéal que vous recherchez (ex: un professionnel en poste travaillant dans le Cloud, disponible pour des sessions mensuelles et des revues de code, ou un aîné de MIS spécialisé en IA...)...')})
     )
     competencies_list = forms.MultipleChoiceField(
         choices=COMPETENCIES_LIST,
@@ -409,7 +455,10 @@ class MenteeRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Mentee
-        fields = ['first_name', 'last_name', 'phone', 'email', 'level', 'desired_specialty', 'skills_to_acquire', 'bio', 'photo']
+        fields = [
+            'first_name', 'last_name', 'phone', 'email', 'cycle', 'level', 'filiere_option',
+            'desired_specialty', 'skills_to_acquire', 'desired_mentor_type', 'bio', 'photo'
+        ]
 
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')

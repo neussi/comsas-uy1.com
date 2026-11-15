@@ -1,60 +1,205 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static custom_filters %}
 
-{% block title %}Inscription Réussie - COMS.A.S{% endblock %}
+{% block title %}Participation Confirmée — Pass Soirée Gala & Parrainage | COMS.A.S{% endblock %}
+
+{% block meta_description %}Félicitations ! Votre inscription au programme de parrainage et votre Pass Soirée de Gala avec QR code officiel sont confirmés.{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .success-card {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 28px;
+        box-shadow: 0 12px 36px var(--rose-shadow);
+        overflow: hidden;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 28px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .btn-outline-rose {
+        background: transparent;
+        color: var(--rose) !important;
+        border: 1.5px solid var(--rose-border);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 12px 24px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--rose-pale);
+        border-color: var(--rose);
+    }
+
+    .ticket-badge {
+        background: #fdf5f8;
+        border: 2px dashed rgba(233, 30, 99, 0.3);
+        border-radius: 20px;
+        padding: 24px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<section class="py-5 bg-white position-relative overflow-hidden"
-    style="min-height: 80vh; display: flex; align-items: center;">
-    <div class="container text-center position-relative z-1">
-        <div class="mb-4">
-            <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle"
-                style="width: 100px; height: 100px;">
-                <i class="fas fa-check fa-3x"></i>
+<section class="py-5">
+    <div class="container py-3">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+
+                <div class="success-card p-4 p-md-5 text-center mb-4">
+                    <!-- Icône succès animée -->
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 85px; height: 85px; background: rgba(76, 175, 80, 0.12); color: #2e7d32; font-size: 2.5rem;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+
+                    <span class="badge rounded-pill px-3 py-1.5 mb-2 d-inline-block" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.78rem;">
+                        PAIEMENT CONFIRMÉ & PASS SOIRÉE VALIDÉ
+                    </span>
+
+                    <h1 class="display-6 fw-extrabold mb-2" style="color: var(--text-dark);">
+                        Félicitations {% if participant %}{{ participant.first_name }}{% endif %} !
+                    </h1>
+
+                    <p class="text-muted lead mb-4" style="font-size: 1.05rem;">
+                        Votre participation au programme de parrainage et votre accès à la <strong>Soirée de Gala & Parrainage</strong> au <strong>Restaurant Universitaire N°2</strong> sont officiellement confirmés.
+                    </p>
+
+                    {% if participant %}
+                    <!-- Aperçu du Pass & QR Code -->
+                    <div class="ticket-badge mb-4 text-start">
+                        <div class="d-flex flex-column flex-sm-row align-items-center gap-4">
+                            {% if participant.qr_code %}
+                            <div class="p-2 bg-white rounded-3 shadow-sm border border-rose-subtle">
+                                <img src="{{ participant.qr_code.url }}" alt="QR Code Pass" style="width: 120px; height: 120px; object-fit: contain;">
+                            </div>
+                            {% endif %}
+
+                            <div class="flex-grow-1 text-center text-sm-start">
+                                <div class="badge rounded-pill mb-1" style="background: var(--rose); color: #fff; font-size: 0.72rem;">
+                                    PASS SOIRÉE OFFICIEL COMSAS
+                                </div>
+                                <h4 class="fw-extrabold mb-1" style="color: var(--text-dark);">
+                                    {{ participant.first_name }} {{ participant.last_name }}
+                                </h4>
+                                <div class="small text-muted mb-1">
+                                    <strong>Rôle :</strong> {% if role == 'mentor' %}Parrain Professionnel (5 000 FCFA){% else %}Filleul Académique (10 000 FCFA){% endif %}
+                                </div>
+                                <div class="small text-muted mb-2">
+                                    <strong>Filière / Option :</strong> {{ participant.filiere_option|default:"Informatique UY1" }}
+                                </div>
+                                <div class="small text-muted">
+                                    <i class="fas fa-map-marker-alt" style="color: var(--rose);"></i> Restaurant Universitaire N° 2, Université de Yaoundé 1
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions Principales -->
+                    <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-4">
+                        <a href="{% url 'sponsorship_download_pass' participant.uuid %}" class="btn-rose">
+                            <i class="fas fa-file-pdf"></i> Télécharger mon Pass PDF
+                        </a>
+                        <a href="{% url 'sponsorship_my_match' participant.uuid %}" class="btn-outline-rose">
+                            <i class="fas fa-user-friends"></i> Voir mon Binôme
+                        </a>
+                        <a href="{% url 'verify_ticket' participant.uuid %}" target="_blank" class="btn-outline-rose">
+                            <i class="fas fa-qrcode"></i> Vérifier le Pass
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="d-flex justify-content-center gap-3 mb-4">
+                        <a href="{% url 'sponsorship_home' %}" class="btn-rose">
+                            <i class="fas fa-users"></i> Espace Parrainage
+                        </a>
+                        <a href="{% url 'home' %}" class="btn-outline-rose">
+                            <i class="fas fa-home"></i> Accueil
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div class="p-3 rounded-4 small text-muted text-start" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                        <i class="fas fa-info-circle me-1" style="color: var(--rose);"></i>
+                        <strong>Prochaine étape :</strong> L'algorithme d'affectation automatique procède à la mise en relation avec votre parrain ou filleul selon vos compétences et aspirations. Vous recevrez également un récapitulatif par email.
+                    </div>
+                </div>
+
             </div>
         </div>
-
-        <h1 class="display-4 fw-bold mb-4">Inscription Enregistrée !</h1>
-        <p class="lead text-muted mb-5 col-lg-8 mx-auto">
-            Merci de vous être inscrit au programme de parrainage. <br>
-            Vous recevrez bientôt une notification par email concernant la suite du processus et l'attribution de votre
-            binôme.
-        </p>
-
-        <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-4">
-                <i class="fas fa-home me-2"></i>Retour à l'accueil
-            </a>
-            <a href="{% url 'sponsorship_home' %}" class="btn btn-primary rounded-pill px-4">
-                <i class="fas fa-users me-2"></i>Espace Parrainage
-            </a>
-        </div>
     </div>
-
-    <!-- Confetti Script (Optional) -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var duration = 3 * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-            function randomInOut(min, max) {
-                return Math.random() * (max - min) + min;
-            }
-
-            var interval = setInterval(function () {
-                var timeLeft = animationEnd - Date.now();
-
-                if (timeLeft <= 0) {
-                    return clearInterval(interval);
-                }
-
-                var particleCount = 50 * (timeLeft / duration);
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.1, 0.3), y: Math.random() - 0.2 } }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.7, 0.9), y: Math.random() - 0.2 } }));
-            }, 250);
-        });
-    </script>
 </section>
+
+<!-- Script de Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var duration = 3 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
+
+        function randomInOut(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        var interval = setInterval(function () {
+            var timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(interval);
+            var particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.1, 0.3), y: Math.random() - 0.2 } }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
+    });
+</script>
 {% endblock %}

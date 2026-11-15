@@ -37,6 +37,9 @@ urlpatterns = [
     path('events/activite/<slug:slug>/', views.activity_detail, name='activity_detail_alt3'),
     path('evenements/activite/candidature/<uuid:uuid>/', views.activity_application_status, name='activity_application_status'),
     path('events/activity/candidature/<uuid:uuid>/', views.activity_application_status, name='activity_application_status_alt'),
+    path('evenements/activite/status/<uuid:uuid>/', views.activity_application_status, name='activity_application_status_status_fr'),
+    path('events/activite/status/<uuid:uuid>/', views.activity_application_status, name='activity_application_status_status_en'),
+    path('events/activity/status/<uuid:uuid>/', views.activity_application_status, name='activity_application_status_status_en2'),
     path('evenements/activite/candidature/<uuid:uuid>/annuler/', views.activity_payment_cancel, name='activity_payment_cancel'),
     path('api/evenements/activite/payment-status/<str:transaction_id>/', views.api_activity_payment_status, name='api_activity_payment_status'),
     
@@ -65,7 +68,13 @@ urlpatterns = [
     path('parrainage/', views.sponsorship_home, name='sponsorship_home'),
     path('parrainage/devenir-parrain/', views.register_mentor, name='register_mentor'),
     path('parrainage/trouver-parrain/', views.register_mentee, name='register_mentee'),
+    path('parrainage/paiement/<uuid:uuid>/', views.sponsorship_payment, name='sponsorship_payment'),
+    path('parrainage/paiement/<uuid:uuid>/annuler/', views.sponsorship_payment_cancel, name='sponsorship_payment_cancel'),
     path('parrainage/succes/', views.sponsorship_success, name='sponsorship_success'),
+    path('parrainage/succes/<uuid:uuid>/', views.sponsorship_success, name='sponsorship_success_participant'),
+    path('parrainage/mon-binome/<uuid:uuid>/', views.sponsorship_my_match, name='sponsorship_my_match'),
+    path('parrainage/pass/<uuid:uuid>/telecharger/', views.sponsorship_download_pass, name='sponsorship_download_pass'),
+    path('api/parrainage/paiement/status/<uuid:uuid>/', views.sponsorship_payment_status, name='sponsorship_payment_status'),
     path('parrainage/nos-parrains/', views.list_mentors, name='list_mentors'),
     path('parrainage/binomes/', views.list_matches, name='list_matches'),
     # Aliases URL pour le parrainage
@@ -74,6 +83,14 @@ urlpatterns = [
     path('sponsorship/matches/', views.list_matches, name='list_matches_alias'),
     path('sponsorship/register/mentor/', views.register_mentor, name='register_mentor_alias'),
     path('sponsorship/register/mentee/', views.register_mentee, name='register_mentee_alias'),
+    path('sponsorship/payment/<uuid:uuid>/', views.sponsorship_payment, name='sponsorship_payment_alias'),
+    path('sponsorship/success/<uuid:uuid>/', views.sponsorship_success, name='sponsorship_success_alias'),
+    path('sponsorship/my-match/<uuid:uuid>/', views.sponsorship_my_match, name='sponsorship_my_match_alias'),
+    path('cofesti/parrainage/devenir-parrain/', views.register_mentor, name='cofesti_register_mentor'),
+    path('cofesti/parrainage/trouver-parrain/', views.register_mentee, name='cofesti_register_mentee'),
+    path('cofesti/parrainage/paiement/<uuid:uuid>/', views.sponsorship_payment, name='cofesti_sponsorship_payment'),
+    path('cofesti/parrainage/mon-binome/<uuid:uuid>/', views.sponsorship_my_match, name='cofesti_sponsorship_my_match'),
+    path('cofesti/parrainage/pass/<uuid:uuid>/telecharger/', views.sponsorship_download_pass, name='cofesti_sponsorship_download_pass'),
     
     # ============= SYSTÈME DE VOTE (CONCOURS) =============
     path('concours/', views.contest_list, name='contest_list'),
@@ -109,6 +126,8 @@ urlpatterns = [
     path('tickets/download/<uuid:uuid>/', views.download_ticket, name='download_ticket'),
     path('tickets/verify/', views.verify_ticket, name='ticket_verify_index'),
     path('tickets/verify/<uuid:uuid>/', views.verify_ticket, name='ticket_verify'),
+    path('verify/<uuid:uuid>/', views.verify_ticket, name='verify_ticket'),
+    path('verify/', views.verify_ticket, name='verify_ticket_index'),
 
     # ============= J.U.IN 2026 =============
     path('juin/', views.juin_page, name='juin'),

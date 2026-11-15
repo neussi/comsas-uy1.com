@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static custom_filters %}
 
-{% block title %}Soirée de Parrainage & Gala — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
+{% block title %}Soirée de Parrainage & Grand Gala — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
 
-{% block meta_description %}Participez à la Soirée de Parrainage et Grand Gala du COFESTI {{ edition.year }} au Restaurant N°2 de l'Université de Yaoundé 1.{% endblock %}
+{% block meta_description %}Participez à la Soirée de Parrainage et Grand Gala du COFESTI {{ edition.year }} au Restaurant N°2 de l'Université de Yaoundé 1. Parrains : 5 000 F, Filleuls : 10 000 F.{% endblock %}
 
 {% block extra_css %}
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -57,6 +57,25 @@
         box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
     }
 
+    .btn-outline-rose {
+        background: transparent;
+        color: var(--rose) !important;
+        border: 1.5px solid var(--rose-border);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 11px 24px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--rose-pale);
+        border-color: var(--rose);
+    }
+
     .gala-card {
         background: var(--blanc);
         border-radius: 24px;
@@ -78,6 +97,14 @@
         justify-content: center;
         flex-shrink: 0;
     }
+
+    .flyer-frame {
+        border-radius: 24px;
+        overflow: hidden;
+        border: 2px solid var(--rose-border);
+        box-shadow: 0 12px 36px var(--rose-shadow);
+        background: #fff;
+    }
 </style>
 {% endblock %}
 
@@ -96,15 +123,90 @@
                 Soirée de Parrainage & <span class="text-gradient">Grand Gala</span>
             </h1>
             <p class="text-muted" style="font-size: 1.05rem;">
-                Le couronnement prestigieux des festivités de fin d'année du Département d'Informatique.
-                Rendez-vous au <strong>Restaurant Universitaire N° 2 de l'Université de Yaoundé I</strong> !
+                Le grand événement de clôture du COFESTI au <strong>Restaurant Universitaire N° 2 de l'Université de Yaoundé I</strong>.
+                Chaque inscription donne accès au buffet gastronomique, à la soirée dansante et à l'affectation de parrainage avec Pass officiel QR code.
             </p>
         </div>
 
-        <div class="row g-4 align-items-start mb-5">
-            <!-- Colonne Gauche: Programme & Prestige -->
+        <!-- Deux Cartes Principales de Tarification -->
+        <div class="row g-4 mb-5">
+            <!-- Formule Parrain -->
+            <div class="col-lg-6">
+                <div class="gala-card h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge rounded-pill px-3 py-1.5 fw-bold" style="background: var(--rose-pale); color: var(--rose); font-size: 0.78rem;">
+                                FORMULE PARRAIN PROFESSIONNEL
+                            </span>
+                            <span class="h4 mb-0 fw-extrabold" style="color: var(--rose);">5 000 FCFA</span>
+                        </div>
+
+                        <h3 class="fw-extrabold mb-2" style="color: var(--text-dark);">Devenir Parrain / Mentor</h3>
+                        <p class="text-muted small mb-4" style="line-height: 1.7;">
+                            Pour les professionnels, ingénieurs, diplômés et étudiants de <strong>MIS, Master ou L3</strong>. Photo portrait obligatoire avec recadrage.
+                        </p>
+
+                        <ul class="list-unstyled mb-4 small text-muted">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i><strong>Pass Soirée de Gala Resto N°2</strong> avec QR code vérifiable.</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Attribution de <strong>maximum 2 filleuls</strong> selon vos affinités techniques.</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Accès au buffet gastronomique et cérémonie de remise des chartes.</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Paiement 100% sécurisé via Orange Money & MTN MoMo.</li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-3 border-top border-rose-subtle">
+                        <a href="{% url 'register_mentor' %}" class="btn-rose w-100 justify-content-center py-3">
+                            <i class="fas fa-user-tie"></i> Postuler comme Parrain (5 000 F)
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formule Filleul -->
+            <div class="col-lg-6">
+                <div class="gala-card h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge rounded-pill px-3 py-1.5 fw-bold" style="background: var(--rose-pale); color: var(--rose); font-size: 0.78rem;">
+                                FORMULE FILLEUL ACADÉMIQUE
+                            </span>
+                            <span class="h4 mb-0 fw-extrabold" style="color: var(--rose);">10 000 FCFA</span>
+                        </div>
+
+                        <h3 class="fw-extrabold mb-2" style="color: var(--text-dark);">Trouver un Parrain (Filleul)</h3>
+                        <p class="text-muted small mb-4" style="line-height: 1.7;">
+                            Pour les étudiants de <strong>Licence, MIS ou Master</strong> désireux d'être guidés par un professionnel dans leur projet et compétences.
+                        </p>
+
+                        <ul class="list-unstyled mb-4 small text-muted">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i><strong>Pass Soirée de Gala Resto N°2</strong> avec QR code vérifiable.</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Algorithme de compatibilité par compétences, spécialité et niveau.</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Accès complet au grand buffet et concert live The Voice.</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Paiement 100% sécurisé via Orange Money & MTN MoMo.</li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-3 border-top border-rose-subtle">
+                        <a href="{% url 'register_mentee' %}" class="btn-rose w-100 justify-content-center py-3">
+                            <i class="fas fa-user-graduate"></i> Trouver mon Parrain (10 000 F)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Programme & Visuel Officiel du Gala -->
+        <div class="row g-4 align-items-center mb-5">
+            <!-- Colonne Flyer Officiel -->
+            <div class="col-lg-5 text-center">
+                <div class="flyer-frame p-2">
+                    <img src="{% static 'images/cofesti/flyer_soiree_parrainage.webp' %}" alt="Flyer Soirée de Parrainage & Gala Resto N°2" class="w-100 rounded-3" style="max-height: 480px; object-fit: cover;">
+                </div>
+            </div>
+
+            <!-- Colonne Programme -->
             <div class="col-lg-7">
-                <div class="gala-card mb-4">
+                <div class="gala-card">
                     <h3 class="fw-bold mb-4 d-flex align-items-center gap-2" style="color: var(--text-dark);">
                         <i class="fas fa-star" style="color: var(--rose);"></i>
                         <span>Programme d'Exception de la Soirée</span>
@@ -122,7 +224,7 @@
                         <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
                             <span class="step-num">2</span>
                             <div>
-                                <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Couronnement Miss & Master</h6>
+                                <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Couronnement Miss & Master COFESTI</h6>
                                 <p class="small text-muted mb-0">Proclamation des résultats du vote en ligne et sacre des ambassadeurs d'élégance du département.</p>
                             </div>
                         </div>
@@ -139,7 +241,7 @@
                             <span class="step-num">4</span>
                             <div>
                                 <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Remise des Prix & Trophées Sportifs</h6>
-                                <p class="small text-muted mb-0">Cérémonie de remise des coupes pour le Football, Basketball et les vainqueurs E-Sport au son de <em>Before the Whistle</em>.</p>
+                                <p class="small text-muted mb-0">Cérémonie de remise des coupes pour le Football, Basketball et E-Sport au son de <em>Before the Whistle</em>.</p>
                             </div>
                         </div>
 
@@ -152,132 +254,30 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Informations pratiques -->
-                <div class="p-4 rounded-4" style="background: var(--blanc); border: 1px solid var(--rose-border);">
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <div class="small fw-bold text-uppercase mb-1" style="color: var(--rose);"><i class="fas fa-map-marker-alt me-1"></i> Lieu de la soirée</div>
-                            <div class="fw-bold text-dark">Restaurant Universitaire N°2</div>
-                            <small class="text-muted">Campus Principal UY1 — Ngoa-Ekellé</small>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="small fw-bold text-uppercase mb-1" style="color: var(--rose);"><i class="fas fa-tshirt me-1"></i> Code Vestimentaire</div>
-                            <div class="fw-bold text-dark">Chic & Élégant / Tenue Traditionnelle</div>
-                            <small class="text-muted">Tenue de soirée exigée à l'entrée</small>
-                        </div>
-                    </div>
-                </div>
             </div>
+        </div>
 
-            <!-- Colonne Droite: Billetterie & Inscription -->
-            <div class="col-lg-5">
-                <div class="gala-card">
-                    <div class="text-center mb-4">
-                        <span class="badge rounded-pill px-3 py-1.5 mb-2" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.75rem;">
-                            RÉSERVATION OFFICIELLE
-                        </span>
-                        <h4 class="fw-extrabold mb-1" style="color: var(--text-dark);">Prendre son Pass Gala</h4>
-                        <p class="small text-muted mb-0">Accès garanti au buffet, animations et cocktail</p>
-                    </div>
-
-                    <form id="sponsorshipRegisterForm" onsubmit="handleSponsorshipSubmit(event)">
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-uppercase">Formule d'Accès</label>
-                            <select name="tier" id="sponsorshipTier" onchange="updateSponsorshipPrice()" class="form-select rounded-3 fw-bold" style="border-color: rgba(233, 30, 99, 0.25);">
-                                <option value="filleul" data-price="10000">Pass Filleul / Étudiant (10 000 FCFA)</option>
-                                <option value="parrain" data-price="15000">Pass Parrain / Aîné (15 000 FCFA)</option>
-                                <option value="invite" data-price="20000">Pass VIP / Invité Externe (20 000 FCFA)</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-uppercase">Votre Nom & Prénom</label>
-                            <input type="text" name="name" required placeholder="Ex: Alexandre Ngono" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-uppercase">Numéro Téléphone (OM / MoMo)</label>
-                            <input type="tel" name="phone" required placeholder="659471152" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-uppercase">Adresse Email</label>
-                            <input type="email" name="email" required placeholder="alex@uy1.cm" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-uppercase">Niveau ou Organisation</label>
-                            <input type="text" name="company" placeholder="Ex: Licence 1 Informatique ou Entreprise X" class="form-control rounded-3" style="border-color: rgba(233, 30, 99, 0.25);">
-                        </div>
-
-                        <div class="p-3 rounded-3 mb-3 d-flex align-items-center justify-content-between" style="background: #fdf5f8; border: 1px solid rgba(233, 30, 99, 0.2);">
-                            <span class="small fw-bold text-uppercase">Montant à régler :</span>
-                            <span class="h4 mb-0 fw-extrabold" id="sponsorshipPriceDisplay" style="color: #E91E63;">10 000 FCFA</span>
-                        </div>
-
-                        <div id="sponsorshipStatusBox" class="d-none p-3 rounded-3 small mb-3"></div>
-
-                        <button type="submit" id="sponsorshipSubmitBtn" class="btn-rose w-100 justify-content-center py-3">
-                            <i class="fas fa-ticket-alt"></i> Confirmer ma réservation Gala
-                        </button>
-                    </form>
+        <!-- Informations pratiques & Lieu -->
+        <div class="p-4 rounded-4 bg-white" style="border: 1px solid var(--rose-border);">
+            <div class="row g-3 text-center text-md-start">
+                <div class="col-md-4">
+                    <div class="small fw-bold text-uppercase mb-1" style="color: var(--rose);"><i class="fas fa-map-marker-alt me-1"></i> Lieu Officiel</div>
+                    <div class="fw-bold text-dark">Restaurant Universitaire N°2</div>
+                    <small class="text-muted">Campus Principal UY1 — Ngoa-Ekellé</small>
+                </div>
+                <div class="col-md-4">
+                    <div class="small fw-bold text-uppercase mb-1" style="color: var(--rose);"><i class="fas fa-tshirt me-1"></i> Code Vestimentaire</div>
+                    <div class="fw-bold text-dark">Chic & Élégant / Tenue Traditionnelle</div>
+                    <small class="text-muted">Tenue de gala exigée à l'entrée</small>
+                </div>
+                <div class="col-md-4">
+                    <div class="small fw-bold text-uppercase mb-1" style="color: var(--rose);"><i class="fas fa-qrcode me-1"></i> Contrôle d'Accès</div>
+                    <div class="fw-bold text-dark">QR Code sur Pass Numérique</div>
+                    <small class="text-muted">Scanné directement sur votre smartphone</small>
                 </div>
             </div>
         </div>
 
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    function updateSponsorshipPrice() {
-        const select = document.getElementById('sponsorshipTier');
-        const price = select.options[select.selectedIndex].getAttribute('data-price');
-        document.getElementById('sponsorshipPriceDisplay').textContent = `${parseInt(price).toLocaleString()} FCFA`;
-    }
-
-    async function handleSponsorshipSubmit(e) {
-        e.preventDefault();
-        const form = document.getElementById('sponsorshipRegisterForm');
-        const submitBtn = document.getElementById('sponsorshipSubmitBtn');
-        const statusBox = document.getElementById('sponsorshipStatusBox');
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Traitement...';
-        statusBox.className = 'alert alert-info d-block small';
-        statusBox.textContent = "Validation de votre réservation de Gala...";
-
-        const formData = new FormData(form);
-
-        try {
-            const resp = await fetch("{% url 'cofesti_sponsorship_register' %}", {
-                method: 'POST',
-                body: formData
-            });
-            const data = await resp.json();
-
-            if (data.success) {
-                statusBox.className = 'alert alert-success d-block small';
-                statusBox.innerHTML = `<strong>Réservation confirmée !</strong> ${data.message}`;
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else {
-                statusBox.className = 'alert alert-danger d-block small';
-                statusBox.textContent = data.error || "Une erreur est survenue lors de l'enregistrement.";
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-ticket-alt me-2"></i> Réessayer';
-            }
-        } catch (err) {
-            statusBox.className = 'alert alert-danger d-block small';
-            statusBox.textContent = "Erreur de connexion internet.";
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-ticket-alt me-2"></i> Réessayer';
-        }
-    }
-</script>
 {% endblock %}

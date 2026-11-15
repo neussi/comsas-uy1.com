@@ -766,12 +766,20 @@ class SponsorshipSession(models.Model):
 class Mentor(models.Model):
     """Parrain (Senior Student ou Professionnel)"""
     LEVEL_CHOICES = [
-        ('L3', 'Licence 3'),
-        ('ICT-L3', 'ICT-L3'),
-        ('M1', 'Master 1'),
-        ('M2', 'Master 2'),
-        ('PHD', 'Doctorat'),
+        ('L3', 'Licence 3 Informatique'),
+        ('ICT-L3', 'ICT4D - Licence 3'),
+        ('MIS', 'Master Informatique Spécialisé (MIS)'),
+        ('M1', 'Master 1 Informatique'),
+        ('M2', 'Master 2 Informatique'),
+        ('PHD', 'Doctorat / PhD'),
         ('ALUMNI', 'Alumni / Professionnel en poste'),
+    ]
+    CYCLE_CHOICES = [
+        ('licence', 'Licence (L3)'),
+        ('mis', 'Master Informatique Spécialisé (MIS)'),
+        ('master', 'Master Recherche (M1, M2)'),
+        ('doctorat', 'Doctorat (PhD)'),
+        ('professionnel', 'Professionnel / Entreprise / Alumni'),
     ]
     SPECIALTY_CHOICES = [
         ('DS', 'Data Science & Intelligence Artificielle'),
@@ -779,13 +787,23 @@ class Mentor(models.Model):
         ('SECU', 'Sécurité Informatique & Cyber'),
         ('GL', 'Génie Logiciel & Développement Web/Mobile'),
     ]
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'En attente de paiement'),
+        ('initiated', 'Paiement initié'),
+        ('confirmed', 'Paiement confirmé'),
+        ('failed', 'Paiement échoué'),
+        ('cancelled', 'Paiement annulé'),
+    ]
 
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     session = models.ForeignKey(SponsorshipSession, on_delete=models.CASCADE, verbose_name="Session")
     first_name = models.CharField(max_length=100, verbose_name="Prénom")
     last_name = models.CharField(max_length=100, verbose_name="Nom")
     phone = models.CharField(max_length=20, verbose_name="Téléphone")
     email = models.EmailField(verbose_name="Email")
-    level = models.CharField(max_length=10, choices=LEVEL_CHOICES, verbose_name="Niveau")
+    cycle = models.CharField(max_length=50, choices=CYCLE_CHOICES, default='professionnel', verbose_name="Cycle d'études ou statut")
+    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, verbose_name="Niveau")
+    filiere_option = models.CharField(max_length=150, blank=True, default="", verbose_name="Filière ou Option")
     
     # Données professionnelles & Portrait obligatoire
     photo = models.ImageField(upload_to='sponsorship/mentors/', verbose_name="Photo Portrait Officielle", blank=True, null=True)
@@ -796,8 +814,19 @@ class Mentor(models.Model):
     
     specialty = models.CharField(max_length=20, choices=SPECIALTY_CHOICES, verbose_name="Spécialité")
     expertise_domains = models.TextField(verbose_name="Compétences & Domaines d'expertise (séparés par des virgules)")
+    skills_with_levels = models.JSONField(default=list, blank=True, verbose_name="Compétences détaillées avec niveau")
     max_mentees = models.IntegerField(default=2, verbose_name="Nombre max de filleuls")
     status = models.CharField(max_length=20, default='pending', choices=[('pending', 'En attente'), ('approved', 'Validé'), ('rejected', 'Refusé')], verbose_name="Statut")
+    
+    # Paiement & Pass Soirée
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=5000, verbose_name="Tarif d'inscription (FCFA)")
+    is_paid = models.BooleanField(default=False, verbose_name="Paiement validé")
+    payment_status = models.CharField(max_length=20, default='pending', choices=PAYMENT_STATUS_CHOICES, verbose_name="Statut du paiement")
+    transaction_id = models.CharField(max_length=100, blank=True, null=True, unique=True, verbose_name="ID Unique de Transaction")
+    payment_reference = models.CharField(max_length=150, blank=True, default="", verbose_name="Référence passerelle Mobile Money")
+    paid_at = models.DateTimeField(null=True, blank=True, verbose_name="Date de paiement")
+    ticket_pdf = models.FileField(upload_to='sponsorship/passes/', blank=True, null=True, verbose_name="Pass Soirée Officiel (PDF)")
+    qr_code = models.ImageField(upload_to='sponsorship/qrcodes/', blank=True, null=True, verbose_name="Code QR Pass")
     
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -838,15 +867,22 @@ DOMAINS_LIST = [
 class Mentee(models.Model):
     """Filleul (Junior Student)"""
     LEVEL_CHOICES = [
-        ('L1', 'Licence 1'),
-        ('L2', 'Licence 2'),
-        ('L3', 'Licence 3'),
-        ('ICT-L1', 'ICT-L1'),
-        ('ICT-L2', 'ICT-L2'),
-        ('ICT-L3', 'ICT-L3'),
-        ('M1', 'Master 1'),
-        ('M2', 'Master 2'),
-        ('PhD', 'Doctorat'),
+        ('L1', 'Licence 1 Informatique'),
+        ('L2', 'Licence 2 Informatique'),
+        ('L3', 'Licence 3 Informatique'),
+        ('ICT-L1', 'ICT4D - Licence 1'),
+        ('ICT-L2', 'ICT4D - Licence 2'),
+        ('ICT-L3', 'ICT4D - Licence 3'),
+        ('MIS', 'Master Informatique Spécialisé (MIS)'),
+        ('M1', 'Master 1 Informatique'),
+        ('M2', 'Master 2 Informatique'),
+        ('PhD', 'Doctorat / PhD'),
+    ]
+    CYCLE_CHOICES = [
+        ('licence', 'Licence (L1, L2, L3)'),
+        ('mis', 'Master Informatique Spécialisé (MIS)'),
+        ('master', 'Master Recherche (M1, M2)'),
+        ('doctorat', 'Doctorat (PhD)'),
     ]
     SPECIALTY_CHOICES = [
         ('DS', 'Data Science & Intelligence Artificielle'),
@@ -854,23 +890,52 @@ class Mentee(models.Model):
         ('SECU', 'Sécurité Informatique & Cyber'),
         ('GL', 'Génie Logiciel & Développement Web/Mobile'),
     ]
+    STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('paid', 'Payé & En attente d\'affectation'),
+        ('matched', 'Binôme assigné'),
+        ('waiting_list', 'Liste d\'attente'),
+        ('rejected', 'Refusé'),
+        ('cancelled', 'Annulé'),
+    ]
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'En attente de paiement'),
+        ('initiated', 'Paiement initié'),
+        ('confirmed', 'Paiement confirmé'),
+        ('failed', 'Paiement échoué'),
+        ('cancelled', 'Paiement annulé'),
+    ]
     
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     session = models.ForeignKey(SponsorshipSession, on_delete=models.CASCADE, verbose_name="Session", null=True)
     first_name = models.CharField(max_length=100, verbose_name="Prénom")
     last_name = models.CharField(max_length=100, verbose_name="Nom")
     phone = models.CharField(max_length=20, verbose_name="Téléphone")
     email = models.EmailField(verbose_name="Adresse e-mail")
+    cycle = models.CharField(max_length=50, choices=CYCLE_CHOICES, default='licence', verbose_name="Cycle d'études")
     level = models.CharField(max_length=50, choices=LEVEL_CHOICES, verbose_name="Niveau d'étude")
+    filiere_option = models.CharField(max_length=150, blank=True, default="", verbose_name="Filière ou Option")
     
     # Données professionnelles & Portrait obligatoire
     photo = models.ImageField(upload_to='sponsorship/mentees/', verbose_name="Photo Portrait Officielle", blank=True, null=True)
     desired_specialty = models.CharField(max_length=100, verbose_name="Spécialité visée")
     competencies = models.TextField(verbose_name="Compétences actuelles (Liste)")
     skills_to_acquire = models.TextField(verbose_name="Compétences ciblées / à acquérir", blank=True, default="")
+    desired_mentor_type = models.TextField(blank=True, default="", verbose_name="Description du type de parrain souhaité")
     professional_domains = models.TextField(verbose_name="Domaines professionnels souhaités", default="")
     bio = models.TextField(blank=True, default="", verbose_name="Présentation / Motivations")
-    status = models.CharField(max_length=20, default='pending', choices=[('pending', 'En attente'), ('matched', 'Binôme assigné'), ('rejected', 'Refusé')], verbose_name="Statut")
+    status = models.CharField(max_length=20, default='pending', choices=STATUS_CHOICES, verbose_name="Statut")
     
+    # Paiement & Pass Soirée
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=10000, verbose_name="Tarif d'inscription (FCFA)")
+    is_paid = models.BooleanField(default=False, verbose_name="Paiement validé")
+    payment_status = models.CharField(max_length=20, default='pending', choices=PAYMENT_STATUS_CHOICES, verbose_name="Statut du paiement")
+    transaction_id = models.CharField(max_length=100, blank=True, null=True, unique=True, verbose_name="ID Unique de Transaction")
+    payment_reference = models.CharField(max_length=150, blank=True, default="", verbose_name="Référence passerelle Mobile Money")
+    paid_at = models.DateTimeField(null=True, blank=True, verbose_name="Date de paiement")
+    ticket_pdf = models.FileField(upload_to='sponsorship/passes/', blank=True, null=True, verbose_name="Pass Soirée Officiel (PDF)")
+    qr_code = models.ImageField(upload_to='sponsorship/qrcodes/', blank=True, null=True, verbose_name="Code QR Pass")
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -885,6 +950,10 @@ class Match(models.Model):
     session = models.ForeignKey(SponsorshipSession, on_delete=models.CASCADE, verbose_name="Session")
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE, verbose_name="Parrain")
     mentee = models.OneToOneField(Mentee, on_delete=models.CASCADE, verbose_name="Filleul")
+    compatibility_score = models.FloatField(default=0.0, verbose_name="Score de compatibilité (0 à 100)")
+    match_notes = models.TextField(blank=True, default="", verbose_name="Notes d'affectation")
+    is_confirmed_by_admin = models.BooleanField(default=True, verbose_name="Confirmé par l'administration")
+    notified_at = models.DateTimeField(null=True, blank=True, verbose_name="Date de notification")
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True, verbose_name="Actif")
     
@@ -895,7 +964,7 @@ class Match(models.Model):
         unique_together = ['mentor', 'mentee']
     
     def __str__(self):
-        return f"{self.mentor} - {self.mentee}"
+        return f"{self.mentor} - {self.mentee} (Score: {self.compatibility_score}%)"
 
 class Contest(models.Model):
     """Concours / Élection"""

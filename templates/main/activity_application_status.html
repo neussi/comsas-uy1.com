@@ -3,8 +3,81 @@
 
 {% block title %}Statut de votre Candidature — {{ activity.title }} | COMS.A.S{% endblock %}
 
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    .status-card {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 28px;
+        box-shadow: 0 12px 36px var(--rose-shadow);
+        overflow: hidden;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 28px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .btn-outline-rose {
+        background: transparent;
+        color: var(--rose) !important;
+        border: 1.5px solid var(--rose-border);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 11px 24px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--rose-pale);
+        border-color: var(--rose);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="py-5 bg-light min-vh-80 d-flex align-items-center">
+<section class="py-5 min-vh-80 d-flex align-items-center">
     <div class="container py-4">
         <div class="row justify-content-center">
             <div class="col-lg-8 col-xl-7">
@@ -19,71 +92,70 @@
                     </ol>
                 </nav>
 
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                <div class="status-card bg-white mb-4">
 
                     <!-- EN-TÊTE SELON STATUT -->
                     {% if application.status == 'confirmed' %}
-                    <div class="card-header bg-success text-white p-4 p-md-5 text-center">
-                        <div class="w-20 h-20 rounded-circle bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h1 mx-auto mb-3">
+                    <div class="p-4 p-md-5 text-center text-white" style="background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white bg-opacity-20 text-white h1 mb-3" style="width: 80px; height: 80px;">
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <span class="badge bg-white text-success text-uppercase fw-bold px-3 py-1.5 rounded-pill mb-2">
                             Candidature Confirmée
                         </span>
-                        <h2 class="h3 fw-bold text-white mb-1">Inscription Validée avec Succès !</h2>
+                        <h2 class="h3 fw-extrabold text-white mb-1">Inscription Validée avec Succès !</h2>
                         <p class="text-white-50 small mb-0">Votre participation à l'activité « {{ activity.title }} » est officiellement enregistrée.</p>
                     </div>
 
                     {% elif application.status == 'pending' %}
-                    <div class="card-header bg-warning text-dark p-4 p-md-5 text-center">
-                        <div class="w-20 h-20 rounded-circle bg-dark bg-opacity-10 d-flex align-items-center justify-content-center text-dark h1 mx-auto mb-3">
+                    <div class="p-4 p-md-5 text-center" style="background: linear-gradient(135deg, rgba(233,30,99,0.06) 0%, rgba(240,98,146,0.12) 100%); border-bottom: 1px solid var(--rose-border);">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 80px; height: 80px; background: var(--rose-pale); color: var(--rose); font-size: 2.2rem;">
                             <i class="fas fa-clock fa-spin" style="animation-duration: 4s;"></i>
                         </div>
-                        <span class="badge bg-dark text-warning text-uppercase fw-bold px-3 py-1.5 rounded-pill mb-2">
+                        <span class="badge rounded-pill px-3 py-1.5 mb-2 fw-bold" style="background: var(--rose); color: #fff;">
                             Paiement en Cours de Traitement
                         </span>
-                        <h2 class="h3 fw-bold text-dark mb-1">En attente de validation</h2>
-                        <p class="text-dark opacity-75 small mb-0">Une notification Mobile Money a été envoyée sur votre téléphone au <strong>{{ application.phone }}</strong>.</p>
+                        <h2 class="h3 fw-extrabold mb-1" style="color: var(--text-dark);">En attente de validation Mobile Money</h2>
+                        <p class="text-muted small mb-0">Une notification a été transmise sur votre téléphone au <strong>{{ application.phone }}</strong>. Composez votre code PIN pour finaliser.</p>
                     </div>
 
                     {% elif application.status == 'cancelled' %}
-                    <div class="card-header bg-secondary text-white p-4 p-md-5 text-center">
-                        <div class="w-20 h-20 rounded-circle bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h1 mx-auto mb-3">
+                    <div class="p-4 p-md-5 text-center bg-secondary text-white">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white bg-opacity-20 text-white h1 mb-3" style="width: 80px; height: 80px;">
                             <i class="fas fa-ban"></i>
                         </div>
                         <span class="badge bg-light text-secondary text-uppercase fw-bold px-3 py-1.5 rounded-pill mb-2">
                             Candidature Annulée
                         </span>
-                        <h2 class="h3 fw-bold text-white mb-1">Demande Annulée</h2>
+                        <h2 class="h3 fw-extrabold text-white mb-1">Demande Annulée</h2>
                         <p class="text-white-50 small mb-0">Votre inscription a été annulée. Vous pouvez soumettre une nouvelle candidature à tout moment.</p>
                     </div>
 
                     {% else %}
-                    <div class="card-header bg-danger text-white p-4 p-md-5 text-center">
-                        <div class="w-20 h-20 rounded-circle bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h1 mx-auto mb-3">
+                    <div class="p-4 p-md-5 text-center bg-danger text-white">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white bg-opacity-20 text-white h1 mb-3" style="width: 80px; height: 80px;">
                             <i class="fas fa-times-circle"></i>
                         </div>
-                        <h2 class="h3 fw-bold text-white mb-1">Candidature Non Retenue</h2>
+                        <h2 class="h3 fw-extrabold text-white mb-1">Candidature Non Retenue</h2>
                         <p class="text-white-50 small mb-0">Le comité d'organisation n'a pas pu valider votre demande.</p>
                     </div>
                     {% endif %}
 
                     <!-- CORPS DU RÉCAPITULATIF -->
-                    <div class="card-body p-4 p-md-5">
+                    <div class="p-4 p-md-5">
 
-                        <!-- Statut box interactif pour polling si pending -->
                         {% if application.status == 'pending' %}
-                        <div id="pollingStatusBox" class="p-3.5 rounded-3 bg-light border border-warning border-opacity-50 mb-4 d-flex align-items-center gap-3">
-                            <div class="spinner-border text-warning spinner-border-sm" role="status"></div>
+                        <div id="pollingStatusBox" class="p-3.5 rounded-4 mb-4 d-flex align-items-center gap-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                            <div class="spinner-border spinner-border-sm" style="color: var(--rose);" role="status"></div>
                             <div class="small">
-                                <strong>Vérification automatique en temps réel...</strong>
+                                <strong style="color: var(--text-dark);">Vérification automatique en temps réel...</strong>
                                 <div class="text-muted">Dès que vous confirmez le paiement avec votre code secret, cette page s'actualisera instantanément.</div>
                             </div>
                         </div>
                         {% endif %}
 
-                        <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom">
-                            <i class="fas fa-receipt text-primary me-2"></i>Détails de votre Inscription
+                        <h5 class="fw-bold mb-3 pb-2 border-bottom" style="color: var(--text-dark);">
+                            <i class="fas fa-receipt me-2" style="color: var(--rose);"></i> Détails de votre Inscription
                         </h5>
 
                         <div class="row g-3 mb-4">
@@ -100,65 +172,49 @@
                                 <strong class="text-dark">{{ application.full_name }}</strong>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block">Téléphone WhatsApp</small>
-                                <strong class="text-dark">{{ application.phone }}</strong>
+                                <small class="text-muted d-block">Contact</small>
+                                <strong class="text-dark">{{ application.phone }} • {{ application.email }}</strong>
                             </div>
 
-                            {% if application.activity.activity_type == 'team' %}
+                            {% if activity.activity_type == 'team' %}
                             <div class="col-sm-6">
                                 <small class="text-muted d-block">Équipe</small>
-                                <strong class="text-primary">{{ application.team_name }} ({{ application.team_size }} membres)</strong>
+                                <strong class="text-dark">{{ application.team_name }} (Capitaine : {{ application.captain_name }})</strong>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block">Capitaine</small>
-                                <strong class="text-dark">{{ application.captain_name }}</strong>
+                                <small class="text-muted d-block">Taille de l'équipe</small>
+                                <strong class="text-dark">{{ application.team_size }} membres</strong>
                             </div>
-                            {% elif application.activity.activity_type == 'gaming' %}
+                            {% endif %}
+
+                            {% if activity.activity_type == 'gaming' %}
                             <div class="col-sm-6">
-                                <small class="text-muted d-block">GamerTag / Pseudo</small>
-                                <strong class="text-primary">{{ application.gamer_tag }}</strong>
-                            </div>
-                            <div class="col-sm-6">
-                                <small class="text-muted d-block">Plateforme & Jeu</small>
-                                <strong class="text-dark">{{ application.gaming_platform }} • {{ application.game_name }}</strong>
+                                <small class="text-muted d-block">Pseudo / Gamer Tag</small>
+                                <strong class="text-dark">{{ application.gamer_tag }} ({{ application.gaming_platform }})</strong>
                             </div>
                             {% endif %}
 
                             <div class="col-sm-6">
                                 <small class="text-muted d-block">Montant</small>
-                                {% if application.amount > 0 %}
-                                <strong class="text-dark">{{ application.amount|floatformat:0 }} FCFA</strong>
-                                <span class="badge {% if application.is_paid %}bg-success{% else %}bg-warning text-dark{% endif %} ms-1">
-                                    {% if application.is_paid %}Réglé{% else %}En attente{% endif %}
-                                </span>
-                                {% else %}
-                                <span class="badge bg-success bg-opacity-10 text-success">Gratuit</span>
-                                {% endif %}
+                                <strong class="fw-extrabold" style="color: var(--rose);">{% if activity.price > 0 %}{{ activity.price|floatformat:0 }} FCFA{% else %}Gratuit{% endif %}</strong>
                             </div>
-
                             <div class="col-sm-6">
                                 <small class="text-muted d-block">Référence Transaction</small>
-                                <span class="font-monospace text-muted small">{{ application.transaction_id }}</span>
+                                <span class="font-monospace small fw-bold">{{ application.transaction_id|default:"N/A" }}</span>
                             </div>
                         </div>
 
-                        <!-- ACTIONS -->
-                        <div class="d-flex flex-column flex-sm-row gap-3 pt-3 border-top">
-                            {% if application.status == 'pending' %}
-                            <a href="{% url 'activity_payment_cancel' application.uuid %}" class="btn btn-outline-danger rounded-pill px-4" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette inscription ?');">
-                                <i class="fas fa-times me-1"></i>Annuler la candidature
+                        <!-- Actions -->
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pt-3 border-top border-rose-subtle">
+                            <a href="{% url 'activity_detail' activity.slug %}" class="btn-outline-rose">
+                                <i class="fas fa-arrow-left"></i> Retour à l'activité
                             </a>
-                            <button type="button" class="btn btn-warning rounded-pill px-4 fw-bold" onclick="location.reload();">
-                                <i class="fas fa-sync-alt me-1"></i>Actualiser le statut
-                            </button>
-                            {% endif %}
 
-                            <a href="{% url 'activity_detail' activity.slug %}" class="btn btn-outline-secondary rounded-pill px-4">
-                                <i class="fas fa-arrow-left me-1"></i>Fiche de l'activité
+                            {% if application.status == 'pending' and activity.price > 0 %}
+                            <a href="{% url 'activity_payment_cancel' application.uuid %}" class="small text-danger text-decoration-none">
+                                <i class="fas fa-times me-1"></i> Annuler cette candidature
                             </a>
-                            <a href="{% url 'event_detail' event.id %}" class="btn btn-primary rounded-pill px-4 ms-sm-auto">
-                                <i class="fas fa-calendar-alt me-1"></i>Retour à l'événement
-                            </a>
+                            {% endif %}
                         </div>
 
                     </div>
@@ -171,30 +227,24 @@
 {% endblock %}
 
 {% block extra_js %}
-{% if application.status == 'pending' %}
+{% if application.status == 'pending' and activity.price > 0 %}
 <script>
-    // Polling du statut de paiement
-    let pollCount = 0;
+    const checkStatusUrl = "{% url 'api_activity_payment_status' application.transaction_id %}";
     const interval = setInterval(async () => {
-        pollCount++;
-        if (pollCount > 40) { // 40 x 3s = 120s
-            clearInterval(interval);
-            return;
-        }
-
         try {
-            const res = await fetch("{% url 'api_activity_payment_status' application.transaction_id %}");
-            const data = await res.json();
-            if (data.is_confirmed) {
+            const resp = await fetch(checkStatusUrl);
+            const data = await resp.json();
+            if (data.is_confirmed || data.is_paid) {
                 clearInterval(interval);
-                location.reload();
-            } else if (data.status === 'cancelled') {
+                window.location.reload();
+            } else if (data.status === 'cancelled' || data.status === 'rejected') {
                 clearInterval(interval);
-                location.reload();
+                window.location.reload();
             }
-        } catch (e) {}
+        } catch (e) {
+            console.warn("Polling error:", e);
+        }
     }, 3000);
 </script>
 {% endif %}
 {% endblock %}
-

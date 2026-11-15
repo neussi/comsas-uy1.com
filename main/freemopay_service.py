@@ -155,6 +155,81 @@ class FreemopayPaymentProcessor:
         except Exception as e:
             return {'success': False, 'error': str(e)}
 
+    def process_sponsorship_payment(self, participant, phone_override=None):
+        """Traite le paiement Freemopay Mobile Money pour une inscription au parrainage (Parrain ou Filleul)"""
+        try:
+            raw_phone = phone_override or participant.phone
+            payer_phone = raw_phone.replace('+', '').replace(' ', '')
+            if not payer_phone.startswith('237') and len(payer_phone) == 9:
+                payer_phone = f"237{payer_phone}"
+                
+            is_mentor = hasattr(participant, 'profession')
+            role_label = "Parrain" if is_mentor else "Filleul"
+            
+            payment_data = {
+                "payer": payer_phone,
+                "amount": str(int(participant.amount)),
+                "externalId": str(participant.transaction_id),
+                "description": f"Pass Soirée Parrainage {role_label} - {participant.first_name} {participant.last_name}",
+                "callback": self._get_webhook_url()
+            }
+            
+            logger.info(f"[FREEMOPAY] Initiation paiement Parrainage: {participant.transaction_id} | Phone: {payer_phone} | Montant: {payment_data['amount']}")
+            
+            response = self.session.post(
+                f"{self.base_url}/api/v2/payment",
+                json=payment_data,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') in ['SUCCESS', 'CREATED']:
+                    participant.payment_reference = data.get('reference', '')
+                    participant.payment_status = 'initiated'
+                    participant.save(update_fields=['payment_reference', 'payment_status'])
+                    return {
+                        'success': True,
+                        'reference': data.get('reference'),
+                        'message': data.get('message', 'Demande de paiement envoyée sur votre téléphone. Composez votre code PIN.'),
+                        'status': data.get('status')
+                    }
+                else:
+                    return {'success': False, 'error': data.get('message', 'Échec de connexion')}
+            else:
+                return {'success': False, 'error': f'Erreur HTTP {response.status_code}'}
+        except Exception as e:
+            logger.error(f"[FREEMOPAY] Exception process_sponsorship_payment: {e}", exc_info=True)
+            return {'success': False, 'error': str(e)}
+
+    def confirm_sponsorship_payment(self, participant, payment_ref=None):
+        """Valide définitivement le paiement du parrainage, génère le pass PDF officiel et le QR code (Idempotent)"""
+        try:
+            if participant.is_paid:
+                return {'success': True, 'message': 'Paiement déjà validé'}
+                
+            from .utils import generate_sponsorship_pass
+            
+            participant.is_paid = True
+            participant.payment_status = 'confirmed'
+            participant.paid_at = timezone.now()
+            if payment_ref:
+                participant.payment_reference = payment_ref
+            if hasattr(participant, 'status') and participant.status == 'pending':
+                participant.status = 'approved' if hasattr(participant, 'profession') else 'paid'
+            participant.save()
+            
+            # Générer le pass soirée avec QR code
+            try:
+                generate_sponsorship_pass(participant)
+            except Exception as e:
+                logger.error(f"[SPONSORSHIP PASS ERROR] {e}")
+                
+            return {'success': True, 'message': 'Paiement validé avec succès et Pass généré.'}
+        except Exception as e:
+            logger.error(f"[FREEMOPAY] Exception confirm_sponsorship_payment: {e}")
+            return {'success': False, 'error': str(e)}
+
     def initiate_automatic_withdrawal(self, vote_instance):
         """Initie automatiquement un retrait vers le compte administrateur"""
         try:
@@ -270,7 +345,30 @@ class FreemopayWebhookHandler:
             # Dépôt (Vote ou Don)
             if transaction_type == 'DEPOSIT':
                 try:
-                    if external_id.startswith('ACTIVITYPAY'):
+                    if external_id.startswith('SPONSORPAY'):
+                        from .models import Mentor, Mentee
+                        from .utils import generate_sponsorship_pass
+                        participant = Mentor.objects.filter(transaction_id=external_id).first()
+                        if not participant:
+                            participant = Mentee.objects.filter(transaction_id=external_id).first()
+                        if participant:
+                            if status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
+                                if not participant.is_paid:
+                                    participant.is_paid = True
+                                    participant.payment_status = 'confirmed'
+                                    participant.paid_at = timezone.now()
+                                    if hasattr(participant, 'status') and participant.status == 'pending':
+                                        participant.status = 'approved' if isinstance(participant, Mentor) else 'paid'
+                                    participant.save()
+                                    try:
+                                        generate_sponsorship_pass(participant)
+                                    except Exception as e:
+                                        logger.error(f"[SPONSORSHIP PASS ERROR] {e}")
+                            elif status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED'):
+                                participant.payment_status = 'failed'
+                                participant.save(update_fields=['payment_status'])
+                        return {'success': True}
+                    elif external_id.startswith('ACTIVITYPAY'):
                         from .models import EventActivityApplication
                         app = EventActivityApplication.objects.get(transaction_id=external_id)
                         if status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):

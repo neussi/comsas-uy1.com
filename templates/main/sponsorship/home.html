@@ -1,109 +1,238 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static custom_filters %}
 
-{% block title %}Parrainage - COMS.A.S{% endblock %}
+{% block title %}Programme de Parrainage & Soirée Gala — COMS.A.S{% endblock %}
+
+{% block meta_description %}Le programme de parrainage du COM.S.AS connecte les étudiants du Département d'Informatique avec les professionnels et diplômés de l'Université de Yaoundé 1.{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 28px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .btn-outline-rose {
+        background: transparent;
+        color: var(--rose) !important;
+        border: 1.5px solid var(--rose-border);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 12px 26px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--rose-pale);
+        border-color: var(--rose);
+    }
+
+    .track-card {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 28px;
+        box-shadow: 0 8px 30px var(--rose-shadow);
+        overflow: hidden;
+        transition: all .3s ease;
+    }
+
+    .track-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--rose);
+    }
+
+    .track-price-pill {
+        background: var(--rose-pale);
+        color: var(--rose);
+        border: 1px solid var(--rose-border);
+        font-weight: 900;
+        padding: 6px 18px;
+        border-radius: 50px;
+        font-size: 0.95rem;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<section class="py-5 bg-white position-relative overflow-hidden">
-    <!-- Background Decor -->
-    <div class="position-absolute top-0 start-0 w-100 h-100">
-        <div class="position-absolute top-0 end-0 bg-primary bg-opacity-10 rounded-circle translate-middle-y"
-            style="width: 400px; height: 400px; opacity: 0.5;"></div>
-        <div class="position-absolute bottom-0 start-0 bg-secondary bg-opacity-10 rounded-circle translate-middle-x"
-            style="width: 300px; height: 300px; opacity: 0.5;"></div>
-    </div>
+<section class="py-5">
+    <div class="container py-3">
 
-    <div class="container position-relative z-1">
-        <div class="row align-items-center mb-5">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <div class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill">
-                    <i class="fas fa-handshake me-2"></i>Programme de Mentorat
-                </div>
-                <h1 class="display-3 fw-bold mb-4 text-dark">
-                    Grandir Ensemble via le <span class="text-primary">Parrainage</span>
-                </h1>
-                <p class="lead text-muted mb-4">
-                    Le programme de parrainage connecte les étudiants seniors (L3, Master, Doctorat) avec les nouveaux
-                    arrivants pour guider leurs premiers pas dans le monde universitaire et professionnel.
-                </p>
-                {% if active_session %}
-                <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4">
-                    <div class="d-flex align-items-center">
-                        <div class="h3 mb-0 me-3 text-success"><i class="fas fa-check-circle"></i></div>
-                        <div>
-                            <h5 class="fw-bold mb-1">Session Active : {{ active_session.name }}</h5>
-                            <p class="mb-0 small text-muted">Inscriptions ouvertes du {{ active_session.start_date|date:"d M Y" }} au {{ active_session.end_date|date:"d M Y" }}
-                            </p>
+        <!-- Fil d'ariane -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted text-decoration-none">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Programme de Parrainage</li>
+            </ol>
+        </nav>
+
+        <!-- Hero Section Rose & Blanc -->
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <span class="badge rounded-pill px-3 py-1.5 mb-2" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.78rem;">
+                <i class="fas fa-handshake me-1"></i> MENTORAT PROFESSIONNEL & ACADÉMIQUE
+            </span>
+            <h1 class="display-4 fw-extrabold mb-3" style="color: var(--text-dark);">
+                Grandir Ensemble via le <span class="text-gradient">Parrainage</span>
+            </h1>
+            <p class="text-muted lead mb-4" style="font-size: 1.1rem; line-height: 1.8;">
+                Le programme officiel du <strong>COM.S.AS</strong> connecte les étudiants du Département d'Informatique de l'UY1 avec les diplômés, aînés et professionnels de l'industrie technologique.
+            </p>
+
+            {% if active_session %}
+            <div class="d-inline-flex align-items-center gap-2 px-4 py-2 rounded-pill bg-white shadow-sm mb-4" style="border: 1px solid var(--rose-border);">
+                <i class="fas fa-check-circle text-success"></i>
+                <span class="small fw-bold text-dark">Session Active : <strong>{{ active_session.name }}</strong></span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Les Deux Parcours : Parrain & Filleul -->
+        <div class="row g-4 mb-5">
+            <!-- Parcours Parrain -->
+            <div class="col-lg-6">
+                <div class="track-card p-4 p-md-5 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background: var(--rose-pale); color: var(--rose); font-size: 1.6rem;">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <span class="track-price-pill">
+                                5 000 FCFA
+                            </span>
                         </div>
+
+                        <h3 class="fw-extrabold mb-2" style="color: var(--text-dark);">Devenir Parrain / Mentor</h3>
+                        <p class="text-muted small mb-4" style="line-height: 1.7;">
+                            Pour les ingénieurs en poste, diplômés, chercheurs et étudiants de <strong>MIS, Master ou Licence 3</strong> désireux de guider la relève informatique camerounaise.
+                        </p>
+
+                        <ul class="list-unstyled mb-4 small text-muted">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i><strong>Pass Soirée de Gala Resto N°2</strong> inclus avec QR code officiel.</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Maximum <strong>2 filleuls ciblés</strong> selon vos technologies et domaines.</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Photo portrait officielle avec recadrage et validation.</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Réseautage privilégié avec les partenaires industriels de l'UY1.</li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-3 border-top border-rose-subtle">
+                        <a href="{% url 'register_mentor' %}" class="btn-rose w-100 justify-content-center py-3">
+                            <i class="fas fa-user-tie"></i> Postuler comme Parrain (5 000 F)
+                        </a>
                     </div>
                 </div>
-                <div class="d-flex gap-3 flex-column flex-sm-row">
-                    <a href="{% url 'register_mentee' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
-                        <i class="fas fa-user-graduate me-2"></i>Je cherche un Parrain
-                    </a>
-                    <a href="{% url 'register_mentor' %}" class="btn btn-outline-dark btn-lg rounded-pill px-5">
-                        <i class="fas fa-chalkboard-teacher me-2"></i>Je veux être Parrain
-                    </a>
-                </div>
-                <div class="mt-3 text-center text-lg-start">
-                    <a href="{% url 'list_matches' %}" class="btn btn-link text-decoration-none fw-bold">
-                        <i class="fas fa-list-ul me-2"></i>Voir la liste des binômes
-                    </a>
-                </div>
-                {% else %}
-                <div class="alert alert-warning border-0 shadow-sm rounded-4">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Aucune session de parrainage n'est active pour le
-                    moment.
-                </div>
-                {% endif %}
             </div>
-            <div class="col-lg-6 text-center">
-                <div class="position-relative">
-                    <div class="bg-gradient-primary rounded-circle position-absolute top-50 start-50 translate-middle opacity-10"
-                        style="width: 500px; height: 500px;"></div>
-                    <img src="{% static 'images/mentorship.svg' %}" alt="Mentorship"
-                        class="img-fluid position-relative z-1"
-                        onerror="this.src='https://placehold.co/600x400/png?text=Mentorship';">
+
+            <!-- Parcours Filleul -->
+            <div class="col-lg-6">
+                <div class="track-card p-4 p-md-5 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background: var(--rose-pale); color: var(--rose); font-size: 1.6rem;">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <span class="track-price-pill">
+                                10 000 FCFA
+                            </span>
+                        </div>
+
+                        <h3 class="fw-extrabold mb-2" style="color: var(--text-dark);">Trouver un Parrain (Filleul)</h3>
+                        <p class="text-muted small mb-4" style="line-height: 1.7;">
+                            Pour les étudiants de <strong>Licence, MIS ou Master</strong> souhaitant accélérer leur montée en compétences, trouver leur stage et structurer leur carrière.
+                        </p>
+
+                        <ul class="list-unstyled mb-4 small text-muted">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i><strong>Pass Soirée de Gala Resto N°2</strong> inclus avec QR code officiel.</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Affectation intelligente selon vos aspirations et compétences voulues.</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Conseils carrières, revues de CV, mentorat technique et orientation.</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Garantie de suivi et charte officielle de parrainage COMSAS.</li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-3 border-top border-rose-subtle">
+                        <a href="{% url 'register_mentee' %}" class="btn-rose w-100 justify-content-center py-3">
+                            <i class="fas fa-user-graduate"></i> Trouver mon Parrain (10 000 F)
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <hr class="my-5 opacity-10">
-
-        <!-- Values Section -->
-        <div class="row g-4 text-center">
-            <div class="col-md-4">
-                <div class="p-4 rounded-4 bg-light h-100 hover-lift transition-all">
-                    <div class="icon-circle bg-white text-primary shadow-sm mb-4 mx-auto"
-                        style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                        <i class="fas fa-compass fa-2x"></i>
+        <!-- Section Complémentaire : Le Gala et le QR Code -->
+        <div class="p-4 p-md-5 rounded-5 bg-white shadow-sm mb-5" style="border: 1px solid var(--rose-border);">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <span class="badge rounded-pill px-3 py-1.5 mb-2" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.75rem;">
+                        ÉVÉNEMENT CLÔTURE
+                    </span>
+                    <h3 class="fw-extrabold mb-2" style="color: var(--text-dark);">
+                        Grande Soirée de Parrainage & Gala au Resto N°2
+                    </h3>
+                    <p class="text-muted small mb-3" style="line-height: 1.8;">
+                        Chaque inscription confirmée et payée génère automatiquement votre <strong>Pass officiel nominatif en PDF</strong>, sécurisé par un QR code unique vérifiable à l'entrée par les commissaires de l'événement.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'list_mentors' %}" class="btn-outline-rose">
+                            <i class="fas fa-users"></i> Consulter les Parrains
+                        </a>
+                        <a href="{% url 'list_matches' %}" class="btn-outline-rose">
+                            <i class="fas fa-link"></i> Voir les Binômes formés
+                        </a>
                     </div>
-                    <h4 class="fw-bold mb-3">Orientation</h4>
-                    <p class="text-muted">Des conseils avisés pour choisir ses unités d'enseignement et définir son
-                        projet professionnel.</p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-4 rounded-4 bg-light h-100 hover-lift transition-all">
-                    <div class="icon-circle bg-white text-secondary shadow-sm mb-4 mx-auto"
-                        style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                        <i class="fas fa-book-reader fa-2x"></i>
-                    </div>
-                    <h4 class="fw-bold mb-3">Soutien Académique</h4>
-                    <p class="text-muted">Une aide méthodologique et technique pour réussir ses examens et projets.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-4 rounded-4 bg-light h-100 hover-lift transition-all">
-                    <div class="icon-circle bg-white text-success shadow-sm mb-4 mx-auto"
-                        style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                        <i class="fas fa-network-wired fa-2x"></i>
-                    </div>
-                    <h4 class="fw-bold mb-3">Réseautage</h4>
-                    <p class="text-muted">Intégration dans la famille COMS.A.S et connexion avec les anciens.</p>
+                <div class="col-lg-5 text-center">
+                    <img src="{% static 'images/cofesti/flyer_soiree_parrainage.webp' %}" alt="Flyer Gala Resto N°2" class="img-fluid rounded-4 shadow-sm" style="max-height: 280px; object-fit: cover;" onerror="this.src='{% static 'images/comsas.png' %}';">
                 </div>
             </div>
         </div>
+
     </div>
 </section>
 {% endblock %}

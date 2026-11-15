@@ -5,8 +5,94 @@
 
 {% block meta_description %}{{ activity.description|striptags|truncatewords:30 }}{% endblock %}
 
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 28px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .btn-outline-rose {
+        background: transparent;
+        color: var(--rose) !important;
+        border: 1.5px solid var(--rose-border);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 10px 22px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--rose-pale);
+        border-color: var(--rose);
+    }
+
+    .activity-card {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 28px;
+        box-shadow: 0 8px 30px var(--rose-shadow);
+        overflow: hidden;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--rose) !important;
+        box-shadow: 0 0 0 0.25rem rgba(233, 30, 99, 0.15) !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="py-5 bg-light position-relative">
+<section class="py-5">
     <div class="container py-3">
         <!-- Fil d'ariane -->
         <nav aria-label="breadcrumb" class="mb-4">
@@ -33,31 +119,31 @@
             <!-- Colonne Principale -->
             <div class="col-lg-8">
                 <!-- Carte d'en-tête de l'activité -->
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="activity-card mb-4">
                     {% if activity.image %}
-                    <div style="height: 320px; overflow: hidden; background: #000;" class="position-relative">
+                    <div style="height: 340px; overflow: hidden; background: #000;" class="position-relative">
                         <img src="{{ activity.image.url }}" alt="{{ activity.title }}" class="w-100 h-100" style="object-fit: cover;">
                         <div class="position-absolute bottom-0 start-0 w-100 p-4" style="background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);">
-                            <span class="badge bg-primary px-3 py-1.5 rounded-pill text-uppercase fw-bold small mb-2">
+                            <span class="badge rounded-pill px-3 py-1.5 text-uppercase fw-bold small mb-2" style="background: var(--rose); color: #fff;">
                                 <i class="fas {% if activity.activity_type == 'team' %}fa-users{% elif activity.activity_type == 'gaming' %}fa-gamepad{% else %}fa-user{% endif %} me-1"></i>
                                 {{ activity.get_activity_type_display }}
                             </span>
-                            <h1 class="text-white fw-bold h2 mb-0">{{ activity.title }}</h1>
+                            <h1 class="text-white fw-extrabold h2 mb-0">{{ activity.title }}</h1>
                         </div>
                     </div>
                     {% else %}
-                    <div class="p-4 p-md-5 bg-primary text-white rounded-top-4 position-relative overflow-hidden">
-                        <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill text-uppercase fw-bold small mb-2">
+                    <div class="p-4 p-md-5 text-white position-relative overflow-hidden" style="background: var(--gradient);">
+                        <span class="badge rounded-pill bg-white text-dark px-3 py-1.5 text-uppercase fw-bold small mb-2">
                             <i class="fas {% if activity.activity_type == 'team' %}fa-users{% elif activity.activity_type == 'gaming' %}fa-gamepad{% else %}fa-user{% endif %} me-1"></i>
                             {{ activity.get_activity_type_display }}
                         </span>
-                        <h1 class="text-white fw-bold h2 mb-1">{{ activity.title }}</h1>
+                        <h1 class="text-white fw-extrabold h2 mb-1">{{ activity.title }}</h1>
                         <p class="text-white-50 small mb-0">Événement : {{ event.title_fr }}</p>
                     </div>
                     {% endif %}
 
                     <!-- Spécifications rapides -->
-                    <div class="card-body p-4 bg-white border-bottom">
+                    <div class="p-4 bg-white border-bottom border-rose-subtle">
                         <div class="row g-3 text-center text-sm-start">
                             <div class="col-6 col-md-3 border-end">
                                 <small class="text-muted text-uppercase d-block fw-semibold" style="font-size: 0.72rem;">Date & Heure</small>
@@ -71,9 +157,9 @@
                             <div class="col-6 col-md-3 border-end">
                                 <small class="text-muted text-uppercase d-block fw-semibold" style="font-size: 0.72rem;">Participation</small>
                                 {% if activity.price > 0 %}
-                                <strong class="text-primary h5 mb-0 d-block">{{ activity.price|floatformat:0 }} FCFA</strong>
+                                <strong class="h5 mb-0 d-block fw-extrabold" style="color: var(--rose);">{{ activity.price|floatformat:0 }} FCFA</strong>
                                 {% else %}
-                                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-2 py-1">Gratuit</span>
+                                <span class="badge rounded-pill px-3 py-1 fw-bold" style="background: rgba(76, 175, 80, 0.15); color: #2e7d32;">Gratuit</span>
                                 {% endif %}
                             </div>
                             <div class="col-6 col-md-3">
@@ -81,25 +167,25 @@
                                 {% if activity.is_full %}
                                 <span class="badge bg-danger rounded-pill px-2.5 py-1">Complet</span>
                                 {% elif activity.remaining_places is not None %}
-                                <span class="badge bg-success rounded-pill px-2.5 py-1">{{ activity.remaining_places }} place(s)</span>
+                                <span class="badge rounded-pill px-2.5 py-1" style="background: var(--rose-pale); color: var(--rose); font-weight: 800;">{{ activity.remaining_places }} place(s)</span>
                                 {% else %}
-                                <span class="badge bg-info text-white rounded-pill px-2.5 py-1">Ouvert</span>
+                                <span class="badge rounded-pill px-2.5 py-1" style="background: var(--rose-pale); color: var(--rose); font-weight: 800;">Ouvert</span>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
 
                     <!-- Description & Règles -->
-                    <div class="card-body p-4 p-md-5 bg-white">
-                        <h4 class="fw-bold text-dark mb-3">À propos de cette activité</h4>
-                        <div class="text-muted lh-base mb-4">
+                    <div class="p-4 p-md-5 bg-white">
+                        <h4 class="fw-bold mb-3" style="color: var(--text-dark);">À propos de cette activité</h4>
+                        <div class="text-muted lh-base mb-4" style="font-size: 1.02rem;">
                             {{ activity.description|safe }}
                         </div>
 
                         {% if activity.rules %}
-                        <div class="p-4 rounded-4 bg-light border border-secondary border-opacity-10 mb-4">
-                            <h5 class="fw-bold text-dark mb-2 flex items-center gap-2">
-                                <i class="fas fa-clipboard-list text-primary me-2"></i>Règles & Modalités
+                        <div class="p-4 rounded-4 mb-4" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                            <h5 class="fw-bold mb-2 d-flex align-items-center gap-2" style="color: var(--text-dark);">
+                                <i class="fas fa-clipboard-list" style="color: var(--rose);"></i> Règles & Modalités Officielles
                             </h5>
                             <div class="text-muted small lh-base mb-0">
                                 {{ activity.rules|linebreaks }}
@@ -108,46 +194,46 @@
                         {% endif %}
 
                         {% if activity.activity_type == 'team' %}
-                        <div class="alert alert-info border-0 rounded-4 small mb-4">
-                            <i class="fas fa-info-circle me-2"></i>
+                        <div class="p-3 rounded-4 small mb-4" style="background: var(--rose-pale); border: 1px solid var(--rose-border); color: var(--text-dark);">
+                            <i class="fas fa-users me-2" style="color: var(--rose);"></i>
                             <strong>Modalité Équipe :</strong> Chaque équipe doit comporter entre <strong>{{ activity.min_team_size }}</strong> et <strong>{{ activity.max_team_size }}</strong> membres. Le capitaine est le point de contact officiel.
                         </div>
                         {% elif activity.activity_type == 'gaming' %}
-                        <div class="alert alert-primary border-0 rounded-4 small mb-4">
-                            <i class="fas fa-gamepad me-2"></i>
-                            <strong>Plateforme de compétition :</strong> {{ activity.platform|default:"Consoles HD / PC du campus" }}{% if activity.game_title %} • Jeu : <strong>{{ activity.game_title }}</strong>{% endif %}.
+                        <div class="p-3 rounded-4 small mb-4" style="background: var(--rose-pale); border: 1px solid var(--rose-border); color: var(--text-dark);">
+                            <i class="fas fa-gamepad me-2" style="color: var(--rose);"></i>
+                            <strong>Plateforme de compétition :</strong> {{ activity.platform|default:"Consoles HD / PC du campus" }}{% if activity.game_title %} • Jeu officiel : <strong>{{ activity.game_title }}</strong>{% endif %}.
                         </div>
                         {% endif %}
                     </div>
                 </div>
 
                 <!-- FORMULAIRE DE CANDIDATURE / POSTULER -->
-                <div id="apply-section" class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                    <div class="card-header bg-dark text-white p-4">
+                <div id="apply-section" class="activity-card mb-4">
+                    <div class="p-4 text-white" style="background: var(--gradient);">
                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                             <div>
-                                <h3 class="h4 fw-bold mb-1 text-white">Postuler à cette activité</h3>
+                                <h3 class="h4 fw-extrabold mb-1 text-white">Postuler à cette activité</h3>
                                 <p class="text-white-50 small mb-0">Complétez le formulaire ci-dessous pour valider votre enregistrement</p>
                             </div>
                             {% if activity.price > 0 %}
-                            <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill font-monospace fw-bold">
+                            <span class="badge bg-white text-dark px-3 py-1.5 rounded-pill font-monospace fw-bold">
                                 Frais : {{ activity.price|floatformat:0 }} FCFA
                             </span>
                             {% else %}
-                            <span class="badge bg-success px-3 py-1.5 rounded-pill fw-bold">
+                            <span class="badge bg-white text-success px-3 py-1.5 rounded-pill fw-bold">
                                 Inscription Gratuite
                             </span>
                             {% endif %}
                         </div>
                     </div>
 
-                    <div class="card-body p-4 p-md-5 bg-white">
+                    <div class="p-4 p-md-5 bg-white">
                         {% if not activity.is_active or activity.is_full %}
                         <div class="text-center py-5">
                             <i class="fas fa-lock fa-3x text-muted opacity-50 mb-3"></i>
                             <h4 class="fw-bold text-dark">Inscriptions Clôturées</h4>
                             <p class="text-muted small">Les inscriptions pour cette activité ne sont plus disponibles (quota atteint ou date limite dépassée).</p>
-                            <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary rounded-pill px-4 mt-2">
+                            <a href="{% url 'event_detail' event.id %}" class="btn-outline-rose rounded-pill px-4 mt-2">
                                 <i class="fas fa-arrow-left me-1"></i>Retour à l'événement
                             </a>
                         </div>
@@ -156,55 +242,55 @@
                             {% csrf_token %}
 
                             <!-- SECTION 1 : RESPONSABLE / CANDIDAT -->
-                            <h5 class="fw-bold text-dark mb-3">
-                                <i class="fas fa-user-circle text-primary me-2"></i>Coordonnées du Responsable
+                            <h5 class="fw-bold mb-3" style="color: var(--text-dark);">
+                                <i class="fas fa-user-circle me-2" style="color: var(--rose);"></i> Coordonnées du Responsable / Candidat
                             </h5>
 
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold small">Nom et Prénom <span class="text-danger">*</span></label>
-                                    <input type="text" name="full_name" required value="{{ form.full_name.value|default:'' }}" class="form-control rounded-3" placeholder="Ex: Jean Paul Nguema">
+                                    <input type="text" name="full_name" required value="{{ form.full_name.value|default:'' }}" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Alexandre Ngono">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold small">Email <span class="text-danger">*</span></label>
-                                    <input type="email" name="email" required value="{{ form.email.value|default:'' }}" class="form-control rounded-3" placeholder="etudiant@domaine.com">
+                                    <input type="email" name="email" required value="{{ form.email.value|default:'' }}" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="alex@uy1.cm">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold small">Téléphone WhatsApp (Paiement) <span class="text-danger">*</span></label>
-                                    <input type="tel" name="phone" required value="{{ form.phone.value|default:'' }}" class="form-control rounded-3" placeholder="Ex: 659471152">
+                                    <label class="form-label fw-semibold small">Téléphone Mobile Money (Orange Money / MTN MoMo) <span class="text-danger">*</span></label>
+                                    <input type="tel" name="phone" required value="{{ form.phone.value|default:'' }}" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="659471152 ou 699000000">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold small">Niveau / Promotion</label>
-                                    <input type="text" name="level" value="{{ form.level.value|default:'' }}" class="form-control rounded-3" placeholder="Ex: Licence 2 Info ou M1">
+                                    <input type="text" name="level" value="{{ form.level.value|default:'' }}" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Licence 2 Info ou M1">
                                 </div>
                             </div>
 
                             <!-- SECTION 2 : SPÉCIFIQUE ÉQUIPE -->
                             {% if activity.activity_type == 'team' %}
-                            <div class="p-4 rounded-4 bg-light border border-secondary border-opacity-10 mb-4">
-                                <h5 class="fw-bold text-dark mb-3">
-                                    <i class="fas fa-users text-primary me-2"></i>Informations de l'Équipe
+                            <div class="p-4 rounded-4 mb-4" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">
+                                    <i class="fas fa-users me-2" style="color: var(--rose);"></i> Informations de l'Équipe
                                 </h5>
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Nom de l'équipe <span class="text-danger">*</span></label>
-                                        <input type="text" name="team_name" required value="{{ form.team_name.value|default:'' }}" class="form-control rounded-3" placeholder="Ex: Hackers UY1">
+                                        <input type="text" name="team_name" required value="{{ form.team_name.value|default:'' }}" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Lions du Département">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Nom du Capitaine <span class="text-danger">*</span></label>
-                                        <input type="text" name="captain_name" required value="{{ form.captain_name.value|default:'' }}" class="form-control rounded-3" placeholder="Ex: Capitaine Cédric">
+                                        <input type="text" name="captain_name" required value="{{ form.captain_name.value|default:'' }}" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Capitaine Marc">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Nombre de membres <span class="text-danger">*</span> (De {{ activity.min_team_size }} à {{ activity.max_team_size }})</label>
-                                        <input type="number" id="teamSizeInput" name="team_size" min="{{ activity.min_team_size }}" max="{{ activity.max_team_size }}" value="{{ form.team_size.value|default:activity.min_team_size }}" required class="form-control rounded-3">
+                                        <input type="number" id="teamSizeInput" name="team_size" min="{{ activity.min_team_size }}" max="{{ activity.max_team_size }}" value="{{ form.team_size.value|default:activity.min_team_size }}" required class="form-control rounded-3" style="border-color: var(--rose-border);">
                                         <div id="teamSizeAlert" class="small text-danger d-none mt-1">
                                             La taille doit être comprise entre {{ activity.min_team_size }} et {{ activity.max_team_size }} membres.
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-semibold small">Liste des membres (Noms, prénoms et contacts) <span class="text-danger">*</span></label>
-                                        <textarea name="team_members" rows="3" required class="form-control rounded-3" placeholder="1. Capitaine (Tel)...&#10;2. Joueur 2 (Tel)...&#10;3. Joueur 3 (Tel)...">{{ form.team_members.value|default:'' }}</textarea>
+                                        <textarea name="team_members" rows="3" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="1. Capitaine (Tel)...&#10;2. Joueur 2 (Tel)...&#10;3. Joueur 3 (Tel)...">{{ form.team_members.value|default:'' }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -212,19 +298,19 @@
 
                             <!-- SECTION 3 : SPÉCIFIQUE GAMING -->
                             {% if activity.activity_type == 'gaming' %}
-                            <div class="p-4 rounded-4 bg-light border border-secondary border-opacity-10 mb-4">
-                                <h5 class="fw-bold text-dark mb-3">
-                                    <i class="fas fa-gamepad text-primary me-2"></i>Informations Joueur E-Sport
+                            <div class="p-4 rounded-4 mb-4" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">
+                                    <i class="fas fa-gamepad me-2" style="color: var(--rose);"></i> Informations Joueur E-Sport
                                 </h5>
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Pseudo Gamer / Tag <span class="text-danger">*</span></label>
-                                        <input type="text" name="gamer_tag" required value="{{ form.gamer_tag.value|default:'' }}" class="form-control rounded-3" placeholder="Ex: ShadowStriker_237">
+                                        <input type="text" name="gamer_tag" required value="{{ form.gamer_tag.value|default:'' }}" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: ShadowStriker_237">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Plateforme de jeu <span class="text-danger">*</span></label>
-                                        <select name="gaming_platform" required class="form-select rounded-3">
+                                        <select name="gaming_platform" required class="form-select rounded-3" style="border-color: var(--rose-border);">
                                             <option value="PS5" selected>PlayStation 5</option>
                                             <option value="PS4">PlayStation 4</option>
                                             <option value="PC">PC Gaming</option>
@@ -233,12 +319,12 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold small">Jeu sélectionné</label>
-                                        <input type="text" name="game_name" value="{{ activity.game_title|default:'Tournoi officiel' }}" readonly class="form-control bg-white rounded-3">
+                                        <label class="form-label fw-semibold small">Jeu officiel</label>
+                                        <input type="text" name="game_name" value="{{ activity.game_title|default:'Tournoi officiel' }}" readonly class="form-control bg-white rounded-3" style="border-color: var(--rose-border);">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Identifiant compte (PSN / Steam / Discord)</label>
-                                        <input type="text" name="gaming_id" value="{{ form.gaming_id.value|default:'' }}" class="form-control rounded-3" placeholder="Ex: PSN: GamerUY1">
+                                        <input type="text" name="gaming_id" value="{{ form.gaming_id.value|default:'' }}" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: PSN: GamerUY1">
                                     </div>
                                 </div>
                             </div>
@@ -246,18 +332,18 @@
 
                             <div class="mb-4">
                                 <label class="form-label fw-semibold small">Commentaires / Précisions éventuelles</label>
-                                <textarea name="notes" rows="2" class="form-control rounded-3" placeholder="Avez-vous des questions ou requêtes spécifiques pour l'organisation ?">{{ form.notes.value|default:'' }}</textarea>
+                                <textarea name="notes" rows="2" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Avez-vous des questions ou requêtes spécifiques pour l'organisation ?">{{ form.notes.value|default:'' }}</textarea>
                             </div>
 
                             {% if activity.price > 0 %}
-                            <div class="p-4 rounded-4 bg-primary bg-opacity-10 border border-primary border-opacity-25 d-flex align-items-center justify-content-between mb-4">
+                            <div class="p-4 rounded-4 d-flex align-items-center justify-content-between mb-4" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
                                 <div>
                                     <span class="small text-muted text-uppercase fw-bold d-block">Montant de la participation</span>
-                                    <span class="h4 fw-bold text-primary mb-0">{{ activity.price|floatformat:0 }} FCFA</span>
+                                    <span class="h4 fw-extrabold mb-0" style="color: var(--rose);">{{ activity.price|floatformat:0 }} FCFA</span>
                                 </div>
                                 <div class="text-end">
-                                    <span class="badge bg-primary px-3 py-2 rounded-pill small">
-                                        <i class="fas fa-lock me-1"></i> Paiement Mobile Money Direct
+                                    <span class="badge rounded-pill px-3 py-2 small fw-bold" style="background: var(--rose); color: #fff;">
+                                        <i class="fas fa-lock me-1"></i> Paiement Mobile Money Sécurisé
                                     </span>
                                 </div>
                             </div>
@@ -267,11 +353,11 @@
                                 <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-secondary rounded-pill px-4">
                                     Annuler
                                 </a>
-                                <button type="submit" id="btnSubmitApp" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                <button type="submit" id="btnSubmitApp" class="btn-rose px-5">
                                     {% if activity.price > 0 %}
-                                    <i class="fas fa-lock me-2"></i>Valider & Payer ({{ activity.price|floatformat:0 }} FCFA)
+                                    <i class="fas fa-lock me-2"></i> Valider & Payer ({{ activity.price|floatformat:0 }} FCFA)
                                     {% else %}
-                                    <i class="fas fa-check-circle me-2"></i>Confirmer mon inscription gratuite
+                                    <i class="fas fa-check-circle me-2"></i> Confirmer mon inscription gratuite
                                     {% endif %}
                                 </button>
                             </div>
@@ -284,32 +370,32 @@
             <!-- Colonne Latérale -->
             <div class="col-lg-4">
                 <!-- Fiche de l'événement parent -->
-                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--rose-border) !important;">
                     <h5 class="fw-bold mb-3 pb-2 border-bottom text-dark">
-                        <i class="fas fa-calendar-alt text-primary me-2"></i>Événement Parent
+                        <i class="fas fa-calendar-alt me-2" style="color: var(--rose);"></i> Événement Parent
                     </h5>
                     <h6 class="fw-bold text-dark">{{ event.title_fr }}</h6>
                     <p class="small text-muted mb-3">{{ event.description_fr|striptags|truncatewords:20 }}</p>
-                    <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary btn-sm rounded-pill w-100">
-                        <i class="fas fa-eye me-1"></i>Voir la fiche de l'événement
+                    <a href="{% url 'event_detail' event.id %}" class="btn-outline-rose btn-sm w-100 justify-content-center">
+                        <i class="fas fa-eye me-1"></i> Voir la fiche de l'événement
                     </a>
                 </div>
 
                 <!-- Autres activités du même événement -->
                 {% if other_activities %}
-                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--rose-border) !important;">
                     <h5 class="fw-bold mb-3 pb-2 border-bottom text-dark">
-                        <i class="fas fa-list-check text-primary me-2"></i>Autres Activités
+                        <i class="fas fa-list-check me-2" style="color: var(--rose);"></i> Autres Activités
                     </h5>
                     <div class="d-flex flex-column gap-3">
                         {% for oact in other_activities %}
                         <a href="{% url 'activity_detail' oact.slug %}" class="text-decoration-none text-dark">
-                            <div class="p-2.5 rounded-3 bg-light hover-bg transition">
-                                <span class="badge bg-primary bg-opacity-10 text-primary small mb-1">{{ oact.get_activity_type_display }}</span>
+                            <div class="p-2.5 rounded-3 hover-bg transition" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                <span class="badge rounded-pill small mb-1" style="background: var(--rose-pale); color: var(--rose);">{{ oact.get_activity_type_display }}</span>
                                 <h6 class="small fw-bold mb-1 text-truncate">{{ oact.title }}</h6>
                                 <div class="d-flex justify-content-between text-muted" style="font-size: 0.72rem;">
                                     <span>{{ oact.date_activity|date:"d M Y" }}</span>
-                                    <span class="fw-bold text-primary">{% if oact.price > 0 %}{{ oact.price|floatformat:0 }} F{% else %}Gratuit{% endif %}</span>
+                                    <span class="fw-bold" style="color: var(--rose);">{% if oact.price > 0 %}{{ oact.price|floatformat:0 }} F{% else %}Gratuit{% endif %}</span>
                                 </div>
                             </div>
                         </a>
@@ -320,9 +406,9 @@
 
                 <!-- Derniers Événements -->
                 {% if recent_events %}
-                <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--rose-border) !important;">
                     <h5 class="fw-bold mb-3 pb-2 border-bottom text-dark">
-                        <i class="fas fa-sparkles text-warning me-2"></i>Derniers Événements
+                        <i class="fas fa-calendar-day me-2" style="color: var(--rose);"></i> Derniers Événements
                     </h5>
                     <div class="d-flex flex-column gap-2.5">
                         {% for rev in recent_events %}
@@ -332,7 +418,7 @@
                                     {% if rev.image %}
                                     <img src="{{ rev.image.url }}" alt="{{ rev.title_fr }}" style="width: 100%; height: 100%; object-fit: cover;">
                                     {% else %}
-                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center text-primary bg-primary bg-opacity-10">
+                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center" style="background: var(--rose-pale); color: var(--rose);">
                                         <i class="fas fa-calendar-day"></i>
                                     </div>
                                     {% endif %}
@@ -374,10 +460,9 @@
         const submitBtn = document.getElementById('btnSubmitApp');
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Traitement de votre candidature...';
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Traitement de votre candidature...';
         }
         return true;
     }
 </script>
 {% endblock %}
-

@@ -1,0 +1,385 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Paiement Sécurisé — Parrainage & Pass Soirée Gala | COMS.A.S{% endblock %}
+
+{% block meta_description %}Finalisez votre participation au programme de parrainage et obtenez votre Pass Soirée Gala avec QR code officiel du COM.S.AS.{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .card-payment {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 28px;
+        box-shadow: 0 12px 36px var(--rose-shadow);
+        overflow: hidden;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 28px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .btn-outline-rose {
+        background: transparent;
+        color: var(--rose) !important;
+        border: 1.5px solid var(--rose-border);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 12px 24px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--rose-pale);
+        border-color: var(--rose);
+    }
+
+    .price-tag {
+        background: var(--gradient);
+        color: #fff;
+        padding: 10px 24px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 1.35rem;
+        display: inline-block;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .25);
+    }
+
+    .avatar-frame {
+        width: 100px;
+        height: 120px;
+        border-radius: 18px;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    }
+
+    .pulse-status {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ff9800;
+        box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7);
+        animation: pulseOrange 1.6s infinite;
+        display: inline-block;
+    }
+
+    @keyframes pulseOrange {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 152, 0, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container py-3">
+        <!-- Fil d'ariane -->
+        <div class="max-w-700 mx-auto mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted text-decoration-none">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'sponsorship_home' %}" class="text-muted text-decoration-none">Parrainage</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Paiement Sécurisé</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+
+                <!-- Messages Django -->
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <!-- Carte de Paiement Principale -->
+                <div class="card-payment mb-4">
+                    <!-- En-tête Rose & Blanc -->
+                    <div class="p-4 p-md-5 text-center position-relative" style="background: linear-gradient(135deg, rgba(233,30,99,0.06) 0%, rgba(240,98,146,0.12) 100%); border-bottom: 1px solid var(--rose-border);">
+                        <span class="badge rounded-pill px-3 py-1.5 mb-2" style="background: var(--rose-pale); color: var(--rose); font-weight: 800; font-size: 0.78rem;">
+                            <i class="fas fa-lock me-1"></i> PAIEMENT 100% SÉCURISÉ FREEMOPAY
+                        </span>
+                        <h2 class="fw-extrabold mb-1" style="color: var(--text-dark);">
+                            Finaliser votre <span class="text-gradient">Participation</span>
+                        </h2>
+                        <p class="text-muted small mb-3">
+                            Session officielle : <strong>{{ session.name|default:"Session 2025/2026" }}</strong>
+                        </p>
+
+                        <div class="price-tag">
+                            {{ amount }} FCFA
+                        </div>
+                    </div>
+
+                    <div class="p-4 p-md-5">
+                        <!-- Récapitulatif du Participant -->
+                        <div class="p-3 p-md-4 rounded-4 mb-4 d-flex flex-column flex-sm-row align-items-center gap-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                            {% if participant.photo %}
+                            <img src="{{ participant.photo.url }}" alt="{{ participant.first_name }}" class="avatar-frame flex-shrink-0">
+                            {% else %}
+                            <div class="avatar-frame d-flex align-items-center justify-content-center bg-white text-muted">
+                                <i class="fas fa-user fa-3x" style="color: var(--rose);"></i>
+                            </div>
+                            {% endif %}
+
+                            <div class="flex-grow-1 text-center text-sm-start">
+                                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-sm-start gap-2 mb-1">
+                                    <h4 class="fw-extrabold mb-0" style="color: var(--text-dark);">
+                                        {{ participant.first_name }} {{ participant.last_name }}
+                                    </h4>
+                                    <span class="badge rounded-pill fw-bold" style="background: var(--rose); color: #fff; font-size: 0.72rem;">
+                                        {% if role == 'mentor' %}PARRAIN PROFESSIONNEL{% else %}FILLEUL ACADÉMIQUE{% endif %}
+                                    </span>
+                                </div>
+                                <div class="small text-muted mb-1">
+                                    <i class="fas fa-graduation-cap me-1" style="color: var(--rose);"></i> {{ participant.get_cycle_display|default:participant.cycle }} • {{ participant.filiere_option }}
+                                </div>
+                                {% if role == 'mentor' %}
+                                <div class="small text-muted">
+                                    <i class="fas fa-briefcase me-1" style="color: var(--rose);"></i> {{ participant.profession }} ({{ participant.years_of_experience }} ans d'exp.)
+                                </div>
+                                {% else %}
+                                <div class="small text-muted">
+                                    <i class="fas fa-bullseye me-1" style="color: var(--rose);"></i> Objectif : {{ participant.desired_specialty }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Ce qui est inclus avec le Pass -->
+                        <div class="mb-4 p-3 rounded-4" style="background: #fff; border: 1px dashed var(--rose-border);">
+                            <h6 class="fw-bold mb-2 small text-uppercase" style="color: var(--rose);">
+                                <i class="fas fa-gift me-1"></i> Ce qui est inclus avec votre pass :
+                            </h6>
+                            <ul class="list-unstyled mb-0 small text-muted">
+                                <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i><strong>Pass Soirée de Gala Resto N°2</strong> officiel avec QR Code unique de vérification.</li>
+                                <li class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>Accès au buffet gastronomique, cocktail et spectacle live <em>The Voice</em>.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i>Attribution intelligente via l'algorithme de compatibilité COMSAS (max 2 filleuls/parrain).</li>
+                            </ul>
+                        </div>
+
+                        <!-- Formulaire Mobile Money -->
+                        <form id="sponsorshipPayForm" onsubmit="handlePaymentSubmit(event)">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-uppercase" style="color: var(--text-dark);">
+                                    Numéro de Téléphone Mobile Money *
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white" style="border-color: var(--rose-border); color: var(--rose);">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </span>
+                                    <input type="tel" name="phone" id="phoneInput" value="{{ participant.phone }}" required placeholder="659471152 ou 699000000" class="form-control form-control-lg fw-bold" style="border-color: var(--rose-border);">
+                                </div>
+                                <div class="form-text small text-muted">
+                                    Compatible <strong>Orange Money Cameroun</strong> (#150#) et <strong>MTN Mobile Money</strong> (*126#).
+                                </div>
+                            </div>
+
+                            <!-- Statut Box en direct -->
+                            <div id="paymentStatusBox" class="p-3 rounded-4 mb-3 d-none" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="pulse-status" id="statusPulseDot"></span>
+                                    <strong id="statusTitle" style="color: var(--text-dark);">En attente de votre validation mobile...</strong>
+                                </div>
+                                <p class="small text-muted mb-0" id="statusMessage">
+                                    Un message USSD a été envoyé sur votre téléphone. Composez votre code PIN secret pour confirmer la transaction de {{ amount }} FCFA.
+                                </p>
+                            </div>
+
+                            <button type="submit" id="btnPaySubmit" class="btn-rose w-100 py-3 shadow-sm">
+                                <i class="fas fa-lock"></i>
+                                <span>Payer {{ amount }} FCFA via Mobile Money</span>
+                            </button>
+
+                            <div class="text-center mt-3">
+                                <a href="{% url 'sponsorship_payment_cancel' participant.uuid %}" class="small text-muted text-decoration-none hover-rose">
+                                    <i class="fas fa-times me-1"></i> Annuler le paiement pour le moment
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Assistance / FAQ -->
+                <div class="text-center text-muted small">
+                    <p class="mb-1">Besoin d'aide ? Contactez la trésorerie COMSAS : <strong>contact@comsas-uy1.com</strong></p>
+                    <p class="mb-0">Paiement sécurisé et chiffré de bout en bout • Agrément Freemopay v2</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const participantUuid = "{{ participant.uuid }}";
+    const statusApiUrl = "{% url 'sponsorship_payment_status' participant.uuid %}";
+    let pollInterval = null;
+
+    async function handlePaymentSubmit(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnPaySubmit');
+        const phone = document.getElementById('phoneInput').value.trim();
+        const statusBox = document.getElementById('paymentStatusBox');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusMessage = document.getElementById('statusMessage');
+
+        if (!phone) {
+            alert("Veuillez renseigner votre numéro de téléphone Mobile Money.");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Envoi de la demande...';
+
+        statusBox.classList.remove('d-none');
+        statusTitle.textContent = "Connexion à Freemopay...";
+        statusMessage.textContent = "Transmission de la requête de paiement à l'opérateur...";
+
+        try {
+            const formData = new FormData();
+            formData.append('phone', phone);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            const resp = await fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await resp.json();
+
+            if (data.success) {
+                statusTitle.textContent = "Demande envoyée avec succès !";
+                statusMessage.innerHTML = `Veuillez composer votre code secret sur votre téléphone (<strong>${phone}</strong>) pour valider les <strong>{{ amount }} FCFA</strong>. Ne fermez pas cette page.`;
+                startPolling();
+            } else {
+                statusTitle.textContent = "Échec de l'initiation";
+                statusMessage.textContent = data.error || "Impossible d'initier le paiement. Veuillez vérifier le numéro.";
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-redo me-2"></i> Réessayer le paiement';
+            }
+        } catch (err) {
+            console.error("Erreur paiement:", err);
+            statusTitle.textContent = "Erreur réseau";
+            statusMessage.textContent = "Une erreur est survenue lors de la communication. Veuillez réessayer.";
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-redo me-2"></i> Réessayer le paiement';
+        }
+    }
+
+    function startPolling() {
+        if (pollInterval) clearInterval(pollInterval);
+        pollInterval = setInterval(checkPaymentStatus, 3000);
+    }
+
+    async function checkPaymentStatus() {
+        try {
+            const resp = await fetch(statusApiUrl);
+            const data = await resp.json();
+
+            if (data.is_paid) {
+                clearInterval(pollInterval);
+                const statusBox = document.getElementById('paymentStatusBox');
+                const statusTitle = document.getElementById('statusTitle');
+                const statusMessage = document.getElementById('statusMessage');
+                const dot = document.getElementById('statusPulseDot');
+
+                dot.style.background = '#4caf50';
+                statusTitle.textContent = "Paiement Validé avec Succès !";
+                statusMessage.innerHTML = "Votre Pass Soirée de Gala avec QR code est prêt. Redirection en cours...";
+
+                setTimeout(() => {
+                    window.location.href = data.redirect_url || "{% url 'sponsorship_success_participant' participant.uuid %}";
+                }, 1500);
+            } else if (data.payment_status === 'failed' || data.payment_status === 'cancelled') {
+                clearInterval(pollInterval);
+                const statusTitle = document.getElementById('statusTitle');
+                const statusMessage = document.getElementById('statusMessage');
+                const btn = document.getElementById('btnPaySubmit');
+
+                statusTitle.textContent = "Paiement Annulé ou Échoué";
+                statusMessage.textContent = "La transaction n'a pas pu aboutir. Veuillez réessayer ou utiliser un autre numéro.";
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-redo me-2"></i> Réessayer le paiement';
+            }
+        } catch (err) {
+            console.warn("Polling check error:", err);
+        }
+    }
+
+    // Si la page est rechargée avec un paiement déjà en cours, déclencher le polling automatiquement
+    {% if participant.payment_status == 'pending' and participant.payment_reference %}
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('paymentStatusBox').classList.remove('d-none');
+        startPolling();
+    });
+    {% endif %}
+</script>
+{% endblock %}

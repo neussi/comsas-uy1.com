@@ -665,22 +665,43 @@ class SponsorshipSessionAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date', 'is_active')
     list_filter = ('is_active',)
 
+def run_full_sponsorship_matching_admin(modeladmin, request, queryset):
+    """Lancer l'algorithme d'attribution optimisé COMSAS (Max 2 filleuls par parrain payé)"""
+    from .sponsorship_matching import run_sponsorship_matching
+    active_session = SponsorshipSession.objects.filter(is_active=True).first()
+    if not active_session:
+        active_session = SponsorshipSession.objects.order_by('-start_date').first()
+    res = run_sponsorship_matching(session=active_session)
+    messages.info(
+        request,
+        f"Algorithme exécuté : {res['matched_count']} binômes créés/confirmés, "
+        f"{res['waiting_list_count']} en liste d'attente sur {res['total_paid_mentees']} filleuls payés."
+    )
+run_full_sponsorship_matching_admin.short_description = "Lancer l'Algorithme COMSAS d'attribution (Max 2 filleuls/parrain payé)"
+
 @admin.register(Mentor)
 class MentorAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'profession', 'company', 'level', 'specialty', 'years_of_experience', 'status', 'max_mentees', 'current_mentees_count')
-    list_filter = ('status', 'level', 'specialty', 'session')
-    list_editable = ('status',)
-    search_fields = ('first_name', 'last_name', 'email', 'profession', 'company')
-    actions = [export_to_csv]
+    list_display = ('first_name', 'last_name', 'cycle', 'filiere_option', 'profession', 'company', 'is_paid', 'amount', 'payment_status', 'status', 'max_mentees', 'current_mentees_count')
+    list_filter = ('is_paid', 'payment_status', 'status', 'cycle', 'session')
+    list_editable = ('status', 'is_paid')
+    search_fields = ('first_name', 'last_name', 'email', 'phone', 'profession', 'company')
+    actions = [run_full_sponsorship_matching_admin, export_to_csv]
 
 @admin.register(Mentee)
 class MenteeAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'desired_specialty', 'level', 'status', 'created_at')
-    list_filter = ('status', 'level', 'session')
-    list_editable = ('status',)
-    search_fields = ('first_name', 'last_name', 'email', 'desired_specialty', 'skills_to_acquire')
-    actions = [export_to_csv]
-    actions = [match_mentees, export_to_csv, export_sponsorship_pdf]
+    list_display = ('first_name', 'last_name', 'cycle', 'filiere_option', 'desired_specialty', 'is_paid', 'amount', 'payment_status', 'status', 'created_at')
+    list_filter = ('is_paid', 'payment_status', 'status', 'cycle', 'session')
+    list_editable = ('status', 'is_paid')
+    search_fields = ('first_name', 'last_name', 'email', 'phone', 'desired_specialty', 'skills_to_acquire')
+    actions = [run_full_sponsorship_matching_admin, export_to_csv, export_sponsorship_pdf]
+
+@admin.register(Match)
+class MatchAdmin(admin.ModelAdmin):
+    list_display = ('mentor', 'mentee', 'compatibility_score', 'is_active', 'is_confirmed_by_admin', 'created_at')
+    list_filter = ('is_active', 'is_confirmed_by_admin', 'session')
+    list_editable = ('is_active', 'is_confirmed_by_admin')
+    search_fields = ('mentor__first_name', 'mentor__last_name', 'mentee__first_name', 'mentee__last_name')
+    actions = [run_full_sponsorship_matching_admin, export_to_csv]
 
 # =============================================================================
 # ADMIN POUR NOUVELLES FONCTIONNALITÉS

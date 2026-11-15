@@ -92,14 +92,13 @@
                                 Attention : Ce document pourrait être une contrefaçon.
                             </div>
                         </div>
-                        {% elif not registration %}
+                        {% elif not registration and not mentor_pass and not mentee_pass and not activity_app %}
                         <div class="text-center mb-4">
                             <div class="status-badge bg-info bg-opacity-10 text-info mx-auto mb-4">
                                 <i class="fas fa-search"></i>
                             </div>
                             <h3 class="fw-bold mb-3">Vérifier Documents</h3>
-                            <p class="text-muted small mb-4">Saisissez l'ID unique (UUID) de votre ticket ou
-                                attestation.</p>
+                            <p class="text-muted small mb-4">Saisissez l'ID unique (UUID) de votre ticket, pass soirée ou attestation.</p>
 
                             <form action="." method="GET" id="manual-verify-form">
                                 <div class="mb-3">
@@ -126,11 +125,99 @@
                             <i class="fas fa-check"></i>
                         </div>
                         <div class="text-center mb-4">
-                            <h3 class="fw-bold text-success mb-1">Document Authentique</h3>
-                            <p class="text-muted small">ID: {{ registration.uuid }}</p>
+                            <h3 class="fw-bold text-success mb-1">Pass & Document Authentique</h3>
+                            <p class="text-muted small">ID: {{ uuid }}</p>
                         </div>
 
-                        <div class="bg-light rounded-4 p-2 shadow-sm border">
+                        {% if mentor_pass %}
+                        <!-- VÉRIFICATION PASS PARRAIN -->
+                        <div class="bg-light rounded-4 p-3 shadow-sm border text-start">
+                            {% if mentor_pass.photo %}
+                            <div class="text-center mb-3">
+                                <img src="{{ mentor_pass.photo.url }}" alt="{{ mentor_pass.first_name }}" class="rounded-circle shadow-sm border border-3 border-white" style="width: 90px; height: 90px; object-fit: cover;">
+                            </div>
+                            {% endif %}
+                            <div class="info-item">
+                                <div class="info-label">Événement & Lieu</div>
+                                <div class="info-value event-title" style="color: #E91E63;">Soirée de Parrainage & Grand Gala COFESTI</div>
+                                <small class="text-muted"><i class="fas fa-map-marker-alt me-1 text-danger"></i>Restaurant Universitaire N° 2 • Campus UY1</small>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Parrain Officiel</div>
+                                <div class="info-value">{{ mentor_pass.first_name }} {{ mentor_pass.last_name }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Rôle & Profession</div>
+                                <div class="info-value">{{ mentor_pass.profession|default:mentor_pass.get_level_display }}{% if mentor_pass.company %} chez {{ mentor_pass.company }}{% endif %}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Frais Réglés</div>
+                                <div class="info-value"><span class="badge rounded-pill fw-bold" style="background: linear-gradient(135deg, #E91E63, #f06292); color: #fff;">{{ mentor_pass.amount|floatformat:0 }} FCFA (Parrain)</span></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Statut d'Accès</div>
+                                <div class="info-value">
+                                    <span class="badge bg-success rounded-pill px-3 py-1.5"><i class="fas fa-check-circle me-1"></i>Pass Valide • Entrée Autorisée</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% elif mentee_pass %}
+                        <!-- VÉRIFICATION PASS FILLEUL -->
+                        <div class="bg-light rounded-4 p-3 shadow-sm border text-start">
+                            {% if mentee_pass.photo %}
+                            <div class="text-center mb-3">
+                                <img src="{{ mentee_pass.photo.url }}" alt="{{ mentee_pass.first_name }}" class="rounded-circle shadow-sm border border-3 border-white" style="width: 90px; height: 90px; object-fit: cover;">
+                            </div>
+                            {% endif %}
+                            <div class="info-item">
+                                <div class="info-label">Événement & Lieu</div>
+                                <div class="info-value event-title" style="color: #E91E63;">Soirée de Parrainage & Grand Gala COFESTI</div>
+                                <small class="text-muted"><i class="fas fa-map-marker-alt me-1 text-danger"></i>Restaurant Universitaire N° 2 • Campus UY1</small>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Filleul Officiel</div>
+                                <div class="info-value">{{ mentee_pass.first_name }} {{ mentee_pass.last_name }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Niveau & Option</div>
+                                <div class="info-value">{{ mentee_pass.get_level_display }} — {{ mentee_pass.filiere_option|default:mentee_pass.desired_specialty }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Frais Réglés</div>
+                                <div class="info-value"><span class="badge rounded-pill fw-bold" style="background: linear-gradient(135deg, #E91E63, #f06292); color: #fff;">{{ mentee_pass.amount|floatformat:0 }} FCFA (Filleul)</span></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Statut d'Accès</div>
+                                <div class="info-value">
+                                    <span class="badge bg-success rounded-pill px-3 py-1.5"><i class="fas fa-check-circle me-1"></i>Pass Valide • Entrée Autorisée</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% elif activity_app %}
+                        <!-- VÉRIFICATION ACTIVITÉ -->
+                        <div class="bg-light rounded-4 p-3 shadow-sm border text-start">
+                            <div class="info-item">
+                                <div class="info-label">Activité & Événement</div>
+                                <div class="info-value event-title">{{ activity_app.activity.title }}</div>
+                                <small class="text-muted">{{ activity_app.activity.event.title_fr }}</small>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Participant / Équipe</div>
+                                <div class="info-value">{{ activity_app.team_name|default:activity_app.full_name }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Statut</div>
+                                <div class="info-value">
+                                    <span class="badge bg-success rounded-pill px-3 py-1.5">{{ activity_app.get_status_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% else %}
+                        <!-- VÉRIFICATION BILLET ÉVÉNEMENT STANDARD -->
+                        <div class="bg-light rounded-4 p-2 shadow-sm border text-start">
                             <div class="info-item">
                                 <div class="info-label">Événement</div>
                                 <div class="info-value event-title">{{ registration.event.title_fr }}</div>
@@ -154,6 +241,7 @@
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
 
                         <div class="mt-4 text-center">
                             <div class="d-flex align-items-center justify-content-center text-muted small">

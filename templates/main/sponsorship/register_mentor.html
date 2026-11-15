@@ -8,14 +8,51 @@
 {% block extra_css %}
 <!-- Cropper.js CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .card-register {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 28px;
+        box-shadow: 0 12px 36px var(--rose-shadow);
+        overflow: hidden;
+    }
+
     .crop-preview-box {
         width: 150px;
-        height: 180px;
-        border-radius: 1rem;
+        height: 185px;
+        border-radius: 18px;
         overflow: hidden;
-        background: #f8fafc;
-        border: 2px dashed #cbd5e1;
+        background: var(--blanc-off);
+        border: 2px dashed var(--rose-border);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -26,14 +63,54 @@
         height: 100%;
         object-fit: cover;
     }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 32px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--rose) !important;
+        box-shadow: 0 0 0 0.25rem rgba(233, 30, 99, 0.15) !important;
+    }
+
+    .skill-tag {
+        background: var(--rose-pale);
+        border: 1px solid var(--rose-border);
+        color: var(--rose);
+        border-radius: 50px;
+        padding: 6px 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<section class="py-5 bg-light position-relative">
+<section class="py-5">
     <div class="container py-3">
         <div class="row justify-content-center">
             <div class="col-lg-10 col-xl-9">
+
                 <!-- Fil d'ariane -->
                 <nav aria-label="breadcrumb" class="mb-4">
                     <ol class="breadcrumb">
@@ -44,27 +121,30 @@
                 </nav>
 
                 <!-- Carte Principale -->
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                    <div class="card-header bg-primary text-white p-4 p-md-5">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="w-14 h-14 rounded-3 bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h3 mb-0">
+                <div class="card-register mb-4">
+                    <!-- En-tête Rose & Blanc -->
+                    <div class="p-4 p-md-5 text-white" style="background: var(--gradient);">
+                        <div class="d-flex flex-column flex-sm-row align-items-center gap-3 text-center text-sm-start">
+                            <div class="w-16 h-16 rounded-circle bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h2 mb-0" style="width: 65px; height: 65px;">
                                 <i class="fas fa-user-tie"></i>
                             </div>
                             <div>
-                                <span class="badge bg-warning text-dark text-uppercase fw-bold px-3 py-1 rounded-pill mb-1">
-                                    Session : {{ session.name }}
+                                <span class="badge rounded-pill bg-white text-dark text-uppercase fw-bold px-3 py-1 mb-2">
+                                    Session : {{ session.name|default:"Session 2025/2026" }}
                                 </span>
-                                <h2 class="mb-1 text-white fw-bold">Devenir Parrain / Mentor</h2>
-                                <p class="mb-0 text-white-50 small">Partagez votre expertise académique et professionnelle avec la relève de l'UY1</p>
+                                <h2 class="mb-1 text-white fw-extrabold">Devenir Parrain Professionnel / Mentor</h2>
+                                <p class="mb-0 text-white-50 small">
+                                    Partagez votre expertise académique et professionnelle • Frais de participation : <strong>5 000 FCFA</strong> (Pass Soirée de Gala Resto N°2 inclus)
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-body p-4 p-md-5 bg-white">
+                    <div class="p-4 p-md-5 bg-white">
                         <!-- Messages Django -->
                         {% if messages %}
                         {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
                             <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -73,7 +153,7 @@
                         {% endif %}
 
                         {% if form.errors %}
-                        <div class="alert alert-danger rounded-3 shadow-sm mb-4">
+                        <div class="alert alert-danger rounded-4 shadow-sm mb-4">
                             <h6 class="fw-bold mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Veuillez corriger les champs suivants :</h6>
                             <ul class="mb-0 small">
                                 {% for field, errors in form.errors.items %}
@@ -89,20 +169,20 @@
                             {% csrf_token %}
 
                             <!-- SECTION 1 : PHOTO PORTRAIT OBLIGATOIRE -->
-                            <div class="mb-5 p-4 rounded-4 bg-light border border-secondary border-opacity-10">
-                                <h5 class="fw-bold text-dark mb-1 flex items-center gap-2">
-                                    <i class="fas fa-camera text-primary me-2"></i>Photo Portrait Officielle <span class="text-danger">*</span>
+                            <div class="mb-5 p-4 rounded-4" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                <h5 class="fw-bold mb-1 d-flex align-items-center gap-2" style="color: var(--text-dark);">
+                                    <i class="fas fa-camera" style="color: var(--rose);"></i> Photo Portrait Officielle <span class="text-danger">*</span>
                                 </h5>
                                 <p class="text-muted small mb-4">
-                                    Votre photo portrait est <strong>obligatoire</strong> pour la fiche de mentorat et le certificat officiel. Formats acceptés : <strong>JPG, PNG, WEBP</strong> (Max 5 Mo).
+                                    Votre photo portrait est <strong>obligatoire</strong> pour la fiche de mentorat, l'algorithme d'affectation et le Pass Soirée officiel avec QR code. Formats : <strong>JPG, PNG, WEBP</strong> (Max 5 Mo).
                                 </p>
 
                                 <div class="row align-items-center g-4">
                                     <div class="col-sm-auto text-center">
                                         <div class="crop-preview-box shadow-sm" id="previewContainer">
                                             <div class="text-center text-muted p-2" id="placeholderPreview">
-                                                <i class="fas fa-user-circle fa-4x text-secondary opacity-50 mb-1"></i>
-                                                <div style="font-size: 0.72rem;">Aperçu du portrait</div>
+                                                <i class="fas fa-user-circle fa-4x opacity-50 mb-1" style="color: var(--rose);"></i>
+                                                <div style="font-size: 0.72rem;">Aperçu recadré</div>
                                             </div>
                                             <img id="imagePreview" class="d-none" alt="Aperçu recadré" />
                                         </div>
@@ -110,16 +190,16 @@
 
                                     <div class="col-sm">
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold small text-uppercase text-muted">Sélectionnez une photo nette</label>
-                                            <input type="file" id="rawPhotoInput" accept="image/jpeg,image/png,image/webp" class="form-control rounded-3" required />
-                                            <!-- Hidden real input containing the final file or base64 data -->
+                                            <label class="form-label fw-bold small text-uppercase text-muted">Sélectionnez une photo nette</label>
+                                            <input type="file" id="rawPhotoInput" accept="image/jpeg,image/png,image/webp" class="form-control rounded-3" style="border-color: var(--rose-border);" required />
+                                            <!-- Champ fichier réel transmis au serveur -->
                                             <input type="file" name="photo" id="finalPhotoInput" class="d-none" />
                                         </div>
                                         <div id="fileSizeAlert" class="small text-danger d-none mb-2">
                                             <i class="fas fa-exclamation-circle me-1"></i> Le fichier sélectionné dépasse 5 Mo. Veuillez choisir une image plus légère.
                                         </div>
                                         <div class="small text-muted">
-                                            <i class="fas fa-info-circle text-primary me-1"></i> Dès la sélection, une fenêtre vous permettra de centrer et recadrer parfaitement votre portrait.
+                                            <i class="fas fa-crop-alt me-1" style="color: var(--rose);"></i> Dès la sélection, un outil de recadrage intelligent vous permettra de centrer votre visage en format portrait 4:5.
                                         </div>
                                     </div>
                                 </div>
@@ -127,112 +207,154 @@
 
                             <!-- SECTION 2 : IDENTITÉ & COORDONNÉES -->
                             <div class="mb-5">
-                                <h5 class="fw-bold text-dark mb-3">
-                                    <i class="fas fa-id-card text-primary me-2"></i>Identité & Contact
+                                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">
+                                    <i class="fas fa-id-card me-2" style="color: var(--rose);"></i> Identité & Contact
                                 </h5>
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Prénom <span class="text-danger">*</span></label>
-                                        <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: Cédric" />
+                                        <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Franck" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Nom de famille <span class="text-danger">*</span></label>
-                                        <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: Nguema" />
+                                        <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Mbarga" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Adresse e-mail <span class="text-danger">*</span></label>
-                                        <input type="email" name="email" value="{{ form.email.value|default:'' }}" required class="form-control rounded-3" placeholder="votre.email@domaine.com" />
+                                        <input type="email" name="email" value="{{ form.email.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="franck@exemple.com" />
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold small">Numéro de téléphone (WhatsApp) <span class="text-danger">*</span></label>
-                                        <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: +237 659 47 11 52" />
+                                        <label class="form-label fw-semibold small">Numéro de téléphone (Mobile Money / WhatsApp) <span class="text-danger">*</span></label>
+                                        <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="659471152 ou 699000000" />
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- SECTION 3 : PARCOURS & PROFIL PROFESSIONNEL -->
+                            <!-- SECTION 3 : PARCOURS, CYCLE & STATUT (INCLUT MIS & MASTER) -->
                             <div class="mb-5">
-                                <h5 class="fw-bold text-dark mb-3">
-                                    <i class="fas fa-briefcase text-primary me-2"></i>Profil Académique & Professionnel
+                                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">
+                                    <i class="fas fa-graduation-cap me-2" style="color: var(--rose);"></i> Cycle d'Études & Expérience
                                 </h5>
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold small">Niveau d'étude / Profil <span class="text-danger">*</span></label>
-                                        <select name="level" required class="form-select rounded-3">
-                                            <option value="">-- Sélectionnez votre niveau --</option>
-                                            <option value="L3" {% if form.level.value == 'L3' %}selected{% endif %}>Licence 3</option>
-                                            <option value="ICT-L3" {% if form.level.value == 'ICT-L3' %}selected{% endif %}>ICT-L3</option>
-                                            <option value="M1" {% if form.level.value == 'M1' %}selected{% endif %}>Master 1</option>
-                                            <option value="M2" {% if form.level.value == 'M2' %}selected{% endif %}>Master 2</option>
-                                            <option value="PHD" {% if form.level.value == 'PHD' %}selected{% endif %}>Doctorat / Chercheur</option>
-                                            <option value="ALUMNI" {% if form.level.value == 'ALUMNI' %}selected{% endif %}>Alumni / Professionnel en poste</option>
+                                        <label class="form-label fw-semibold small">Niveau d'études / Cycle * <span class="text-danger">*</span></label>
+                                        <select name="cycle" required class="form-select rounded-3" style="border-color: var(--rose-border);">
+                                            <option value="">-- Sélectionnez votre cycle --</option>
+                                            <option value="licence" {% if form.cycle.value == 'licence' %}selected{% endif %}>Licence (L3)</option>
+                                            <option value="mis" {% if form.cycle.value == 'mis' %}selected{% endif %}>MIS (Master Informatique Spécialisé)</option>
+                                            <option value="master" {% if form.cycle.value == 'master' %}selected{% endif %}>Master Recherche / Académique (M1/M2)</option>
+                                            <option value="doctorat" {% if form.cycle.value == 'doctorat' %}selected{% endif %}>Doctorat / PhD</option>
+                                            <option value="pro" {% if form.cycle.value == 'pro' or not form.cycle.value %}selected{% endif %}>Professionnel en activité / Ingénieur</option>
                                         </select>
+                                        <div class="form-text small text-muted">
+                                            <em>Les étudiants de MIS et de Master peuvent postuler librement comme parrains ou filleuls.</em>
+                                        </div>
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold small">Spécialité principale <span class="text-danger">*</span></label>
-                                        <select name="specialty" required class="form-select rounded-3">
-                                            <option value="">-- Spécialité --</option>
-                                            <option value="GL" {% if form.specialty.value == 'GL' %}selected{% endif %}>Génie Logiciel & Développement Web/Mobile</option>
-                                            <option value="DS" {% if form.specialty.value == 'DS' %}selected{% endif %}>Data Science & Intelligence Artificielle</option>
-                                            <option value="SECU" {% if form.specialty.value == 'SECU' %}selected{% endif %}>Sécurité Informatique & Cybersécurité</option>
-                                            <option value="RESEAU" {% if form.specialty.value == 'RESEAU' %}selected{% endif %}>Réseau, Systèmes & Cloud DevOps</option>
-                                        </select>
+                                        <label class="form-label fw-semibold small">Filière / Option / Spécialisation * <span class="text-danger">*</span></label>
+                                        <input type="text" name="filiere_option" value="{{ form.filiere_option.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Génie Logiciel, Systèmes & Cloud, Data Science, Cyber..." />
                                     </div>
 
                                     <div class="col-md-5">
                                         <label class="form-label fw-semibold small">Profession / Poste actuel <span class="text-danger">*</span></label>
-                                        <input type="text" name="profession" value="{{ form.profession.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: Cloud Engineer, Dev Backend, Data Scientist" />
+                                        <input type="text" name="profession" value="{{ form.profession.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Cloud Architect, Développeur Full-Stack, Chercheur" />
                                     </div>
 
                                     <div class="col-md-4">
-                                        <label class="form-label fw-semibold small">Entreprise / Organisation</label>
-                                        <input type="text" name="company" value="{{ form.company.value|default:'' }}" class="form-control rounded-3" placeholder="Ex: Google, MTN, Camtel, Freelance..." />
+                                        <label class="form-label fw-semibold small">Entreprise / Organisation / Université</label>
+                                        <input type="text" name="company" value="{{ form.company.value|default:'' }}" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Camtel, MTN, UY1, Startup..." />
                                     </div>
 
                                     <div class="col-md-3">
-                                        <label class="form-label fw-semibold small">Expérience (Années) <span class="text-danger">*</span></label>
-                                        <input type="number" name="years_of_experience" min="0" max="50" value="{{ form.years_of_experience.value|default:'1' }}" required class="form-control rounded-3" />
+                                        <label class="form-label fw-semibold small">Années d'expérience <span class="text-danger">*</span></label>
+                                        <input type="number" name="years_of_experience" min="0" max="60" value="{{ form.years_of_experience.value|default:'2' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" />
                                     </div>
 
+                                    <!-- Champ masqué level pour rétrocompatibilité modèle -->
+                                    <input type="hidden" name="level" value="ALUMNI" />
+                                    <input type="hidden" name="specialty" value="GL" />
+
                                     <div class="col-12">
-                                        <label class="form-label fw-semibold small">Biographie & Présentation succincte</label>
-                                        <textarea name="bio" rows="3" class="form-control rounded-3" placeholder="Parlez de votre parcours, vos défis surmontés et votre vision pour accompagner au mieux vos filleuls...">{{ form.bio.value|default:'' }}</textarea>
+                                        <label class="form-label fw-semibold small">Biographie / Présentation de votre accompagnement</label>
+                                        <textarea name="bio" rows="3" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Présentez brièvement vos compétences, votre parcours et les conseils que vous souhaitez partager avec vos filleuls...">{{ form.bio.value|default:'' }}</textarea>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- SECTION 4 : COMPÉTENCES & DISPONIBILITÉS -->
+                            <!-- SECTION 4 : COMPÉTENCES AVEC NIVEAU & DOMAINES D'EXPERTISE -->
                             <div class="mb-5">
-                                <h5 class="fw-bold text-dark mb-2">
-                                    <i class="fas fa-layer-group text-primary me-2"></i>Domaines d'Expertise & Compétences Clés <span class="text-danger">*</span>
+                                <h5 class="fw-bold mb-2" style="color: var(--text-dark);">
+                                    <i class="fas fa-layer-group me-2" style="color: var(--rose);"></i> Vos Compétences avec leur Niveau
                                 </h5>
-                                <p class="text-muted small mb-3">Cochez les technologies et domaines dans lesquels vous êtes à l'aise pour conseiller et encadrer :</p>
+                                <p class="text-muted small mb-3">
+                                    Renseignez vos compétences clés et votre niveau de maîtrise pour chacune. Ces données alimentent directement le score de compatibilité de l'algorithme d'affectation :
+                                </p>
 
-                                <div class="row g-2 mb-4">
-                                    {% for choice_val, choice_label in form.fields.expertise_domains_list.choices %}
-                                    <div class="col-sm-6 col-md-4">
-                                        <div class="form-check p-2.5 rounded-3 border bg-light h-100">
-                                            <input class="form-check-input ms-0 me-2" type="checkbox" name="expertise_domains_list" value="{{ choice_val }}" id="domain_{{ choice_val }}">
-                                            <label class="form-check-label small fw-semibold text-dark" for="domain_{{ choice_val }}">
-                                                {{ choice_label }}
-                                            </label>
+                                <!-- Sélecteur dynamique de compétences -->
+                                <div class="p-3 rounded-4 mb-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                    <div class="row g-2 align-items-center mb-3">
+                                        <div class="col-md-6">
+                                            <input type="text" id="newSkillName" placeholder="Ex: Python, React, Docker, Machine Learning..." class="form-control rounded-3" style="border-color: var(--rose-border);">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select id="newSkillLevel" class="form-select rounded-3" style="border-color: var(--rose-border);">
+                                                <option value="Expert">Niveau : Expert (Maîtrise avancée)</option>
+                                                <option value="Avancé" selected>Niveau : Avancé (Très autonome)</option>
+                                                <option value="Intermédiaire">Niveau : Intermédiaire (Pratique régulière)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" onclick="addCustomSkill()" class="btn-rose w-100 justify-content-center">
+                                                <i class="fas fa-plus"></i> Ajouter
+                                            </button>
                                         </div>
                                     </div>
-                                    {% endfor %}
+
+                                    <!-- Tags affichés -->
+                                    <div id="skillsTagContainer" class="d-flex flex-wrap gap-2 min-h-40">
+                                        <!-- Injecté dynamiquement par JS -->
+                                    </div>
+                                    <input type="hidden" name="skills_with_levels_json" id="skillsWithLevelsJson" value="[]" />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Domaines généraux d'expertise (Cochez) :</label>
+                                    <div class="row g-2">
+                                        {% for choice_val, choice_label in form.fields.expertise_domains_list.choices %}
+                                        <div class="col-sm-6 col-md-4">
+                                            <div class="form-check p-2.5 rounded-3 border bg-light h-100">
+                                                <input class="form-check-input ms-0 me-2" type="checkbox" name="expertise_domains_list" value="{{ choice_val }}" id="domain_{{ choice_val }}">
+                                                <label class="form-check-label small fw-semibold text-dark" for="domain_{{ choice_val }}">
+                                                    {{ choice_label }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
 
                                 <div class="row align-items-center">
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold small">Nombre maximum de filleuls souhaité</label>
-                                        <select name="max_mentees" class="form-select rounded-3">
-                                            <option value="1">1 Filleul (Accompagnement individuel)</option>
-                                            <option value="2" selected>2 Filleuls (Recommandé)</option>
-                                            <option value="3">3 Filleuls</option>
-                                            <option value="4">4 Filleuls</option>
+                                        <label class="form-label fw-semibold small">Nombre maximum de filleuls (Strictement plafonné à 2)</label>
+                                        <select name="max_mentees" class="form-select rounded-3" style="border-color: var(--rose-border);">
+                                            <option value="1">1 Filleul (Accompagnement exclusif)</option>
+                                            <option value="2" selected>2 Filleuls (Maximum officiel recommandé)</option>
                                         </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-4 mb-4" style="background: var(--blanc-off); border: 1px dashed var(--rose-border);">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div>
+                                        <span class="small fw-bold text-uppercase" style="color: var(--rose);">Frais de Participation :</span>
+                                        <h4 class="fw-extrabold mb-0" style="color: var(--text-dark);">5 000 FCFA</h4>
+                                    </div>
+                                    <div class="small text-muted">
+                                        <i class="fas fa-ticket-alt" style="color: var(--rose);"></i> Comprend votre Pass Soirée de Gala Resto N°2 + QR code
                                     </div>
                                 </div>
                             </div>
@@ -243,13 +365,14 @@
                                 <a href="{% url 'sponsorship_home' %}" class="btn btn-outline-secondary rounded-pill px-4">
                                     Annuler
                                 </a>
-                                <button type="submit" id="submitBtn" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
-                                    <i class="fas fa-check-circle me-2"></i>Valider mon Inscription de Parrain
+                                <button type="submit" id="submitBtn" class="btn-rose px-5">
+                                    <i class="fas fa-arrow-right"></i> Continuer vers le paiement (5 000 FCFA)
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -258,9 +381,9 @@
 <!-- MODAL DE RECADRAGE DE PHOTO (CROPPER.JS) -->
 <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content rounded-4 border-0 shadow-2xl">
-            <div class="modal-header bg-dark text-white rounded-top-4">
-                <h5 class="modal-title fw-bold" id="cropModalLabel"><i class="fas fa-crop-alt me-2 text-primary"></i>Recadrez votre Photo Portrait</h5>
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header text-white rounded-top-4" style="background: var(--gradient);">
+                <h5 class="modal-title fw-bold" id="cropModalLabel"><i class="fas fa-crop-alt me-2"></i>Recadrez votre Photo Portrait</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-3 text-center">
@@ -275,7 +398,7 @@
             </div>
             <div class="modal-footer bg-light rounded-bottom-4">
                 <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" id="cropConfirmBtn" class="btn btn-primary rounded-pill px-4 fw-bold">
+                <button type="button" id="cropConfirmBtn" class="btn-rose px-4">
                     <i class="fas fa-check me-1"></i> Valider ce portrait
                 </button>
             </div>
@@ -298,11 +421,46 @@
     const placeholderPreview = document.getElementById('placeholderPreview');
     const fileSizeAlert = document.getElementById('fileSizeAlert');
 
+    let mentorSkillsList = [
+        { skill: "Python & Django", level: "Expert" },
+        { skill: "Architecture Logicielle", level: "Avancé" }
+    ];
+
+    function renderSkills() {
+        const container = document.getElementById('skillsTagContainer');
+        container.innerHTML = '';
+        mentorSkillsList.forEach((item, index) => {
+            const span = document.createElement('span');
+            span.className = 'skill-tag';
+            span.innerHTML = `<span><strong>${item.skill}</strong> (${item.level})</span> <i class="fas fa-times cursor-pointer ms-1" onclick="removeSkill(${index})"></i>`;
+            container.appendChild(span);
+        });
+        document.getElementById('skillsWithLevelsJson').value = JSON.stringify(mentorSkillsList);
+    }
+
+    function addCustomSkill() {
+        const input = document.getElementById('newSkillName');
+        const levelSelect = document.getElementById('newSkillLevel');
+        const val = input.value.trim();
+        if (!val) return;
+        mentorSkillsList.push({ skill: val, level: levelSelect.value });
+        input.value = '';
+        renderSkills();
+    }
+
+    function removeSkill(index) {
+        mentorSkillsList.splice(index, 1);
+        renderSkills();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderSkills();
+    });
+
     rawPhotoInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Validation taille (Max 5 Mo)
         if (file.size > 5 * 1024 * 1024) {
             fileSizeAlert.classList.remove('d-none');
             rawPhotoInput.value = '';
@@ -324,7 +482,7 @@
             cropper.destroy();
         }
         cropper = new Cropper(cropperImage, {
-            aspectRatio: 4 / 5, // Ratio portrait idéal
+            aspectRatio: 4 / 5,
             viewMode: 1,
             autoCropArea: 0.9,
             responsive: true,
@@ -342,13 +500,11 @@
         });
 
         canvas.toBlob(function(blob) {
-            // Créer un File à partir du Blob pour l'input form
             const croppedFile = new File([blob], "portrait_mentor.jpg", { type: "image/jpeg" });
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(croppedFile);
             finalPhotoInput.files = dataTransfer.files;
 
-            // Afficher l'aperçu
             imagePreview.src = canvas.toDataURL('image/jpeg');
             imagePreview.classList.remove('d-none');
             placeholderPreview.classList.add('d-none');
@@ -367,7 +523,7 @@
 
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Enregistrement en cours...';
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Enregistrement...';
         return true;
     }
 </script>

@@ -458,6 +458,61 @@ def generate_ticket(registration):
     return registration.ticket_pdf.url
 
 
+def generate_sponsorship_pass(participant):
+    """
+    Génère et sauvegarde le Pass VIP officiel pour la Soirée de Parrainage & Gala (Parrain ou Filleul).
+    Réutilise le générateur officiel Boarding Pass et la vérification QR code.
+    """
+    from datetime import datetime
+    
+    is_mentor = hasattr(participant, 'profession')
+    role_label = "PARRAIN" if is_mentor else "FILLEUL"
+    amount_str = f"{getattr(participant, 'amount', 0):,.0f} FCFA".replace(',', ' ')
+    
+    verify_url = f"{getattr(settings, 'SITE_URL', 'https://comsas-uy1.com')}{reverse('ticket_verify', kwargs={'uuid': participant.uuid})}"
+
+    # Sauvegarde du QR code image pour le modèle
+    qr = qrcode.QRCode(version=1, box_size=8, border=2)
+    qr.add_data(verify_url)
+    qr.make(fit=True)
+    blob = BytesIO()
+    qr.make_image(fill_color="#C2185B", back_color="white").save(blob, 'PNG')
+    if participant.qr_code:
+        participant.qr_code.delete(save=False)
+    participant.qr_code.save(f'qr_pass_{participant.uuid}.png', File(blob), save=False)
+
+    # Proxy pour la mise en page
+    session_name = getattr(participant.session, 'name', 'COFESTI 2026')
+    date_evt = None
+    if getattr(participant.session, 'end_date', None):
+        try:
+            date_evt = datetime.combine(participant.session.end_date, datetime.min.time())
+        except Exception:
+            date_evt = participant.session.end_date
+
+    event_proxy = type('EventProxy', (), {
+        'title_fr': f"SOIRÉE PARRAINAGE & GALA • PASS {role_label}",
+        'date_event': date_evt,
+        'location': "Restaurant Universitaire N° 2 • Campus UY1",
+        'ticket_note': f"Pass officiel Soirée Festi-Noël • {role_label} ({amount_str}) • Accès Buffet & Gala."
+    })()
+
+    participant_data = {
+        'nom_prenom': f"{participant.first_name} {participant.last_name}",
+        'promotion': f"{role_label} • {getattr(participant, 'level', '')}",
+        'uuid': participant.uuid,
+        'verify_url': verify_url,
+    }
+
+    buffer = render_ticket_pdf(event_proxy, participant_data)
+    
+    if participant.ticket_pdf:
+        participant.ticket_pdf.delete(save=False)
+
+    participant.ticket_pdf.save(f'pass_{participant.uuid}.pdf', File(buffer), save=True)
+    return participant.ticket_pdf.url
+
+
 def generate_preview_ticket(event):
     """
     Génère un billet PDF de démonstration pour la prévisualisation dans l'admin.

@@ -1,21 +1,58 @@
 {% extends 'base.html' %}
 {% load static custom_filters %}
 
-{% block title %}Trouver un Parrain / Filleul — COMS.A.S{% endblock %}
+{% block title %}Trouver un Parrain (Filleul) — COMS.A.S{% endblock %}
 
-{% block meta_description %}Rejoignez le programme de parrainage du COM.S.AS en tant que filleul. Bénéficiez des conseils d'un étudiant aîné ou d'un professionnel tech pour réussir vos études.{% endblock %}
+{% block meta_description %}Rejoignez le programme de parrainage du COM.S.AS en tant que filleul. Bénéficiez des conseils d'un diplômé ou d'un professionnel tech pour réussir vos études et décrocher votre stage.{% endblock %}
 
 {% block extra_css %}
 <!-- Cropper.js CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .card-register {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 28px;
+        box-shadow: 0 12px 36px var(--rose-shadow);
+        overflow: hidden;
+    }
+
     .crop-preview-box {
         width: 150px;
-        height: 180px;
-        border-radius: 1rem;
+        height: 185px;
+        border-radius: 18px;
         overflow: hidden;
-        background: #f8fafc;
-        border: 2px dashed #cbd5e1;
+        background: var(--blanc-off);
+        border: 2px dashed var(--rose-border);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -26,14 +63,41 @@
         height: 100%;
         object-fit: cover;
     }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 32px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--rose) !important;
+        box-shadow: 0 0 0 0.25rem rgba(233, 30, 99, 0.15) !important;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<section class="py-5 bg-light position-relative">
+<section class="py-5">
     <div class="container py-3">
         <div class="row justify-content-center">
             <div class="col-lg-10 col-xl-9">
+
                 <!-- Fil d'ariane -->
                 <nav aria-label="breadcrumb" class="mb-4">
                     <ol class="breadcrumb">
@@ -44,27 +108,30 @@
                 </nav>
 
                 <!-- Carte Principale -->
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                    <div class="card-header bg-success text-white p-4 p-md-5">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="w-14 h-14 rounded-3 bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h3 mb-0">
+                <div class="card-register mb-4">
+                    <!-- En-tête Rose & Blanc -->
+                    <div class="p-4 p-md-5 text-white" style="background: var(--gradient);">
+                        <div class="d-flex flex-column flex-sm-row align-items-center gap-3 text-center text-sm-start">
+                            <div class="w-16 h-16 rounded-circle bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h2 mb-0" style="width: 65px; height: 65px;">
                                 <i class="fas fa-user-graduate"></i>
                             </div>
                             <div>
-                                <span class="badge bg-warning text-dark text-uppercase fw-bold px-3 py-1 rounded-pill mb-1">
-                                    Session : {{ session.name }}
+                                <span class="badge rounded-pill bg-white text-dark text-uppercase fw-bold px-3 py-1 mb-2">
+                                    Session : {{ session.name|default:"Session 2025/2026" }}
                                 </span>
-                                <h2 class="mb-1 text-white fw-bold">Trouver un Parrain (Filleul)</h2>
-                                <p class="mb-0 text-white-50 small">Soyez orienté et accompagné vers vos objectifs professionnels et académiques</p>
+                                <h2 class="mb-1 text-white fw-extrabold">Trouver un Parrain (Inscription Filleul)</h2>
+                                <p class="mb-0 text-white-50 small">
+                                    Bénéficiez d'un mentor sur mesure pour votre carrière tech • Frais de participation : <strong>10 000 FCFA</strong> (Pass Soirée de Gala Resto N°2 inclus)
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-body p-4 p-md-5 bg-white">
+                    <div class="p-4 p-md-5 bg-white">
                         <!-- Messages Django -->
                         {% if messages %}
                         {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
                             <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -73,8 +140,8 @@
                         {% endif %}
 
                         {% if form.errors %}
-                        <div class="alert alert-danger rounded-3 shadow-sm mb-4">
-                            <h6 class="fw-bold mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Veuillez corriger les champs suivants :</h6>
+                        <div class="alert alert-danger rounded-4 shadow-sm mb-4">
+                            <h6 class="fw-bold mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Veuillez corriger les erreurs ci-dessous :</h6>
                             <ul class="mb-0 small">
                                 {% for field, errors in form.errors.items %}
                                     {% for error in errors %}
@@ -89,20 +156,20 @@
                             {% csrf_token %}
 
                             <!-- SECTION 1 : PHOTO PORTRAIT OBLIGATOIRE -->
-                            <div class="mb-5 p-4 rounded-4 bg-light border border-secondary border-opacity-10">
-                                <h5 class="fw-bold text-dark mb-1">
-                                    <i class="fas fa-camera text-success me-2"></i>Photo Portrait Officielle <span class="text-danger">*</span>
+                            <div class="mb-5 p-4 rounded-4" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                <h5 class="fw-bold mb-1 d-flex align-items-center gap-2" style="color: var(--text-dark);">
+                                    <i class="fas fa-camera" style="color: var(--rose);"></i> Photo Portrait Officielle <span class="text-danger">*</span>
                                 </h5>
                                 <p class="text-muted small mb-4">
-                                    Votre photo portrait est <strong>obligatoire</strong> pour constituer votre binôme et éditer votre certificat de parrainage. Formats : <strong>JPG, PNG, WEBP</strong> (Max 5 Mo).
+                                    Votre photo portrait est <strong>obligatoire</strong> pour constituer votre binôme, générer votre Pass Soirée Resto N°2 avec QR code et être identifié par votre parrain. Formats : <strong>JPG, PNG, WEBP</strong> (Max 5 Mo).
                                 </p>
 
                                 <div class="row align-items-center g-4">
                                     <div class="col-sm-auto text-center">
                                         <div class="crop-preview-box shadow-sm" id="previewContainer">
                                             <div class="text-center text-muted p-2" id="placeholderPreview">
-                                                <i class="fas fa-user-circle fa-4x text-secondary opacity-50 mb-1"></i>
-                                                <div style="font-size: 0.72rem;">Aperçu du portrait</div>
+                                                <i class="fas fa-user-circle fa-4x opacity-50 mb-1" style="color: var(--rose);"></i>
+                                                <div style="font-size: 0.72rem;">Aperçu recadré</div>
                                             </div>
                                             <img id="imagePreview" class="d-none" alt="Aperçu recadré" />
                                         </div>
@@ -110,15 +177,16 @@
 
                                     <div class="col-sm">
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold small text-uppercase text-muted">Sélectionnez votre portrait</label>
-                                            <input type="file" id="rawPhotoInput" accept="image/jpeg,image/png,image/webp" class="form-control rounded-3" required />
+                                            <label class="form-label fw-bold small text-uppercase text-muted">Sélectionnez votre portrait</label>
+                                            <input type="file" id="rawPhotoInput" accept="image/jpeg,image/png,image/webp" class="form-control rounded-3" style="border-color: var(--rose-border);" required />
+                                            <!-- Input masqué contenant le fichier rogné final -->
                                             <input type="file" name="photo" id="finalPhotoInput" class="d-none" />
                                         </div>
                                         <div id="fileSizeAlert" class="small text-danger d-none mb-2">
                                             <i class="fas fa-exclamation-circle me-1"></i> Le fichier sélectionné dépasse 5 Mo. Veuillez choisir une image plus légère.
                                         </div>
                                         <div class="small text-muted">
-                                            <i class="fas fa-crop-alt text-success me-1"></i> Une boîte de recadrage interactive s'ouvrira pour ajuster le cadrage.
+                                            <i class="fas fa-crop-alt me-1" style="color: var(--rose);"></i> Une boîte de recadrage interactive s'ouvrira pour ajuster le cadrage portrait (ratio 4:5).
                                         </div>
                                     </div>
                                 </div>
@@ -126,61 +194,86 @@
 
                             <!-- SECTION 2 : IDENTITÉ & COORDONNÉES -->
                             <div class="mb-5">
-                                <h5 class="fw-bold text-dark mb-3">
-                                    <i class="fas fa-id-card text-success me-2"></i>Informations Personnelles
+                                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">
+                                    <i class="fas fa-id-card me-2" style="color: var(--rose);"></i> Informations Personnelles & Contact
                                 </h5>
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Prénom <span class="text-danger">*</span></label>
-                                        <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: Vanessa" />
+                                        <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Jean-Paul" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Nom de famille <span class="text-danger">*</span></label>
-                                        <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: Fotso" />
+                                        <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Talla" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small">Adresse e-mail <span class="text-danger">*</span></label>
-                                        <input type="email" name="email" value="{{ form.email.value|default:'' }}" required class="form-control rounded-3" placeholder="votre.email@domaine.com" />
+                                        <input type="email" name="email" value="{{ form.email.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="jean.paul@exemple.com" />
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label fw-semibold small">Numéro de téléphone (WhatsApp) <span class="text-danger">*</span></label>
-                                        <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: +237 659 47 11 52" />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small">Votre Niveau d'étude actuel <span class="text-danger">*</span></label>
-                                        <select name="level" required class="form-select rounded-3">
-                                            <option value="">-- Sélectionnez votre niveau --</option>
-                                            <option value="L1" {% if form.level.value == 'L1' %}selected{% endif %}>Licence 1 Informatique</option>
-                                            <option value="ICT-L1" {% if form.level.value == 'ICT-L1' %}selected{% endif %}>ICT-L1</option>
-                                            <option value="L2" {% if form.level.value == 'L2' %}selected{% endif %}>Licence 2 Informatique</option>
-                                            <option value="ICT-L2" {% if form.level.value == 'ICT-L2' %}selected{% endif %}>ICT-L2</option>
-                                            <option value="L3" {% if form.level.value == 'L3' %}selected{% endif %}>Licence 3</option>
-                                            <option value="M1" {% if form.level.value == 'M1' %}selected{% endif %}>Master 1</option>
-                                            <option value="M2" {% if form.level.value == 'M2' %}selected{% endif %}>Master 2</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small">Spécialité visée / souhaitée <span class="text-danger">*</span></label>
-                                        <input type="text" name="desired_specialty" value="{{ form.desired_specialty.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: Génie Logiciel, Data Science & IA, Cybersécurité, Réseaux..." />
+                                        <label class="form-label fw-semibold small">Numéro de téléphone (Mobile Money / WhatsApp) <span class="text-danger">*</span></label>
+                                        <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="659471152 ou 699000000" />
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- SECTION 3 : PROJET & COMPÉTENCES CIBLÉES -->
+                            <!-- SECTION 3 : NIVEAU D'ÉTUDES (LICENCE, MIS, MASTER) -->
                             <div class="mb-5">
-                                <h5 class="fw-bold text-dark mb-3">
-                                    <i class="fas fa-bullseye text-success me-2"></i>Compétences Ciblées & Projet
+                                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">
+                                    <i class="fas fa-graduation-cap me-2" style="color: var(--rose);"></i> Cycle d'Études & Filière
+                                </h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Cycle d'études actuel * <span class="text-danger">*</span></label>
+                                        <select name="cycle" required class="form-select rounded-3" style="border-color: var(--rose-border);">
+                                            <option value="">-- Sélectionnez votre cycle --</option>
+                                            <option value="licence" {% if form.cycle.value == 'licence' or not form.cycle.value %}selected{% endif %}>Licence (L1, L2, L3)</option>
+                                            <option value="mis" {% if form.cycle.value == 'mis' %}selected{% endif %}>MIS (Master Informatique Spécialisé)</option>
+                                            <option value="master" {% if form.cycle.value == 'master' %}selected{% endif %}>Master Recherche / Académique (M1, M2)</option>
+                                        </select>
+                                        <div class="form-text small text-muted">
+                                            <em>Les étudiants de MIS et de Master peuvent postuler aussi bien comme filleuls que comme parrains.</em>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Filière / Option actuelle * <span class="text-danger">*</span></label>
+                                        <input type="text" name="filiere_option" value="{{ form.filiere_option.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Informatique Fondamentale, MIS, ICT4D, Génie Logiciel..." />
+                                    </div>
+
+                                    <!-- Champ masqué level pour rétrocompatibilité -->
+                                    <input type="hidden" name="level" value="L2" />
+
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold small">Spécialité ou Métier visé * <span class="text-danger">*</span></label>
+                                        <input type="text" name="desired_specialty" value="{{ form.desired_specialty.value|default:'' }}" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Ex: Architecte Cloud, Ingénieur Cybersécurité, Développeur Full-Stack, Data Analyst..." />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 4 : ASPIRATIONS & TYPE DE PARRAIN SOUHAITÉ -->
+                            <div class="mb-5">
+                                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">
+                                    <i class="fas fa-bullseye me-2" style="color: var(--rose);"></i> Aspirations & Critères d'Affectation
                                 </h5>
 
                                 <div class="mb-4">
-                                    <label class="form-label fw-semibold small">Compétences précises que vous souhaitez acquérir <span class="text-danger">*</span></label>
-                                    <textarea name="skills_to_acquire" rows="3" required class="form-control rounded-3" placeholder="Quelles technologies, outils, méthodes ou conseils aimeriez-vous que votre parrain vous transmette ? (Ex: Maîtriser Python et Docker, savoir déployer une API sur le Cloud, réussir mes examens d'algorithmique...)">{{ form.skills_to_acquire.value|default:'' }}</textarea>
+                                    <label class="form-label fw-semibold small">Compétences précises que vous souhaitez acquérir * <span class="text-danger">*</span></label>
+                                    <textarea name="skills_to_acquire" rows="3" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Listez les technologies, méthodes et compétences concrètes que vous voulez développer (Ex: Docker, CI/CD, React, entraînement de modèles IA, préparation d'entretiens techniques...)">{{ form.skills_to_acquire.value|default:'' }}</textarea>
                                 </div>
 
                                 <div class="mb-4">
-                                    <label class="form-label fw-semibold small">Vos compétences techniques actuelles <span class="text-danger">*</span></label>
-                                    <p class="text-muted small mb-2">Cochez vos acquis (même débutant) :</p>
+                                    <label class="form-label fw-semibold small">Description détaillée du type de parrain souhaité * <span class="text-danger">*</span></label>
+                                    <textarea name="desired_mentor_type" rows="3" required class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Décrivez le profil de parrain idéal pour vous (Ex: un ingénieur travaillant dans les télécoms ou une startup, un aîné de MIS spécialisé en sécurité, disponible pour un point mensuel et des conseils de carrière...)">{{ form.desired_mentor_type.value|default:'' }}</textarea>
+                                    <div class="form-text small text-muted">
+                                        <em>Ce texte est directement analysé par notre algorithme de compatibilité pour trouver le meilleur mentor.</em>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold small">Vos compétences actuelles (Même débutant) :</label>
                                     <div class="row g-2">
                                         {% for choice_val, choice_label in form.fields.competencies_list.choices %}
                                         <div class="col-sm-6 col-md-4">
@@ -196,7 +289,7 @@
                                 </div>
 
                                 <div class="mb-4">
-                                    <label class="form-label fw-semibold small">Domaines professionnels souhaités <span class="text-danger">*</span> <span class="text-muted fw-normal">(Max 2)</span></label>
+                                    <label class="form-label fw-semibold small">Domaines professionnels visés (Max 2) :</label>
                                     <div class="row g-2">
                                         {% for choice_val, choice_label in form.fields.professional_domains_list.choices %}
                                         <div class="col-sm-6 col-md-4">
@@ -212,8 +305,20 @@
                                 </div>
 
                                 <div>
-                                    <label class="form-label fw-semibold small">Motivations / Message à votre futur parrain</label>
-                                    <textarea name="bio" rows="2" class="form-control rounded-3" placeholder="Dites quelques mots sur ce qui vous motive le plus...">{{ form.bio.value|default:'' }}</textarea>
+                                    <label class="form-label fw-semibold small">Motivations personnelles</label>
+                                    <textarea name="bio" rows="2" class="form-control rounded-3" style="border-color: var(--rose-border);" placeholder="Exprimez vos motivations et vos ambitions...">{{ form.bio.value|default:'' }}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-4 mb-4" style="background: var(--blanc-off); border: 1px dashed var(--rose-border);">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div>
+                                        <span class="small fw-bold text-uppercase" style="color: var(--rose);">Frais de Participation :</span>
+                                        <h4 class="fw-extrabold mb-0" style="color: var(--text-dark);">10 000 FCFA</h4>
+                                    </div>
+                                    <div class="small text-muted">
+                                        <i class="fas fa-ticket-alt" style="color: var(--rose);"></i> Comprend votre Pass Soirée de Gala Resto N°2 + QR code
+                                    </div>
                                 </div>
                             </div>
 
@@ -223,13 +328,14 @@
                                 <a href="{% url 'sponsorship_home' %}" class="btn btn-outline-secondary rounded-pill px-4">
                                     Annuler
                                 </a>
-                                <button type="submit" id="submitBtn" class="btn btn-success rounded-pill px-5 fw-bold shadow-sm">
-                                    <i class="fas fa-paper-plane me-2"></i>Soumettre ma demande de Parrain
+                                <button type="submit" id="submitBtn" class="btn-rose px-5">
+                                    <i class="fas fa-arrow-right"></i> Continuer vers le paiement (10 000 FCFA)
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -238,9 +344,9 @@
 <!-- MODAL DE RECADRAGE DE PHOTO (CROPPER.JS) -->
 <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content rounded-4 border-0 shadow-2xl">
-            <div class="modal-header bg-dark text-white rounded-top-4">
-                <h5 class="modal-title fw-bold" id="cropModalLabel"><i class="fas fa-crop-alt me-2 text-success"></i>Recadrez votre Photo Portrait</h5>
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header text-white rounded-top-4" style="background: var(--gradient);">
+                <h5 class="modal-title fw-bold" id="cropModalLabel"><i class="fas fa-crop-alt me-2"></i>Recadrez votre Photo Portrait</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-3 text-center">
@@ -255,7 +361,7 @@
             </div>
             <div class="modal-footer bg-light rounded-bottom-4">
                 <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" id="cropConfirmBtn" class="btn btn-success rounded-pill px-4 fw-bold">
+                <button type="button" id="cropConfirmBtn" class="btn-rose px-4">
                     <i class="fas fa-check me-1"></i> Valider ce portrait
                 </button>
             </div>
@@ -344,7 +450,7 @@
 
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Envoi en cours...';
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Enregistrement...';
         return true;
     }
 </script>

@@ -4,6 +4,7 @@ import json
 import uuid
 import logging
 import threading
+from decimal import Decimal
 from django.db import transaction
 from django.contrib import messages
 
@@ -536,19 +537,42 @@ def event_detail(request, pk):
 
 def verify_ticket(request, uuid=None):
     """
-    Vérifie l'authenticité d'un ticket ou d'une attestation via son UUID.
+    Vérifie l'authenticité d'un ticket, d'un pass de parrainage (Parrain/Filleul) ou d'une activité via son UUID.
     """
     registration = None
+    mentor_pass = None
+    mentee_pass = None
+    activity_app = None
     valid = None
+
     if uuid:
-        try:
-            registration = EventRegistration.objects.get(uuid=uuid)
+        # 1. Ticket événement classique
+        registration = EventRegistration.objects.filter(uuid=uuid).first()
+        if registration:
             valid = True
-        except Exception:
-            valid = False
-    
+        else:
+            # 2. Pass Parrain
+            mentor_pass = Mentor.objects.filter(uuid=uuid).first()
+            if mentor_pass:
+                valid = True
+            else:
+                # 3. Pass Filleul
+                mentee_pass = Mentee.objects.filter(uuid=uuid).first()
+                if mentee_pass:
+                    valid = True
+                else:
+                    # 4. Candidature / Ticket Activité
+                    activity_app = EventActivityApplication.objects.filter(uuid=uuid).first()
+                    if activity_app:
+                        valid = True
+                    else:
+                        valid = False
+
     return render(request, 'main/ticket_verify.html', {
         'registration': registration,
+        'mentor_pass': mentor_pass,
+        'mentee_pass': mentee_pass,
+        'activity_app': activity_app,
         'event': registration.event if registration else None,
         'uuid': uuid,
         'valid': valid
@@ -860,60 +884,249 @@ def list_mentors(request):
     mentors = Mentor.objects.filter(session__is_active=True).order_by('specialty', 'first_name')
     return render(request, 'main/sponsorship/mentor_list.html', {'mentors': mentors})
 
+def _get_sponsorship_participant(participant_uuid):
+    """Récupère un mentor ou mentee par son UUID"""
+    participant = Mentor.objects.filter(uuid=participant_uuid).first()
+    role = 'mentor'
+    if not participant:
+        participant = Mentee.objects.filter(uuid=participant_uuid).first()
+        role = 'mentee'
+    return participant, role
+
 def register_mentor(request):
-    """Inscription Parrain Professionnel ou Académique"""
+    """Inscription Parrain Professionnel ou Académique (Frais de participation: 5 000 FCFA avec Pass Soirée)"""
     active_session = SponsorshipSession.objects.filter(is_active=True).first()
     if not active_session:
-        messages.error(request, "Aucune session de parrainage n'est active pour le moment.")
+        active_session = SponsorshipSession.objects.order_by('-start_date').first()
+    if not active_session:
+        messages.error(request, _("Aucune session de parrainage n'est active pour le moment."))
         return redirect('sponsorship_home')
 
     if request.method == 'POST':
         form = MentorRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
+            email = form.cleaned_data.get('email')
+            existing = Mentor.objects.filter(email=email, session=active_session).first()
+            if existing:
+                if existing.is_paid:
+                    messages.info(request, _("Vous êtes déjà inscrit en tant que Parrain et votre Pass Soirée est validé."))
+                    return redirect('sponsorship_success', uuid=existing.uuid)
+                else:
+                    messages.info(request, _("Votre inscription est en attente de paiement."))
+                    return redirect('sponsorship_payment', uuid=existing.uuid)
+
             mentor = form.save(commit=False)
             mentor.session = active_session
-            # Vérifier unicité email pour cette session
-            if Mentor.objects.filter(email=mentor.email, session=active_session).exists():
-                messages.error(request, "Cet email est déjà enregistré comme parrain pour cette session.")
-            else:
-                mentor.save()
-                messages.success(request, f"Félicitations {mentor.first_name} ! Votre inscription en tant que Parrain a été enregistrée avec succès. Votre profil est en cours de validation.")
-                return redirect('sponsorship_success')
+            mentor.amount = Decimal('5000.00')
+            mentor.payment_status = 'pending'
+            mentor.is_paid = False
+            mentor.transaction_id = f"SPONSORPAY-PARRAIN-{uuid.uuid4().hex[:10].upper()}"
+            mentor.save()
+            messages.success(request, _("Félicitations %(name)s ! Votre profil de Parrain a été enregistré. Finalisez votre paiement de 5 000 FCFA pour activer votre Pass Soirée et participer au matching.") % {'name': mentor.first_name})
+            return redirect('sponsorship_payment', uuid=mentor.uuid)
         else:
-            messages.error(request, "Veuillez corriger les erreurs dans le formulaire, notamment la photo portrait obligatoire.")
+            messages.error(request, _("Veuillez corriger les erreurs indiquées dans le formulaire, notamment la photo portrait obligatoire."))
     else:
         form = MentorRegistrationForm()
 
     return render(request, 'main/sponsorship/register_mentor.html', {'form': form, 'session': active_session})
 
 def register_mentee(request):
-    """Inscription Filleul"""
+    """Inscription Filleul (Frais de participation: 10 000 FCFA avec Pass Soirée)"""
     active_session = SponsorshipSession.objects.filter(is_active=True).first()
     if not active_session:
-        messages.error(request, "Aucune session de parrainage n'est active pour le moment.")
+        active_session = SponsorshipSession.objects.order_by('-start_date').first()
+    if not active_session:
+        messages.error(request, _("Aucune session de parrainage n'est active pour le moment."))
         return redirect('sponsorship_home')
 
     if request.method == 'POST':
         form = MenteeRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
+            email = form.cleaned_data.get('email')
+            existing = Mentee.objects.filter(email=email, session=active_session).first()
+            if existing:
+                if existing.is_paid:
+                    messages.info(request, _("Vous êtes déjà inscrit en tant que Filleul et votre Pass Soirée est validé."))
+                    return redirect('sponsorship_success', uuid=existing.uuid)
+                else:
+                    messages.info(request, _("Votre inscription est en attente de paiement."))
+                    return redirect('sponsorship_payment', uuid=existing.uuid)
+
             mentee = form.save(commit=False)
             mentee.session = active_session
-            # Vérifier unicité email pour cette session
-            if Mentee.objects.filter(email=mentee.email, session=active_session).exists():
-                messages.error(request, "Cet email est déjà enregistré comme filleul pour cette session.")
-            else:
-                mentee.save()
-                messages.success(request, f"Félicitations {mentee.first_name} ! Votre demande de parrainage a été enregistrée avec succès. L'attribution du binôme aura lieu prochainement.")
-                return redirect('sponsorship_success')
+            mentee.amount = Decimal('10000.00')
+            mentee.payment_status = 'pending'
+            mentee.is_paid = False
+            mentee.transaction_id = f"SPONSORPAY-FILLEUL-{uuid.uuid4().hex[:10].upper()}"
+            mentee.save()
+            messages.success(request, _("Félicitations %(name)s ! Votre candidature de Filleul a été enregistrée. Finalisez votre paiement de 10 000 FCFA pour activer votre Pass Soirée et être intégré à l'algorithme d'affectation.") % {'name': mentee.first_name})
+            return redirect('sponsorship_payment', uuid=mentee.uuid)
         else:
-            messages.error(request, "Veuillez corriger les erreurs dans le formulaire, notamment la photo portrait obligatoire.")
+            messages.error(request, _("Veuillez corriger les erreurs indiquées dans le formulaire, notamment la photo portrait obligatoire."))
     else:
         form = MenteeRegistrationForm()
 
     return render(request, 'main/sponsorship/register_mentee.html', {'form': form, 'session': active_session})
 
-def sponsorship_success(request):
-    return render(request, 'main/sponsorship/success.html')
+def sponsorship_payment(request, uuid):
+    """Page de paiement Mobile Money sécurisé pour le parrainage (5 000 F Parrain, 10 000 F Filleul)"""
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant:
+        messages.error(request, _("Inscription de parrainage introuvable ou expirée."))
+        return redirect('sponsorship_home')
+
+    if participant.is_paid:
+        messages.info(request, _("Votre paiement est déjà validé et votre Pass Soirée est disponible."))
+        return redirect('sponsorship_success', uuid=participant.uuid)
+
+    amount = int(participant.amount) if participant.amount else (5000 if role == 'mentor' else 10000)
+
+    if request.method == 'POST':
+        phone = request.POST.get('phone', '').strip()
+        if phone:
+            participant.phone = phone
+            participant.save(update_fields=['phone'])
+        else:
+            phone = participant.phone
+
+        from .freemopay_service import FreemopayPaymentProcessor
+        processor = FreemopayPaymentProcessor()
+        res = processor.process_sponsorship_payment(participant, phone=phone)
+
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', '')
+        if is_ajax:
+            return JsonResponse(res)
+
+        if res.get('success'):
+            messages.info(request, res.get('message', _("Une notification de paiement a été envoyée sur votre téléphone. Composez votre code secret.")))
+        else:
+            messages.warning(request, _("Échec de l'initialisation du paiement : %(err)s") % {'err': res.get('error', _("Erreur réseau"))})
+
+    context = {
+        'participant': participant,
+        'role': role,
+        'amount': amount,
+        'session': participant.session,
+    }
+    return render(request, 'main/sponsorship/payment.html', context)
+
+def sponsorship_payment_status(request, uuid):
+    """Vérification AJAX du statut de paiement de parrainage (Polling)"""
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant:
+        return JsonResponse({'success': False, 'error': 'Participant introuvable'}, status=404)
+
+    if not participant.is_paid and participant.payment_status in ('pending', 'processing') and participant.payment_reference:
+        from .freemopay_service import FreemopayPaymentProcessor
+        processor = FreemopayPaymentProcessor()
+        vote_like = type('Obj', (object,), {
+            'transaction_id': participant.transaction_id,
+            'payment_reference': participant.payment_reference,
+            'phone': participant.phone
+        })()
+        check = processor.verify_payment_status(vote_like)
+        if check.get('success') and check.get('status') == 'completed':
+            processor.confirm_sponsorship_payment(participant)
+            participant.refresh_from_db()
+
+    redirect_url = reverse('sponsorship_success', kwargs={'uuid': participant.uuid}) if participant.is_paid else ''
+    
+    return JsonResponse({
+        'is_paid': participant.is_paid,
+        'payment_status': participant.payment_status,
+        'transaction_id': participant.transaction_id,
+        'name': f"{participant.first_name} {participant.last_name}",
+        'redirect_url': redirect_url,
+    })
+
+def sponsorship_payment_cancel(request, uuid):
+    """Annulation d'un paiement en attente"""
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant:
+        return redirect('sponsorship_home')
+    if not participant.is_paid:
+        participant.payment_status = 'cancelled'
+        participant.save(update_fields=['payment_status'])
+        messages.info(request, _("Le paiement a été annulé. Vous pouvez relancer la transaction à tout moment pour activer votre pass."))
+    return redirect('sponsorship_payment', uuid=participant.uuid)
+
+def sponsorship_success(request, uuid=None):
+    """Confirmation finale, affichage du Pass officiel avec QR Code et statut d'affectation"""
+    if not uuid:
+        return render(request, 'main/sponsorship/success.html', {})
+        
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant:
+        messages.error(request, _("Participant introuvable."))
+        return redirect('sponsorship_home')
+
+    if not participant.is_paid:
+        messages.warning(request, _("Veuillez d'abord finaliser votre paiement pour obtenir votre Pass officiel."))
+        return redirect('sponsorship_payment', uuid=participant.uuid)
+
+    match = None
+    matches = []
+    if role == 'mentor':
+        matches = Match.objects.filter(mentor=participant)
+    else:
+        match = Match.objects.filter(mentee=participant).first()
+
+    context = {
+        'participant': participant,
+        'role': role,
+        'match': match,
+        'matches': matches,
+        'session': participant.session,
+    }
+    return render(request, 'main/sponsorship/success.html', context)
+
+def sponsorship_my_match(request, uuid):
+    """Espace personnel pour voir son Parrain ou son/ses Filleul(s) (Maximum 2 filleuls par parrain)"""
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant:
+        messages.error(request, _("Participant introuvable."))
+        return redirect('sponsorship_home')
+
+    if not participant.is_paid:
+        messages.warning(request, _("Veuillez d'abord valider votre participation pour consulter votre binôme."))
+        return redirect('sponsorship_payment', uuid=participant.uuid)
+
+    matches = []
+    mentees = []
+    mentor = None
+
+    if role == 'mentor':
+        matches = Match.objects.filter(mentor=participant).select_related('mentee')
+        mentees = [m.mentee for m in matches]
+    else:
+        m = Match.objects.filter(mentee=participant).select_related('mentor').first()
+        if m:
+            matches = [m]
+            mentor = m.mentor
+
+    context = {
+        'participant': participant,
+        'role': role,
+        'matches': matches,
+        'mentees': mentees,
+        'mentor': mentor,
+        'session': participant.session,
+    }
+    return render(request, 'main/sponsorship/my_match.html', context)
+
+def sponsorship_download_pass(request, uuid):
+    """Téléchargement direct du PDF du Pass Soirée de Gala avec QR code"""
+    participant, role = _get_sponsorship_participant(uuid)
+    if not participant or not participant.is_paid:
+        raise Http404(_("Pass non disponible ou impayé."))
+    if not participant.ticket_pdf:
+        from .utils import generate_sponsorship_pass
+        generate_sponsorship_pass(participant)
+        participant.refresh_from_db()
+    if participant.ticket_pdf:
+        return FileResponse(participant.ticket_pdf.open('rb'), content_type='application/pdf', filename=f"Pass_Soiree_{participant.first_name}_{participant.last_name}.pdf")
+    raise Http404(_("Fichier de pass introuvable."))
 
 def list_mentors(request):
     """Liste publique des parrains"""

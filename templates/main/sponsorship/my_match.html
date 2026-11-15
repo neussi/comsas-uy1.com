@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Mon Binôme de Parrainage — COMS.A.S{% endblock %}
+
+{% block meta_description %}Consultez les informations et coordonnées de votre parrain ou de vos filleuls du programme de parrainage du COM.S.AS.{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    .text-gradient {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 24px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .22);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
+    }
+
+    .btn-outline-rose {
+        background: transparent;
+        color: var(--rose) !important;
+        border: 1.5px solid var(--rose-border);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 10px 22px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--rose-pale);
+        border-color: var(--rose);
+    }
+
+    .partner-card {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 24px;
+        box-shadow: 0 8px 30px var(--rose-shadow);
+        overflow: hidden;
+        transition: transform .25s ease;
+    }
+
+    .partner-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .partner-photo {
+        width: 140px;
+        height: 170px;
+        border-radius: 20px;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 6px 18px rgba(0,0,0,.12);
+    }
+
+    .score-badge {
+        background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.8rem;
+        padding: 6px 16px;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
+    }
+
+    .skill-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: 50px;
+        background: var(--rose-pale);
+        border: 1px solid var(--rose-border);
+        color: var(--rose);
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container py-3">
+
+        <!-- En-tête & Boutons d'Action -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5">
+            <div>
+                <a href="{% url 'sponsorship_home' %}" class="small text-muted text-decoration-none d-inline-flex align-items-center gap-1 mb-2">
+                    <i class="fas fa-arrow-left"></i> Espace Parrainage
+                </a>
+                <h1 class="display-6 fw-extrabold mb-1" style="color: var(--text-dark);">
+                    Mon Espace <span class="text-gradient">Binôme & Parrainage</span>
+                </h1>
+                <p class="text-muted small mb-0">
+                    Session : <strong>{{ session.name|default:"Session 2025/2026" }}</strong> • Vous êtes connecté comme <strong>{{ participant.first_name }} {{ participant.last_name }}</strong>
+                </p>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'sponsorship_download_pass' participant.uuid %}" class="btn-rose">
+                    <i class="fas fa-file-pdf"></i> Télécharger mon Pass Gala
+                </a>
+                <a href="{% url 'verify_ticket' participant.uuid %}" target="_blank" class="btn-outline-rose">
+                    <i class="fas fa-qrcode"></i> Vérifier mon Pass
+                </a>
+            </div>
+        </div>
+
+        <!-- Messages Django -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+            <i class="fas fa-info-circle me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if role == 'mentor' %}
+            <!-- ================= CAS DU PARRAIN : VOIR SES FILLEULS (MAX 2) ================= -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h3 class="fw-bold mb-0" style="color: var(--text-dark);">
+                        <i class="fas fa-user-graduate me-2" style="color: var(--rose);"></i> Vos Filleuls Attribués
+                    </h3>
+                    <span class="badge rounded-pill fw-bold px-3 py-1.5" style="background: var(--rose-pale); color: var(--rose);">
+                        {{ mentees|length }} / 2 Filleul{{ mentees|length|pluralize }} maximum
+                    </span>
+                </div>
+
+                {% if mentees %}
+                <div class="row g-4">
+                    {% for mentee in mentees %}
+                    <div class="col-lg-6">
+                        <div class="partner-card p-4 p-md-5 h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start gap-4 mb-4">
+                                    {% if mentee.photo %}
+                                    <img src="{{ mentee.photo.url }}" alt="{{ mentee.first_name }}" class="partner-photo flex-shrink-0">
+                                    {% else %}
+                                    <div class="partner-photo d-flex align-items-center justify-content-center bg-white text-muted">
+                                        <i class="fas fa-user fa-3x" style="color: var(--rose);"></i>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="flex-grow-1 text-center text-sm-start">
+                                        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-sm-start gap-2 mb-1">
+                                            <h4 class="fw-extrabold mb-0" style="color: var(--text-dark);">
+                                                {{ mentee.first_name }} {{ mentee.last_name }}
+                                            </h4>
+                                        </div>
+                                        <div class="small fw-bold mb-2" style="color: var(--rose);">
+                                            <i class="fas fa-graduation-cap me-1"></i> {{ mentee.get_cycle_display|default:mentee.cycle }} • {{ mentee.filiere_option }}
+                                        </div>
+                                        <div class="small text-muted mb-2">
+                                            <strong>Spécialité visée :</strong> {{ mentee.desired_specialty }}
+                                        </div>
+                                        <span class="score-badge">
+                                            <i class="fas fa-sparkles me-1"></i> Match Compatible
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 rounded-4 mb-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                    <div class="small fw-bold mb-1" style="color: var(--text-dark);">
+                                        <i class="fas fa-tools me-1" style="color: var(--rose);"></i> Compétences à acquérir :
+                                    </div>
+                                    <p class="small text-muted mb-0" style="line-height: 1.6;">
+                                        {{ mentee.skills_to_acquire }}
+                                    </p>
+                                </div>
+
+                                {% if mentee.desired_mentor_type %}
+                                <div class="p-3 rounded-4 mb-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                    <div class="small fw-bold mb-1" style="color: var(--text-dark);">
+                                        <i class="fas fa-user-check me-1" style="color: var(--rose);"></i> Type de parrain souhaité :
+                                    </div>
+                                    <p class="small text-muted mb-0" style="line-height: 1.6;">
+                                        {{ mentee.desired_mentor_type }}
+                                    </p>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Coordonnées et Contact -->
+                            <div class="pt-3 border-top border-rose-subtle mt-2 d-flex flex-wrap gap-2">
+                                <a href="mailto:{{ mentee.email }}" class="btn-outline-rose btn-sm">
+                                    <i class="fas fa-envelope"></i> {{ mentee.email }}
+                                </a>
+                                <a href="tel:{{ mentee.phone }}" class="btn-rose btn-sm">
+                                    <i class="fas fa-phone-alt"></i> {{ mentee.phone }}
+                                </a>
+                                {% if mentee.phone %}
+                                <a href="https://wa.me/237{{ mentee.phone|cut:' ' }}" target="_blank" class="btn btn-success rounded-pill btn-sm fw-bold d-inline-flex align-items-center gap-1 px-3">
+                                    <i class="fab fa-whatsapp"></i> Échanger
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% else %}
+                <!-- État d'attente pour le parrain -->
+                <div class="p-5 rounded-5 text-center bg-white shadow-sm" style="border: 1px solid var(--rose-border);">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 80px; height: 80px; background: var(--rose-pale); color: var(--rose); font-size: 2.2rem;">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h3 class="fw-extrabold mb-2" style="color: var(--text-dark);">
+                        Affectation de vos filleuls en cours
+                    </h3>
+                    <p class="text-muted max-w-700 mx-auto mb-4" style="line-height: 1.8;">
+                        Merci pour votre engagement généreux en tant que Parrain ! Notre algorithme analyse en ce moment les souhaits et filières des filleuls inscrits pour vous attribuer jusqu'à <strong>2 filleuls maximum</strong> correspondant le mieux à votre profil d'expertise.
+                        Vous recevrez une notification par email dès la confirmation des affectations.
+                    </p>
+                    <a href="{% url 'sponsorship_home' %}" class="btn-rose">
+                        <i class="fas fa-arrow-left"></i> Retour au portail Parrainage
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+        {% else %}
+            <!-- ================= CAS DU FILLEUL : VOIR SON PARRAIN ================= -->
+            <div class="mb-4">
+                <h3 class="fw-bold mb-3" style="color: var(--text-dark);">
+                    <i class="fas fa-chalkboard-teacher me-2" style="color: var(--rose);"></i> Votre Parrain Attribué
+                </h3>
+
+                {% if mentor %}
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="partner-card p-4 p-md-5">
+                            <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start gap-4 mb-4">
+                                {% if mentor.photo %}
+                                <img src="{{ mentor.photo.url }}" alt="{{ mentor.first_name }}" class="partner-photo flex-shrink-0">
+                                {% else %}
+                                <div class="partner-photo d-flex align-items-center justify-content-center bg-white text-muted">
+                                    <i class="fas fa-user-tie fa-3x" style="color: var(--rose);"></i>
+                                </div>
+                                {% endif %}
+
+                                <div class="flex-grow-1 text-center text-sm-start">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-sm-start gap-2 mb-1">
+                                        <h3 class="fw-extrabold mb-0" style="color: var(--text-dark);">
+                                            {{ mentor.first_name }} {{ mentor.last_name }}
+                                        </h3>
+                                        <span class="score-badge">
+                                            <i class="fas fa-award me-1"></i> Parrain Officiel
+                                        </span>
+                                    </div>
+
+                                    <div class="small fw-bold mb-1" style="color: var(--rose);">
+                                        <i class="fas fa-briefcase me-1"></i> {{ mentor.profession }} {% if mentor.company %}chez <strong>{{ mentor.company }}</strong>{% endif %}
+                                    </div>
+                                    <div class="small text-muted mb-2">
+                                        <i class="fas fa-history me-1"></i> {{ mentor.years_of_experience }} an{{ mentor.years_of_experience|pluralize }} d'expérience • {{ mentor.get_cycle_display|default:mentor.cycle }}
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        <i class="fas fa-graduation-cap me-1" style="color: var(--rose);"></i> {{ mentor.filiere_option }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if mentor.bio %}
+                            <div class="p-3 rounded-4 mb-4" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                <h6 class="small fw-bold mb-1" style="color: var(--text-dark);">Présentation & Parcours :</h6>
+                                <p class="small text-muted mb-0" style="line-height: 1.7;">
+                                    {{ mentor.bio }}
+                                </p>
+                            </div>
+                            {% endif %}
+
+                            <!-- Domaines et Compétences du Parrain -->
+                            {% if mentor.expertise_domains %}
+                            <div class="mb-4">
+                                <h6 class="small fw-bold mb-2 text-uppercase" style="color: var(--rose);">Domaines d'expertise :</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for domain in mentor.get_expertise_domains_list %}
+                                    <span class="skill-chip">
+                                        <i class="fas fa-check"></i> {{ domain }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Coordonnées et Contact -->
+                            <div class="pt-3 border-top border-rose-subtle d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a href="mailto:{{ mentor.email }}" class="btn-outline-rose">
+                                        <i class="fas fa-envelope"></i> {{ mentor.email }}
+                                    </a>
+                                    <a href="tel:{{ mentor.phone }}" class="btn-rose">
+                                        <i class="fas fa-phone-alt"></i> {{ mentor.phone }}
+                                    </a>
+                                    {% if mentor.phone %}
+                                    <a href="https://wa.me/237{{ mentor.phone|cut:' ' }}" target="_blank" class="btn btn-success rounded-pill fw-bold d-inline-flex align-items-center gap-1 px-3">
+                                        <i class="fab fa-whatsapp"></i> Échanger sur WhatsApp
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% else %}
+                <!-- État d'attente ou liste d'attente pour le filleul -->
+                <div class="p-5 rounded-5 text-center bg-white shadow-sm" style="border: 1px solid var(--rose-border);">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 80px; height: 80px; background: var(--rose-pale); color: var(--rose); font-size: 2.2rem;">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <h3 class="fw-extrabold mb-2" style="color: var(--text-dark);">
+                        Recherche et Attribution de votre Parrain en cours
+                    </h3>
+                    <p class="text-muted max-w-700 mx-auto mb-4" style="line-height: 1.8;">
+                        Votre inscription est confirmée et votre <strong>Pass Soirée de Gala</strong> est validé.
+                        Notre algorithme apparie actuellement les filleuls avec les parrains les plus expérimentés dans votre domaine souhaité (<strong>{{ participant.desired_specialty }}</strong>).
+                        Si la capacité d'accueil de la session est atteinte, vous êtes prioritaire sur la liste d'attente pour la prochaine vague d'attribution.
+                    </p>
+                    <a href="{% url 'sponsorship_home' %}" class="btn-rose">
+                        <i class="fas fa-arrow-left"></i> Revenir au portail
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
