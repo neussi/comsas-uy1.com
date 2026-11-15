@@ -2453,11 +2453,14 @@ def _get_cofesti_edition(year=None):
                 'description': "Le grand festival festif et sportif de fin d'année du Département d'Informatique de l'Université de Yaoundé I.",
                 'start_date': datetime.date(2026, 12, 1),
                 'end_date': datetime.date(2026, 12, 23),
-                'sponsorship_gala_date': datetime.date(2026, 12, 23),
-                'sponsorship_gala_location': "Restaurant Universitaire N°2, Université de Yaoundé I",
+                'location': "Université de Yaoundé I",
                 'is_active': True,
-                'is_voting_open': True,
-                'vote_price': 100,
+                'miss_master_active': True,
+                'miss_master_voting_open': True,
+                'sports_active': True,
+                'picnics_active': True,
+                'sponsorship_gala_active': True,
+                'vote_unit_price': 100,
             }
         )
     return edition
