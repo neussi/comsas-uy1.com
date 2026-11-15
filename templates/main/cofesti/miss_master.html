@@ -4,9 +4,15 @@
 {% block title %}Concours Miss & Master COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
 
 {% block extra_css %}
-<link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        corePlugins: {
+            preflight: false,
+        }
+    };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
     .font-outfit {
         font-family: 'Outfit', sans-serif;
@@ -30,7 +36,7 @@
         <!-- Header -->
         <div class="text-center max-w-3xl mx-auto mb-10">
             <a href="{% url 'cofesti_home' %}"
-                class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-full transition-colors mb-4">
+                class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-full transition-colors mb-4 text-decoration-none">
                 <i class="fas fa-arrow-left"></i>
                 <span>Retour au Hub COFESTI {{ edition.year }}</span>
             </a>
@@ -38,26 +44,25 @@
                 Élection Miss & Master & Finale The Voice
             </h1>
             <p class="text-slate-600 text-sm sm:text-base mt-3">
-                Soutenez vos camarades du Département d'Informatique. Les votes en ligne s'effectuent à <strong>{{
-                    edition.vote_unit_price|floatformat:0 }} FCFA par voix</strong> via Orange Money & MTN Mobile Money.
+                Soutenez vos camarades du Département d'Informatique. Les votes en ligne s'effectuent à <strong>{{ edition.vote_unit_price|floatformat:0 }} FCFA par voix</strong> via Orange Money & MTN Mobile Money.
             </p>
 
             <!-- Filters -->
             <div class="flex flex-wrap items-center justify-center gap-2.5 mt-8">
                 <a href="?type=all"
-                    class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if current_type == 'all' %}bg-slate-900 text-white shadow-md{% else %}bg-white text-slate-700 border border-slate-200 hover:bg-slate-100{% endif %}">
+                    class="btn btn-sm rounded-xl px-4 py-2 font-bold transition-all {% if current_type == 'all' %}btn-dark text-white shadow-md{% else %}btn-outline-secondary bg-white text-dark border-slate-200{% endif %}">
                     Tous les candidats ({{ candidates|length }})
                 </a>
                 <a href="?type=miss"
-                    class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if current_type == 'miss' %}bg-rose-600 text-white shadow-md{% else %}bg-white text-rose-700 border border-rose-200 hover:bg-rose-50{% endif %}">
+                    class="btn btn-sm rounded-xl px-4 py-2 font-bold transition-all {% if current_type == 'miss' %}btn-danger text-white shadow-md{% else %}btn-outline-danger bg-white text-danger border-rose-200{% endif %}">
                     <i class="fas fa-female mr-1"></i> Miss Département ({{ miss_count }})
                 </a>
                 <a href="?type=master"
-                    class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if current_type == 'master' %}bg-blue-600 text-white shadow-md{% else %}bg-white text-blue-700 border border-blue-200 hover:bg-blue-50{% endif %}">
+                    class="btn btn-sm rounded-xl px-4 py-2 font-bold transition-all {% if current_type == 'master' %}btn-primary text-white shadow-md{% else %}btn-outline-primary bg-white text-primary border-blue-200{% endif %}">
                     <i class="fas fa-male mr-1"></i> Master Département ({{ master_count }})
                 </a>
                 <a href="?type=voice"
-                    class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if current_type == 'voice' %}bg-purple-600 text-white shadow-md{% else %}bg-white text-purple-700 border border-purple-200 hover:bg-purple-50{% endif %}">
+                    class="btn btn-sm rounded-xl px-4 py-2 font-bold transition-all {% if current_type == 'voice' %}btn-purple text-white shadow-md bg-purple-600 border-purple-600{% else %}btn-outline-secondary bg-white text-purple-700 border-purple-200{% endif %}">
                     <i class="fas fa-microphone mr-1"></i> The Voice ({{ voice_count }})
                 </a>
             </div>
@@ -67,15 +72,13 @@
         {% if candidates %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {% for c in candidates %}
-            <div
-                class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between card-hover">
+            <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between card-hover">
                 <div>
-                    <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-slate-100 mb-4">
+                    <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-slate-100 mb-4" style="min-height: 280px;">
                         {% if c.photo %}
                         <img src="{{ c.photo.url }}" alt="{{ c.name }}" class="w-full h-full object-cover">
                         {% else %}
-                        <div
-                            class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-gradient-to-tr from-slate-100 to-slate-200">
+                        <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-gradient-to-tr from-slate-100 to-slate-200" style="min-height: 280px;">
                             {% if c.contest_type == 'miss' %}
                             <i class="fas fa-female text-5xl text-rose-300 mb-2"></i>
                             <span class="text-xs font-bold text-rose-500">Candidate Miss</span>
@@ -89,13 +92,11 @@
                         </div>
                         {% endif %}
 
-                        <div
-                            class="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md text-amber-400 text-xs font-black px-2.5 py-1 rounded-lg">
+                        <div class="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md text-amber-400 text-xs font-black px-2.5 py-1 rounded-lg">
                             #{{ c.number }}
                         </div>
 
-                        <div
-                            class="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md flex items-center gap-1.5">
+                        <div class="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md flex items-center gap-1.5">
                             <i class="fas fa-fire text-amber-400 text-xs"></i>
                             <span>{{ c.votes_count }} voix</span>
                         </div>
@@ -103,15 +104,11 @@
 
                     <div class="flex items-center gap-2 mb-1">
                         {% if c.contest_type == 'miss' %}
-                        <span
-                            class="text-[10px] font-black uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-0.5 rounded">Miss</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-0.5 rounded">Miss</span>
                         {% elif c.contest_type == 'master' %}
-                        <span
-                            class="text-[10px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Master</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Master</span>
                         {% else %}
-                        <span
-                            class="text-[10px] font-black uppercase tracking-wider text-purple-600 bg-purple-50 px-2 py-0.5 rounded">The
-                            Voice</span>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-purple-600 bg-purple-50 px-2 py-0.5 rounded">The Voice</span>
                         {% endif %}
                         <span class="text-xs text-slate-400">•</span>
                         <span class="text-xs text-slate-500 font-medium">{{ c.level }}</span>
@@ -131,7 +128,7 @@
                     <button
                         onclick="openVoteModal({{ c.id }}, '{{ c.name|escapejs }}', {{ c.number }}, '{{ c.get_contest_type_display|escapejs }}')"
                         type="button"
-                        class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-amber-500/20 flex items-center justify-center gap-2">
+                        class="btn btn-warning w-full py-2.5 px-4 rounded-xl font-bold text-xs shadow-md d-flex align-items-center justify-content-center gap-2">
                         <i class="fas fa-vote-yea"></i>
                         <span>Voter ({{ edition.vote_unit_price|floatformat:0 }} FCFA)</span>
                     </button>
@@ -140,10 +137,48 @@
             {% endfor %}
         </div>
         {% else %}
-        <div class="text-center py-16 bg-white rounded-3xl border border-slate-200">
-            <i class="fas fa-crown text-4xl text-slate-300 mb-3"></i>
-            <h3 class="text-lg font-bold text-slate-700">Aucun candidat dans cette catégorie pour le moment</h3>
-            <p class="text-xs text-slate-500 mt-1">Revenez très vite pour le lancement officiel des votes !</p>
+        <!-- État vide : Candidatures pas encore publiées -->
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-4">
+            <div class="mx-auto mb-3 rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <i class="fas fa-crown fa-2x"></i>
+            </div>
+            <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-30 rounded-pill px-3 py-1.5 fw-bold text-uppercase mx-auto mb-3" style="font-size:0.75rem;">
+                <i class="fas fa-hourglass-half me-1"></i> Phase Préparatoire · Candidatures
+            </span>
+            <h3 class="fw-bold text-dark mb-2 font-outfit">Les candidatures ne sont pas encore publiées</h3>
+            <p class="text-muted mx-auto mb-4" style="max-width: 640px; font-size: 0.95rem;">
+                L'appel officiel à candidatures pour l'élection <strong>Miss Département</strong>, <strong>Master Département</strong> et la <strong>Finale The Voice {{ edition.year }}</strong> est en cours auprès de la Commission Concours du COFESTI. Les profils des candidates et candidats officiels seront dévoilés ici dès leur validation par le Comité d'Organisation.
+            </p>
+            
+            <div class="row g-3 justify-content-center mb-4 text-start" style="max-width: 760px; margin: 0 auto;">
+                <div class="col-md-4">
+                    <div class="p-3 rounded-3 bg-light border border-light-subtle h-100">
+                        <span class="fw-bold text-danger d-block mb-1"><i class="fas fa-female me-1"></i> Miss Informatique</span>
+                        <small class="text-muted d-block">Étudiante inscrite en Informatique à l'UY1 (L1 à Doctorat), éloquence, projet associatif et esprit d'initiative.</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 rounded-3 bg-light border border-light-subtle h-100">
+                        <span class="fw-bold text-primary d-block mb-1"><i class="fas fa-male me-1"></i> Master Informatique</span>
+                        <small class="text-muted d-block">Étudiant inscrit en Informatique à l'UY1 (L1 à Doctorat), charisme, leadership et représentation étudiante.</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 rounded-3 bg-light border border-light-subtle h-100">
+                        <span class="fw-bold text-purple d-block mb-1" style="color: #9333ea;"><i class="fas fa-microphone me-1"></i> The Voice</span>
+                        <small class="text-muted d-block">Prestation vocale en direct sur la grande scène lors de la soirée gala de clôture au Restaurant Universitaire N°2.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a href="mailto:contact@comsas-uy1.com?subject=Candidature%20COFESTI%20{{ edition.year }}" class="btn btn-warning rounded-pill px-4 py-2.5 fw-bold text-dark shadow-sm">
+                    <i class="fas fa-paper-plane me-2"></i>Contacter la Commission Concours
+                </a>
+                <a href="{% url 'cofesti_home' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2.5 fw-semibold">
+                    <i class="fas fa-arrow-left me-2"></i>Retour au Hub COFESTI
+                </a>
+            </div>
         </div>
         {% endif %}
 
