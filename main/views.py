@@ -33,7 +33,7 @@ from .forms import (
     ContactForm, JUINCommissionApplicationForm, 
     JUINDonationForm, JUINSponsorRequestForm
 )
-from .freemopay_service import FreemopayService
+from .propenta_service import PropentaPaymentProcessor, PropentaWebhookHandler
 
 from .utils import generate_ticket
 from django.db.models import Q
@@ -700,7 +700,7 @@ def initiate_donation(request):
             payment_status='pending'
         )
 
-        service = FreemopayService()
+        service = PropentaPaymentProcessor()
         res = service.initiate_payment(
             amount=montant,
             phone_number=clean_phone,
@@ -721,7 +721,7 @@ def initiate_donation(request):
             donation.payment_status = 'failed'
             donation.save()
             raw_err = res.get('error') if res else 'Service de paiement indisponible.'
-            error_msg = FreemopayService.translate_error_message(raw_err)
+            error_msg = PropentaPaymentProcessor.translate_error_message(raw_err)
             return JsonResponse({'success': False, 'error': error_msg})
 
     except Exception as e:
@@ -743,7 +743,7 @@ def check_donation_status(request, external_id):
 
     if donation.payment_status in ('initiated', 'pending', 'processing') and donation.freemopay_reference:
         try:
-            service = FreemopayService()
+            service = PropentaPaymentProcessor()
             check = service.check_payment_status(donation.freemopay_reference)
             if check.get('success'):
                 raw_status = (check.get('status') or '').upper()
@@ -762,7 +762,7 @@ def check_donation_status(request, external_id):
                 elif raw_status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED'):
                     donation.payment_status = 'failed'
                     donation.save()
-                    reason = check.get('reason') or FreemopayService.translate_error_message((check.get('data') or {}).get('reason')) or 'Le paiement a échoué. Veuillez vérifier votre solde et réessayer.'
+                    reason = check.get('reason') or PropentaPaymentProcessor.translate_error_message((check.get('data') or {}).get('reason')) or 'Le paiement a échoué. Veuillez vérifier votre solde et réessayer.'
                     return JsonResponse({
                         'success': True,
                         'status': 'failed',
@@ -772,7 +772,7 @@ def check_donation_status(request, external_id):
                 elif raw_status in ('CANCELLED', 'CANCELED', 'REJECTED'):
                     donation.payment_status = 'cancelled'
                     donation.save()
-                    reason = check.get('reason') or FreemopayService.translate_error_message((check.get('data') or {}).get('reason')) or 'La transaction a été annulée sur votre téléphone.'
+                    reason = check.get('reason') or PropentaPaymentProcessor.translate_error_message((check.get('data') or {}).get('reason')) or 'La transaction a été annulée sur votre téléphone.'
                     return JsonResponse({
                         'success': True,
                         'status': 'cancelled',
@@ -990,8 +990,8 @@ def sponsorship_payment(request, uuid):
         else:
             phone = participant.phone
 
-        from .freemopay_service import FreemopayPaymentProcessor
-        processor = FreemopayPaymentProcessor()
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
         res = processor.process_sponsorship_payment(participant, phone=phone)
 
         is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', '')
@@ -1018,8 +1018,8 @@ def sponsorship_payment_status(request, uuid):
         return JsonResponse({'success': False, 'error': 'Participant introuvable'}, status=404)
 
     if not participant.is_paid and participant.payment_status in ('pending', 'processing') and participant.payment_reference:
-        from .freemopay_service import FreemopayPaymentProcessor
-        processor = FreemopayPaymentProcessor()
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
         vote_like = type('Obj', (object,), {
             'transaction_id': participant.transaction_id,
             'payment_reference': participant.payment_reference,
@@ -1733,7 +1733,7 @@ def juin_donate(request):
                 donation.external_id = external_id
                 donation.save()
                 
-                service = FreemopayService()
+                service = PropentaPaymentProcessor()
                 res = service.initiate_payment(
                     amount=donation.montant,
                     phone_number=donation.telephone,
@@ -1821,8 +1821,8 @@ def juin_payment_status_check(request, external_id):
     # Toujours re-vérifier depuis Freemopay si le paiement est en cours ou si on a une référence
     if donation.payment_status in ('initiated', 'processing') and donation.freemopay_reference:
         try:
-            from .freemopay_service import FreemopayService
-            service = FreemopayService()
+            from .propenta_service import PropentaPaymentProcessor, PropentaWebhookHandler
+            service = PropentaPaymentProcessor()
             check = service.check_payment_status(donation.freemopay_reference)
             if check.get('success'):
                 raw_status = check.get('status', '').upper()
@@ -2266,17 +2266,23 @@ def juin_candidates_status(request, contest_slug=None):
         'candidates': candidates
     })
 
-from .freemopay_service import FreemopayPaymentProcessor, FreemopayWebhookHandler
+from .propenta_service import PropentaPaymentProcessor, PropentaWebhookHandler
 
 @csrf_exempt
-def juin_freemopay_webhook(request):
-    """Webhook pour recevoir les notifications de paiement Freemopay"""
+def propenta_webhook(request):
+    """
+    Webhook officiel Propenta Pay V2 (configuré sur https://www.comsas-uy1.com/webhook)
+    Reçoit les notifications d'état des transactions Mobile Money (Orange Money & MTN MoMo)
+    """
     if request.method == 'POST':
-        result = FreemopayWebhookHandler.handle_webhook(request.body)
+        result = PropentaWebhookHandler.handle_webhook(request.body)
         if result.get('success'):
-            return JsonResponse({'status': 'ok'})
+            return JsonResponse({'status': 'ok', 'result': result})
         return JsonResponse({'status': 'error', 'message': result.get('error')}, status=400)
     return HttpResponseForbidden()
+
+# Alias de rétro-compatibilité
+juin_freemopay_webhook = propenta_webhook
 
 def contest_vote_initiate(request):
     """Initier un vote payant (100 FCFA/voix)"""
@@ -2313,8 +2319,8 @@ def contest_vote_initiate(request):
             user_agent=request.META.get('HTTP_USER_AGENT')
         )
         
-        from .freemopay_service import FreemopayPaymentProcessor
-        processor = FreemopayPaymentProcessor()
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
         result = processor.process_vote_payment(vote)
         
         if result.get('success'):
@@ -2337,7 +2343,7 @@ def vote_status_check(request, transaction_id):
     
     # Si toujours en cours, on peut tenter une vérification active si besoin
     if vote.status == 'processing':
-        processor = FreemopayPaymentProcessor()
+        processor = PropentaPaymentProcessor()
         check = processor.verify_payment_status(vote)
         if check.get('success') and check.get('status') == 'completed':
             processor.confirm_payment(vote)
@@ -2395,8 +2401,8 @@ def juin_vote_initiate(request):
             user_agent=request.META.get('HTTP_USER_AGENT')
         )
         
-        from .freemopay_service import FreemopayPaymentProcessor
-        processor = FreemopayPaymentProcessor()
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
         result = processor.process_vote_payment(vote)
         
         if result.get('success'):
@@ -2423,8 +2429,8 @@ def juin_vote_status_check(request, transaction_id):
     vote = get_object_or_404(JUINVote, transaction_id=transaction_id)
     
     if vote.status == 'processing':
-        from .freemopay_service import FreemopayPaymentProcessor
-        processor = FreemopayPaymentProcessor()
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
         check = processor.verify_payment_status(vote)
         if check.get('success') and check.get('status') == 'completed':
             processor.confirm_payment(vote)
@@ -2833,8 +2839,8 @@ def cofesti_vote_initiate(request):
             ip_address=request.META.get('REMOTE_ADDR')
         )
         
-        from .freemopay_service import FreemopayPaymentProcessor
-        processor = FreemopayPaymentProcessor()
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
         result = processor.process_vote_payment(vote)
         
         if result.get('success'):
@@ -2862,8 +2868,8 @@ def cofesti_vote_status_check(request, transaction_id):
     vote = get_object_or_404(CofestiVote, transaction_id=transaction_id)
     
     if vote.status == 'processing':
-        from .freemopay_service import FreemopayPaymentProcessor
-        processor = FreemopayPaymentProcessor()
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
         check = processor.verify_payment_status(vote)
         if check.get('success') and check.get('status') == 'completed':
             processor.confirm_payment(vote)
@@ -3015,8 +3021,8 @@ def activity_detail(request, slug):
                 app.is_paid = False
                 app.save()
                 
-                from .freemopay_service import FreemopayPaymentProcessor
-                processor = FreemopayPaymentProcessor()
+                from .propenta_service import PropentaPaymentProcessor
+                processor = PropentaPaymentProcessor()
                 res = processor.process_activity_payment(app)
                 
                 if res.get('success'):
@@ -3050,8 +3056,8 @@ def activity_application_status(request, uuid):
     
     # Vérification asynchrone du statut si en attente
     if application.status == 'pending' and not application.is_paid and activity.price > 0:
-        from .freemopay_service import FreemopayPaymentProcessor
-        processor = FreemopayPaymentProcessor()
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
         # Mock/Vérification
         vote_like = type('Obj', (object,), {
             'transaction_id': application.transaction_id,
@@ -3086,8 +3092,8 @@ def api_activity_payment_status(request, transaction_id):
     app = get_object_or_404(EventActivityApplication, transaction_id=transaction_id)
     
     if app.status == 'pending' and not app.is_paid:
-        from .freemopay_service import FreemopayPaymentProcessor
-        processor = FreemopayPaymentProcessor()
+        from .propenta_service import PropentaPaymentProcessor
+        processor = PropentaPaymentProcessor()
         vote_like = type('Obj', (object,), {
             'transaction_id': app.transaction_id,
             'payment_reference': app.payment_reference,

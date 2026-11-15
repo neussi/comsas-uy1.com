@@ -5,8 +5,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
+from main import views as main_views
 
 urlpatterns = [
+    # Webhooks officiels Propenta Pay V2 (sans redirection i18n)
+    path('webhook', main_views.propenta_webhook, name='propenta_webhook_raw'),
+    path('webhook/', main_views.propenta_webhook, name='propenta_webhook_slash'),
+    path('api/propenta/webhook/', main_views.propenta_webhook, name='propenta_webhook_api'),
+    path('api/payments/webhook/freemopay/', main_views.propenta_webhook, name='propenta_freemopay_webhook_compat'),
     
     # Dashboard administrateur personnalisé
     path('dashboard/', include('admin_dashboard.urls')),

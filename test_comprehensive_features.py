@@ -19,7 +19,7 @@ from main.models import (
     CofestiEdition, CofestiCandidate, CofestiVote
 )
 from main.forms import MentorRegistrationForm, MenteeRegistrationForm, EventActivityApplicationForm
-from main.freemopay_service import FreemopayPaymentProcessor
+from main.propenta_service import PropentaPaymentProcessor
 
 print("="*70)
 print("RUNNING COMPREHENSIVE E2E & UNIT TESTS")
@@ -67,7 +67,9 @@ mentor_data = {
     'last_name': 'Dupont',
     'email': 'jean.dupont.test@example.com',
     'phone': '+237699001122',
-    'level': 'ALUMNI',
+    'cycle': 'master',
+    'level': 'M1',
+    'filiere_option': 'GL',
     'specialty': 'GL',
     'profession': 'Senior Cloud Architect & DevOps Lead',
     'company': 'Google Cloud Partner',
@@ -94,9 +96,12 @@ mentee_data = {
     'last_name': 'Kamga',
     'email': 'alice.kamga.test@example.com',
     'phone': '+237677112233',
+    'cycle': 'licence',
     'level': 'L1',
+    'filiere_option': 'GL',
     'desired_specialty': 'Data Science & Intelligence Artificielle',
     'skills_to_acquire': 'Machine Learning, Deep Learning, MLOps',
+    'desired_mentor_type': 'Senior Data Engineer ou Expert IA',
     'bio': 'Étudiante passionnée cherchant à se perfectionner en IA.',
     'competencies_list': ['python'],
     'professional_domains_list': ['data_science'],
@@ -280,13 +285,13 @@ print("✓ Gaming activity application validated: SUCCESS")
 
 
 # ---------------------------------------------------------
-# TEST 3: Freemopay Payment Flow (Pending, Status, Cancel, Success)
+# TEST 3: Propenta Pay Payment Flow (Pending, Status, Cancel, Success)
 # ---------------------------------------------------------
-print("\n--- [TEST 3] Freemopay Mobile Money Payment Integration ---")
+print("\n--- [TEST 3] Propenta Pay Mobile Money Payment Integration ---")
 
 import uuid
 
-processor = FreemopayPaymentProcessor()
+processor = PropentaPaymentProcessor()
 
 # 3.1 Create pending application for paid gaming activity
 tx_uuid = f"ACTIVITYPAY-GAMING-{uuid.uuid4().hex[:6]}"

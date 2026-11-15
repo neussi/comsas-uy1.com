@@ -36,8 +36,12 @@ jobs:
           ENVEOF
           FPK="${{ secrets.FREEMOPAY_APP_KEY }}"
           FSK="${{ secrets.FREEMOPAY_SECRET_KEY }}"
-          if [ -z "$FPK" ]; then FPK="69997c27-8def-464a-8934-5d9ed0a85709"; fi
-          if [ -z "$FSK" ]; then FSK="1DwoptA4kDjApej9OeWp"; fi
+          if [ -z "$FPK" ]; then FPK="a6f1c793-7193-4859-b6c9-323e4c6e76ca"; fi
+          if [ -z "$FSK" ]; then FSK="4bT5nNhDWChrM9NwRZtHKj92qgK0qZWxoh-wI38kx64"; fi
+          echo "PROPENTA_CLIENT_ID=$FPK" >> .env
+          echo "PROPENTA_CLIENT_SECRET=$FSK" >> .env
+          echo "PROPENTA_BASE_URL=https://app.pay.propentatech.com/api/v2" >> .env
+          echo "PROPENTA_WEBHOOK_URL=https://www.comsas-uy1.com/webhook" >> .env
           echo "FREEMOPAY_APP_KEY=$FPK" >> .env
           echo "FREEMOPAY_SECRET_KEY=$FSK" >> .env
           echo "--- .env injecté ---"

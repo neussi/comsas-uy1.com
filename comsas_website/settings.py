@@ -406,9 +406,17 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # =============================================================================
-# FREEMOPAY — Paiements Mobile Money
+# PROPENTA PAY (V2) — Mobile Money Cameroun (Orange Money & MTN MoMo)
 # =============================================================================
-FREEMOPAY_APP_KEY = os.environ.get('FREEMOPAY_APP_KEY') or '69997c27-8def-464a-8934-5d9ed0a85709'
-FREEMOPAY_SECRET_KEY = os.environ.get('FREEMOPAY_SECRET_KEY') or '1DwoptA4kDjApej9OeWp'
-FREEMOPAY_BASE_URL = os.environ.get('FREEMOPAY_BASE_URL') or 'https://api-v2.freemopay.com'
+PROPENTA_CLIENT_ID = os.environ.get('PROPENTA_CLIENT_ID') or 'a6f1c793-7193-4859-b6c9-323e4c6e76ca'
+PROPENTA_CLIENT_SECRET = os.environ.get('PROPENTA_CLIENT_SECRET') or '4bT5nNhDWChrM9NwRZtHKj92qgK0qZWxoh-wI38kx64'
+PROPENTA_BASE_URL = os.environ.get('PROPENTA_BASE_URL') or 'https://app.pay.propentatech.com/api/v2'
+PROPENTA_WEBHOOK_URL = os.environ.get('PROPENTA_WEBHOOK_URL') or 'https://www.comsas-uy1.com/webhook'
+PROPENTA_WITHDRAWAL_NUMBER = os.environ.get('PROPENTA_WITHDRAWAL_NUMBER') or '237650970526'
+
+# Compatibilité transitoire Freemopay
+FREEMOPAY_APP_KEY = PROPENTA_CLIENT_ID
+FREEMOPAY_SECRET_KEY = PROPENTA_CLIENT_SECRET
+FREEMOPAY_BASE_URL = PROPENTA_BASE_URL
+
 

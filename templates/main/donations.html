@@ -180,7 +180,7 @@
                         <div class="p-3 bg-white rounded-4 border border-light shadow-sm text-center">
                             <span class="small text-muted d-block mb-1">Moyen de paiement sécurisé</span>
                             <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-semibold">
-                                <i class="fas fa-shield-alt me-1"></i>Mobile Money (MTN & Orange) via Freemopay
+                                <i class="fas fa-shield-alt me-1"></i>Mobile Money (MTN & Orange) via Propenta Pay
                             </span>
                         </div>
                     </div>
@@ -273,10 +273,10 @@
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-rose w-100 py-3 rounded-pill fw-bold h5 mb-2" id="submit-btn">
-                            <i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay
+                            <i class="fas fa-lock me-2"></i>Lancer le Don Mobile Money
                         </button>
                         <div class="text-center small text-muted">
-                            Transaction sécurisée par Freemopay. Aucun frais supplémentaire facturé.
+                            Transaction sécurisée par Propenta Pay V2. Aucun frais supplémentaire facturé.
                         </div>
                     </form>
                 </div>
@@ -340,7 +340,7 @@
     </div>
 </section>
 
-<!-- Modal de traitement du paiement Freemopay -->
+<!-- Modal de traitement du paiement Propenta Pay -->
 <div class="payment-modal" id="payment-modal">
     <div class="modal-content-box">
         <!-- État 1 : En attente de validation USSD -->
@@ -492,12 +492,12 @@
             } else {
                 showFormError(data.error || 'Une erreur est survenue lors de l\'initiation du paiement.');
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay';
+                submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don Mobile Money';
             }
         } catch (err) {
             showFormError('Erreur de connexion. Veuillez vérifier votre accès à internet et réessayer.');
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay';
+            submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don Mobile Money';
         }
     }
 
@@ -546,7 +546,7 @@
 
         const submitBtn = document.getElementById('submit-btn');
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay';
+        submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don Mobile Money';
     }
 
     function closeModal(refresh) {
@@ -557,7 +557,7 @@
         } else {
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don via Freemopay';
+            submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Lancer le Don Mobile Money';
         }
     }
 </script>

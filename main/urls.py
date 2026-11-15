@@ -153,8 +153,11 @@ urlpatterns = [
     path('juin/sponsors/', views.juin_sponsors_list, name='juin_sponsors'),
     path('juin/devenir-partenaire/', views.juin_sponsor_request, name='juin_become_partner'),
     
-    # FreemoPay Webhooks & Async checks
-    path('api/payments/webhook/freemopay/', views.juin_freemopay_webhook, name='juin_freemopay_webhook'),
+    # Propenta Pay Webhooks & Async checks
+    path('webhook', views.propenta_webhook, name='propenta_webhook_raw'),
+    path('webhook/', views.propenta_webhook, name='propenta_webhook'),
+    path('api/propenta/webhook/', views.propenta_webhook, name='propenta_webhook_api'),
+    path('api/payments/webhook/freemopay/', views.propenta_webhook, name='juin_freemopay_webhook'),
     path('api/payments/status/<str:external_id>/', views.juin_payment_status_check, name='juin_payment_status'),
     path('api/vote/initiate/', views.contest_vote_initiate, name='contest_vote_initiate'),
     path('api/vote/status/<str:transaction_id>/', views.vote_status_check, name='vote_status_check'),
