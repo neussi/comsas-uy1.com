@@ -26,12 +26,17 @@ urlpatterns = [
     path('projects/', views.projects, name='projects'),
     path('projects/<int:pk>/', views.project_detail, name='project_detail'),
     
-    # Événements
+    # Événements & Activités
     path('events/', views.events, name='events'),
     path('events/<int:pk>/', views.event_detail, name='event_detail'),
     path('events/register/success/<uuid:uuid>/', views.event_registration_success, name='event_registration_success'),
     path('evenements/activite/<slug:slug>/', views.activity_detail, name='activity_detail'),
+    path('evenements/activite/<int:slug>/', views.activity_detail, name='activity_detail_pk'),
+    path('evenements/activites/<slug:slug>/', views.activity_detail, name='activity_detail_alt1'),
+    path('events/activity/<slug:slug>/', views.activity_detail, name='activity_detail_alt2'),
+    path('events/activite/<slug:slug>/', views.activity_detail, name='activity_detail_alt3'),
     path('evenements/activite/candidature/<uuid:uuid>/', views.activity_application_status, name='activity_application_status'),
+    path('events/activity/candidature/<uuid:uuid>/', views.activity_application_status, name='activity_application_status_alt'),
     path('evenements/activite/candidature/<uuid:uuid>/annuler/', views.activity_payment_cancel, name='activity_payment_cancel'),
     path('api/evenements/activite/payment-status/<str:transaction_id>/', views.api_activity_payment_status, name='api_activity_payment_status'),
     
@@ -63,6 +68,12 @@ urlpatterns = [
     path('parrainage/succes/', views.sponsorship_success, name='sponsorship_success'),
     path('parrainage/nos-parrains/', views.list_mentors, name='list_mentors'),
     path('parrainage/binomes/', views.list_matches, name='list_matches'),
+    # Aliases URL pour le parrainage
+    path('sponsorship/', views.sponsorship_home, name='sponsorship_home_alias'),
+    path('sponsorship/mentors/', views.list_mentors, name='list_mentors_alias'),
+    path('sponsorship/matches/', views.list_matches, name='list_matches_alias'),
+    path('sponsorship/register/mentor/', views.register_mentor, name='register_mentor_alias'),
+    path('sponsorship/register/mentee/', views.register_mentee, name='register_mentee_alias'),
     
     # ============= SYSTÈME DE VOTE (CONCOURS) =============
     path('concours/', views.contest_list, name='contest_list'),
@@ -168,13 +179,25 @@ urlpatterns = [
     path('cofesti/miss-master/', views.cofesti_miss_master, name='cofesti_miss_master'),
     path('cofesti/<int:year>/miss-master/', views.cofesti_miss_master, name='cofesti_miss_master_year'),
     path('cofesti/sports/', views.cofesti_sports, name='cofesti_sports'),
+    path('cofesti/sport/', views.cofesti_sports, name='cofesti_sport_alias'),
     path('cofesti/<int:year>/sports/', views.cofesti_sports, name='cofesti_sports_year'),
+    path('cofesti/<int:year>/sport/', views.cofesti_sports, name='cofesti_sports_year_alias'),
     path('cofesti/pique-niques/', views.cofesti_picnics, name='cofesti_picnics'),
+    path('cofesti/piqueniques/', views.cofesti_picnics, name='cofesti_picnics_alias1'),
+    path('cofesti/picnics/', views.cofesti_picnics, name='cofesti_picnics_alias2'),
     path('cofesti/<int:year>/pique-niques/', views.cofesti_picnics, name='cofesti_picnics_year'),
+    path('cofesti/<int:year>/piqueniques/', views.cofesti_picnics, name='cofesti_picnics_year_alias1'),
+    path('cofesti/<int:year>/picnics/', views.cofesti_picnics, name='cofesti_picnics_year_alias2'),
     path('cofesti/parrainage/', views.cofesti_sponsorship, name='cofesti_sponsorship'),
+    path('cofesti/parrainage-gala/', views.cofesti_sponsorship, name='cofesti_sponsorship_alias1'),
+    path('cofesti/gala/', views.cofesti_sponsorship, name='cofesti_sponsorship_alias2'),
     path('cofesti/<int:year>/parrainage/', views.cofesti_sponsorship, name='cofesti_sponsorship_year'),
+    path('cofesti/<int:year>/parrainage-gala/', views.cofesti_sponsorship, name='cofesti_sponsorship_year_alias1'),
+    path('cofesti/<int:year>/gala/', views.cofesti_sponsorship, name='cofesti_sponsorship_year_alias2'),
     path('cofesti/comite/', views.cofesti_committee, name='cofesti_committee'),
+    path('cofesti/committee/', views.cofesti_committee, name='cofesti_committee_alias'),
     path('cofesti/<int:year>/comite/', views.cofesti_committee, name='cofesti_committee_year'),
+    path('cofesti/<int:year>/committee/', views.cofesti_committee, name='cofesti_committee_year_alias'),
 
     # Actions & API COFESTI
     path('api/cofesti/vote/initiate/', views.cofesti_vote_initiate, name='cofesti_vote_initiate'),

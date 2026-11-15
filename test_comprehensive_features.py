@@ -284,10 +284,12 @@ print("✓ Gaming activity application validated: SUCCESS")
 # ---------------------------------------------------------
 print("\n--- [TEST 3] Freemopay Mobile Money Payment Integration ---")
 
+import uuid
+
 processor = FreemopayPaymentProcessor()
 
 # 3.1 Create pending application for paid gaming activity
-tx_uuid = f"ACTIVITYPAY-GAMING-001"
+tx_uuid = f"ACTIVITYPAY-GAMING-{uuid.uuid4().hex[:6]}"
 app_gaming = form_gaming_ok.save(commit=False)
 app_gaming.activity = act_gaming
 app_gaming.amount = act_gaming.price
@@ -327,7 +329,7 @@ app_paid = EventActivityApplication.objects.create(
     team_name='FC Codeurs',
     team_size=6,
     amount=act_team.price,
-    transaction_id=f"ACTIVITYPAY-TEAM-002",
+    transaction_id=f"ACTIVITYPAY-TEAM-{uuid.uuid4().hex[:6]}",
     status='pending',
     is_paid=False,
 )

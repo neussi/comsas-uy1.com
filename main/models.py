@@ -1907,10 +1907,30 @@ class CofestiEdition(models.Model):
 
     @classmethod
     def get_current(cls):
-        """Récupère l'édition active ou la plus récente"""
+        """Récupère l'édition active ou la plus récente, ou provisionne automatiquement l'édition par défaut"""
         current = cls.objects.filter(is_active=True).first()
         if not current:
             current = cls.objects.order_by('-year').first()
+        if not current:
+            import datetime
+            try:
+                current, _ = cls.objects.get_or_create(
+                    year=2026,
+                    defaults={
+                        'title': "COFESTI 2026 — Festi-Noël du COM.S.AS",
+                        'theme': "Célébration, Excellence & Solidarité Estudiantine",
+                        'description': "Le grand festival festif et sportif de fin d'année du Département d'Informatique de l'Université de Yaoundé I.",
+                        'start_date': datetime.date(2026, 12, 1),
+                        'end_date': datetime.date(2026, 12, 23),
+                        'sponsorship_gala_date': datetime.date(2026, 12, 23),
+                        'sponsorship_gala_location': "Restaurant Universitaire N°2, Université de Yaoundé I",
+                        'is_active': True,
+                        'is_voting_open': True,
+                        'vote_price': 100,
+                    }
+                )
+            except Exception:
+                current = cls.objects.first()
         return current
 
 

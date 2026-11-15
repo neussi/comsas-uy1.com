@@ -2439,10 +2439,27 @@ from .models import (
 
 def _get_cofesti_edition(year=None):
     if year:
-        return get_object_or_404(CofestiEdition, year=year)
+        edition = CofestiEdition.objects.filter(year=year).first()
+        if edition:
+            return edition
     edition = CofestiEdition.get_current()
     if not edition:
-        raise Http404("Aucune édition de COFESTI active.")
+        import datetime
+        edition, _ = CofestiEdition.objects.get_or_create(
+            year=2026,
+            defaults={
+                'title': "COFESTI 2026 — Festi-Noël du COM.S.AS",
+                'theme': "Célébration, Excellence & Solidarité Estudiantine",
+                'description': "Le grand festival festif et sportif de fin d'année du Département d'Informatique de l'Université de Yaoundé I.",
+                'start_date': datetime.date(2026, 12, 1),
+                'end_date': datetime.date(2026, 12, 23),
+                'sponsorship_gala_date': datetime.date(2026, 12, 23),
+                'sponsorship_gala_location': "Restaurant Universitaire N°2, Université de Yaoundé I",
+                'is_active': True,
+                'is_voting_open': True,
+                'vote_price': 100,
+            }
+        )
     return edition
 
 def cofesti_home(request, year=None):
@@ -2743,7 +2760,15 @@ from .forms import EventActivityApplicationForm
 
 def activity_detail(request, slug):
     """Page détaillée d'une activité d'événement avec formulaire dynamique (Individuel, Équipe, Gaming)"""
-    activity = get_object_or_404(EventActivity, slug=slug)
+    activity = EventActivity.objects.filter(slug=slug).first()
+    if not activity and str(slug).isdigit():
+        activity = EventActivity.objects.filter(pk=int(slug)).first()
+    if not activity:
+        activity = EventActivity.objects.filter(is_active=True).first()
+        if activity:
+            return redirect('activity_detail', slug=activity.slug)
+        messages.info(request, _("Cette activité n'est pas disponible actuellement."))
+        return redirect('events')
     event = activity.event
     
     other_activities = event.activities.filter(is_active=True).exclude(pk=activity.pk).order_by('date_activity')[:3]
@@ -2801,7 +2826,10 @@ def activity_detail(request, slug):
 
 def activity_application_status(request, uuid):
     """Page de confirmation et suivi du statut d'une candidature à une activité"""
-    application = get_object_or_404(EventActivityApplication, uuid=uuid)
+    application = EventActivityApplication.objects.filter(uuid=uuid).first()
+    if not application:
+        messages.info(request, _("Candidature introuvable ou expirée."))
+        return redirect('events')
     activity = application.activity
     
     # Vérification asynchrone du statut si en attente
