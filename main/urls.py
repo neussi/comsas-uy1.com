@@ -30,6 +30,10 @@ urlpatterns = [
     path('events/', views.events, name='events'),
     path('events/<int:pk>/', views.event_detail, name='event_detail'),
     path('events/register/success/<uuid:uuid>/', views.event_registration_success, name='event_registration_success'),
+    path('evenements/activite/<slug:slug>/', views.activity_detail, name='activity_detail'),
+    path('evenements/activite/candidature/<uuid:uuid>/', views.activity_application_status, name='activity_application_status'),
+    path('evenements/activite/candidature/<uuid:uuid>/annuler/', views.activity_payment_cancel, name='activity_payment_cancel'),
+    path('api/evenements/activite/payment-status/<str:transaction_id>/', views.api_activity_payment_status, name='api_activity_payment_status'),
     
     # Actualités
     path('news/', views.news, name='news'),
@@ -157,6 +161,28 @@ urlpatterns = [
     
     # Portfolios
     path('portfolio/<slug:slug>/', views.member_portfolio, name='member_portfolio'),
+
+    # ============= COFESTI (FESTI-NOËL COMSAS) =============
+    path('cofesti/', views.cofesti_home, name='cofesti_home'),
+    path('cofesti/<int:year>/', views.cofesti_home, name='cofesti_home_year'),
+    path('cofesti/miss-master/', views.cofesti_miss_master, name='cofesti_miss_master'),
+    path('cofesti/<int:year>/miss-master/', views.cofesti_miss_master, name='cofesti_miss_master_year'),
+    path('cofesti/sports/', views.cofesti_sports, name='cofesti_sports'),
+    path('cofesti/<int:year>/sports/', views.cofesti_sports, name='cofesti_sports_year'),
+    path('cofesti/pique-niques/', views.cofesti_picnics, name='cofesti_picnics'),
+    path('cofesti/<int:year>/pique-niques/', views.cofesti_picnics, name='cofesti_picnics_year'),
+    path('cofesti/parrainage/', views.cofesti_sponsorship, name='cofesti_sponsorship'),
+    path('cofesti/<int:year>/parrainage/', views.cofesti_sponsorship, name='cofesti_sponsorship_year'),
+    path('cofesti/comite/', views.cofesti_committee, name='cofesti_committee'),
+    path('cofesti/<int:year>/comite/', views.cofesti_committee, name='cofesti_committee_year'),
+
+    # Actions & API COFESTI
+    path('api/cofesti/vote/initiate/', views.cofesti_vote_initiate, name='cofesti_vote_initiate'),
+    path('api/cofesti/vote/status/<str:transaction_id>/', views.cofesti_vote_status_check, name='cofesti_vote_status_check'),
+    path('cofesti/vote/merci/<str:transaction_id>/', views.cofesti_vote_complete, name='cofesti_vote_complete'),
+    path('cofesti/equipe/inscrire/', views.cofesti_team_register, name='cofesti_team_register'),
+    path('cofesti/pique-nique/reserver/', views.cofesti_picnic_book, name='cofesti_picnic_book'),
+    path('cofesti/parrainage/inscrire/', views.cofesti_sponsorship_register, name='cofesti_sponsorship_register'),
 ]
 
 if settings.DEBUG:

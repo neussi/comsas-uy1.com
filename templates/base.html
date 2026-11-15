@@ -1630,6 +1630,29 @@
                             href="{% url 'contact' %}">Contact</a>
                     </li>
 
+                    <!-- COFESTI 2026 (Festi-Noël) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'cofesti' in request.path %}active{% endif %}" href="#"
+                            id="cofestiDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:#D97706;font-weight:700;">
+                            <i class="fas fa-holly-berry me-1 text-danger"></i>COFESTI 2026 <span class="badge bg-warning text-dark ms-1" style="font-size:0.65rem;">Festi-Noël</span>
+                        </a>
+                        <ul class="dropdown-menu shadow-lg border-0 rounded-4" aria-labelledby="cofestiDropdown" style="min-width: 250px;">
+                            <li><a class="dropdown-item fw-bold text-success" href="{% url 'cofesti_home' %}">
+                                    <i class="fas fa-home me-2"></i>Hub COFESTI 2026</a></li>
+                            <li><a class="dropdown-item fw-bold text-danger" href="{% url 'cofesti_miss_master' %}">
+                                    <i class="fas fa-crown me-2"></i>Miss & Master (Votes à 100F)</a></li>
+                            <li><a class="dropdown-item fw-bold text-primary" href="{% url 'cofesti_sports' %}">
+                                    <i class="fas fa-futbol me-2"></i>Sports & Hymne Football</a></li>
+                            <li><a class="dropdown-item" href="{% url 'cofesti_picnics' %}">
+                                    <i class="fas fa-film me-2 text-info"></i>5 Pique-Niques & Cinéma</a></li>
+                            <li><a class="dropdown-item fw-bold text-warning" href="{% url 'cofesti_sponsorship' %}">
+                                    <i class="fas fa-glass-cheers me-2"></i>Soirée Parrainage & Gala</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-muted" href="{% url 'cofesti_committee' %}">
+                                    <i class="fas fa-users me-2"></i>Comité Officiel (Décision 095)</a></li>
+                        </ul>
+                    </li>
+
                     <!-- J.U.IN 2026 -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {% if 'juin' in request.path %}active{% endif %}" href="#"

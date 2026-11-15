@@ -285,113 +285,140 @@ class NewsletterForm(forms.Form):
 
 # ------------- SPONSORSHIP FORMS -------------
 from .models import Mentor, Mentee, SponsorshipSession, COMPETENCIES_LIST, DOMAINS_LIST
+from PIL import Image
+
+def validate_portrait_photo(photo):
+    """Validation stricte du format et du poids de la photo portrait"""
+    if not photo:
+        raise forms.ValidationError(_("La photo portrait officielle est obligatoire."))
+    
+    # Validation du poids (Max 5 Mo)
+    max_size = 5 * 1024 * 1024
+    if photo.size > max_size:
+        raise forms.ValidationError(_("Le fichier photo est trop lourd (%(size).1f Mo). La taille maximale autorisée est de 5 Mo.") % {
+            'size': photo.size / (1024 * 1024)
+        })
+
+    # Validation du format (JPEG, PNG, WEBP)
+    allowed_types = ['image/jpeg', 'image/png', 'image/webp']
+    content_type = getattr(photo, 'content_type', '')
+    if content_type and content_type not in allowed_types:
+        raise forms.ValidationError(_("Format non pris en charge. Veuillez télécharger une image au format JPG, PNG ou WEBP."))
+
+    try:
+        img = Image.open(photo)
+        img.verify()
+    except Exception:
+        raise forms.ValidationError(_("Fichier image corrompu ou invalide. Veuillez sélectionner une photo valide."))
+
+    return photo
+
 
 class MentorRegistrationForm(forms.ModelForm):
-    """Formulaire d'inscription des parrains"""
-    # Use MultipleChoiceField for checkboxes logic, but model has TextField.
-    # We'll need to clean the data to join list into string.
+    """Formulaire d'inscription des parrains professionnels et académiques"""
+    photo = forms.ImageField(
+        required=True,
+        label=_("Photo Portrait Officielle *"),
+        help_text=_("Photo nette et professionnelle (JPEG, PNG, WEBP, max 5 Mo). Un outil de recadrage est à votre disposition ci-dessous."),
+        validators=[validate_portrait_photo]
+    )
+    profession = forms.CharField(
+        max_length=150,
+        required=True,
+        label=_("Profession / Poste actuel *"),
+        widget=forms.TextInput(attrs={'placeholder': _('Ex: Ingénieur DevOps, Data Scientist, Tech Lead...')})
+    )
+    company = forms.CharField(
+        max_length=150,
+        required=False,
+        label=_("Entreprise / Organisation"),
+        widget=forms.TextInput(attrs={'placeholder': _('Ex: Google, MTN, Orange, Startup, Freelance...')})
+    )
+    years_of_experience = forms.IntegerField(
+        min_value=0,
+        max_value=60,
+        initial=1,
+        required=True,
+        label=_("Années d'expérience *"),
+        widget=forms.NumberInput(attrs={'min': 0, 'max': 60})
+    )
+    bio = forms.CharField(
+        required=False,
+        label=_("Présentation / Biographie succincte"),
+        widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('Présentez votre parcours, vos réalisations et ce que vous souhaitez apporter à vos filleuls...')})
+    )
     expertise_domains_list = forms.MultipleChoiceField(
         choices=DOMAINS_LIST,
         widget=forms.CheckboxSelectMultiple,
         required=True,
-        label=_("Domaines d'expertise (Cochez tout ce qui s'applique)")
+        label=_("Domaines d'expertise & Compétences clés * (Cochez tout ce qui s'applique)")
     )
     
     class Meta:
         model = Mentor
-        fields = ['first_name', 'last_name', 'phone', 'email', 'level', 'specialty', 'max_mentees']
-        # removed expertise_domains from fields, handled manually
+        fields = ['first_name', 'last_name', 'phone', 'email', 'level', 'specialty', 'profession', 'company', 'years_of_experience', 'bio', 'photo', 'max_mentees']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Fieldset(
-                _('Informations Personnelles'),
-                Row(
-                    Column('first_name', css_class='form-group col-md-6 mb-3'),
-                    Column('last_name', css_class='form-group col-md-6 mb-3'),
-                ),
-                Row(
-                    Column('email', css_class='form-group col-md-6 mb-3'),
-                    Column('phone', css_class='form-group col-md-6 mb-3'),
-                ),
-                Row(
-                    Column('level', css_class='form-group col-md-6 mb-3'),
-                    Column('specialty', css_class='form-group col-md-6 mb-3'),
-                ),
-                'expertise_domains_list',
-                'max_mentees',
-            ),
-            Submit('submit', _('Devenir Parrain'), css_class='btn btn-primary btn-lg w-100')
-        )
-        # Styling
-        for field_name, field in self.fields.items():
-            if field_name != 'expertise_domains_list':
-                field.widget.attrs.update({'class': 'form-control'})
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        return validate_portrait_photo(photo)
     
     def clean(self):
         cleaned_data = super().clean()
         domains = cleaned_data.get('expertise_domains_list')
         if domains:
-            # Join list into comma-separated string for the model
             self.instance.expertise_domains = ", ".join(domains)
         return cleaned_data
 
+
 class MenteeRegistrationForm(forms.ModelForm):
     """Formulaire d'inscription des filleuls"""
+    photo = forms.ImageField(
+        required=True,
+        label=_("Photo Portrait Officielle *"),
+        help_text=_("Photo nette (JPEG, PNG, WEBP, max 5 Mo). Un outil de recadrage est à votre disposition ci-dessous."),
+        validators=[validate_portrait_photo]
+    )
+    desired_specialty = forms.CharField(
+        max_length=100,
+        required=True,
+        label=_("Spécialité visée *"),
+        widget=forms.TextInput(attrs={'placeholder': _('Ex: Génie Logiciel, Data Science, Cybersécurité, Systèmes & Cloud...')})
+    )
+    skills_to_acquire = forms.CharField(
+        required=True,
+        label=_("Compétences que vous souhaitez acquérir *"),
+        widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('Listez les technologies, outils ou compétences précises que vous souhaitez développer avec votre parrain (ex: Docker, Architecture Microservices, Machine Learning...)...')})
+    )
     competencies_list = forms.MultipleChoiceField(
         choices=COMPETENCIES_LIST,
         widget=forms.CheckboxSelectMultiple,
         required=True,
-        label=_("Compétences techniques actuelles")
+        label=_("Compétences techniques actuelles *")
     )
-    
     professional_domains_list = forms.MultipleChoiceField(
         choices=DOMAINS_LIST,
         widget=forms.CheckboxSelectMultiple,
         required=True,
-        label=_("Domaines professionnels visés (Max 2)")
+        label=_("Domaines professionnels visés * (Max 2)")
+    )
+    bio = forms.CharField(
+        required=False,
+        label=_("Motivations / Présentation"),
+        widget=forms.Textarea(attrs={'rows': 2, 'placeholder': _('Expliquez brièvement vos attentes vis-à-vis du parrainage...')})
     )
 
     class Meta:
         model = Mentee
-        fields = ['first_name', 'last_name', 'phone', 'email', 'level', 'desired_specialty']
-        # removed text fields, handled manually
+        fields = ['first_name', 'last_name', 'phone', 'email', 'level', 'desired_specialty', 'skills_to_acquire', 'bio', 'photo']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Fieldset(
-                _('Informations Personnelles'),
-                Row(
-                    Column('first_name', css_class='form-group col-md-6 mb-3'),
-                    Column('last_name', css_class='form-group col-md-6 mb-3'),
-                ),
-                Row(
-                    Column('email', css_class='form-group col-md-6 mb-3'),
-                    Column('phone', css_class='form-group col-md-6 mb-3'),
-                ),
-                'level',
-            ),
-            Fieldset(
-                _('Projet Professionnel'),
-                'desired_specialty',
-                'competencies_list',
-                'professional_domains_list',
-            ),
-            Submit('submit', _('Trouver un Parrain'), css_class='btn btn-success btn-lg w-100')
-        )
-        # Styling
-        for field_name, field in self.fields.items():
-            if 'list' not in field_name:
-                field.widget.attrs.update({'class': 'form-control'})
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        return validate_portrait_photo(photo)
 
     def clean_professional_domains_list(self):
         domains = self.cleaned_data.get('professional_domains_list')
-        if len(domains) > 2:
-            raise forms.ValidationError(_("Vous ne pouvez sélectionner que 2 domaines maximum."))
+        if domains and len(domains) > 2:
+            raise forms.ValidationError(_("Vous ne pouvez sélectionner que 2 domaines professionnels maximum."))
         return domains
 
     def clean(self):
@@ -404,6 +431,83 @@ class MenteeRegistrationForm(forms.ModelForm):
         if domains:
             self.instance.professional_domains = ", ".join(domains)
         
+        return cleaned_data
+
+
+# =============================================================================
+# EVENT ACTIVITY FORMS
+# =============================================================================
+from .models import EventActivity, EventActivityApplication
+
+class EventActivityApplicationForm(forms.ModelForm):
+    """Formulaire d'inscription à une activité d'événement (Individuel, Équipe ou Gaming)"""
+    
+    class Meta:
+        model = EventActivityApplication
+        fields = [
+            'full_name', 'email', 'phone', 'level', 'notes',
+            'team_name', 'captain_name', 'team_members', 'team_size',
+            'gamer_tag', 'game_name', 'gaming_platform', 'gaming_id'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        self.activity = kwargs.pop('activity', None)
+        super().__init__(*args, **kwargs)
+        
+        # Champs optionnels par défaut (rendus obligatoires conditionnellement dans clean())
+        optional_conditional_fields = [
+            'team_name', 'captain_name', 'team_members', 'team_size',
+            'gamer_tag', 'game_name', 'gaming_platform', 'gaming_id',
+            'level', 'notes'
+        ]
+        for f in optional_conditional_fields:
+            if f in self.fields:
+                self.fields[f].required = False
+
+        if self.activity and self.activity.activity_type != 'team':
+            self.fields['team_size'].initial = 1
+
+        # Styles par défaut
+        for fname, field in self.fields.items():
+            field.widget.attrs.update({'class': 'form-control'})
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.activity:
+            return cleaned_data
+
+        activity_type = self.activity.activity_type
+        
+        # Validation spécifique aux équipes
+        if activity_type == 'team':
+            team_name = cleaned_data.get('team_name')
+            captain_name = cleaned_data.get('captain_name')
+            team_members = cleaned_data.get('team_members')
+            team_size = cleaned_data.get('team_size') or 1
+            
+            if not team_name:
+                self.add_error('team_name', _("Le nom de l'équipe est obligatoire."))
+            if not captain_name:
+                self.add_error('captain_name', _("Le nom du capitaine est obligatoire."))
+            if not team_members:
+                self.add_error('team_members', _("La composition des membres de l'équipe est obligatoire."))
+                
+            min_size = self.activity.min_team_size
+            max_size = self.activity.max_team_size
+            if team_size < min_size or team_size > max_size:
+                self.add_error('team_size', _("La taille de l'équipe doit être comprise entre %(min)s et %(max)s membres.") % {
+                    'min': min_size, 'max': max_size
+                })
+
+        # Validation spécifique au Gaming
+        elif activity_type == 'gaming':
+            gamer_tag = cleaned_data.get('gamer_tag')
+            gaming_platform = cleaned_data.get('gaming_platform')
+            if not gamer_tag:
+                self.add_error('gamer_tag', _("Votre pseudo GamerTag est obligatoire."))
+            if not gaming_platform:
+                self.add_error('gaming_platform', _("La plateforme de jeu est obligatoire."))
+
         return cleaned_data
 
 

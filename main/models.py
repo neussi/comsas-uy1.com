@@ -328,6 +328,127 @@ class EventAttendance(models.Model):
         status = "Présent" if self.is_present else "Absent"
         return f"{self.registration.nom_prenom} - Jour {self.day_number}: {status}"
 
+
+class EventActivity(models.Model):
+    """Activité spécifique au sein d'un événement (Tournoi, Concours, Atelier, Hackathon, Gaming, etc.)"""
+    ACTIVITY_TYPES = [
+        ('individual', 'Individuelle standard'),
+        ('team', 'Compétition en équipe'),
+        ('gaming', 'Tournoi Gaming / E-Sport'),
+    ]
+
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='activities', verbose_name="Événement parent")
+    title = models.CharField(max_length=200, verbose_name="Titre de l'activité")
+    slug = models.SlugField(max_length=220, blank=True, verbose_name="Slug URL")
+    activity_type = models.CharField(max_length=20, choices=ACTIVITY_TYPES, default='individual', verbose_name="Type d'activité")
+    image = models.ImageField(upload_to='events/activities/', blank=True, null=True, verbose_name="Visuel de l'activité")
+    description = RichTextField(verbose_name="Description détaillée")
+    date_activity = models.DateTimeField(verbose_name="Date et heure de l'activité")
+    location = models.CharField(max_length=200, verbose_name="Lieu de l'activité")
+    rules = models.TextField(blank=True, verbose_name="Règles, conditions et déroulement")
+    max_participants = models.PositiveIntegerField(null=True, blank=True, verbose_name="Nombre maximum de participants/équipes")
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Frais de participation (FCFA)")
+    
+    # Paramètres pour compétition en équipe
+    min_team_size = models.PositiveIntegerField(default=1, verbose_name="Taille min d'équipe")
+    max_team_size = models.PositiveIntegerField(default=5, verbose_name="Taille max d'équipe")
+    
+    # Paramètres pour tournoi gaming / e-sport
+    game_title = models.CharField(max_length=100, blank=True, verbose_name="Nom du jeu (ex: FIFA 24, Tekken 8, COD)")
+    platform = models.CharField(max_length=50, blank=True, verbose_name="Plateforme requise (ex: PC, PS5, Mobile)")
+    
+    is_active = models.BooleanField(default=True, verbose_name="Inscriptions ouvertes")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Activité d'événement"
+        verbose_name_plural = "Activités d'événements"
+        ordering = ['date_activity', 'title']
+
+    def __str__(self):
+        return f"{self.title} — {self.event.title_fr}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(f"{self.event.title_fr}-{self.title}")
+            slug = base_slug
+            counter = 1
+            while EventActivity.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    @property
+    def registered_count(self):
+        return self.applications.filter(status__in=['pending', 'confirmed']).count()
+
+    @property
+    def remaining_places(self):
+        if self.max_participants is None:
+            return None
+        rem = self.max_participants - self.registered_count
+        return max(0, rem)
+
+    @property
+    def is_full(self):
+        if self.max_participants is None:
+            return False
+        return self.remaining_places <= 0
+
+
+class EventActivityApplication(models.Model):
+    """Candidature / Inscription à une activité d'événement (Individuelle, Équipe ou Gaming)"""
+    STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('confirmed', 'Confirmée'),
+        ('rejected', 'Rejetée'),
+        ('cancelled', 'Annulée'),
+    ]
+
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    activity = models.ForeignKey(EventActivity, on_delete=models.CASCADE, related_name='applications', verbose_name="Activité")
+    
+    # Données du candidat / responsable
+    full_name = models.CharField(max_length=200, verbose_name="Nom et prénom")
+    email = models.EmailField(verbose_name="Adresse e-mail")
+    phone = models.CharField(max_length=20, verbose_name="Téléphone WhatsApp")
+    level = models.CharField(max_length=50, blank=True, verbose_name="Promotion / Niveau")
+    notes = models.TextField(blank=True, verbose_name="Commentaires / Motivations")
+    
+    # Données spécifiques équipe
+    team_name = models.CharField(max_length=150, blank=True, verbose_name="Nom de l'équipe")
+    captain_name = models.CharField(max_length=150, blank=True, verbose_name="Nom du capitaine")
+    team_members = models.TextField(blank=True, verbose_name="Membres de l'équipe")
+    team_size = models.PositiveIntegerField(default=1, verbose_name="Taille de l'équipe")
+    
+    # Données spécifiques gaming / e-sport
+    gamer_tag = models.CharField(max_length=100, blank=True, verbose_name="Pseudo Gamer / Tag")
+    game_name = models.CharField(max_length=100, blank=True, verbose_name="Jeu choisi")
+    gaming_platform = models.CharField(max_length=50, blank=True, verbose_name="Plateforme de jeu")
+    gaming_id = models.CharField(max_length=100, blank=True, verbose_name="Identifiant compte (PSN / Steam / Riot / etc.)")
+    
+    # Paiement (si activité payante)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Montant payé / dû (FCFA)")
+    transaction_id = models.CharField(max_length=100, unique=True, verbose_name="ID Unique de Transaction")
+    payment_reference = models.CharField(max_length=100, blank=True, verbose_name="Référence Passerelle")
+    is_paid = models.BooleanField(default=False, verbose_name="Paiement validé")
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Statut de la candidature")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Candidature Activité"
+        verbose_name_plural = "Candidatures Activités"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        title = self.team_name if self.team_name else self.full_name
+        return f"{title} — {self.activity.title} ({self.get_status_display()})"
+
+
 class News(models.Model):
     """Modèle pour les actualités"""
     title_fr = models.CharField(max_length=200, verbose_name="Titre (Français)")
@@ -643,19 +764,20 @@ class SponsorshipSession(models.Model):
         return self.name
 
 class Mentor(models.Model):
-    """Parrain (Senior Student)"""
+    """Parrain (Senior Student ou Professionnel)"""
     LEVEL_CHOICES = [
         ('L3', 'Licence 3'),
         ('ICT-L3', 'ICT-L3'),
         ('M1', 'Master 1'),
         ('M2', 'Master 2'),
         ('PHD', 'Doctorat'),
+        ('ALUMNI', 'Alumni / Professionnel en poste'),
     ]
     SPECIALTY_CHOICES = [
-        ('DS', 'Data Science'),
-        ('RESEAU', 'Réseau et Système'),
-        ('SECU', 'Sécurité Informatique'),
-        ('GL', 'Génie Logiciel'),
+        ('DS', 'Data Science & Intelligence Artificielle'),
+        ('RESEAU', 'Réseau, Systèmes & Cloud'),
+        ('SECU', 'Sécurité Informatique & Cyber'),
+        ('GL', 'Génie Logiciel & Développement Web/Mobile'),
     ]
 
     session = models.ForeignKey(SponsorshipSession, on_delete=models.CASCADE, verbose_name="Session")
@@ -665,9 +787,17 @@ class Mentor(models.Model):
     email = models.EmailField(verbose_name="Email")
     level = models.CharField(max_length=10, choices=LEVEL_CHOICES, verbose_name="Niveau")
     
+    # Données professionnelles & Portrait obligatoire
+    photo = models.ImageField(upload_to='sponsorship/mentors/', verbose_name="Photo Portrait Officielle", blank=True, null=True)
+    profession = models.CharField(max_length=150, blank=True, default="", verbose_name="Profession / Intitulé du poste")
+    company = models.CharField(max_length=150, blank=True, default="", verbose_name="Entreprise / Organisation")
+    years_of_experience = models.PositiveIntegerField(default=1, verbose_name="Années d'expérience professionnelle")
+    bio = models.TextField(blank=True, default="", verbose_name="Courte biographie / Présentation")
+    
     specialty = models.CharField(max_length=20, choices=SPECIALTY_CHOICES, verbose_name="Spécialité")
-    expertise_domains = models.TextField(verbose_name="Domaines de compétence (séparés par des virgules)")
+    expertise_domains = models.TextField(verbose_name="Compétences & Domaines d'expertise (séparés par des virgules)")
     max_mentees = models.IntegerField(default=2, verbose_name="Nombre max de filleuls")
+    status = models.CharField(max_length=20, default='pending', choices=[('pending', 'En attente'), ('approved', 'Validé'), ('rejected', 'Refusé')], verbose_name="Statut")
     
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -676,7 +806,8 @@ class Mentor(models.Model):
         verbose_name_plural = "Parrains"
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.get_specialty_display()})"
+        title = f"{self.profession} chez {self.company}" if self.profession else self.get_specialty_display()
+        return f"{self.first_name} {self.last_name} ({title})"
     
     @property
     def current_mentees_count(self):
@@ -718,23 +849,27 @@ class Mentee(models.Model):
         ('PhD', 'Doctorat'),
     ]
     SPECIALTY_CHOICES = [
-        ('DS', 'Data Science'),
-        ('RESEAU', 'Réseau et Système'),
-        ('SECU', 'Sécurité Informatique'),
-        ('GL', 'Génie Logiciel'),
+        ('DS', 'Data Science & Intelligence Artificielle'),
+        ('RESEAU', 'Réseau, Systèmes & Cloud'),
+        ('SECU', 'Sécurité Informatique & Cyber'),
+        ('GL', 'Génie Logiciel & Développement Web/Mobile'),
     ]
     
+    session = models.ForeignKey(SponsorshipSession, on_delete=models.CASCADE, verbose_name="Session", null=True)
     first_name = models.CharField(max_length=100, verbose_name="Prénom")
     last_name = models.CharField(max_length=100, verbose_name="Nom")
     phone = models.CharField(max_length=20, verbose_name="Téléphone")
     email = models.EmailField(verbose_name="Adresse e-mail")
     level = models.CharField(max_length=50, choices=LEVEL_CHOICES, verbose_name="Niveau d'étude")
     
-    desired_specialty = models.CharField(max_length=100, verbose_name="Spécialité souhaitée")
+    # Données professionnelles & Portrait obligatoire
+    photo = models.ImageField(upload_to='sponsorship/mentees/', verbose_name="Photo Portrait Officielle", blank=True, null=True)
+    desired_specialty = models.CharField(max_length=100, verbose_name="Spécialité visée")
     competencies = models.TextField(verbose_name="Compétences actuelles (Liste)")
-    professional_domains = models.TextField(verbose_name="Domaines pro souhaités (Liste)", default="")
-    
-    session = models.ForeignKey(SponsorshipSession, on_delete=models.CASCADE, verbose_name="Session", null=True) # Added back
+    skills_to_acquire = models.TextField(verbose_name="Compétences ciblées / à acquérir", blank=True, default="")
+    professional_domains = models.TextField(verbose_name="Domaines professionnels souhaités", default="")
+    bio = models.TextField(blank=True, default="", verbose_name="Présentation / Motivations")
+    status = models.CharField(max_length=20, default='pending', choices=[('pending', 'En attente'), ('matched', 'Binôme assigné'), ('rejected', 'Refusé')], verbose_name="Statut")
     
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -743,7 +878,7 @@ class Mentee(models.Model):
         verbose_name_plural = "Filleuls"
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.last_name} (Vise: {self.desired_specialty})"
 
 class Match(models.Model):
     """Binôme (Pairing)"""
@@ -1697,3 +1832,316 @@ class JobOffer(models.Model):
         
     def __str__(self):
         return f"{self.title} chez {self.company}"
+
+
+# =============================================================================
+# MODULE COFESTI (FESTI-NOËL COMSAS) — ÉDITIONS PÉRENNES & CONFIGURABLES
+# =============================================================================
+
+class CofestiEdition(models.Model):
+    """Édition du Festi-Noël (COFESTI) configurable pour chaque année académique."""
+    year = models.PositiveIntegerField(unique=True, default=2026, verbose_name="Année de l'édition")
+    edition_number = models.PositiveIntegerField(default=1, verbose_name="Numéro de l'édition")
+    title = models.CharField(max_length=255, default="COFESTI 2026 — Festi-Noël du Département d'Informatique", verbose_name="Titre de l'édition")
+    theme = models.CharField(max_length=300, default="Accueil, Parrainage & Festivités de Fin d'Année", verbose_name="Thème officiel")
+    slogan = models.CharField(max_length=200, default="Célébrer • Fédérer • Exceller", verbose_name="Slogan")
+    description = models.TextField(default="Le COFESTI réunit tous les étudiants du Département d'Informatique de l'Université de Yaoundé 1 pour les festivités de fin d'année, l'accueil et le parrainage des nouveaux camarades, les grands tournois sportifs, les jeux vidéo, les sorties pique-niques & cinéma, et la soirée de prestige.", verbose_name="Description officielle")
+    
+    start_date = models.DateField(default="2026-12-01", verbose_name="Date de début")
+    end_date = models.DateField(default="2026-12-23", verbose_name="Date de fin")
+    location = models.CharField(max_length=255, default="Campus Université de Yaoundé I (Restaurant N°2 & Stade)", verbose_name="Lieux principaux")
+    cover_image = models.ImageField(upload_to='cofesti/covers/', blank=True, null=True, verbose_name="Image de couverture")
+    
+    # Hymne Officiel Football / Festivités
+    anthem_audio = models.FileField(upload_to='cofesti/audio/', blank=True, null=True, verbose_name="Fichier Audio de l'Hymne")
+    anthem_title = models.CharField(max_length=200, default="Before the Whistle (Hymne Officiel Football)", verbose_name="Titre de l'hymne")
+    
+    # Statut global
+    is_active = models.BooleanField(default=True, verbose_name="Édition active en cours")
+    
+    # Contrôles des modules
+    miss_master_active = models.BooleanField(default=True, verbose_name="Concours Miss & Master activé")
+    miss_master_voting_open = models.BooleanField(default=True, verbose_name="Votes Miss & Master ouverts")
+    miss_master_results_published = models.BooleanField(default=False, verbose_name="Publier les résultats finaux Miss & Master")
+    
+    the_voice_active = models.BooleanField(default=True, verbose_name="Finale The Voice activée")
+    the_voice_voting_open = models.BooleanField(default=True, verbose_name="Votes The Voice ouverts")
+    
+    sports_active = models.BooleanField(default=True, verbose_name="Compétitions sportives activées")
+    sports_registrations_open = models.BooleanField(default=True, verbose_name="Inscriptions aux sports ouvertes")
+    
+    games_active = models.BooleanField(default=True, verbose_name="Jeux de salle & stratégie activés")
+    games_registrations_open = models.BooleanField(default=True, verbose_name="Inscriptions aux jeux ouvertes")
+    
+    picnics_active = models.BooleanField(default=True, verbose_name="Pique-niques & Cinéma activés")
+    picnics_booking_open = models.BooleanField(default=True, verbose_name="Réservations pique-niques ouvertes")
+    
+    sponsorship_gala_active = models.BooleanField(default=True, verbose_name="Soirée de Parrainage & Gala activée")
+    sponsorship_registrations_open = models.BooleanField(default=True, verbose_name="Inscriptions parrainage ouvertes")
+    
+    # Tarification (en FCFA)
+    vote_unit_price = models.DecimalField(max_digits=8, decimal_places=2, default=100.00, verbose_name="Tarif unitaire d'un vote (FCFA)")
+    mentee_gala_fee = models.DecimalField(max_digits=10, decimal_places=2, default=10000.00, verbose_name="Contribution Filleul (FCFA)")
+    mentor_gala_fee = models.DecimalField(max_digits=10, decimal_places=2, default=5000.00, verbose_name="Contribution Parrain (FCFA)")
+    
+    # Supervision & Direction du Comité
+    supervisor_name = models.CharField(max_length=200, default="NGUE MBONG André Fitzgerald", verbose_name="Superviseur Général (VP Culture & Sport)")
+    president_name = models.CharField(max_length=200, default="OLA DURREL", verbose_name="Président du COFESTI")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Édition COFESTI"
+        verbose_name_plural = "Éditions COFESTI"
+        ordering = ['-year']
+
+    def __str__(self):
+        return f"COFESTI {self.year} — {self.title}"
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # S'assurer qu'une seule édition est active à la fois
+            CofestiEdition.objects.exclude(pk=self.pk).update(is_active=False)
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_current(cls):
+        """Récupère l'édition active ou la plus récente"""
+        current = cls.objects.filter(is_active=True).first()
+        if not current:
+            current = cls.objects.order_by('-year').first()
+        return current
+
+
+class CofestiCandidate(models.Model):
+    """Candidats aux concours Miss & Master et Finale The Voice du COFESTI."""
+    CONTEST_TYPES = [
+        ('miss', 'Miss Département'),
+        ('master', 'Master Département'),
+        ('voice', 'Finale The Voice'),
+    ]
+    
+    edition = models.ForeignKey(CofestiEdition, on_delete=models.CASCADE, related_name='candidates', verbose_name="Édition COFESTI")
+    contest_type = models.CharField(max_length=20, choices=CONTEST_TYPES, default='miss', verbose_name="Type de concours")
+    number = models.PositiveIntegerField(default=1, verbose_name="Numéro de candidat")
+    name = models.CharField(max_length=200, verbose_name="Nom complet")
+    age = models.PositiveIntegerField(null=True, blank=True, verbose_name="Âge")
+    level = models.CharField(max_length=50, default="Licence 1", verbose_name="Niveau d'étude")
+    specialty = models.CharField(max_length=100, blank=True, verbose_name="Filière / Spécialité")
+    photo = models.ImageField(upload_to='cofesti/candidates/', blank=True, null=True, verbose_name="Photo de présentation")
+    bio = models.TextField(blank=True, verbose_name="Biographie, motivation ou présentation")
+    video_url = models.URLField(blank=True, null=True, verbose_name="Lien vidéo (YouTube / TikTok / etc.)")
+    
+    votes_count = models.PositiveIntegerField(default=0, verbose_name="Nombre total de votes")
+    total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Revenus générés (FCFA)")
+    is_approved = models.BooleanField(default=True, verbose_name="Candidat approuvé")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Candidat COFESTI (Miss / Master / The Voice)"
+        verbose_name_plural = "Candidats COFESTI"
+        ordering = ['-votes_count', 'number', 'name']
+
+    def __str__(self):
+        return f"[{self.get_contest_type_display()}] #{self.number} {self.name} ({self.votes_count} voix)"
+
+
+class CofestiVote(models.Model):
+    """Vote en ligne pour un candidat COFESTI (au tarif officiel de 100 FCFA par voix)."""
+    STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('completed', 'Confirmé (Payé)'),
+        ('failed', 'Échoué'),
+        ('cancelled', 'Annulé'),
+    ]
+
+    edition = models.ForeignKey(CofestiEdition, on_delete=models.CASCADE, related_name='votes', verbose_name="Édition COFESTI")
+    candidate = models.ForeignKey(CofestiCandidate, on_delete=models.CASCADE, related_name='candidate_votes', verbose_name="Candidat")
+    
+    vote_count = models.PositiveIntegerField(default=1, verbose_name="Nombre de voix")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=100.00, verbose_name="Montant total payé (FCFA)")
+    
+    voter_name = models.CharField(max_length=200, blank=True, null=True, verbose_name="Nom du votant (facultatif)")
+    voter_phone = models.CharField(max_length=20, verbose_name="Numéro de téléphone de paiement")
+    operator = models.CharField(max_length=20, blank=True, null=True, verbose_name="Opérateur (Orange Money / MTN MoMo)")
+    
+    transaction_id = models.CharField(max_length=100, unique=True, verbose_name="ID Unique de Transaction")
+    payment_reference = models.CharField(max_length=100, blank=True, null=True, verbose_name="Référence Passerelle")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Statut du vote")
+    
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="Adresse IP")
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Vote COFESTI"
+        verbose_name_plural = "Votes COFESTI"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.vote_count} vote(s) pour #{self.candidate.number} {self.candidate.name} ({self.status})"
+
+    def mark_as_completed(self):
+        """Valide le paiement et crédite instantanément le compteur du candidat."""
+        if self.status != 'completed':
+            self.status = 'completed'
+            self.completed_at = timezone.now()
+            self.save(update_fields=['status', 'completed_at'])
+            
+            # Mise à jour atomique du candidat
+            c = self.candidate
+            c.votes_count = models.F('votes_count') + self.vote_count
+            c.total_revenue = models.F('total_revenue') + self.amount
+            c.save(update_fields=['votes_count', 'total_revenue'])
+            c.refresh_from_db()
+
+
+class CofestiSportTournament(models.Model):
+    """Disciplines sportives et tournois de jeux au programme du COFESTI."""
+    TOURNAMENT_CATEGORIES = [
+        ('football_m', 'Football Masculin (30 000 / 25 000 FCFA)'),
+        ('football_f', 'Football Féminin (15 000 FCFA)'),
+        ('basketball_m', 'Basketball Masculin (30 000 FCFA)'),
+        ('basketball_f', 'Basketball Féminin (15 000 FCFA)'),
+        ('handball', 'Handball Féminin & Masculin (15 000 FCFA)'),
+        ('volleyball', 'Volley-ball'),
+        ('tennis', 'Tennis (Masculin, Féminin & Mixte)'),
+        ('gaming_fifa', 'Jeux de Salle — FIFA'),
+        ('gaming_storm', 'Jeux de Salle — Naruto Storm'),
+        ('gaming_cod', 'Jeux de Salle — Call of Duty'),
+        ('strategy_chess', 'Jeux de Stratégie — Échecs'),
+        ('strategy_ludo', 'Jeux de Stratégie — Ludo'),
+        ('virtual_other', 'Défis Virtuels (Boxe, Neck Dance)'),
+    ]
+
+    edition = models.ForeignKey(CofestiEdition, on_delete=models.CASCADE, related_name='tournaments', verbose_name="Édition")
+    category = models.CharField(max_length=50, choices=TOURNAMENT_CATEGORIES, verbose_name="Discipline")
+    title = models.CharField(max_length=200, verbose_name="Intitulé du tournoi / de l'épreuve")
+    registration_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Frais d'inscription par équipe / joueur (FCFA)")
+    rules_summary = models.TextField(blank=True, verbose_name="Règles et format de jeu")
+    location = models.CharField(max_length=200, default="Stade du campus UY1 / Salle dédiée", verbose_name="Lieu")
+    is_open = models.BooleanField(default=True, verbose_name="Inscriptions ouvertes")
+    order = models.PositiveIntegerField(default=0, verbose_name="Ordre d'affichage")
+
+    class Meta:
+        verbose_name = "Tournoi / Discipline Sportive COFESTI"
+        verbose_name_plural = "Tournois & Disciplines COFESTI"
+        ordering = ['order', 'title']
+
+    def __str__(self):
+        return f"{self.title} ({self.registration_fee:,.0f} FCFA)"
+
+
+class CofestiTeam(models.Model):
+    """Équipe ou joueur inscrit à un tournoi sportif ou jeu du COFESTI."""
+    tournament = models.ForeignKey(CofestiSportTournament, on_delete=models.CASCADE, related_name='teams', verbose_name="Tournoi")
+    name = models.CharField(max_length=200, verbose_name="Nom de l'équipe / Joueur")
+    level_or_class = models.CharField(max_length=100, verbose_name="Promotion / Classe représentée")
+    captain_name = models.CharField(max_length=200, verbose_name="Capitaine / Responsable")
+    captain_phone = models.CharField(max_length=20, verbose_name="Téléphone WhatsApp")
+    captain_email = models.EmailField(blank=True, verbose_name="Email")
+    players_list = models.TextField(blank=True, verbose_name="Liste des joueurs / effectif")
+    is_confirmed = models.BooleanField(default=False, verbose_name="Inscription confirmée / Réglée")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Équipe / Participant Sportif COFESTI"
+        verbose_name_plural = "Équipes & Participants Sportifs COFESTI"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} — {self.tournament.title} ({self.level_or_class})"
+
+
+class CofestiPicnic(models.Model):
+    """Sorties pique-niques et projections cinéma de décembre."""
+    edition = models.ForeignKey(CofestiEdition, on_delete=models.CASCADE, related_name='picnics', verbose_name="Édition")
+    theme = models.CharField(max_length=255, verbose_name="Thème de la sortie")
+    location = models.CharField(max_length=255, verbose_name="Lieu de rendez-vous")
+    picnic_date = models.DateField(verbose_name="Date du pique-nique")
+    cinema_date = models.DateField(verbose_name="Date de la séance cinéma")
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=5000.00, verbose_name="Frais par personne (FCFA)")
+    description = models.TextField(blank=True, verbose_name="Description / Ambiance")
+    is_active = models.BooleanField(default=True, verbose_name="Sortie ouverte aux réservations")
+    order = models.PositiveIntegerField(default=1, verbose_name="Ordre chronologique")
+
+    class Meta:
+        verbose_name = "Pique-Nique & Cinéma COFESTI"
+        verbose_name_plural = "Pique-Niques & Cinéma COFESTI"
+        ordering = ['order', 'picnic_date']
+
+    def __str__(self):
+        return f"Thème: {self.theme} — {self.location} ({self.price:,.0f} FCFA)"
+
+
+class CofestiPicnicBooking(models.Model):
+    """Réservation d'un pass pour un pique-nique et cinéma du COFESTI."""
+    picnic = models.ForeignKey(CofestiPicnic, on_delete=models.CASCADE, related_name='bookings', verbose_name="Sortie choisie")
+    full_name = models.CharField(max_length=200, verbose_name="Nom et prénom")
+    phone = models.CharField(max_length=20, verbose_name="Téléphone WhatsApp")
+    email = models.EmailField(blank=True, verbose_name="Email")
+    level = models.CharField(max_length=50, blank=True, verbose_name="Niveau d'étude")
+    ticket_code = models.CharField(max_length=30, unique=True, verbose_name="Code Pass d'accès")
+    is_paid = models.BooleanField(default=False, verbose_name="Payé")
+    transaction_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="ID Transaction")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Réservation Pique-Nique COFESTI"
+        verbose_name_plural = "Réservations Pique-Nique COFESTI"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.full_name} — {self.picnic.theme} ({self.ticket_code})"
+
+
+class CofestiSponsorshipRegistration(models.Model):
+    """Inscription à la Soirée de Parrainage & Gala Festi-Noël (Restaurant N°2)."""
+    ROLE_CHOICES = [
+        ('mentee', 'Filleul (Nouveau étudiant L1/ICT-L1 — 10 000 FCFA)'),
+        ('mentor', 'Parrain (Aîné L2, L3, Master, Doctorat — 5 000 FCFA)'),
+    ]
+
+    edition = models.ForeignKey(CofestiEdition, on_delete=models.CASCADE, related_name='sponsorship_registrations', verbose_name="Édition")
+    role_type = models.CharField(max_length=20, choices=ROLE_CHOICES, verbose_name="Rôle au parrainage")
+    full_name = models.CharField(max_length=200, verbose_name="Nom et prénom")
+    phone = models.CharField(max_length=20, verbose_name="Téléphone WhatsApp")
+    email = models.EmailField(verbose_name="Email")
+    level = models.CharField(max_length=50, verbose_name="Niveau d'étude")
+    specialty_or_wish = models.CharField(max_length=150, verbose_name="Spécialité / Filière souhaitée ou exercée")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Montant de la contribution (FCFA)")
+    ticket_code = models.CharField(max_length=30, unique=True, verbose_name="Code Billet / Certificat")
+    is_confirmed = models.BooleanField(default=False, verbose_name="Contribution confirmée / Payée")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Inscription Soirée de Parrainage COFESTI"
+        verbose_name_plural = "Inscriptions Soirée de Parrainage COFESTI"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.get_role_type_display()} : {self.full_name} ({self.ticket_code})"
+
+
+class CofestiOrganizingMember(models.Model):
+    """Membres officiels du comité d'organisation du COFESTI (Décision N° 095/26)."""
+    BLOC_CHOICES = [
+        ('bloc1', 'Bloc I — Bureau du Comité'),
+        ('bloc2', 'Bloc II — Membres du Comité'),
+    ]
+
+    edition = models.ForeignKey(CofestiEdition, on_delete=models.CASCADE, related_name='committee_members', verbose_name="Édition")
+    bloc = models.CharField(max_length=20, choices=BLOC_CHOICES, default='bloc1', verbose_name="Bloc du comité")
+    role = models.CharField(max_length=150, verbose_name="Poste / Rôle officiel")
+    name = models.CharField(max_length=200, verbose_name="Nom et prénom(s)")
+    phone = models.CharField(max_length=30, blank=True, verbose_name="Contact (facultatif)")
+    order = models.PositiveIntegerField(default=0, verbose_name="Ordre d'affichage")
+
+    class Meta:
+        verbose_name = "Membre du Comité COFESTI"
+        verbose_name_plural = "Membres du Comité COFESTI"
+        ordering = ['bloc', 'order', 'name']
+
+    def __str__(self):
+        return f"[{self.get_bloc_display()}] {self.role} — {self.name}"

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Comité d'Organisation — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    .font-outfit { font-family: 'Outfit', sans-serif; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.08); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+
+        <!-- Header -->
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <a href="{% url 'cofesti_home' %}" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-full transition-colors mb-4">
+                <i class="fas fa-arrow-left"></i>
+                <span>Retour au Hub COFESTI {{ edition.year }}</span>
+            </a>
+            <div class="inline-block bg-slate-900 text-amber-400 font-mono text-xs px-3 py-1 rounded-md mb-2">
+                DÉCISION N° 095/26/COMSAS/Pdt/SG
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-outfit tracking-tight">
+                Le Comité d'Organisation du Festi-Noël
+            </h1>
+            <p class="text-slate-600 text-sm sm:text-base mt-3">
+                Nommé par le Président du Club Informatique COM.S.AS pour l'année académique 2026-2027 sous la supervision du Vice-Président chargé des activités culturelles et sportives.
+            </p>
+        </div>
+
+        <!-- Superviseur & Président Vedettes -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 rounded-3xl p-8 text-white shadow-xl flex items-center gap-6">
+                <div class="w-16 h-16 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-2xl font-black shrink-0">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Supervision Générale</span>
+                    <h3 class="text-xl font-black font-outfit mt-1">{{ edition.supervisor_name }}</h3>
+                    <p class="text-xs text-emerald-200 mt-1">Vice-Président chargé des activités culturelles et sportives (COM.S.AS)</p>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-slate-900 to-emerald-950 rounded-3xl p-8 text-white shadow-xl flex items-center gap-6">
+                <div class="w-16 h-16 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl font-black shrink-0">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Président du Comité</span>
+                    <h3 class="text-xl font-black font-outfit mt-1">{{ edition.president_name }}</h3>
+                    <p class="text-xs text-emerald-200 mt-1">Président exécutif du COFESTI {{ edition.year }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOC I : LE BUREAU DU COMITÉ -->
+        <div class="mb-14">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg font-bold">
+                    <i class="fas fa-id-badge"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900 font-outfit">Bloc I — Bureau du COFESTI (Article 5)</h2>
+                    <p class="text-xs text-slate-500">Membres du bureau de coordination, secrétariat, rapporteurs et censeurs</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {% for m in bureau %}
+                <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4 card-hover">
+                    <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-sm shrink-0">
+                        {{ m.name|slice:":2" }}
+                    </div>
+                    <div>
+                        <span class="text-[11px] font-bold text-amber-600 uppercase tracking-wide block">{{ m.role }}</span>
+                        <h4 class="font-bold text-slate-900 text-sm leading-snug">{{ m.name }}</h4>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- BLOC II : LES MEMBRES DU COMITÉ -->
+        <div>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg font-bold">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900 font-outfit">Bloc II — Membres du COFESTI (Article 6)</h2>
+                    <p class="text-xs text-slate-500">Commissions techniques, logistique, communication, accueil et sécurité</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% for m in membres %}
+                <div class="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm flex items-center gap-3 card-hover">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center justify-center shrink-0">
+                        {{ m.order }}
+                    </span>
+                    <span class="text-xs font-bold text-slate-800 leading-snug truncate" title="{{ m.name }}">
+                        {{ m.name }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+

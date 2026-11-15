@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Pique-Niques & Séances Cinéma — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    .font-outfit { font-family: 'Outfit', sans-serif; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <a href="{% url 'cofesti_home' %}" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-full transition-colors mb-4">
+                <i class="fas fa-arrow-left"></i>
+                <span>Retour au Hub COFESTI {{ edition.year }}</span>
+            </a>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-outfit tracking-tight">
+                Pique-Niques Thématiques & Projections Cinéma
+            </h1>
+            <p class="text-slate-600 text-sm sm:text-base mt-3">
+                5 moments exclusifs de partage, de gastronomie et de divertissement tout au long du mois de décembre. Chaque inscription donne droit à une <strong>carte d'accès pour la projection cinématographique</strong> !
+            </p>
+        </div>
+
+        <!-- 5 THÈMES DES PIQUE-NIQUES -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {% for p in picnics %}
+            <div class="bg-white rounded-3xl p-7 border border-slate-200/80 shadow-sm flex flex-col justify-between card-hover relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-sky-50 rounded-full pointer-events-none"></div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-black text-white bg-slate-900 px-3 py-1 rounded-xl">Sortie #{{ p.order }}</span>
+                        <span class="text-sm font-black text-sky-700 bg-sky-50 px-3 py-1 rounded-xl border border-sky-200/60 font-outfit">
+                            {{ p.price|floatformat:0 }} FCFA
+                        </span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-slate-900 font-outfit leading-snug">{{ p.theme }}</h3>
+                    
+                    <div class="mt-4 space-y-2.5 text-xs text-slate-600">
+                        <div class="flex items-start gap-2.5">
+                            <i class="fas fa-map-marker-alt text-amber-500 mt-0.5 text-sm"></i>
+                            <div>
+                                <span class="font-bold text-slate-800">Lieu :</span>
+                                <p>{{ p.location }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <i class="fas fa-utensils text-emerald-600 mt-0.5 text-sm"></i>
+                            <div>
+                                <span class="font-bold text-slate-800">Date du pique-nique :</span>
+                                <p>{{ p.picnic_date|date:"l d F Y" }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <i class="fas fa-film text-rose-500 mt-0.5 text-sm"></i>
+                            <div>
+                                <span class="font-bold text-slate-800">Date de la projection cinéma :</span>
+                                <p>{{ p.cinema_date|date:"l d F Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-100 relative z-10">
+                    <button onclick="openBookingModal({{ p.id }}, '{{ p.theme|escapejs }}', '{{ p.location|escapejs }}', '{{ p.price|floatformat:0 }}')" type="button" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-bold text-xs transition-all shadow-md shadow-sky-600/20 flex items-center justify-center gap-2">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Réserver son Pass Ciné-Pique-nique</span>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL RÉSERVATION PASS PIQUE-NIQUE -->
+<div id="bookingModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
+        <button onclick="closeBookingModal()" type="button" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="text-center mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center text-2xl mx-auto mb-3 font-bold">
+                <i class="fas fa-film"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 font-outfit" id="modalPicnicTheme">Réserver votre Pass</h3>
+            <p class="text-xs text-slate-500 mt-1" id="modalPicnicDetails">--</p>
+        </div>
+
+        <form action="{% url 'cofesti_picnic_book' %}" method="POST" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="picnic_id" id="modalPicnicId">
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom et Prénom *</label>
+                <input type="text" name="full_name" required placeholder="Ex: Jean Paul Ndongo" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">WhatsApp *</label>
+                    <input type="tel" name="phone" required placeholder="Ex: 659471152" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Niveau d'étude</label>
+                    <input type="text" name="level" placeholder="Ex: L1, L2, M1..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email pour recevoir le billet</label>
+                <input type="email" name="email" placeholder="etudiant@domaine.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-500">
+            </div>
+
+            <div class="bg-sky-50 rounded-2xl p-4 border border-sky-200/60 flex items-center justify-between text-slate-800">
+                <span class="text-xs font-bold uppercase">Tarif par personne :</span>
+                <span class="text-base font-black text-sky-700 font-outfit" id="modalPicnicPrice">-- FCFA</span>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-bold text-sm transition-colors shadow-lg shadow-sky-800/20 flex items-center justify-center gap-2">
+                <i class="fas fa-check-circle"></i>
+                <span>Générer mon Pass d'accès</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openBookingModal(id, theme, location, price) {
+        document.getElementById('modalPicnicId').value = id;
+        document.getElementById('modalPicnicTheme').textContent = theme;
+        document.getElementById('modalPicnicDetails').textContent = `Lieu : ${location}`;
+        document.getElementById('modalPicnicPrice').textContent = `${price} FCFA`;
+        document.getElementById('bookingModal').classList.remove('hidden');
+    }
+
+    function closeBookingModal() {
+        document.getElementById('bookingModal').classList.add('hidden');
+    }
+</script>
+{% endblock %}
+

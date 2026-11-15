@@ -247,6 +247,73 @@
                 </div>
                 {% endif %}
 
+                <!-- Activités de l'événement -->
+                {% if activities %}
+                <div class="mb-5">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small fw-bold mb-1">Programme</span>
+                            <h3 class="h4 fw-bold text-dark mb-0">Activités & Compétitions au Programme</h3>
+                        </div>
+                        <span class="badge bg-light text-dark border">{{ activities|length }} activité(s)</span>
+                    </div>
+
+                    <div class="row g-3">
+                        {% for act in activities %}
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-3 p-md-4 bg-white hover-lift transition border border-secondary border-opacity-10">
+                                <div class="row align-items-center g-3">
+                                    <div class="col-md-3">
+                                        <div class="rounded-3 overflow-hidden position-relative bg-light" style="height: 110px;">
+                                            {% if act.image %}
+                                            <img src="{{ act.image.url }}" alt="{{ act.title }}" class="w-100 h-100" style="object-fit: cover;">
+                                            {% else %}
+                                            <div class="w-100 h-100 d-flex align-items-center justify-content-center text-primary bg-primary bg-opacity-10">
+                                                {% if act.activity_type == 'team' %}
+                                                <i class="fas fa-users fa-2x"></i>
+                                                {% elif act.activity_type == 'gaming' %}
+                                                <i class="fas fa-gamepad fa-2x"></i>
+                                                {% else %}
+                                                <i class="fas fa-star fa-2x"></i>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+                                            <span class="badge bg-dark bg-opacity-75 text-white position-absolute top-2 start-2 small">
+                                                {{ act.get_activity_type_display }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5 class="fw-bold mb-1 text-dark">{{ act.title }}</h5>
+                                        <p class="small text-muted mb-2 line-clamp-2">{{ act.description|striptags }}</p>
+                                        <div class="d-flex flex-wrap gap-2 text-muted" style="font-size: 0.78rem;">
+                                            <span><i class="fas fa-calendar-alt text-primary me-1"></i>{{ act.date_activity|date:"d M Y à H:i" }}</span>
+                                            <span><i class="fas fa-map-marker-alt text-danger me-1"></i>{{ act.location }}</span>
+                                            {% if act.remaining_places is not None %}
+                                            <span class="text-success fw-bold"><i class="fas fa-user-check me-1"></i>{{ act.remaining_places }} place(s) restante(s)</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 text-md-end">
+                                        <div class="mb-2">
+                                            {% if act.price > 0 %}
+                                            <span class="h5 fw-bold text-primary mb-0 d-block">{{ act.price|floatformat:0 }} FCFA</span>
+                                            {% else %}
+                                            <span class="badge bg-success bg-opacity-10 text-success fw-bold px-2.5 py-1">Gratuit</span>
+                                            {% endif %}
+                                        </div>
+                                        <a href="{% url 'activity_detail' act.slug %}" class="btn btn-sm btn-primary rounded-pill px-3 py-2 fw-semibold w-100 shadow-sm">
+                                            Voir & Postuler <i class="fas fa-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- Registration Block -->
                 {% if can_register %}
                 <div id="registration-form" class="card border-0 shadow-sm rounded-4 p-4" style="border-top: 4px solid #E91E63 !important;">
@@ -373,6 +440,36 @@
                         </li>
                     </ul>
                 </div>
+
+                <!-- Derniers Événements -->
+                {% if recent_events %}
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid #F3E8EE !important;">
+                    <h5 class="h6 fw-bold mb-3 pb-2 border-bottom text-dark">
+                        <i class="fas fa-calendar-alt text-primary me-2"></i>Autres Événements Récents
+                    </h5>
+                    <div class="d-flex flex-column gap-3">
+                        {% for rev in recent_events %}
+                        <a href="{% url 'event_detail' rev.id %}" class="text-decoration-none text-dark">
+                            <div class="d-flex align-items-center gap-3 p-2 rounded-3 hover-bg transition">
+                                <div class="rounded-3 overflow-hidden flex-shrink-0" style="width: 55px; height: 55px; background: #e2e8f0;">
+                                    {% if rev.image %}
+                                    <img src="{{ rev.image.url }}" alt="{{ rev.title_fr }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center text-primary bg-primary bg-opacity-10">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 min-w-0">
+                                    <h6 class="small fw-bold text-dark mb-0 text-truncate">{{ rev.title_fr }}</h6>
+                                    <span class="text-muted" style="font-size: 0.72rem;">{{ rev.date_event|date:"d M Y" }} • {{ rev.location|truncatewords:2 }}</span>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
 
                 <div class="card border-0 shadow-sm rounded-4 p-4 text-center" style="border: 1px solid #F3E8EE !important;">
                     <h5 class="h6 fw-bold mb-3 text-dark">Association COMSAS</h5>

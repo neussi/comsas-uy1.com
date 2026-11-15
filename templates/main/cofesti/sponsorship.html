@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Soirée de Parrainage & Gala — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    .font-outfit { font-family: 'Outfit', sans-serif; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto">
+
+        <!-- Header -->
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <a href="{% url 'cofesti_home' %}" class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-full transition-colors mb-4">
+                <i class="fas fa-arrow-left"></i>
+                <span>Retour au Hub COFESTI {{ edition.year }}</span>
+            </a>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-outfit tracking-tight">
+                Soirée de Parrainage & Grand Gala Festi-Noël
+            </h1>
+            <p class="text-slate-600 text-sm sm:text-base mt-3">
+                L'événement de prestige réunissant nouveaux étudiants (filleuls) et aînés académiques (parrains) dans le cadre chaleureux du <strong>Restaurant N° 2 de l'Université de Yaoundé I</strong>.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
+
+            <!-- Présentation & Programme -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm space-y-5">
+                    <h2 class="text-2xl font-bold text-slate-900 font-outfit flex items-center gap-3">
+                        <i class="fas fa-star text-amber-500"></i>
+                        <span>Au Programme de la Soirée</span>
+                    </h2>
+
+                    <ul class="space-y-3.5 text-sm text-slate-700">
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+                            <span><strong>Cérémonie officielle de Parrainage</strong> : Attribution et remise des certificats solennels de parrainage signés.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+                            <span><strong>Couronnement Miss & Master</strong> : Révélation et sacre des ambassadeurs du Département d'Informatique.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</span>
+                            <span><strong>Grande Finale The Voice</strong> : Prestations vocales en direct et vote du public.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">4</span>
+                            <span><strong>Cliché Cinématographique</strong> : Projection vidéo rétrospective et artistique de la vie étudiante.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">5</span>
+                            <span><strong>Remise des Trophées Sportifs</strong> : Récompenses des vainqueurs football, basket, e-sport et échecs.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">6</span>
+                            <span><strong>Banquet & Soirée Dansante</strong> : Gastronomie, cocktails, animation DJ et networking.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tarifs Officiels Box -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100/60 rounded-2xl p-6 border border-amber-200">
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-800">Filleuls (Nouveaux L1/ICT)</span>
+                        <div class="text-3xl font-black text-amber-600 font-outfit mt-1">{{ edition.mentee_gala_fee|floatformat:0 }} FCFA</div>
+                        <p class="text-xs text-amber-900 mt-2">Comprend le repas, le cocktail, le kit et le certificat officiel de parrainage.</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/60 rounded-2xl p-6 border border-emerald-200">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Parrains (Aînés L2 à Doctorat)</span>
+                        <div class="text-3xl font-black text-emerald-700 font-outfit mt-1">{{ edition.mentor_gala_fee|floatformat:0 }} FCFA</div>
+                        <p class="text-xs text-emerald-900 mt-2">Accès complet à la soirée de gala, cocktail de prestige et networking.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire d'inscription -->
+            <div class="lg:col-span-5 bg-white rounded-3xl p-8 border border-slate-200 shadow-xl relative">
+                <div class="text-center mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center text-xl mx-auto mb-2 font-bold">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 font-outfit">Réserver ma participation</h3>
+                    <p class="text-xs text-slate-500 mt-1">Inscription individuelle nominative</p>
+                </div>
+
+                <form action="{% url 'cofesti_sponsorship_register' %}" method="POST" class="space-y-4">
+                    {% csrf_token %}
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Votre Rôle au Parrainage *</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="border-2 border-slate-200 rounded-2xl p-3 text-center cursor-pointer hover:border-amber-400 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 transition-all">
+                                <input type="radio" name="role_type" value="mentee" checked class="hidden" onchange="updateRoleFee('10 000 FCFA')">
+                                <span class="block text-xs font-bold text-slate-900">Filleul (Nouveau)</span>
+                                <span class="text-[11px] text-amber-600 font-bold">10 000 FCFA</span>
+                            </label>
+                            <label class="border-2 border-slate-200 rounded-2xl p-3 text-center cursor-pointer hover:border-emerald-500 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50 transition-all">
+                                <input type="radio" name="role_type" value="mentor" class="hidden" onchange="updateRoleFee('5 000 FCFA')">
+                                <span class="block text-xs font-bold text-slate-900">Parrain (Aîné)</span>
+                                <span class="text-[11px] text-emerald-600 font-bold">5 000 FCFA</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom et Prénom complets *</label>
+                        <input type="text" name="full_name" required placeholder="Ex: Paul Alain Biya" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Niveau d'étude *</label>
+                            <input type="text" name="level" required placeholder="Ex: L1 Info ou M2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Téléphone WhatsApp *</label>
+                            <input type="tel" name="phone" required placeholder="Ex: 659471152" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email pour recevoir le billet *</label>
+                        <input type="email" name="email" required placeholder="etudiant@domaine.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Spécialité / Filière souhaitée</label>
+                        <input type="text" name="specialty_or_wish" placeholder="Ex: Génie Logiciel, Data Science, Sécurité..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-400">
+                    </div>
+
+                    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex items-center justify-between text-slate-800">
+                        <span class="text-xs font-bold uppercase">Contribution à régler :</span>
+                        <span class="text-base font-black text-slate-900 font-outfit" id="roleContributionDisplay">10 000 FCFA</span>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Confirmer mon inscription au Gala</span>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateRoleFee(fee) {
+        document.getElementById('roleContributionDisplay').textContent = fee;
+    }
+</script>
+{% endblock %}
+

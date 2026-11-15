@@ -100,6 +100,61 @@ class FreemopayPaymentProcessor:
             logger.error(f"[FREEMOPAY] Exception process_vote: {e}", exc_info=True)
             return {'success': False, 'error': str(e)}
 
+    def process_activity_payment(self, app_instance):
+        """Traite le paiement pour une inscription à une activité d'événement payante"""
+        try:
+            payer_phone = app_instance.phone.replace('+', '').replace(' ', '')
+            if not payer_phone.startswith('237') and len(payer_phone) == 9:
+                payer_phone = f"237{payer_phone}"
+                
+            payment_data = {
+                "payer": payer_phone,
+                "amount": str(int(app_instance.amount)),
+                "externalId": str(app_instance.transaction_id),
+                "description": f"Inscription {app_instance.activity.title} - {app_instance.full_name}",
+                "callback": self._get_webhook_url()
+            }
+            
+            logger.info(f"[FREEMOPAY] Initiation paiement Activité: {app_instance.transaction_id} | Phone: {payer_phone} | Montant: {payment_data['amount']}")
+            
+            response = self.session.post(
+                f"{self.base_url}/api/v2/payment",
+                json=payment_data,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') in ['SUCCESS', 'CREATED']:
+                    app_instance.payment_reference = data.get('reference', '')
+                    app_instance.save(update_fields=['payment_reference'])
+                    return {
+                        'success': True,
+                        'reference': data.get('reference'),
+                        'message': data.get('message', 'Paiement initié avec succès. Composez votre code PIN.'),
+                        'status': data.get('status')
+                    }
+                else:
+                    return {'success': False, 'error': data.get('message', 'Échec initiation')}
+            else:
+                return {'success': False, 'error': f'Erreur HTTP {response.status_code}'}
+        except Exception as e:
+            logger.error(f"[FREEMOPAY] Exception process_activity_payment: {e}", exc_info=True)
+            return {'success': False, 'error': str(e)}
+
+    def confirm_activity_payment(self, app_instance):
+        """Valide définitivement le paiement et confirme la candidature"""
+        try:
+            if app_instance.is_paid:
+                return {'success': True, 'message': 'Déjà validé'}
+            app_instance.is_paid = True
+            app_instance.status = 'confirmed'
+            app_instance.save(update_fields=['is_paid', 'status'])
+            logger.info(f"[FREEMOPAY] Candidature confirmée et payée: {app_instance.transaction_id}")
+            return {'success': True}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+
     def initiate_automatic_withdrawal(self, vote_instance):
         """Initie automatiquement un retrait vers le compte administrateur"""
         try:
@@ -215,7 +270,27 @@ class FreemopayWebhookHandler:
             # Dépôt (Vote ou Don)
             if transaction_type == 'DEPOSIT':
                 try:
-                    if external_id.startswith('JUINVOTE'):
+                    if external_id.startswith('ACTIVITYPAY'):
+                        from .models import EventActivityApplication
+                        app = EventActivityApplication.objects.get(transaction_id=external_id)
+                        if status in ('SUCCESS', 'COMPLETED', 'PAID', 'SUCCESSFUL'):
+                            processor = FreemopayPaymentProcessor()
+                            processor.confirm_activity_payment(app)
+                        elif status in ('FAILED', 'FAILURE', 'ERROR', 'EXPIRED'):
+                            app.status = 'cancelled'
+                            app.save(update_fields=['status'])
+                        return {'success': True}
+                    elif external_id.startswith('COFESTIVOTE'):
+                        from .models import CofestiVote
+                        vote = CofestiVote.objects.get(transaction_id=external_id)
+                        if status == 'SUCCESS':
+                            processor = FreemopayPaymentProcessor()
+                            processor.confirm_payment(vote)
+                        elif status == 'FAILED':
+                            vote.status = 'failed'
+                            vote.save()
+                        return {'success': True}
+                    elif external_id.startswith('JUINVOTE'):
                         from .models import JUINVote
                         vote = JUINVote.objects.get(transaction_id=external_id)
                         if status == 'SUCCESS':

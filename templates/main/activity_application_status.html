@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Statut de votre Candidature — {{ activity.title }} | COMS.A.S{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light min-vh-80 d-flex align-items-center">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+
+                <!-- Fil d'ariane -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted text-decoration-none">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'event_detail' event.id %}" class="text-muted text-decoration-none">{{ event.title_fr }}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'activity_detail' activity.slug %}" class="text-muted text-decoration-none">{{ activity.title }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Statut Candidature</li>
+                    </ol>
+                </nav>
+
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+
+                    <!-- EN-TÊTE SELON STATUT -->
+                    {% if application.status == 'confirmed' %}
+                    <div class="card-header bg-success text-white p-4 p-md-5 text-center">
+                        <div class="w-20 h-20 rounded-circle bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h1 mx-auto mb-3">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <span class="badge bg-white text-success text-uppercase fw-bold px-3 py-1.5 rounded-pill mb-2">
+                            Candidature Confirmée
+                        </span>
+                        <h2 class="h3 fw-bold text-white mb-1">Inscription Validée avec Succès !</h2>
+                        <p class="text-white-50 small mb-0">Votre participation à l'activité « {{ activity.title }} » est officiellement enregistrée.</p>
+                    </div>
+
+                    {% elif application.status == 'pending' %}
+                    <div class="card-header bg-warning text-dark p-4 p-md-5 text-center">
+                        <div class="w-20 h-20 rounded-circle bg-dark bg-opacity-10 d-flex align-items-center justify-content-center text-dark h1 mx-auto mb-3">
+                            <i class="fas fa-clock fa-spin" style="animation-duration: 4s;"></i>
+                        </div>
+                        <span class="badge bg-dark text-warning text-uppercase fw-bold px-3 py-1.5 rounded-pill mb-2">
+                            Paiement en Cours de Traitement
+                        </span>
+                        <h2 class="h3 fw-bold text-dark mb-1">En attente de validation</h2>
+                        <p class="text-dark opacity-75 small mb-0">Une notification Mobile Money a été envoyée sur votre téléphone au <strong>{{ application.phone }}</strong>.</p>
+                    </div>
+
+                    {% elif application.status == 'cancelled' %}
+                    <div class="card-header bg-secondary text-white p-4 p-md-5 text-center">
+                        <div class="w-20 h-20 rounded-circle bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h1 mx-auto mb-3">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <span class="badge bg-light text-secondary text-uppercase fw-bold px-3 py-1.5 rounded-pill mb-2">
+                            Candidature Annulée
+                        </span>
+                        <h2 class="h3 fw-bold text-white mb-1">Demande Annulée</h2>
+                        <p class="text-white-50 small mb-0">Votre inscription a été annulée. Vous pouvez soumettre une nouvelle candidature à tout moment.</p>
+                    </div>
+
+                    {% else %}
+                    <div class="card-header bg-danger text-white p-4 p-md-5 text-center">
+                        <div class="w-20 h-20 rounded-circle bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h1 mx-auto mb-3">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <h2 class="h3 fw-bold text-white mb-1">Candidature Non Retenue</h2>
+                        <p class="text-white-50 small mb-0">Le comité d'organisation n'a pas pu valider votre demande.</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- CORPS DU RÉCAPITULATIF -->
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- Statut box interactif pour polling si pending -->
+                        {% if application.status == 'pending' %}
+                        <div id="pollingStatusBox" class="p-3.5 rounded-3 bg-light border border-warning border-opacity-50 mb-4 d-flex align-items-center gap-3">
+                            <div class="spinner-border text-warning spinner-border-sm" role="status"></div>
+                            <div class="small">
+                                <strong>Vérification automatique en temps réel...</strong>
+                                <div class="text-muted">Dès que vous confirmez le paiement avec votre code secret, cette page s'actualisera instantanément.</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom">
+                            <i class="fas fa-receipt text-primary me-2"></i>Détails de votre Inscription
+                        </h5>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Activité</small>
+                                <strong class="text-dark">{{ activity.title }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Événement parent</small>
+                                <strong class="text-dark">{{ event.title_fr }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Nom du Responsable</small>
+                                <strong class="text-dark">{{ application.full_name }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Téléphone WhatsApp</small>
+                                <strong class="text-dark">{{ application.phone }}</strong>
+                            </div>
+
+                            {% if application.activity.activity_type == 'team' %}
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Équipe</small>
+                                <strong class="text-primary">{{ application.team_name }} ({{ application.team_size }} membres)</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Capitaine</small>
+                                <strong class="text-dark">{{ application.captain_name }}</strong>
+                            </div>
+                            {% elif application.activity.activity_type == 'gaming' %}
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">GamerTag / Pseudo</small>
+                                <strong class="text-primary">{{ application.gamer_tag }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Plateforme & Jeu</small>
+                                <strong class="text-dark">{{ application.gaming_platform }} • {{ application.game_name }}</strong>
+                            </div>
+                            {% endif %}
+
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Montant</small>
+                                {% if application.amount > 0 %}
+                                <strong class="text-dark">{{ application.amount|floatformat:0 }} FCFA</strong>
+                                <span class="badge {% if application.is_paid %}bg-success{% else %}bg-warning text-dark{% endif %} ms-1">
+                                    {% if application.is_paid %}Réglé{% else %}En attente{% endif %}
+                                </span>
+                                {% else %}
+                                <span class="badge bg-success bg-opacity-10 text-success">Gratuit</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block">Référence Transaction</small>
+                                <span class="font-monospace text-muted small">{{ application.transaction_id }}</span>
+                            </div>
+                        </div>
+
+                        <!-- ACTIONS -->
+                        <div class="d-flex flex-column flex-sm-row gap-3 pt-3 border-top">
+                            {% if application.status == 'pending' %}
+                            <a href="{% url 'activity_payment_cancel' application.uuid %}" class="btn btn-outline-danger rounded-pill px-4" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette inscription ?');">
+                                <i class="fas fa-times me-1"></i>Annuler la candidature
+                            </a>
+                            <button type="button" class="btn btn-warning rounded-pill px-4 fw-bold" onclick="location.reload();">
+                                <i class="fas fa-sync-alt me-1"></i>Actualiser le statut
+                            </button>
+                            {% endif %}
+
+                            <a href="{% url 'activity_detail' activity.slug %}" class="btn btn-outline-secondary rounded-pill px-4">
+                                <i class="fas fa-arrow-left me-1"></i>Fiche de l'activité
+                            </a>
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-primary rounded-pill px-4 ms-sm-auto">
+                                <i class="fas fa-calendar-alt me-1"></i>Retour à l'événement
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% if application.status == 'pending' %}
+<script>
+    // Polling du statut de paiement
+    let pollCount = 0;
+    const interval = setInterval(async () => {
+        pollCount++;
+        if (pollCount > 40) { // 40 x 3s = 120s
+            clearInterval(interval);
+            return;
+        }
+
+        try {
+            const res = await fetch("{% url 'api_activity_payment_status' application.transaction_id %}");
+            const data = await res.json();
+            if (data.is_confirmed) {
+                clearInterval(interval);
+                location.reload();
+            } else if (data.status === 'cancelled') {
+                clearInterval(interval);
+                location.reload();
+            }
+        } catch (e) {}
+    }, 3000);
+</script>
+{% endif %}
+{% endblock %}
+

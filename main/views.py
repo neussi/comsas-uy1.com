@@ -90,6 +90,9 @@ def home(request):
     
     # Edition JUIN actuelle
     juin_edition = JUINEdition.objects.filter(is_active=True).first()
+
+    # Edition COFESTI actuelle
+    cofesti_edition = CofestiEdition.get_current()
     
     # Modèles de requêtes pour la page d'accueil
     featured_request_docs = RequestDocument.objects.all().order_by('-downloads_count', '-created_at')[:5]
@@ -111,6 +114,7 @@ def home(request):
         'total_members': total_members,
         'completed_projects': completed_projects,
         'juin_edition': juin_edition,
+        'cofesti_edition': cofesti_edition,
         'active_contests': active_contests,
         'featured_request_docs': featured_request_docs,
         'total_request_docs': total_request_docs,
@@ -511,6 +515,12 @@ def event_detail(request, pk):
             if m not in gallery_media:
                 gallery_media.append(m)
 
+    # Activités rattachées à cet événement
+    activities = event.activities.filter(is_active=True).order_by('date_activity')
+
+    # Derniers événements
+    recent_events = Event.objects.filter(is_active=True).exclude(pk=event.pk).order_by('-date_event')[:4]
+
     context = {
         'event': event,
         'form': form,
@@ -518,6 +528,8 @@ def event_detail(request, pk):
         'participants': participants,
         'gallery_media': gallery_media,
         'images': gallery_media,
+        'activities': activities,
+        'recent_events': recent_events,
     }
     
     return render(request, 'main/event_detail.html', context)
@@ -849,14 +861,14 @@ def list_mentors(request):
     return render(request, 'main/sponsorship/mentor_list.html', {'mentors': mentors})
 
 def register_mentor(request):
-    """Inscription Parrain"""
+    """Inscription Parrain Professionnel ou Académique"""
     active_session = SponsorshipSession.objects.filter(is_active=True).first()
     if not active_session:
         messages.error(request, "Aucune session de parrainage n'est active pour le moment.")
         return redirect('sponsorship_home')
 
     if request.method == 'POST':
-        form = MentorRegistrationForm(request.POST)
+        form = MentorRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             mentor = form.save(commit=False)
             mentor.session = active_session
@@ -865,8 +877,10 @@ def register_mentor(request):
                 messages.error(request, "Cet email est déjà enregistré comme parrain pour cette session.")
             else:
                 mentor.save()
-                messages.success(request, "Votre inscription en tant que Parrain a été enregistrée avec succès !")
+                messages.success(request, f"Félicitations {mentor.first_name} ! Votre inscription en tant que Parrain a été enregistrée avec succès. Votre profil est en cours de validation.")
                 return redirect('sponsorship_success')
+        else:
+            messages.error(request, "Veuillez corriger les erreurs dans le formulaire, notamment la photo portrait obligatoire.")
     else:
         form = MentorRegistrationForm()
 
@@ -880,7 +894,7 @@ def register_mentee(request):
         return redirect('sponsorship_home')
 
     if request.method == 'POST':
-        form = MenteeRegistrationForm(request.POST)
+        form = MenteeRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             mentee = form.save(commit=False)
             mentee.session = active_session
@@ -889,8 +903,10 @@ def register_mentee(request):
                 messages.error(request, "Cet email est déjà enregistré comme filleul pour cette session.")
             else:
                 mentee.save()
-                messages.success(request, "Votre demande de parrainage a été enregistrée avec succès ! L'attribution se fera bientôt.")
+                messages.success(request, f"Félicitations {mentee.first_name} ! Votre demande de parrainage a été enregistrée avec succès. L'attribution du binôme aura lieu prochainement.")
                 return redirect('sponsorship_success')
+        else:
+            messages.error(request, "Veuillez corriger les erreurs dans le formulaire, notamment la photo portrait obligatoire.")
     else:
         form = MenteeRegistrationForm()
 
@@ -2410,5 +2426,442 @@ def api_chatbot_message(request):
     except Exception as e:
         logger.error(f"Erreur API Chatbot: {e}")
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+# =============================================================================
+# COFESTI (FESTI-NOËL COMSAS) VIEWS
+# =============================================================================
+from .models import (
+    CofestiEdition, CofestiCandidate, CofestiVote, CofestiSportTournament,
+    CofestiTeam, CofestiPicnic, CofestiPicnicBooking,
+    CofestiSponsorshipRegistration, CofestiOrganizingMember
+)
+
+def _get_cofesti_edition(year=None):
+    if year:
+        return get_object_or_404(CofestiEdition, year=year)
+    edition = CofestiEdition.get_current()
+    if not edition:
+        raise Http404("Aucune édition de COFESTI active.")
+    return edition
+
+def cofesti_home(request, year=None):
+    """Page d'accueil du Hub COFESTI"""
+    edition = _get_cofesti_edition(year)
+    all_editions = CofestiEdition.objects.order_by('-year')
+    
+    candidates_miss = edition.candidates.filter(contest_type='miss', is_approved=True).order_by('-votes_count')[:4]
+    candidates_master = edition.candidates.filter(contest_type='master', is_approved=True).order_by('-votes_count')[:4]
+    candidates_voice = edition.candidates.filter(contest_type='voice', is_approved=True).order_by('-votes_count')[:4]
+    
+    tournaments = edition.tournaments.all()[:6]
+    picnics = edition.picnics.filter(is_active=True).order_by('order')
+    bureau_members = edition.committee_members.filter(bloc='bloc1').order_by('order')
+    commission_members = edition.committee_members.filter(bloc='bloc2').order_by('order')
+    
+    # Statistiques
+    total_votes = sum(c.votes_count for c in edition.candidates.all())
+    total_candidates = edition.candidates.filter(is_approved=True).count()
+    total_teams = CofestiTeam.objects.filter(tournament__edition=edition).count()
+    total_picnic_goers = CofestiPicnicBooking.objects.filter(picnic__edition=edition).count()
+    
+    context = {
+        'edition': edition,
+        'all_editions': all_editions,
+        'candidates_miss': candidates_miss,
+        'candidates_master': candidates_master,
+        'candidates_voice': candidates_voice,
+        'tournaments': tournaments,
+        'picnics': picnics,
+        'bureau_members': bureau_members,
+        'commission_members': commission_members,
+        'total_votes': total_votes,
+        'total_candidates': total_candidates,
+        'total_teams': total_teams,
+        'total_picnic_goers': total_picnic_goers,
+    }
+    return render(request, 'main/cofesti/home.html', context)
+
+def cofesti_miss_master(request, year=None):
+    """Page Concours Miss & Master et Finale The Voice du COFESTI"""
+    edition = _get_cofesti_edition(year)
+    contest_type = request.GET.get('type', 'all')
+    
+    qs = edition.candidates.filter(is_approved=True)
+    if contest_type in ['miss', 'master', 'voice']:
+        qs = qs.filter(contest_type=contest_type)
+        
+    candidates = qs.order_by('-votes_count', 'number')
+    
+    context = {
+        'edition': edition,
+        'candidates': candidates,
+        'current_type': contest_type,
+        'miss_count': edition.candidates.filter(contest_type='miss', is_approved=True).count(),
+        'master_count': edition.candidates.filter(contest_type='master', is_approved=True).count(),
+        'voice_count': edition.candidates.filter(contest_type='voice', is_approved=True).count(),
+    }
+    return render(request, 'main/cofesti/miss_master.html', context)
+
+def cofesti_sports(request, year=None):
+    """Page Compétitions Sportives & Jeux de Salle du COFESTI"""
+    edition = _get_cofesti_edition(year)
+    tournaments = edition.tournaments.all().order_by('order')
+    
+    terrain_tournaments = tournaments.filter(category__in=['football_m', 'football_f', 'basketball_m', 'basketball_f', 'handball', 'volleyball', 'tennis'])
+    gaming_tournaments = tournaments.filter(category__in=['gaming_fifa', 'gaming_storm', 'gaming_cod'])
+    strategy_tournaments = tournaments.filter(category__in=['strategy_chess', 'strategy_ludo', 'virtual_other'])
+    
+    context = {
+        'edition': edition,
+        'tournaments': tournaments,
+        'terrain_tournaments': terrain_tournaments,
+        'gaming_tournaments': gaming_tournaments,
+        'strategy_tournaments': strategy_tournaments,
+    }
+    return render(request, 'main/cofesti/sports.html', context)
+
+def cofesti_picnics(request, year=None):
+    """Page Pique-Niques & Séances Cinéma de Décembre"""
+    edition = _get_cofesti_edition(year)
+    picnics = edition.picnics.filter(is_active=True).order_by('order')
+    
+    context = {
+        'edition': edition,
+        'picnics': picnics,
+    }
+    return render(request, 'main/cofesti/picnics.html', context)
+
+def cofesti_sponsorship(request, year=None):
+    """Page Soirée de Parrainage & Gala (Restaurant N°2)"""
+    edition = _get_cofesti_edition(year)
+    
+    context = {
+        'edition': edition,
+    }
+    return render(request, 'main/cofesti/sponsorship.html', context)
+
+def cofesti_committee(request, year=None):
+    """Page du Comité d'Organisation Officiel COFESTI"""
+    edition = _get_cofesti_edition(year)
+    bureau = edition.committee_members.filter(bloc='bloc1').order_by('order')
+    membres = edition.committee_members.filter(bloc='bloc2').order_by('order')
+    
+    context = {
+        'edition': edition,
+        'bureau': bureau,
+        'membres': membres,
+    }
+    return render(request, 'main/cofesti/committee.html', context)
+
+# --- API & FORM HANDLERS ---
+
+@csrf_exempt
+def cofesti_vote_initiate(request):
+    """Initier un vote COFESTI (100 FCFA/voix via Freemopay Mobile Money)"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
+        
+    try:
+        candidate_id = request.POST.get('candidate_id')
+        vote_count = int(request.POST.get('vote_count', 1))
+        phone = request.POST.get('phone', '').strip()
+        voter_name = request.POST.get('voter_name', '').strip()
+        operator = request.POST.get('operator', '').strip()
+        
+        if not candidate_id or not phone or vote_count < 1:
+            return JsonResponse({'success': False, 'error': 'Veuillez renseigner un candidat, un numéro et au moins 1 voix.'}, status=400)
+            
+        candidate = get_object_or_404(CofestiCandidate, id=candidate_id)
+        edition = candidate.edition
+        
+        # Vérification si les votes sont ouverts
+        if candidate.contest_type in ['miss', 'master'] and not edition.miss_master_voting_open:
+            return JsonResponse({'success': False, 'error': 'Les votes pour ce concours sont actuellement clôturés.'}, status=403)
+        elif candidate.contest_type == 'voice' and not edition.the_voice_voting_open:
+            return JsonResponse({'success': False, 'error': 'Les votes pour The Voice sont actuellement clôturés.'}, status=403)
+            
+        from decimal import Decimal
+        unit_price = edition.vote_unit_price or Decimal('100.00')
+        amount = vote_count * unit_price
+        
+        transaction_id = f"COFESTIVOTE-{uuid.uuid4().hex[:10].upper()}"
+        
+        vote = CofestiVote.objects.create(
+            edition=edition,
+            candidate=candidate,
+            vote_count=vote_count,
+            amount=amount,
+            voter_name=voter_name,
+            voter_phone=phone,
+            operator=operator,
+            transaction_id=transaction_id,
+            status='pending',
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+        
+        from .freemopay_service import FreemopayPaymentProcessor
+        processor = FreemopayPaymentProcessor()
+        result = processor.process_vote_payment(vote)
+        
+        if result.get('success'):
+            return JsonResponse({
+                'success': True,
+                'transaction_id': transaction_id,
+                'amount': float(amount),
+                'candidate_name': candidate.name,
+                'message': result.get('message', 'Paiement initié. Veuillez composer votre code secret sur votre téléphone.')
+            })
+        else:
+            vote.status = 'failed'
+            vote.save()
+            return JsonResponse({
+                'success': False,
+                'error': result.get('error', 'Échec de l\'initiation du paiement Mobile Money.'),
+                'transaction_id': transaction_id
+            })
+    except Exception as e:
+        logger.error(f"[COFESTI_VOTE] Erreur: {e}", exc_info=True)
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+def cofesti_vote_status_check(request, transaction_id):
+    """Vérifier le statut du vote COFESTI (polling AJAX)"""
+    vote = get_object_or_404(CofestiVote, transaction_id=transaction_id)
+    
+    if vote.status == 'processing':
+        from .freemopay_service import FreemopayPaymentProcessor
+        processor = FreemopayPaymentProcessor()
+        check = processor.verify_payment_status(vote)
+        if check.get('success') and check.get('status') == 'completed':
+            processor.confirm_payment(vote)
+            
+    return JsonResponse({
+        'status': vote.status,
+        'is_confirmed': vote.status == 'completed',
+        'candidate_name': vote.candidate.name,
+        'vote_count': vote.vote_count,
+        'votes_total': vote.candidate.votes_count
+    })
+
+def cofesti_vote_complete(request, transaction_id):
+    """Page de confirmation finale de vote COFESTI"""
+    vote = get_object_or_404(CofestiVote, transaction_id=transaction_id)
+    return render(request, 'main/cofesti/vote_complete.html', {'vote': vote})
+
+def cofesti_team_register(request):
+    """Inscription d'une équipe ou d'un participant à un tournoi COFESTI"""
+    if request.method == 'POST':
+        tournament_id = request.POST.get('tournament_id')
+        name = request.POST.get('name', '').strip()
+        level_or_class = request.POST.get('level_or_class', '').strip()
+        captain_name = request.POST.get('captain_name', '').strip()
+        captain_phone = request.POST.get('captain_phone', '').strip()
+        captain_email = request.POST.get('captain_email', '').strip()
+        players_list = request.POST.get('players_list', '').strip()
+        
+        tournament = get_object_or_404(CofestiSportTournament, id=tournament_id)
+        
+        team = CofestiTeam.objects.create(
+            tournament=tournament,
+            name=name,
+            level_or_class=level_or_class,
+            captain_name=captain_name,
+            captain_phone=captain_phone,
+            captain_email=captain_email,
+            players_list=players_list,
+            is_confirmed=False
+        )
+        messages.success(request, f"L'équipe/participant '{name}' a bien été préinscrit au tournoi {tournament.title}. Un organisateur prendra contact pour la validation finale.")
+        return redirect('cofesti_sports')
+        
+    return redirect('cofesti_sports')
+
+def cofesti_picnic_book(request):
+    """Réservation d'un pass pour un pique-nique & cinéma"""
+    if request.method == 'POST':
+        picnic_id = request.POST.get('picnic_id')
+        full_name = request.POST.get('full_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        email = request.POST.get('email', '').strip()
+        level = request.POST.get('level', '').strip()
+        
+        picnic = get_object_or_404(CofestiPicnic, id=picnic_id)
+        
+        code = f"PIQ-{uuid.uuid4().hex[:6].upper()}"
+        
+        booking = CofestiPicnicBooking.objects.create(
+            picnic=picnic,
+            full_name=full_name,
+            phone=phone,
+            email=email,
+            level=level,
+            ticket_code=code,
+            is_paid=False
+        )
+        messages.success(request, f"Votre passe pour '{picnic.theme}' a été généré avec succès ! Votre code est : {code}. Vous pouvez le régler au stand COMSAS ou auprès du comité.")
+        return redirect('cofesti_picnics')
+        
+    return redirect('cofesti_picnics')
+
+def cofesti_sponsorship_register(request):
+    """Inscription pour la Soirée de Parrainage & Gala"""
+    if request.method == 'POST':
+        role_type = request.POST.get('role_type') # mentee or mentor
+        full_name = request.POST.get('full_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        email = request.POST.get('email', '').strip()
+        level = request.POST.get('level', '').strip()
+        specialty_or_wish = request.POST.get('specialty_or_wish', '').strip()
+        
+        edition = CofestiEdition.get_current()
+        amount = edition.mentee_gala_fee if role_type == 'mentee' else edition.mentor_gala_fee
+        code = f"GALA-{uuid.uuid4().hex[:6].upper()}"
+        
+        reg = CofestiSponsorshipRegistration.objects.create(
+            edition=edition,
+            role_type=role_type,
+            full_name=full_name,
+            phone=phone,
+            email=email,
+            level=level,
+            specialty_or_wish=specialty_or_wish,
+            amount=amount,
+            ticket_code=code,
+            is_confirmed=False
+        )
+        messages.success(request, f"Félicitations {full_name} ! Votre inscription pour la Soirée de Parrainage a été enregistrée (Billet {code}).")
+        return redirect('cofesti_sponsorship')
+        
+    return redirect('cofesti_sponsorship')
+
+
+# =============================================================================
+# EVENT ACTIVITIES & APPLICATIONS VIEWS
+# =============================================================================
+from .models import EventActivity, EventActivityApplication
+from .forms import EventActivityApplicationForm
+
+def activity_detail(request, slug):
+    """Page détaillée d'une activité d'événement avec formulaire dynamique (Individuel, Équipe, Gaming)"""
+    activity = get_object_or_404(EventActivity, slug=slug)
+    event = activity.event
+    
+    other_activities = event.activities.filter(is_active=True).exclude(pk=activity.pk).order_by('date_activity')[:3]
+    recent_events = Event.objects.filter(is_active=True).exclude(pk=event.pk).order_by('-date_event')[:4]
+    
+    if request.method == 'POST':
+        if not activity.is_active or activity.is_full:
+            messages.error(request, _("Désolé, les inscriptions pour cette activité sont closes ou le quota maximal a été atteint."))
+            return redirect('activity_detail', slug=slug)
+            
+        form = EventActivityApplicationForm(request.POST, activity=activity)
+        if form.is_valid():
+            app = form.save(commit=False)
+            app.activity = activity
+            app.amount = activity.price
+            app.transaction_id = f"ACTIVITYPAY-{uuid.uuid4().hex[:10].upper()}"
+            
+            # Si gratuit : confirmation immédiate
+            if activity.price <= 0:
+                app.is_paid = True
+                app.status = 'confirmed'
+                app.save()
+                messages.success(request, _("Félicitations ! Votre inscription à l'activité \"%(title)s\" est confirmée avec succès.") % {'title': activity.title})
+                return redirect('activity_application_status', uuid=app.uuid)
+            else:
+                # Si payant : initiation du paiement Freemopay Mobile Money
+                app.status = 'pending'
+                app.is_paid = False
+                app.save()
+                
+                from .freemopay_service import FreemopayPaymentProcessor
+                processor = FreemopayPaymentProcessor()
+                res = processor.process_activity_payment(app)
+                
+                if res.get('success'):
+                    messages.info(request, _("Une demande de paiement a été envoyée sur votre téléphone (%(phone)s). Veuillez composer votre code secret.") % {'phone': app.phone})
+                else:
+                    messages.warning(request, _("Le paiement automatique n'a pas pu être finalisé : %(err)s. Vous pouvez réessayer ci-dessous.") % {'err': res.get('error', '')})
+                
+                return redirect('activity_application_status', uuid=app.uuid)
+        else:
+            messages.error(request, _("Veuillez corriger les erreurs indiquées dans le formulaire."))
+    else:
+        form = EventActivityApplicationForm(activity=activity)
+        
+    context = {
+        'activity': activity,
+        'event': event,
+        'form': form,
+        'other_activities': other_activities,
+        'recent_events': recent_events,
+    }
+    return render(request, 'main/activity_detail.html', context)
+
+
+def activity_application_status(request, uuid):
+    """Page de confirmation et suivi du statut d'une candidature à une activité"""
+    application = get_object_or_404(EventActivityApplication, uuid=uuid)
+    activity = application.activity
+    
+    # Vérification asynchrone du statut si en attente
+    if application.status == 'pending' and not application.is_paid and activity.price > 0:
+        from .freemopay_service import FreemopayPaymentProcessor
+        processor = FreemopayPaymentProcessor()
+        # Mock/Vérification
+        vote_like = type('Obj', (object,), {
+            'transaction_id': application.transaction_id,
+            'payment_reference': application.payment_reference,
+            'phone': application.phone
+        })()
+        check = processor.verify_payment_status(vote_like)
+        if check.get('success') and check.get('status') == 'completed':
+            processor.confirm_activity_payment(application)
+            application.refresh_from_db()
+            
+    context = {
+        'application': application,
+        'activity': activity,
+        'event': activity.event,
+    }
+    return render(request, 'main/activity_application_status.html', context)
+
+
+def activity_payment_cancel(request, uuid):
+    """Annulation d'une candidature ou d'un paiement en attente"""
+    application = get_object_or_404(EventActivityApplication, uuid=uuid)
+    if application.status == 'pending':
+        application.status = 'cancelled'
+        application.save(update_fields=['status'])
+        messages.info(request, _("Votre demande d'inscription a été annulée. Vous pouvez soumettre une nouvelle candidature quand vous le souhaitez."))
+    return redirect('activity_detail', slug=application.activity.slug)
+
+
+def api_activity_payment_status(request, transaction_id):
+    """Endpoint AJAX pour interroger le statut de paiement d'une activité"""
+    app = get_object_or_404(EventActivityApplication, transaction_id=transaction_id)
+    
+    if app.status == 'pending' and not app.is_paid:
+        from .freemopay_service import FreemopayPaymentProcessor
+        processor = FreemopayPaymentProcessor()
+        vote_like = type('Obj', (object,), {
+            'transaction_id': app.transaction_id,
+            'payment_reference': app.payment_reference,
+            'phone': app.phone
+        })()
+        check = processor.verify_payment_status(vote_like)
+        if check.get('success') and check.get('status') == 'completed':
+            processor.confirm_activity_payment(app)
+            app.refresh_from_db()
+
+    return JsonResponse({
+        'status': app.status,
+        'is_paid': app.is_paid,
+        'is_confirmed': app.status == 'confirmed',
+        'full_name': app.full_name,
+        'activity_title': app.activity.title
+    })
+
+
 
 

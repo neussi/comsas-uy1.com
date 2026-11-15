@@ -591,6 +591,106 @@ tech, etudiant informatique{% endblock %}
 </section>
 
 <!-- ═══════════════════════════════════════════
+     COFESTI 2026 TEASER (FESTI-NOËL)
+═══════════════════════════════════════════ -->
+{% if cofesti_edition %}
+<section class="py-5 position-relative overflow-hidden text-white" style="background: linear-gradient(135deg, #064E3B 0%, #065F46 50%, #0F172A 100%);">
+    <div class="position-absolute top-0 end-0 p-5 pe-none opacity-10 d-none d-lg-block">
+        <i class="fas fa-holly-berry fa-10x text-warning"></i>
+    </div>
+    <div class="container position-relative z-1">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7" data-aos="fade-right">
+                <div class="d-inline-flex align-items-center mb-3 px-3 py-1 bg-warning bg-opacity-20 border border-warning border-opacity-40 rounded-pill">
+                    <span class="text-warning fw-bold small text-uppercase ls-1">
+                        <i class="fas fa-gift me-1"></i> Événement de Fin d'Année · UY1
+                    </span>
+                </div>
+                <h2 class="fw-bold mb-2 text-white lh-sm" style="font-size: clamp(1.8rem, 4.5vw, 2.8rem);">
+                    COFESTI <span class="text-warning">{{ cofesti_edition.year }}</span>
+                    <span class="d-block text-white-50 h4 fw-normal mt-1">Le Festi-Noël & Parrainage du Département d'Informatique</span>
+                </h2>
+                <p class="lead mb-3 text-white-50" style="font-size: clamp(0.9rem, 2vw, 1.05rem);">
+                    Rejoignez les grandes festivités de fin d'année du COM.S.AS : Tournois sportifs avec l'hymne officiel <em>Before the Whistle</em>, élection Miss & Master avec votes en ligne à 100 FCFA, 5 pique-niques de décembre et la Soirée de Parrainage & Gala au Restaurant N°2.
+                </p>
+                <div class="d-flex flex-wrap gap-2 gap-sm-3 pt-2">
+                    <a href="{% url 'cofesti_home' %}" class="btn btn-warning rounded-pill px-4 py-2.5 shadow-sm fw-bold text-dark">
+                        <i class="fas fa-star me-2"></i>Découvrir COFESTI {{ cofesti_edition.year }}
+                    </a>
+                    <a href="{% url 'cofesti_miss_master' %}" class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-semibold">
+                        <i class="fas fa-crown me-2 text-warning"></i>Voter Miss & Master (100F)
+                    </a>
+                    <a href="{% url 'cofesti_sports' %}" class="btn btn-outline-warning rounded-pill px-4 py-2.5 fw-semibold">
+                        <i class="fas fa-futbol me-2"></i>Écouter l'Hymne Foot
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="card border border-white border-opacity-25 rounded-4 p-4 text-center shadow-lg" style="background: rgba(0,0,0,0.45); backdrop-filter: blur(10px);">
+                    <span class="badge bg-warning text-dark text-uppercase fw-bold py-1.5 px-3 rounded-pill align-self-center mb-3">
+                        <i class="fas fa-calendar-alt me-1"></i> {{ cofesti_edition.start_date|date:"d M" }} — {{ cofesti_edition.end_date|date:"d M Y" }}
+                    </span>
+
+                    <!-- Compte à rebours COFESTI (Festi-Noël) -->
+                    <div class="mb-4 p-3 rounded-3 bg-black bg-opacity-40 border border-warning border-opacity-30">
+                        <div class="d-flex align-items-center justify-content-center gap-2 mb-2 text-warning small fw-bold text-uppercase ls-1">
+                            <i class="fas fa-hourglass-half"></i> Compte à rebours avant Festi-Noël
+                        </div>
+                        <div class="row g-2" id="home-cofesti-countdown" data-date="{{ cofesti_edition.start_date|date:'Y-m-d' }}">
+                            <div class="col-3">
+                                <div class="p-2 bg-dark bg-opacity-75 rounded-3 border border-warning border-opacity-25">
+                                    <span class="d-block fw-bold text-warning" id="cofesti-days" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">00</span>
+                                    <small class="text-white-50" style="font-size: 0.68rem;">Jours</small>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="p-2 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
+                                    <span class="d-block fw-bold text-white" id="cofesti-hours" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">00</span>
+                                    <small class="text-white-50" style="font-size: 0.68rem;">Heures</small>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="p-2 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
+                                    <span class="d-block fw-bold text-white" id="cofesti-minutes" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">00</span>
+                                    <small class="text-white-50" style="font-size: 0.68rem;">Minutes</small>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="p-2 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25">
+                                    <span class="d-block fw-bold text-white" id="cofesti-seconds" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">00</span>
+                                    <small class="text-white-50" style="font-size: 0.68rem;">Secs</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="text-white fw-bold mb-3 font-outfit">5 Pôles au Programme</h5>
+                    <div class="text-start space-y-2 text-white-50 small">
+                        <div class="p-2 rounded-3 bg-white bg-opacity-10 mb-2 d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-crown text-warning me-2"></i>Miss, Master & The Voice</span>
+                            <span class="badge bg-light text-dark fw-bold">100F / vote</span>
+                        </div>
+                        <div class="p-2 rounded-3 bg-white bg-opacity-10 mb-2 d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-futbol text-success me-2"></i>Football, Basket, E-Sport</span>
+                            <span class="badge bg-light text-dark fw-bold">Dès 15 000F</span>
+                        </div>
+                        <div class="p-2 rounded-3 bg-white bg-opacity-10 mb-2 d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-film text-info me-2"></i>5 Pique-Niques & Cinéma</span>
+                            <span class="badge bg-light text-dark fw-bold">3 500F à 5 000F</span>
+                        </div>
+                        <div class="p-2 rounded-3 bg-white bg-opacity-10 d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-glass-cheers text-warning me-2"></i>Gala Parrainage Resto N°2</span>
+                            <span class="badge bg-light text-dark fw-bold">Filleul: 10 000F</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════
      J.U.IN TEASER
 ═══════════════════════════════════════════ -->
 {% if juin_edition %}
@@ -1451,6 +1551,35 @@ tech, etudiant informatique{% endblock %}
             }
             setInterval(updateCountdown, 1000);
             updateCountdown();
+        }
+
+        // Countdown COFESTI (Festi-Noël)
+        const cofestiCdEl = document.getElementById('home-cofesti-countdown');
+        if (cofestiCdEl) {
+            const cofestiTargetDate = new Date(cofestiCdEl.getAttribute('data-date')).getTime();
+            function updateCofestiCountdown() {
+                const distance = cofestiTargetDate - new Date().getTime();
+                const ids = ['cofesti-days', 'cofesti-hours', 'cofesti-minutes', 'cofesti-seconds'];
+                if (distance < 0) {
+                    ids.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.innerText = "00";
+                    });
+                    return;
+                }
+                const vals = [
+                    Math.floor(distance / 86400000),
+                    Math.floor((distance % 86400000) / 3600000),
+                    Math.floor((distance % 3600000) / 60000),
+                    Math.floor((distance % 60000) / 1000)
+                ];
+                ids.forEach((id, i) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = vals[i].toString().padStart(2, '0');
+                });
+            }
+            setInterval(updateCofestiCountdown, 1000);
+            updateCofestiCountdown();
         }
 
         // Recherche instantanée de documents sur la page d'accueil

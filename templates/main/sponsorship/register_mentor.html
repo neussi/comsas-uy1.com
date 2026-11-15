@@ -1,57 +1,374 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% load static custom_filters %}
 
-{% block title %}Inscription Parrain - COMS.A.S{% endblock %}
+{% block title %}Devenir Parrain Professionnel & Académique — COMS.A.S{% endblock %}
+
+{% block meta_description %}Rejoignez le programme de parrainage du COM.S.AS en tant que mentor ou parrain professionnel. Guidez les étudiants de l'Université de Yaoundé I vers l'excellence tech.{% endblock %}
+
+{% block extra_css %}
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+<style>
+    .crop-preview-box {
+        width: 150px;
+        height: 180px;
+        border-radius: 1rem;
+        overflow: hidden;
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+    }
+    .crop-preview-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <section class="py-5 bg-light position-relative">
-    <div class="container py-4">
+    <div class="container py-3">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-10 col-xl-9">
+                <!-- Fil d'ariane -->
                 <nav aria-label="breadcrumb" class="mb-4">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'home' %}"
-                                class="text-muted text-decoration-none">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'sponsorship_home' %}"
-                                class="text-muted text-decoration-none">Parrainage</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Inscription Parrain</li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted text-decoration-none">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'sponsorship_home' %}" class="text-muted text-decoration-none">Parrainage</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Devenir Parrain</li>
                     </ol>
                 </nav>
 
+                <!-- Carte Principale -->
                 <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                    <div class="card-header bg-primary text-white p-4">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-chalkboard-teacher fa-2x me-3"></i>
+                    <div class="card-header bg-primary text-white p-4 p-md-5">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="w-14 h-14 rounded-3 bg-white bg-opacity-20 d-flex align-items-center justify-content-center text-white h3 mb-0">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
                             <div>
-                                <h3 class="mb-0 text-white fw-bold">Devenir Parrain</h3>
-                                <p class="mb-0 opacity-75">Partagez votre expérience avec les plus jeunes</p>
+                                <span class="badge bg-warning text-dark text-uppercase fw-bold px-3 py-1 rounded-pill mb-1">
+                                    Session : {{ session.name }}
+                                </span>
+                                <h2 class="mb-1 text-white fw-bold">Devenir Parrain / Mentor</h2>
+                                <p class="mb-0 text-white-50 small">Partagez votre expertise académique et professionnelle avec la relève de l'UY1</p>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body p-5 bg-white">
+
+                    <div class="card-body p-4 p-md-5 bg-white">
+                        <!-- Messages Django -->
                         {% if messages %}
                         {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                         {% endfor %}
                         {% endif %}
 
-                        <div class="mb-4">
-                            <h5 class="fw-bold text-dark mb-3">Comment ça marche ?</h5>
-                            <ul class="text-muted small">
-                                <li>Vous devez être étudiant en Licence 3, Master ou Doctorat.</li>
-                                <li>Vous vous engagez à guider vos filleuls durant l'année académique.</li>
-                                <li>L'attribution des filleuls se fera en fonction de votre spécialité.</li>
+                        {% if form.errors %}
+                        <div class="alert alert-danger rounded-3 shadow-sm mb-4">
+                            <h6 class="fw-bold mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Veuillez corriger les champs suivants :</h6>
+                            <ul class="mb-0 small">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li><strong>{{ field }} :</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
                             </ul>
                         </div>
+                        {% endif %}
 
-                        {% crispy form %}
+                        <form method="POST" enctype="multipart/form-data" id="mentorForm" onsubmit="return handleFormSubmit(event)">
+                            {% csrf_token %}
+
+                            <!-- SECTION 1 : PHOTO PORTRAIT OBLIGATOIRE -->
+                            <div class="mb-5 p-4 rounded-4 bg-light border border-secondary border-opacity-10">
+                                <h5 class="fw-bold text-dark mb-1 flex items-center gap-2">
+                                    <i class="fas fa-camera text-primary me-2"></i>Photo Portrait Officielle <span class="text-danger">*</span>
+                                </h5>
+                                <p class="text-muted small mb-4">
+                                    Votre photo portrait est <strong>obligatoire</strong> pour la fiche de mentorat et le certificat officiel. Formats acceptés : <strong>JPG, PNG, WEBP</strong> (Max 5 Mo).
+                                </p>
+
+                                <div class="row align-items-center g-4">
+                                    <div class="col-sm-auto text-center">
+                                        <div class="crop-preview-box shadow-sm" id="previewContainer">
+                                            <div class="text-center text-muted p-2" id="placeholderPreview">
+                                                <i class="fas fa-user-circle fa-4x text-secondary opacity-50 mb-1"></i>
+                                                <div style="font-size: 0.72rem;">Aperçu du portrait</div>
+                                            </div>
+                                            <img id="imagePreview" class="d-none" alt="Aperçu recadré" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold small text-uppercase text-muted">Sélectionnez une photo nette</label>
+                                            <input type="file" id="rawPhotoInput" accept="image/jpeg,image/png,image/webp" class="form-control rounded-3" required />
+                                            <!-- Hidden real input containing the final file or base64 data -->
+                                            <input type="file" name="photo" id="finalPhotoInput" class="d-none" />
+                                        </div>
+                                        <div id="fileSizeAlert" class="small text-danger d-none mb-2">
+                                            <i class="fas fa-exclamation-circle me-1"></i> Le fichier sélectionné dépasse 5 Mo. Veuillez choisir une image plus légère.
+                                        </div>
+                                        <div class="small text-muted">
+                                            <i class="fas fa-info-circle text-primary me-1"></i> Dès la sélection, une fenêtre vous permettra de centrer et recadrer parfaitement votre portrait.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 2 : IDENTITÉ & COORDONNÉES -->
+                            <div class="mb-5">
+                                <h5 class="fw-bold text-dark mb-3">
+                                    <i class="fas fa-id-card text-primary me-2"></i>Identité & Contact
+                                </h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Prénom <span class="text-danger">*</span></label>
+                                        <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: Cédric" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Nom de famille <span class="text-danger">*</span></label>
+                                        <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: Nguema" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Adresse e-mail <span class="text-danger">*</span></label>
+                                        <input type="email" name="email" value="{{ form.email.value|default:'' }}" required class="form-control rounded-3" placeholder="votre.email@domaine.com" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Numéro de téléphone (WhatsApp) <span class="text-danger">*</span></label>
+                                        <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: +237 659 47 11 52" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 3 : PARCOURS & PROFIL PROFESSIONNEL -->
+                            <div class="mb-5">
+                                <h5 class="fw-bold text-dark mb-3">
+                                    <i class="fas fa-briefcase text-primary me-2"></i>Profil Académique & Professionnel
+                                </h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Niveau d'étude / Profil <span class="text-danger">*</span></label>
+                                        <select name="level" required class="form-select rounded-3">
+                                            <option value="">-- Sélectionnez votre niveau --</option>
+                                            <option value="L3" {% if form.level.value == 'L3' %}selected{% endif %}>Licence 3</option>
+                                            <option value="ICT-L3" {% if form.level.value == 'ICT-L3' %}selected{% endif %}>ICT-L3</option>
+                                            <option value="M1" {% if form.level.value == 'M1' %}selected{% endif %}>Master 1</option>
+                                            <option value="M2" {% if form.level.value == 'M2' %}selected{% endif %}>Master 2</option>
+                                            <option value="PHD" {% if form.level.value == 'PHD' %}selected{% endif %}>Doctorat / Chercheur</option>
+                                            <option value="ALUMNI" {% if form.level.value == 'ALUMNI' %}selected{% endif %}>Alumni / Professionnel en poste</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Spécialité principale <span class="text-danger">*</span></label>
+                                        <select name="specialty" required class="form-select rounded-3">
+                                            <option value="">-- Spécialité --</option>
+                                            <option value="GL" {% if form.specialty.value == 'GL' %}selected{% endif %}>Génie Logiciel & Développement Web/Mobile</option>
+                                            <option value="DS" {% if form.specialty.value == 'DS' %}selected{% endif %}>Data Science & Intelligence Artificielle</option>
+                                            <option value="SECU" {% if form.specialty.value == 'SECU' %}selected{% endif %}>Sécurité Informatique & Cybersécurité</option>
+                                            <option value="RESEAU" {% if form.specialty.value == 'RESEAU' %}selected{% endif %}>Réseau, Systèmes & Cloud DevOps</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <label class="form-label fw-semibold small">Profession / Poste actuel <span class="text-danger">*</span></label>
+                                        <input type="text" name="profession" value="{{ form.profession.value|default:'' }}" required class="form-control rounded-3" placeholder="Ex: Cloud Engineer, Dev Backend, Data Scientist" />
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold small">Entreprise / Organisation</label>
+                                        <input type="text" name="company" value="{{ form.company.value|default:'' }}" class="form-control rounded-3" placeholder="Ex: Google, MTN, Camtel, Freelance..." />
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold small">Expérience (Années) <span class="text-danger">*</span></label>
+                                        <input type="number" name="years_of_experience" min="0" max="50" value="{{ form.years_of_experience.value|default:'1' }}" required class="form-control rounded-3" />
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold small">Biographie & Présentation succincte</label>
+                                        <textarea name="bio" rows="3" class="form-control rounded-3" placeholder="Parlez de votre parcours, vos défis surmontés et votre vision pour accompagner au mieux vos filleuls...">{{ form.bio.value|default:'' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 4 : COMPÉTENCES & DISPONIBILITÉS -->
+                            <div class="mb-5">
+                                <h5 class="fw-bold text-dark mb-2">
+                                    <i class="fas fa-layer-group text-primary me-2"></i>Domaines d'Expertise & Compétences Clés <span class="text-danger">*</span>
+                                </h5>
+                                <p class="text-muted small mb-3">Cochez les technologies et domaines dans lesquels vous êtes à l'aise pour conseiller et encadrer :</p>
+
+                                <div class="row g-2 mb-4">
+                                    {% for choice_val, choice_label in form.fields.expertise_domains_list.choices %}
+                                    <div class="col-sm-6 col-md-4">
+                                        <div class="form-check p-2.5 rounded-3 border bg-light h-100">
+                                            <input class="form-check-input ms-0 me-2" type="checkbox" name="expertise_domains_list" value="{{ choice_val }}" id="domain_{{ choice_val }}">
+                                            <label class="form-check-label small fw-semibold text-dark" for="domain_{{ choice_val }}">
+                                                {{ choice_label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Nombre maximum de filleuls souhaité</label>
+                                        <select name="max_mentees" class="form-select rounded-3">
+                                            <option value="1">1 Filleul (Accompagnement individuel)</option>
+                                            <option value="2" selected>2 Filleuls (Recommandé)</option>
+                                            <option value="3">3 Filleuls</option>
+                                            <option value="4">4 Filleuls</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4" />
+
+                            <div class="d-flex flex-column flex-sm-row justify-content-end gap-3">
+                                <a href="{% url 'sponsorship_home' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                                    Annuler
+                                </a>
+                                <button type="submit" id="submitBtn" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                    <i class="fas fa-check-circle me-2"></i>Valider mon Inscription de Parrain
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- MODAL DE RECADRAGE DE PHOTO (CROPPER.JS) -->
+<div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow-2xl">
+            <div class="modal-header bg-dark text-white rounded-top-4">
+                <h5 class="modal-title fw-bold" id="cropModalLabel"><i class="fas fa-crop-alt me-2 text-primary"></i>Recadrez votre Photo Portrait</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3 text-center">
+                <div class="img-container" style="max-height: 480px; overflow: hidden; background: #000;">
+                    <img id="cropperImage" style="max-width: 100%; display: block;" />
+                </div>
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cropper.rotate(-90)"><i class="fas fa-undo"></i> -90°</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cropper.rotate(90)"><i class="fas fa-redo"></i> +90°</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cropper.reset()"><i class="fas fa-sync-alt"></i> Réinitialiser</button>
+                </div>
+            </div>
+            <div class="modal-footer bg-light rounded-bottom-4">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" id="cropConfirmBtn" class="btn btn-primary rounded-pill px-4 fw-bold">
+                    <i class="fas fa-check me-1"></i> Valider ce portrait
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Cropper.js JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+    let cropper = null;
+    const rawPhotoInput = document.getElementById('rawPhotoInput');
+    const finalPhotoInput = document.getElementById('finalPhotoInput');
+    const cropperImage = document.getElementById('cropperImage');
+    const cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
+    const cropConfirmBtn = document.getElementById('cropConfirmBtn');
+    const imagePreview = document.getElementById('imagePreview');
+    const placeholderPreview = document.getElementById('placeholderPreview');
+    const fileSizeAlert = document.getElementById('fileSizeAlert');
+
+    rawPhotoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validation taille (Max 5 Mo)
+        if (file.size > 5 * 1024 * 1024) {
+            fileSizeAlert.classList.remove('d-none');
+            rawPhotoInput.value = '';
+            return;
+        } else {
+            fileSizeAlert.classList.add('d-none');
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            cropperImage.src = evt.target.result;
+            cropModal.show();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('cropModal').addEventListener('shown.bs.modal', function () {
+        if (cropper) {
+            cropper.destroy();
+        }
+        cropper = new Cropper(cropperImage, {
+            aspectRatio: 4 / 5, // Ratio portrait idéal
+            viewMode: 1,
+            autoCropArea: 0.9,
+            responsive: true,
+            background: false
+        });
+    });
+
+    cropConfirmBtn.addEventListener('click', function() {
+        if (!cropper) return;
+        const canvas = cropper.getCroppedCanvas({
+            width: 600,
+            height: 750,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+
+        canvas.toBlob(function(blob) {
+            // Créer un File à partir du Blob pour l'input form
+            const croppedFile = new File([blob], "portrait_mentor.jpg", { type: "image/jpeg" });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+            finalPhotoInput.files = dataTransfer.files;
+
+            // Afficher l'aperçu
+            imagePreview.src = canvas.toDataURL('image/jpeg');
+            imagePreview.classList.remove('d-none');
+            placeholderPreview.classList.add('d-none');
+
+            cropModal.hide();
+        }, 'image/jpeg', 0.9);
+    });
+
+    function handleFormSubmit(e) {
+        if (!finalPhotoInput.files || finalPhotoInput.files.length === 0) {
+            e.preventDefault();
+            alert("Veuillez sélectionner et recadrer une photo portrait officielle obligatoire.");
+            rawPhotoInput.focus();
+            return false;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Enregistrement en cours...';
+        return true;
+    }
+</script>
 {% endblock %}

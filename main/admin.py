@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import (
     Member, Project, Event, EventRegistration, EventRegistrationCode, EventAttendance,
+    EventActivity, EventActivityApplication,
     Professor, Classroom, Delegate, News, Gallery, GalleryAlbum, 
     Contact, SiteSettings, SponsorshipSession, Mentor, Mentee, Match,
     Contest, Candidate, Vote, Archive, ArchiveComment,
@@ -514,13 +515,36 @@ class GalleryInline(admin.TabularInline):
     extra = 1
     fields = ('media_type', 'image', 'video_url', 'video_file', 'title_fr', 'is_featured')
 
+class EventActivityInline(admin.TabularInline):
+    model = EventActivity
+    extra = 1
+    fields = ('title', 'activity_type', 'date_activity', 'location', 'price', 'max_participants', 'is_active')
+
+@admin.register(EventActivity)
+class EventActivityAdmin(admin.ModelAdmin):
+    list_display = ('title', 'event', 'activity_type', 'date_activity', 'location', 'price', 'max_participants', 'is_active')
+    list_filter = ('event', 'activity_type', 'is_active')
+    list_editable = ('price', 'max_participants', 'is_active')
+    search_fields = ('title', 'description', 'rules', 'game_title')
+    prepopulated_fields = {'slug': ('title',)}
+
+@admin.register(EventActivityApplication)
+class EventActivityApplicationAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'activity', 'team_name', 'gamer_tag', 'phone', 'amount', 'is_paid', 'status', 'created_at')
+    list_filter = ('activity__event', 'activity', 'is_paid', 'status', 'created_at')
+    list_editable = ('is_paid', 'status')
+    search_fields = ('full_name', 'email', 'phone', 'team_name', 'gamer_tag', 'transaction_id')
+    readonly_fields = ('uuid', 'transaction_id', 'created_at', 'updated_at')
+    actions = [export_to_csv]
+
+
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ('title_fr', 'date_event', 'duration_days', 'requires_registration_code', 'custom_registered_count', 'attendees_count', 'is_active', 'is_featured', 'certificates_sent')
     list_filter = ('requires_registration_code', 'is_active', 'is_featured', 'certificates_sent')
     list_editable = ('duration_days', 'requires_registration_code', 'custom_registered_count', 'attendees_count', 'is_active', 'is_featured')
     search_fields = ('title_fr', 'location')
-    inlines = [GalleryInline]
+    inlines = [EventActivityInline, GalleryInline]
     actions = ['send_event_certificates']
 
     def send_event_certificates(self, request, queryset):
@@ -643,16 +667,19 @@ class SponsorshipSessionAdmin(admin.ModelAdmin):
 
 @admin.register(Mentor)
 class MentorAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'level', 'specialty', 'max_mentees', 'current_mentees_count')
-    list_filter = ('level', 'specialty', 'session')
-    search_fields = ('first_name', 'last_name', 'email')
+    list_display = ('first_name', 'last_name', 'profession', 'company', 'level', 'specialty', 'years_of_experience', 'status', 'max_mentees', 'current_mentees_count')
+    list_filter = ('status', 'level', 'specialty', 'session')
+    list_editable = ('status',)
+    search_fields = ('first_name', 'last_name', 'email', 'profession', 'company')
     actions = [export_to_csv]
 
 @admin.register(Mentee)
 class MenteeAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'level', 'desired_specialty')
-    list_filter = ('level', 'desired_specialty', 'session')
-    search_fields = ('first_name', 'last_name', 'email')
+    list_display = ('first_name', 'last_name', 'desired_specialty', 'level', 'status', 'created_at')
+    list_filter = ('status', 'level', 'session')
+    list_editable = ('status',)
+    search_fields = ('first_name', 'last_name', 'email', 'desired_specialty', 'skills_to_acquire')
+    actions = [export_to_csv]
     actions = [match_mentees, export_to_csv, export_sponsorship_pdf]
 
 # =============================================================================
@@ -833,4 +860,110 @@ class VoteAdmin(admin.ModelAdmin):
     list_filter = ('status', 'contest', 'created_at')
     search_fields = ('transaction_id', 'voter_phone', 'voter_email')
     readonly_fields = ('created_at',)
+
+
+# =============================================================================
+# COFESTI (FESTI-NOËL) ADMIN
+# =============================================================================
+from .models import (
+    CofestiEdition, CofestiCandidate, CofestiVote, CofestiSportTournament,
+    CofestiTeam, CofestiPicnic, CofestiPicnicBooking,
+    CofestiSponsorshipRegistration, CofestiOrganizingMember
+)
+
+@admin.register(CofestiEdition)
+class CofestiEditionAdmin(admin.ModelAdmin):
+    list_display = ('year', 'title', 'theme', 'is_active', 'miss_master_voting_open', 'sports_active', 'picnics_active', 'sponsorship_gala_active')
+    list_editable = ('is_active', 'miss_master_voting_open', 'sports_active', 'picnics_active', 'sponsorship_gala_active')
+    search_fields = ('title', 'theme', 'slogan')
+    fieldsets = (
+        ("Édition & Informations Générales", {
+            'fields': ('year', 'edition_number', 'title', 'theme', 'slogan', 'description', 'start_date', 'end_date', 'location', 'cover_image', 'is_active')
+        }),
+        ("Hymne Officiel Football", {
+            'fields': ('anthem_audio', 'anthem_title')
+        }),
+        ("Modules & Activations", {
+            'fields': (
+                ('miss_master_active', 'miss_master_voting_open', 'miss_master_results_published'),
+                ('the_voice_active', 'the_voice_voting_open'),
+                ('sports_active', 'sports_registrations_open'),
+                ('games_active', 'games_registrations_open'),
+                ('picnics_active', 'picnics_booking_open'),
+                ('sponsorship_gala_active', 'sponsorship_registrations_open'),
+            )
+        }),
+        ("Tarifs Officiels", {
+            'fields': ('vote_unit_price', 'mentee_gala_fee', 'mentor_gala_fee')
+        }),
+        ("Supervision & Direction", {
+            'fields': ('supervisor_name', 'president_name')
+        })
+    )
+
+
+@admin.register(CofestiCandidate)
+class CofestiCandidateAdmin(admin.ModelAdmin):
+    list_display = ('number', 'name', 'contest_type', 'edition', 'level', 'votes_count', 'total_revenue', 'is_approved')
+    list_filter = ('edition', 'contest_type', 'is_approved', 'level')
+    search_fields = ('name', 'bio', 'specialty')
+    list_editable = ('is_approved',)
+    ordering = ['edition', 'contest_type', '-votes_count']
+
+
+@admin.register(CofestiVote)
+class CofestiVoteAdmin(admin.ModelAdmin):
+    list_display = ('transaction_id', 'candidate', 'vote_count', 'amount', 'voter_phone', 'operator', 'status', 'created_at')
+    list_filter = ('edition', 'status', 'operator', 'created_at')
+    search_fields = ('transaction_id', 'voter_phone', 'voter_name', 'candidate__name')
+    readonly_fields = ('created_at', 'completed_at')
+
+
+@admin.register(CofestiSportTournament)
+class CofestiSportTournamentAdmin(admin.ModelAdmin):
+    list_display = ('title', 'edition', 'category', 'registration_fee', 'location', 'is_open', 'order')
+    list_filter = ('edition', 'category', 'is_open')
+    list_editable = ('registration_fee', 'is_open', 'order')
+    search_fields = ('title', 'rules_summary')
+
+
+@admin.register(CofestiTeam)
+class CofestiTeamAdmin(admin.ModelAdmin):
+    list_display = ('name', 'tournament', 'level_or_class', 'captain_name', 'captain_phone', 'is_confirmed', 'created_at')
+    list_filter = ('tournament__edition', 'tournament', 'is_confirmed')
+    search_fields = ('name', 'captain_name', 'captain_phone', 'players_list')
+    list_editable = ('is_confirmed',)
+
+
+@admin.register(CofestiPicnic)
+class CofestiPicnicAdmin(admin.ModelAdmin):
+    list_display = ('theme', 'edition', 'location', 'picnic_date', 'cinema_date', 'price', 'is_active', 'order')
+    list_filter = ('edition', 'is_active')
+    list_editable = ('price', 'is_active', 'order')
+    search_fields = ('theme', 'location', 'description')
+
+
+@admin.register(CofestiPicnicBooking)
+class CofestiPicnicBookingAdmin(admin.ModelAdmin):
+    list_display = ('ticket_code', 'full_name', 'phone', 'picnic', 'is_paid', 'created_at')
+    list_filter = ('picnic__edition', 'picnic', 'is_paid')
+    search_fields = ('ticket_code', 'full_name', 'phone', 'email')
+    list_editable = ('is_paid',)
+
+
+@admin.register(CofestiSponsorshipRegistration)
+class CofestiSponsorshipRegistrationAdmin(admin.ModelAdmin):
+    list_display = ('ticket_code', 'role_type', 'full_name', 'phone', 'level', 'amount', 'is_confirmed', 'created_at')
+    list_filter = ('edition', 'role_type', 'is_confirmed')
+    search_fields = ('ticket_code', 'full_name', 'phone', 'email')
+    list_editable = ('is_confirmed',)
+
+
+@admin.register(CofestiOrganizingMember)
+class CofestiOrganizingMemberAdmin(admin.ModelAdmin):
+    list_display = ('name', 'role', 'bloc', 'edition', 'order')
+    list_filter = ('edition', 'bloc')
+    list_editable = ('order',)
+    search_fields = ('name', 'role')
+
 
