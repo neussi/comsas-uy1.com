@@ -48,8 +48,8 @@ jobs:
           fi
           echo "--- .env injecté ---"
           cat .env | grep -v PASSWORD | grep -v SECRET
-          # Assurer la présence des dossiers média et flyers
-          mkdir -p media/activities
+          mkdir -p staticfiles/images media/activities
+          cp -r static/images/cofesti staticfiles/images/ 2>/dev/null || true
           cp -r static/images/cofesti/* media/activities/ 2>/dev/null || true
           docker-compose build --no-cache
           docker-compose up -d
