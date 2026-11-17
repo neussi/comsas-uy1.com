@@ -107,6 +107,26 @@
                         <p class="text-white-50 small mb-0">Votre participation à l'activité « {{ activity.title }} » est officiellement enregistrée.</p>
                     </div>
 
+                    {% elif application.status == 'pay_later' or application.pay_later and not application.is_paid %}
+                    <div class="p-4 p-md-5 text-center" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #fde68a;">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 shadow-sm" style="width: 80px; height: 80px; background: #fffdf5; color: #d97706; font-size: 2.2rem; border: 2px solid #f59e0b;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <span class="badge bg-warning text-dark text-uppercase fw-bold px-3 py-1.5 rounded-pill mb-2">
+                            Réservation Enregistrée • Option « Payer plus tard »
+                        </span>
+                        <h2 class="h3 fw-extrabold text-dark mb-1">Candidature Réservée avec Succès !</h2>
+                        <div class="alert alert-warning border-0 rounded-4 mx-auto mt-3 text-start p-3 shadow-sm" style="max-width: 580px; background: #fff; border-left: 6px solid #f59e0b !important;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle fa-2x me-3" style="color: #f59e0b;"></i>
+                                <div>
+                                    <strong class="d-block text-dark fw-bold mb-1">Consigne Importante :</strong>
+                                    <span class="fw-bold" style="color: #92400e; font-size: 0.95rem;">Non payé, veuillez contacter le comité d'organisation afin de payer votre billet avant la date.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {% elif application.status == 'pending' %}
                     <div class="p-4 p-md-5 text-center" style="background: linear-gradient(135deg, rgba(233,30,99,0.06) 0%, rgba(240,98,146,0.12) 100%); border-bottom: 1px solid var(--rose-border);">
                         <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 80px; height: 80px; background: var(--rose-pale); color: var(--rose); font-size: 2.2rem;">

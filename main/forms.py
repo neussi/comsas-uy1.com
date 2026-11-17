@@ -370,11 +370,18 @@ class MentorRegistrationForm(forms.ModelForm):
         label=_("Domaines d'expertise & Compétences clés * (Cochez tout ce qui s'applique)")
     )
     
+    pay_later = forms.BooleanField(
+        required=False,
+        label=_("Payer plus tard (Régler auprès du comité avant la soirée)"),
+        help_text=_("Cochez cette case si vous n'avez pas vos fonds immédiatement. Vous pourrez finaliser votre paiement auprès du comité d'organisation avant la date de la soirée."),
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    
     class Meta:
         model = Mentor
         fields = [
             'first_name', 'last_name', 'phone', 'email', 'cycle', 'level', 'filiere_option',
-            'specialty', 'profession', 'company', 'years_of_experience', 'bio', 'photo', 'max_mentees'
+            'specialty', 'profession', 'company', 'years_of_experience', 'bio', 'photo', 'max_mentees', 'pay_later'
         ]
 
     def clean_photo(self):
@@ -453,11 +460,18 @@ class MenteeRegistrationForm(forms.ModelForm):
         widget=forms.Textarea(attrs={'rows': 2, 'placeholder': _('Expliquez brièvement vos attentes vis-à-vis du parrainage...')})
     )
 
+    pay_later = forms.BooleanField(
+        required=False,
+        label=_("Payer plus tard (Régler auprès du comité avant la soirée)"),
+        help_text=_("Cochez cette case si vous n'avez pas vos fonds immédiatement. Vous pourrez finaliser votre paiement auprès du comité d'organisation avant la date de la soirée."),
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+
     class Meta:
         model = Mentee
         fields = [
             'first_name', 'last_name', 'phone', 'email', 'cycle', 'level', 'filiere_option',
-            'desired_specialty', 'skills_to_acquire', 'desired_mentor_type', 'bio', 'photo'
+            'desired_specialty', 'skills_to_acquire', 'desired_mentor_type', 'bio', 'photo', 'pay_later'
         ]
 
     def clean_photo(self):
@@ -490,13 +504,20 @@ from .models import EventActivity, EventActivityApplication
 
 class EventActivityApplicationForm(forms.ModelForm):
     """Formulaire d'inscription à une activité d'événement (Individuel, Équipe ou Gaming)"""
+    pay_later = forms.BooleanField(
+        required=False,
+        label=_("Payer plus tard (Régler auprès du comité avant l'événement)"),
+        help_text=_("Cochez cette case si vous souhaitez vous inscrire maintenant et régler vos frais de participation plus tard auprès du comité d'organisation."),
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
     
     class Meta:
         model = EventActivityApplication
         fields = [
             'full_name', 'email', 'phone', 'level', 'notes',
             'team_name', 'captain_name', 'team_members', 'team_size',
-            'gamer_tag', 'game_name', 'gaming_platform', 'gaming_id'
+            'gamer_tag', 'game_name', 'gaming_platform', 'gaming_id',
+            'pay_later'
         ]
 
     def __init__(self, *args, **kwargs):
@@ -507,7 +528,7 @@ class EventActivityApplicationForm(forms.ModelForm):
         optional_conditional_fields = [
             'team_name', 'captain_name', 'team_members', 'team_size',
             'gamer_tag', 'game_name', 'gaming_platform', 'gaming_id',
-            'level', 'notes'
+            'level', 'notes', 'pay_later'
         ]
         for f in optional_conditional_fields:
             if f in self.fields:
@@ -516,9 +537,15 @@ class EventActivityApplicationForm(forms.ModelForm):
         if self.activity and self.activity.activity_type != 'team':
             self.fields['team_size'].initial = 1
 
+        # Cacher pay_later si l'activité est gratuite
+        if self.activity and self.activity.price <= 0:
+            if 'pay_later' in self.fields:
+                del self.fields['pay_later']
+
         # Styles par défaut
         for fname, field in self.fields.items():
-            field.widget.attrs.update({'class': 'form-control'})
+            if fname != 'pay_later':
+                field.widget.attrs.update({'class': 'form-control'})
 
     def clean(self):
         cleaned_data = super().clean()
@@ -558,6 +585,100 @@ class EventActivityApplicationForm(forms.ModelForm):
                 self.add_error('gaming_platform', _("La plateforme de jeu est obligatoire."))
 
         return cleaned_data
+
+
+# =============================================================================
+# COFESTI CANDIDATE FORM (MISS & MASTER)
+# =============================================================================
+from .models import CofestiCandidate, CofestiCandidatePhoto
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('widget', MultipleFileInput(attrs={'multiple': True, 'accept': 'image/*'}))
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+class CofestiCandidateApplicationForm(forms.ModelForm):
+    """Formulaire de dépôt de candidature pour Miss Département & Master Département (1 à 5 photos)"""
+    CONTEST_CHOICES = [
+        ('miss', "Miss Département d'Informatique 👑"),
+        ('master', "Master Département d'Informatique 🤴"),
+    ]
+    contest_type = forms.ChoiceField(
+        choices=CONTEST_CHOICES,
+        required=True,
+        label=_("Concours visé *"),
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    photo = forms.ImageField(
+        required=True,
+        label=_("Photo Portrait Officielle * (Photo Principale)"),
+        help_text=_("Photo nette et professionnelle de face (Formats: JPEG, PNG, WEBP, max 5 Mo)."),
+        widget=forms.ClearableFileInput(attrs={'accept': 'image/*'})
+    )
+    additional_photos = MultipleFileField(
+        required=False,
+        label=_("Galerie Photos Additionnelles (1 à 4 photos de plus)"),
+        help_text=_("Vous pouvez ajouter jusqu'à 4 photos additionnelles (tenue de soirée, tenue traditionnelle, tenue chic/décontractée) pour une galerie de 5 photos max.")
+    )
+
+    class Meta:
+        model = CofestiCandidate
+        fields = [
+            'contest_type', 'name', 'phone', 'email', 'level', 'specialty',
+            'campaign_message', 'bio', 'photo'
+        ]
+        labels = {
+            'name': _("Nom complet *"),
+            'phone': _("Numéro WhatsApp / Téléphone *"),
+            'email': _("Adresse e-mail *"),
+            'level': _("Niveau d'études *"),
+            'specialty': _("Filière ou Spécialité *"),
+            'campaign_message': _("Message de campagne / Slogan *"),
+            'bio': _("Biographie & Motivations *"),
+        }
+        widgets = {
+            'campaign_message': forms.TextInput(attrs={'placeholder': _("Ex: L'élégance alliée au génie technologique pour inspirer notre département !")}),
+            'bio': forms.Textarea(attrs={'rows': 4, 'placeholder': _("Parlez de vous, de votre vision pour les étudiants, de vos passions, projets et engagements...")}),
+            'level': forms.Select(choices=[
+                ('Licence 1', 'Licence 1 Informatique'),
+                ('Licence 2', 'Licence 2 Informatique'),
+                ('Licence 3', 'Licence 3 Informatique'),
+                ('ICT-L1', 'ICT4D - Licence 1'),
+                ('ICT-L2', 'ICT4D - Licence 2'),
+                ('ICT-L3', 'ICT4D - Licence 3'),
+                ('MIS', 'Master Informatique Spécialisé (MIS)'),
+                ('Master 1', 'Master 1 Informatique'),
+                ('Master 2', 'Master 2 Informatique'),
+                ('Doctorat', 'Doctorat / PhD'),
+            ], attrs={'class': 'form-select'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for fname, field in self.fields.items():
+            if fname not in ['additional_photos', 'photo', 'contest_type', 'level']:
+                field.widget.attrs.update({'class': 'form-control'})
+            if fname in ['name', 'phone', 'email', 'level', 'specialty', 'campaign_message', 'bio']:
+                field.required = True
+
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        if not photo:
+            raise forms.ValidationError(_("La photo portrait officielle est obligatoire."))
+        if photo.size > 5 * 1024 * 1024:
+            raise forms.ValidationError(_("La photo principale ne doit pas dépasser 5 Mo."))
+        return photo
 
 
 # =============================================================================

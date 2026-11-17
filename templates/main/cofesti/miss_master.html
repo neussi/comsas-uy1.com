@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
 {% load static custom_filters %}
 
-{% block title %}Élection Miss & Master & The Voice — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
+{% block title %}Élection Miss & Master COFESTI {{ edition.year }} — Département d'Informatique | COMS.A.S{% endblock %}
 
-{% block meta_description %}Soutenez les candidats au concours Miss & Master du Département d'Informatique de l'Université de Yaoundé 1. Votes en ligne sécurisés à 100 FCFA.{% endblock %}
+{% block meta_description %}Soutenez les candidates et candidats aux concours Miss Département et Master Département d'Informatique de l'Université de Yaoundé 1. Votes en direct à 100 FCFA.{% endblock %}
 
 {% block extra_css %}
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 <style>
     :root {
         --rose: #E91E63;
@@ -14,7 +17,7 @@
         --rose-dark: #c2185b;
         --rose-pale: rgba(233, 30, 99, .08);
         --rose-border: rgba(233, 30, 99, .2);
-        --rose-shadow: rgba(233, 30, 99, .14);
+        --rose-shadow: rgba(233, 30, 99, .15);
         --blanc: #ffffff;
         --blanc-off: #fdf5f8;
         --text-dark: #1a0a10;
@@ -72,35 +75,61 @@
         box-shadow: 0 8px 24px rgba(233, 30, 99, .32);
     }
 
-    .filter-btn {
+    .btn-outline-rose {
+        background: transparent;
+        color: var(--rose) !important;
+        border: 1.5px solid var(--rose-border);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 9px 22px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--rose-pale);
+        border-color: var(--rose);
+    }
+
+    /* Tabs de navigation */
+    .contest-tab-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 35px;
+    }
+
+    .contest-tab-btn {
         border-radius: 50px;
         font-weight: 700;
-        font-size: 0.85rem;
-        padding: 8px 20px;
+        font-size: 0.9rem;
+        padding: 10px 24px;
         transition: all 0.25s ease;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-    }
-
-    .filter-btn.active {
-        background: var(--gradient);
-        color: #fff !important;
-        border: none;
-        box-shadow: 0 4px 14px var(--rose-shadow);
-    }
-
-    .filter-btn:not(.active) {
+        gap: 8px;
+        border: 1px solid var(--rose-border);
         background: #fff;
         color: var(--text-dark);
-        border: 1px solid var(--rose-border);
+        cursor: pointer;
     }
 
-    .filter-btn:not(.active):hover {
-        border-color: var(--rose);
-        color: var(--rose);
+    .contest-tab-btn:hover {
         background: var(--rose-pale);
+        color: var(--rose);
+        border-color: var(--rose);
+    }
+
+    .contest-tab-btn.active {
+        background: var(--gradient);
+        color: #fff !important;
+        border-color: transparent;
+        box-shadow: 0 6px 18px var(--rose-shadow);
     }
 
     /* Candidate Card */
@@ -123,7 +152,7 @@
     }
 
     .candidate-img-wrap {
-        height: 320px;
+        height: 330px;
         position: relative;
         overflow: hidden;
         background: linear-gradient(135deg, #fdf5f8 0%, #f8d7da 100%);
@@ -165,191 +194,784 @@
         text-transform: uppercase;
         padding: 6px 14px;
         border-radius: 50px;
-        box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
 
-    /* Prep info card */
-    .prep-box {
-        background: var(--blanc);
+    .photo-count-pill {
+        position: absolute;
+        bottom: 12px;
+        right: 14px;
+        background: rgba(0, 0, 0, 0.65);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 50px;
+        backdrop-filter: blur(4px);
+    }
+
+    .slogan-box {
+        background: var(--blanc-off);
+        border-left: 3px solid var(--rose);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-style: italic;
+        font-size: 0.83rem;
+        color: var(--text-dark);
+        line-height: 1.4;
+    }
+
+    /* Leader Card */
+    .leader-card {
+        background: linear-gradient(135deg, #fff 0%, #fff9fb 100%);
+        border: 2px solid var(--rose);
         border-radius: 24px;
-        border: 1px solid var(--rose-border);
         box-shadow: 0 10px 30px var(--rose-shadow);
-        padding: 32px 24px;
-        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .leader-crown-badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.75rem;
+        padding: 6px 16px;
+        border-bottom-left-radius: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-metric-box {
+        background: #fff;
+        border: 1px solid var(--rose-border);
+        border-radius: 18px;
+        padding: 18px;
         text-align: center;
-        transition: transform .3s ease;
-    }
-
-    .prep-box:hover {
-        transform: translateY(-5px);
-        border-color: var(--rose);
-    }
-
-    .prep-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 20px;
-        background: var(--rose-pale);
-        color: var(--rose);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.6rem;
-        margin: 0 auto 18px;
+        box-shadow: 0 4px 14px var(--rose-shadow);
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="py-5">
-    <div class="container py-3">
+    <div class="container">
 
-        <!-- En-tête -->
-        <div class="text-center max-w-700 mx-auto mb-4">
-            <a href="{% url 'cofesti_home' %}" class="d-inline-flex align-items-center gap-2 small fw-bold px-3 py-1.5 rounded-pill mb-3 text-decoration-none" style="background: var(--rose-pale); color: var(--rose); border: 1px solid var(--rose-border);">
-                <i class="fas fa-arrow-left"></i>
-                <span>Retour au Hub COFESTI {{ edition.year }}</span>
-            </a>
-
-            <h1 class="display-5 fw-extrabold mb-2" style="color: var(--text-dark);">
-                Élection <span class="text-gradient">Miss & Master</span> & The Voice
+        <!-- HERO HEADER -->
+        <div class="text-center mb-5">
+            <div class="d-inline-flex align-items-center gap-2 mb-3">
+                <span class="section-badge">
+                    <i class="fas fa-crown"></i> Concours & Élections COFESTI {{ edition.year }}
+                </span>
+            </div>
+            <h1 class="display-5 fw-extrabold mb-3" style="color: var(--text-dark);">
+                Élection <span class="text-gradient">Miss & Master</span> Département
             </h1>
-            <p class="text-muted" style="font-size: 1.05rem;">
-                Soutenez vos camarades du Département d'Informatique ! Les votes en ligne sont 100% sécurisés et transparents à <strong style="color: var(--rose);">{{ edition.vote_unit_price|floatformat:0 }} FCFA par voix</strong> via Orange Money et MTN Mobile Money.
+            <p class="text-muted max-w-700 mx-auto mb-4" style="font-size: 1.05rem; line-height: 1.7;">
+                Célébrez l'excellence, l'éloquence et le charisme des étudiants du Département d'Informatique de l'UY1.
+                Les votes s'effectuent à <strong>{{ edition.vote_unit_price|floatformat:0 }} FCFA par voix</strong> via Mobile Money.
             </p>
 
-            <!-- Filtres de catégorie -->
-            <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
-                <a href="?type=all" class="filter-btn {% if current_type == 'all' %}active{% endif %}">
-                    <i class="fas fa-users"></i> Tous ({{ candidates|length }})
+            <!-- BOUTON DÉPÔT DE CANDIDATURE (MIS EN AVANT) -->
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+                <a href="{% url 'cofesti_candidate_apply' %}" class="btn-rose px-4 py-3 shadow">
+                    <i class="fas fa-sparkles"></i>
+                    <span>Déposer ma candidature (Miss ou Master)</span>
                 </a>
-                <a href="?type=miss" class="filter-btn {% if current_type == 'miss' %}active{% endif %}">
-                    <i class="fas fa-female"></i> Candidates Miss ({{ miss_count }})
-                </a>
-                <a href="?type=master" class="filter-btn {% if current_type == 'master' %}active{% endif %}">
-                    <i class="fas fa-male"></i> Candidats Master ({{ master_count }})
-                </a>
-                <a href="?type=voice" class="filter-btn {% if current_type == 'voice' %}active{% endif %}">
-                    <i class="fas fa-microphone"></i> Finale The Voice ({{ voice_count }})
-                </a>
+                <button type="button" onclick="switchTab('stats')" class="btn-outline-rose px-4 py-3">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Voir les statistiques en direct</span>
+                </button>
             </div>
         </div>
 
-        <!-- LISTE DES CANDIDATS OU ÉTAT DE PRÉPARATION -->
-        {% if candidates %}
-        <div class="row g-4 mt-2">
-            {% for candidate in candidates %}
-            <div class="col-md-6 col-lg-4">
-                <div class="candidate-card">
-                    <div class="candidate-img-wrap">
-                        {% if candidate.photo %}
-                        <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}">
+        <!-- TABS DE SÉPARATION (MISS D'UN CÔTÉ, MASTERS DE L'AUTRE) -->
+        <div class="contest-tab-nav" id="contestTabs">
+            <button class="contest-tab-btn {% if current_tab == 'miss' %}active{% endif %}" onclick="switchTab('miss')">
+                <i class="fas fa-crown text-warning"></i>
+                <span>Miss Département</span>
+                <span class="badge rounded-pill bg-white text-dark ms-1">{{ miss_count }}</span>
+            </button>
+            <button class="contest-tab-btn {% if current_tab == 'master' %}active{% endif %}" onclick="switchTab('master')">
+                <i class="fas fa-user-tie text-info"></i>
+                <span>Master Département</span>
+                <span class="badge rounded-pill bg-white text-dark ms-1">{{ master_count }}</span>
+            </button>
+            <button class="contest-tab-btn {% if current_tab == 'stats' %}active{% endif %}" onclick="switchTab('stats')">
+                <i class="fas fa-chart-pie" style="color: var(--rose);"></i>
+                <span>Stats & Classement en direct</span>
+            </button>
+            {% if voice_count > 0 %}
+            <button class="contest-tab-btn {% if current_tab == 'voice' %}active{% endif %}" onclick="switchTab('voice')">
+                <i class="fas fa-microphone-alt text-danger"></i>
+                <span>Finale The Voice ({{ voice_count }})</span>
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- CONTENU ONGLET 1 : MISS DÉPARTEMENT -->
+        <div id="tab-miss" class="tab-pane-content {% if current_tab != 'miss' %}d-none{% endif %}">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-2 border-bottom border-rose-subtle">
+                <div>
+                    <h3 class="fw-extrabold mb-1" style="color: var(--text-dark);">
+                        👑 Candidates au titre de Miss Département
+                    </h3>
+                    <p class="small text-muted mb-0">Total : {{ miss_count }} candidate{{ miss_count|pluralize }} en lice • {{ total_votes_miss }} voix enregistrées</p>
+                </div>
+                <a href="{% url 'cofesti_candidate_apply' %}?type=miss" class="btn-outline-rose btn-sm">
+                    <i class="fas fa-plus-circle"></i> Postuler comme Miss
+                </a>
+            </div>
+
+            {% if candidates_miss %}
+            <div class="row g-4">
+                {% for candidate in candidates_miss %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="candidate-card">
+                        <div class="candidate-img-wrap">
+                            {% if candidate.photo %}
+                            <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}">
+                            {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                <i class="fas fa-user fa-4x opacity-25"></i>
+                            </div>
+                            {% endif %}
+
+                            <span class="candidate-badge-num">#{{ candidate.number }}</span>
+                            <span class="candidate-badge-type">Miss</span>
+
+                            {% with count=candidate.all_photos_list|length %}
+                            {% if count > 1 %}
+                            <span class="photo-count-pill">
+                                <i class="fas fa-images me-1"></i> {{ count }} photos
+                            </span>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <span class="badge align-self-start mb-2 px-3 py-1 text-uppercase fw-bold" style="background: var(--rose-pale); color: var(--rose); font-size: 0.72rem;">
+                                {{ candidate.level }}
+                            </span>
+                            <h4 class="fw-bold mb-1" style="color: var(--text-dark);">{{ candidate.name }}</h4>
+                            <p class="small text-muted mb-2">{{ candidate.specialty|default:"Informatique UY1" }}</p>
+
+                            {% if candidate.campaign_message %}
+                            <div class="slogan-box mb-3">
+                                « {{ candidate.campaign_message }} »
+                            </div>
+                            {% endif %}
+
+                            <!-- Barre de votes -->
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small text-muted fw-bold">
+                                        <i class="fas fa-vote-yea me-1" style="color: var(--rose);"></i> Voix :
+                                    </span>
+                                    <span class="badge rounded-pill fw-bold" style="background: var(--rose-pale); color: var(--rose); font-size: 0.85rem;">
+                                        {{ candidate.votes_count }} voix ({{ candidate.percentage }}%)
+                                    </span>
+                                </div>
+                                <div class="progress mb-3" style="height: 6px; border-radius: 10px; background: rgba(233, 30, 99, 0.1);">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ candidate.percentage }}%; background: var(--gradient);"></div>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="button" onclick="openProfileModal('{{ candidate.id }}')" class="btn-outline-rose flex-grow-1 justify-content-center btn-sm">
+                                        <i class="fas fa-eye"></i> Profil & Galerie
+                                    </button>
+                                    <button type="button" onclick="openVoteModal('{{ candidate.id }}', '{{ candidate.name|escapejs }}', '{{ candidate.number }}', 'Miss Département')" class="btn-rose flex-grow-1 justify-content-center btn-sm">
+                                        <i class="fas fa-heart"></i> Voter (100F)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- ÉTAT VIDE MISS -->
+            <div class="p-5 rounded-5 bg-white text-center shadow-sm" style="border: 1px dashed var(--rose-border);">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 75px; height: 75px; background: var(--rose-pale); color: var(--rose); font-size: 2rem;">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Aucune candidate validée pour le moment</h4>
+                <p class="text-muted max-w-600 mx-auto mb-4">
+                    Les candidatures sont actuellement ouvertes ! Déposez votre candidature dès maintenant avec vos plus belles photos pour devenir l'ambassadrice du Département d'Informatique.
+                </p>
+                <a href="{% url 'cofesti_candidate_apply' %}?type=miss" class="btn-rose">
+                    <i class="fas fa-sparkles"></i> Déposer ma candidature Miss
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- CONTENU ONGLET 2 : MASTER DÉPARTEMENT -->
+        <div id="tab-master" class="tab-pane-content {% if current_tab != 'master' %}d-none{% endif %}">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-2 border-bottom border-rose-subtle">
+                <div>
+                    <h3 class="fw-extrabold mb-1" style="color: var(--text-dark);">
+                        🤴 Candidats au titre de Master Département
+                    </h3>
+                    <p class="small text-muted mb-0">Total : {{ master_count }} candidat{{ master_count|pluralize }} en lice • {{ total_votes_master }} voix enregistrées</p>
+                </div>
+                <a href="{% url 'cofesti_candidate_apply' %}?type=master" class="btn-outline-rose btn-sm">
+                    <i class="fas fa-plus-circle"></i> Postuler comme Master
+                </a>
+            </div>
+
+            {% if candidates_master %}
+            <div class="row g-4">
+                {% for candidate in candidates_master %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="candidate-card">
+                        <div class="candidate-img-wrap">
+                            {% if candidate.photo %}
+                            <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}">
+                            {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                <i class="fas fa-user-tie fa-4x opacity-25"></i>
+                            </div>
+                            {% endif %}
+
+                            <span class="candidate-badge-num">#{{ candidate.number }}</span>
+                            <span class="candidate-badge-type" style="background: linear-gradient(135deg, #1e293b, #334155);">Master</span>
+
+                            {% with count=candidate.all_photos_list|length %}
+                            {% if count > 1 %}
+                            <span class="photo-count-pill">
+                                <i class="fas fa-images me-1"></i> {{ count }} photos
+                            </span>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <span class="badge align-self-start mb-2 px-3 py-1 text-uppercase fw-bold" style="background: rgba(30, 41, 59, 0.08); color: #1e293b; font-size: 0.72rem;">
+                                {{ candidate.level }}
+                            </span>
+                            <h4 class="fw-bold mb-1" style="color: var(--text-dark);">{{ candidate.name }}</h4>
+                            <p class="small text-muted mb-2">{{ candidate.specialty|default:"Informatique UY1" }}</p>
+
+                            {% if candidate.campaign_message %}
+                            <div class="slogan-box mb-3" style="border-left-color: #1e293b;">
+                                « {{ candidate.campaign_message }} »
+                            </div>
+                            {% endif %}
+
+                            <!-- Barre de votes -->
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small text-muted fw-bold">
+                                        <i class="fas fa-vote-yea me-1" style="color: var(--rose);"></i> Voix :
+                                    </span>
+                                    <span class="badge rounded-pill fw-bold" style="background: var(--rose-pale); color: var(--rose); font-size: 0.85rem;">
+                                        {{ candidate.votes_count }} voix ({{ candidate.percentage }}%)
+                                    </span>
+                                </div>
+                                <div class="progress mb-3" style="height: 6px; border-radius: 10px; background: rgba(233, 30, 99, 0.1);">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ candidate.percentage }}%; background: var(--gradient);"></div>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="button" onclick="openProfileModal('{{ candidate.id }}')" class="btn-outline-rose flex-grow-1 justify-content-center btn-sm">
+                                        <i class="fas fa-eye"></i> Profil & Galerie
+                                    </button>
+                                    <button type="button" onclick="openVoteModal('{{ candidate.id }}', '{{ candidate.name|escapejs }}', '{{ candidate.number }}', 'Master Département')" class="btn-rose flex-grow-1 justify-content-center btn-sm">
+                                        <i class="fas fa-heart"></i> Voter (100F)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- ÉTAT VIDE MASTER -->
+            <div class="p-5 rounded-5 bg-white text-center shadow-sm" style="border: 1px dashed var(--rose-border);">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 75px; height: 75px; background: rgba(30, 41, 59, 0.08); color: #1e293b; font-size: 2rem;">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Aucun candidat validé pour le moment</h4>
+                <p class="text-muted max-w-600 mx-auto mb-4">
+                    Les candidatures pour l'élection de Master Département sont ouvertes ! Rejoignez la compétition et partagez votre vision.
+                </p>
+                <a href="{% url 'cofesti_candidate_apply' %}?type=master" class="btn-rose">
+                    <i class="fas fa-sparkles"></i> Déposer ma candidature Master
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- CONTENU ONGLET 3 : STATISTIQUES EN TEMPS RÉEL & GRAPHIQUES -->
+        <div id="tab-stats" class="tab-pane-content {% if current_tab != 'stats' %}d-none{% endif %}">
+            <div class="mb-4 text-center">
+                <span class="section-badge mb-2">
+                    <i class="fas fa-chart-line"></i> Observatoire Live des Votes
+                </span>
+                <h3 class="fw-extrabold" style="color: var(--text-dark);">
+                    Statistiques en Temps Réel & Leaders de la Compétition
+                </h3>
+                <p class="text-muted max-w-700 mx-auto small">
+                    Découvrez qui est en tête, l'écart des voix et la répartition des votes pour chaque concours.
+                </p>
+            </div>
+
+            <!-- FICHES LEADERS (EN TÊTE) -->
+            <div class="row g-4 mb-5">
+                <!-- Leader Miss -->
+                <div class="col-md-6">
+                    <div class="leader-card p-4">
+                        <span class="leader-crown-badge">
+                            <i class="fas fa-crown me-1"></i> En tête Miss
+                        </span>
+                        {% if leader_miss %}
+                        <div class="d-flex align-items-center gap-3 mt-2">
+                            <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid var(--rose); flex-shrink: 0;">
+                                {% if leader_miss.photo %}
+                                <img src="{{ leader_miss.photo.url }}" alt="{{ leader_miss.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center h-100"><i class="fas fa-user"></i></div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h5 class="fw-extrabold mb-1" style="color: var(--text-dark);">{{ leader_miss.name }}</h5>
+                                <div class="small text-muted mb-1">{{ leader_miss.level }} — {{ leader_miss.specialty }}</div>
+                                <div class="badge rounded-pill fw-bold" style="background: var(--rose); color: #fff; font-size: 0.8rem;">
+                                    {{ leader_miss.votes_count }} voix ({{ leader_miss.percentage }}%)
+                                </div>
+                                {% if leader_miss_gap > 0 %}
+                                <span class="badge rounded-pill bg-success ms-1 small">
+                                    +{{ leader_miss_gap }} voix d'avance
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
                         {% else %}
-                        <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="color: var(--rose);">
-                            <i class="fas fa-user-circle fa-5x mb-2 opacity-50"></i>
-                            <span class="small fw-bold">Photo officielle à venir</span>
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-hourglass-start fa-2x mb-2 opacity-50"></i>
+                            <div class="small">Les votes n'ont pas encore débuté pour Miss Département.</div>
                         </div>
                         {% endif %}
+                    </div>
+                </div>
 
-                        <span class="candidate-badge-num">#{{ candidate.number }}</span>
-                        <span class="candidate-badge-type">{{ candidate.get_contest_type_display }}</span>
+                <!-- Leader Master -->
+                <div class="col-md-6">
+                    <div class="leader-card p-4" style="border-color: #334155;">
+                        <span class="leader-crown-badge" style="background: linear-gradient(135deg, #334155, #0f172a);">
+                            <i class="fas fa-trophy me-1"></i> En tête Master
+                        </span>
+                        {% if leader_master %}
+                        <div class="d-flex align-items-center gap-3 mt-2">
+                            <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid #334155; flex-shrink: 0;">
+                                {% if leader_master.photo %}
+                                <img src="{{ leader_master.photo.url }}" alt="{{ leader_master.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center h-100"><i class="fas fa-user-tie"></i></div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h5 class="fw-extrabold mb-1" style="color: var(--text-dark);">{{ leader_master.name }}</h5>
+                                <div class="small text-muted mb-1">{{ leader_master.level }} — {{ leader_master.specialty }}</div>
+                                <div class="badge rounded-pill fw-bold" style="background: #334155; color: #fff; font-size: 0.8rem;">
+                                    {{ leader_master.votes_count }} voix ({{ leader_master.percentage }}%)
+                                </div>
+                                {% if leader_master_gap > 0 %}
+                                <span class="badge rounded-pill bg-success ms-1 small">
+                                    +{{ leader_master_gap }} voix d'avance
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-hourglass-start fa-2x mb-2 opacity-50"></i>
+                            <div class="small">Les votes n'ont pas encore débuté pour Master Département.</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRAPHIQUES CHART.JS INTERACTIFS -->
+            <div class="row g-4 mb-5">
+                <div class="col-lg-6">
+                    <div class="p-4 rounded-4 bg-white shadow-sm border border-rose-subtle">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: var(--text-dark);">
+                            <i class="fas fa-chart-bar" style="color: var(--rose);"></i> Comparatif Voix — Miss Département
+                        </h5>
+                        <div style="height: 280px; position: relative;">
+                            <canvas id="chartMiss"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="p-4 rounded-4 bg-white shadow-sm border border-rose-subtle">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: var(--text-dark);">
+                            <i class="fas fa-chart-bar text-dark"></i> Comparatif Voix — Master Département
+                        </h5>
+                        <div style="height: 280px; position: relative;">
+                            <canvas id="chartMaster"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLEAU DE CLASSEMENT LIVE -->
+            <div class="p-4 rounded-4 bg-white shadow-sm border border-rose-subtle mb-4">
+                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">
+                    <i class="fas fa-list-ol me-2" style="color: var(--rose);"></i> Classement Détaillé & Écarts
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 70px;">Rang</th>
+                                <th>Candidat(e)</th>
+                                <th>Concours</th>
+                                <th>Promotion</th>
+                                <th>Total Voix</th>
+                                <th>Part (%)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in candidates_miss %}
+                            <tr>
+                                <td>
+                                    {% if forloop.counter == 1 %}<span class="badge rounded-circle bg-warning text-dark p-2">🥇</span>
+                                    {% elif forloop.counter == 2 %}<span class="badge rounded-circle bg-secondary text-white p-2">🥈</span>
+                                    {% elif forloop.counter == 3 %}<span class="badge rounded-circle text-white p-2" style="background: #cd7f32;">🥉</span>
+                                    {% else %}#{{ forloop.counter }}{% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div style="width: 38px; height: 38px; border-radius: 50%; overflow: hidden; background: #eee;">
+                                            {% if c.photo %}<img src="{{ c.photo.url }}" style="width:100%;height:100%;object-fit:cover;">{% endif %}
+                                        </div>
+                                        <strong class="text-dark">{{ c.name }}</strong>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-danger-subtle text-danger rounded-pill">Miss</span></td>
+                                <td><small class="text-muted">{{ c.level }}</small></td>
+                                <td><strong style="color: var(--rose);">{{ c.votes_count }}</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="small fw-bold">{{ c.percentage }}%</span>
+                                        <div class="progress flex-grow-1" style="height: 6px; width: 60px;">
+                                            <div class="progress-bar" style="width: {{ c.percentage }}%; background: var(--rose);"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button onclick="openVoteModal('{{ c.id }}', '{{ c.name|escapejs }}', '{{ c.number }}', 'Miss Département')" class="btn-rose btn-sm py-1 px-3">
+                                        Voter
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                            {% for c in candidates_master %}
+                            <tr>
+                                <td>
+                                    {% if forloop.counter == 1 %}<span class="badge rounded-circle bg-warning text-dark p-2">🥇</span>
+                                    {% elif forloop.counter == 2 %}<span class="badge rounded-circle bg-secondary text-white p-2">🥈</span>
+                                    {% elif forloop.counter == 3 %}<span class="badge rounded-circle text-white p-2" style="background: #cd7f32;">🥉</span>
+                                    {% else %}#{{ forloop.counter }}{% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div style="width: 38px; height: 38px; border-radius: 50%; overflow: hidden; background: #eee;">
+                                            {% if c.photo %}<img src="{{ c.photo.url }}" style="width:100%;height:100%;object-fit:cover;">{% endif %}
+                                        </div>
+                                        <strong class="text-dark">{{ c.name }}</strong>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary-subtle text-primary rounded-pill">Master</span></td>
+                                <td><small class="text-muted">{{ c.level }}</small></td>
+                                <td><strong class="text-dark">{{ c.votes_count }}</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="small fw-bold">{{ c.percentage }}%</span>
+                                        <div class="progress flex-grow-1" style="height: 6px; width: 60px;">
+                                            <div class="progress-bar" style="width: {{ c.percentage }}%; background: #334155;"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button onclick="openVoteModal('{{ c.id }}', '{{ c.name|escapejs }}', '{{ c.number }}', 'Master Département')" class="btn-rose btn-sm py-1 px-3">
+                                        Voter
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODALE PROFIL DU CANDIDAT (CARROUSEL 1 À 5 PHOTOS, BIO, SLOGAN & VOTE) -->
+<!-- ========================================================================= -->
+<div class="modal fade" id="candidateProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            <div class="modal-header border-0 pb-0 pt-3 px-4">
+                <span class="badge rounded-pill text-uppercase fw-bold" id="profBadgeType" style="background: var(--rose-pale); color: var(--rose);">
+                    Candidat
+                </span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body p-4 pt-2">
+                <div class="row g-4 align-items-center">
+                    <!-- Carrousel Photos (jusqu'à 5 photos) -->
+                    <div class="col-md-6">
+                        <div id="candidateCarousel" class="carousel slide rounded-4 overflow-hidden shadow-sm" data-bs-ride="carousel" style="height: 380px; background: #000;">
+                            <div class="carousel-indicators" id="carouselIndicators"></div>
+                            <div class="carousel-inner h-100" id="carouselInner"></div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#candidateCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Précédent</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#candidateCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Suivant</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
+                    <!-- Infos & Bio -->
+                    <div class="col-md-6 d-flex flex-column justify-content-between">
                         <div>
-                            <div class="small fw-bold mb-1" style="color: var(--rose);">{{ candidate.level }}</div>
-                            <h4 class="fw-bold mb-1" style="color: var(--text-dark);">{{ candidate.name }}</h4>
-                            <p class="small text-muted mb-2"><em>"{{ candidate.slogan|default:"Ensemble pour faire briller l'Informatique !" }}"</em></p>
-                            {% if candidate.bio %}
-                            <p class="small text-muted mb-3" style="line-height: 1.6;">{{ candidate.bio|truncatewords:20 }}</p>
-                            {% endif %}
+                            <span class="text-muted small fw-bold" id="profNumber">#1</span>
+                            <h3 class="fw-extrabold mb-1" id="profName" style="color: var(--text-dark);">Nom Candidat</h3>
+                            <div class="small text-muted mb-3" id="profLevelSpec">Licence 1 • Informatique</div>
+
+                            <div class="slogan-box mb-3" id="profSloganBox">
+                                <span id="profSlogan">Slogan de campagne</span>
+                            </div>
+
+                            <h6 class="fw-bold small text-uppercase text-muted mb-1">Biographie & Motivations</h6>
+                            <p class="small text-muted mb-4" id="profBio" style="line-height: 1.6; max-height: 140px; overflow-y: auto;">
+                                Biographie
+                            </p>
                         </div>
 
-                        <div class="pt-3 border-top border-rose-subtle mt-2">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="small text-muted fw-bold"><i class="fas fa-vote-yea me-1" style="color: var(--rose);"></i> Voix recueillies</span>
-                                <span class="badge rounded-pill fw-bold" style="background: var(--rose-pale); color: var(--rose); font-size: 0.85rem;">
-                                    {{ candidate.votes_count }} vote{{ candidate.votes_count|pluralize }}
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between p-3 rounded-3 mb-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                <span class="small fw-bold text-muted"><i class="fas fa-heart text-danger me-1"></i> Voix recueillies</span>
+                                <span class="badge rounded-pill fw-bold" id="profVotesBadge" style="background: var(--rose); color: #fff; font-size: 0.9rem;">
+                                    0 voix
                                 </span>
                             </div>
 
-                            <button type="button" onclick="openVoteModal('{{ candidate.id }}', '{{ candidate.name|escapejs }}', '{{ candidate.number }}', '{{ candidate.get_contest_type_display|escapejs }}')" class="btn-rose w-100 justify-content-center">
+                            <button type="button" id="profVoteBtn" class="btn-rose w-100 justify-content-center py-2.5">
                                 <i class="fas fa-heart"></i>
-                                <span>Voter ({{ edition.vote_unit_price|floatformat:0 }} FCFA)</span>
+                                <span>Voter pour ce candidat (100 FCFA)</span>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
-
-        {% else %}
-        <!-- ÉTAT PRÉPARATOIRE (AUCUN CANDIDAT ENCORE DÉPLOYÉ) -->
-        <div class="mt-4">
-            <div class="p-4 p-md-5 rounded-5 shadow-sm text-center bg-white mb-5" style="border: 1px solid var(--rose-border);">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 80px; height: 80px; background: var(--rose-pale); color: var(--rose); font-size: 2.2rem;">
-                    <i class="fas fa-hourglass-start"></i>
-                </div>
-                <h3 class="fw-extrabold mb-2" style="color: var(--text-dark);">
-                    Candidatures & Phase de Préparation en cours
-                </h3>
-                <p class="text-muted max-w-700 mx-auto mb-4" style="font-size: 1.05rem; line-height: 1.8;">
-                    Les inscriptions pour l'élection de la <strong>Miss Informatique</strong>, du <strong>Master Informatique</strong> et pour la finale de <strong>The Voice COFESTI {{ edition.year }}</strong> sont en cours de finalisation par la Commission Culturelle.
-                    La plateforme de vote sera accessible dès la publication officielle des candidats retenus !
-                </p>
-                <div class="d-flex flex-wrap justify-content-center gap-3">
-                    <a href="{% url 'cofesti_home' %}" class="btn-rose">
-                        <i class="fas fa-home"></i> Découvrir les autres pôles du COFESTI
-                    </a>
-                    <a href="{% url 'cofesti_committee' %}" class="btn-outline-rose">
-                        <i class="fas fa-envelope"></i> Contacter la Commission Miss & Master
-                    </a>
-                </div>
-            </div>
-
-            <!-- Critères & Déroulement du concours -->
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="prep-box">
-                        <div class="prep-icon">
-                            <i class="fas fa-crown"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">Miss Département</h5>
-                        <p class="small text-muted mb-0" style="line-height: 1.7;">
-                            Élégance, prestance, éloquence et projet d'impact académique ou social pour les étudiantes en Informatique de l'UY1.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="prep-box">
-                        <div class="prep-icon">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">Master Département</h5>
-                        <p class="small text-muted mb-0" style="line-height: 1.7;">
-                            Charisme, leadership, esprit d'équipe et vision innovante pour les ambassadeurs masculins du département.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="prep-box">
-                        <div class="prep-icon">
-                            <i class="fas fa-microphone-alt"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">Finale The Voice</h5>
-                        <p class="small text-muted mb-0" style="line-height: 1.7;">
-                            Compétition vocale et musicale live lors de la prestigieuse Soirée de Parrainage & Gala au Restaurant N°2.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
     </div>
 </div>
 
+<!-- Inclusion de la modale de paiement des votes -->
 {% include 'main/cofesti/_vote_modal.html' %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Dictionnaire des profils candidats avec galerie photos
+    const CANDIDATES_DATA = {
+        {% for c in candidates_miss %}
+        "{{ c.id }}": {
+            id: "{{ c.id }}",
+            name: "{{ c.name|escapejs }}",
+            number: "{{ c.number }}",
+            contestType: "Miss Département",
+            level: "{{ c.level|escapejs }}",
+            specialty: "{{ c.specialty|escapejs }}",
+            slogan: "{{ c.campaign_message|default:''|escapejs }}",
+            bio: "{{ c.bio|default:'Aucune biographie fournie.'|escapejs }}",
+            votes: {{ c.votes_count }},
+            photos: [
+                {% for p in c.all_photos_list %}
+                { url: "{{ p.url }}", caption: "{{ p.caption|escapejs }}" },
+                {% endfor %}
+            ]
+        },
+        {% endfor %}
+
+        {% for c in candidates_master %}
+        "{{ c.id }}": {
+            id: "{{ c.id }}",
+            name: "{{ c.name|escapejs }}",
+            number: "{{ c.number }}",
+            contestType: "Master Département",
+            level: "{{ c.level|escapejs }}",
+            specialty: "{{ c.specialty|escapejs }}",
+            slogan: "{{ c.campaign_message|default:''|escapejs }}",
+            bio: "{{ c.bio|default:'Aucune biographie fournie.'|escapejs }}",
+            votes: {{ c.votes_count }},
+            photos: [
+                {% for p in c.all_photos_list %}
+                { url: "{{ p.url }}", caption: "{{ p.caption|escapejs }}" },
+                {% endfor %}
+            ]
+        },
+        {% endfor %}
+    };
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-pane-content').forEach(el => el.classList.add('d-none'));
+        document.querySelectorAll('.contest-tab-btn').forEach(btn => btn.classList.remove('active'));
+
+        const target = document.getElementById('tab-' + tabName);
+        if (target) {
+            target.classList.remove('d-none');
+        }
+
+        // Active button
+        const buttons = document.querySelectorAll('.contest-tab-btn');
+        if (tabName === 'miss' && buttons[0]) buttons[0].classList.add('active');
+        if (tabName === 'master' && buttons[1]) buttons[1].classList.add('active');
+        if (tabName === 'stats' && buttons[2]) buttons[2].classList.add('active');
+        if (tabName === 'voice' && buttons[3]) buttons[3].classList.add('active');
+
+        if (tabName === 'stats') {
+            initCharts();
+        }
+    }
+
+    function openProfileModal(candidateId) {
+        const c = CANDIDATES_DATA[candidateId];
+        if (!c) return;
+
+        document.getElementById('profName').innerText = c.name;
+        document.getElementById('profNumber').innerText = '#' + c.number;
+        document.getElementById('profBadgeType').innerText = c.contestType;
+        document.getElementById('profLevelSpec').innerText = `${c.level} • ${c.specialty || 'Informatique'}`;
+        document.getElementById('profBio').innerText = c.bio;
+        document.getElementById('profVotesBadge').innerText = `${c.votes} voix`;
+
+        const sloganBox = document.getElementById('profSloganBox');
+        if (c.slogan) {
+            document.getElementById('profSlogan').innerText = `« ${c.slogan} »`;
+            sloganBox.classList.remove('d-none');
+        } else {
+            sloganBox.classList.add('d-none');
+        }
+
+        // Carousel Photos
+        const indicators = document.getElementById('carouselIndicators');
+        const inner = document.getElementById('carouselInner');
+        indicators.innerHTML = '';
+        inner.innerHTML = '';
+
+        const photos = c.photos.length > 0 ? c.photos : [{ url: '{% static "images/default_user.png" %}', caption: c.name }];
+        photos.forEach((p, idx) => {
+            const indBtn = document.createElement('button');
+            indBtn.type = 'button';
+            indBtn.setAttribute('data-bs-target', '#candidateCarousel');
+            indBtn.setAttribute('data-bs-slide-to', idx);
+            if (idx === 0) indBtn.className = 'active';
+            indicators.appendChild(indBtn);
+
+            const item = document.createElement('div');
+            item.className = 'carousel-item h-100' + (idx === 0 ? ' active' : '');
+            item.innerHTML = `<img src="${p.url}" class="d-block w-100 h-100" style="object-fit: cover;" alt="${p.caption}">`;
+            inner.appendChild(item);
+        });
+
+        // Bouton de vote direct
+        const voteBtn = document.getElementById('profVoteBtn');
+        voteBtn.onclick = function() {
+            const modalEl = document.getElementById('candidateProfileModal');
+            const bsModal = bootstrap.Modal.getInstance(modalEl);
+            if (bsModal) bsModal.hide();
+            openVoteModal(c.id, c.name, c.number, c.contestType);
+        };
+
+        const modal = new bootstrap.Modal(document.getElementById('candidateProfileModal'));
+        modal.show();
+    }
+
+    // Initialisation Chart.js
+    let chartsInitialized = false;
+    function initCharts() {
+        if (chartsInitialized) return;
+        chartsInitialized = true;
+
+        const missPayload = {{ chart_miss_json|safe }};
+        const masterPayload = {{ chart_master_json|safe }};
+
+        const ctxMiss = document.getElementById('chartMiss');
+        if (ctxMiss) {
+            new Chart(ctxMiss, {
+                type: 'bar',
+                data: {
+                    labels: missPayload.labels.length > 0 ? missPayload.labels : ['Aucune candidate'],
+                    datasets: [{
+                        label: 'Voix recueillies',
+                        data: missPayload.data.length > 0 ? missPayload.data : [0],
+                        backgroundColor: missPayload.colors.length > 0 ? missPayload.colors : ['#E91E63'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
+        }
+
+        const ctxMaster = document.getElementById('chartMaster');
+        if (ctxMaster) {
+            new Chart(ctxMaster, {
+                type: 'bar',
+                data: {
+                    labels: masterPayload.labels.length > 0 ? masterPayload.labels : ['Aucun candidat'],
+                    datasets: [{
+                        label: 'Voix recueillies',
+                        data: masterPayload.data.length > 0 ? masterPayload.data : [0],
+                        backgroundColor: masterPayload.colors.length > 0 ? masterPayload.colors : ['#334155'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if ("{{ current_tab }}" === 'stats') {
+            initCharts();
+        }
+    });
+</script>
 {% endblock %}

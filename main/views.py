@@ -915,15 +915,30 @@ def register_mentor(request):
                     messages.info(request, _("Votre inscription est en attente de paiement."))
                     return redirect('sponsorship_payment', uuid=existing.uuid)
 
+            pay_later = form.cleaned_data.get('pay_later', False)
             mentor = form.save(commit=False)
             mentor.session = active_session
             mentor.amount = Decimal('5000.00')
-            mentor.payment_status = 'pending'
-            mentor.is_paid = False
+            mentor.pay_later = pay_later
             mentor.transaction_id = f"SPONSORPAY-PARRAIN-{uuid.uuid4().hex[:10].upper()}"
-            mentor.save()
-            messages.success(request, _("Félicitations %(name)s ! Votre profil de Parrain a été enregistré. Finalisez votre paiement de 5 000 FCFA pour activer votre Pass Soirée et participer au matching.") % {'name': mentor.first_name})
-            return redirect('sponsorship_payment', uuid=mentor.uuid)
+
+            if pay_later:
+                mentor.is_paid = False
+                mentor.payment_status = 'pay_later'
+                mentor.save()
+                from .utils import generate_sponsorship_pass
+                try:
+                    generate_sponsorship_pass(mentor)
+                except Exception as e:
+                    pass
+                messages.success(request, _("Félicitations %(name)s ! Votre inscription de Parrain a été enregistrée avec l'option « Payer plus tard ». Veuillez contacter le comité d'organisation afin de régler votre billet avant la date.") % {'name': mentor.first_name})
+                return redirect('sponsorship_success', uuid=mentor.uuid)
+            else:
+                mentor.payment_status = 'pending'
+                mentor.is_paid = False
+                mentor.save()
+                messages.success(request, _("Félicitations %(name)s ! Votre profil de Parrain a été enregistré. Finalisez votre paiement de 5 000 FCFA pour activer votre Pass Soirée et participer au matching.") % {'name': mentor.first_name})
+                return redirect('sponsorship_payment', uuid=mentor.uuid)
         else:
             messages.error(request, _("Veuillez corriger les erreurs indiquées dans le formulaire, notamment la photo portrait obligatoire."))
     else:
@@ -953,15 +968,30 @@ def register_mentee(request):
                     messages.info(request, _("Votre inscription est en attente de paiement."))
                     return redirect('sponsorship_payment', uuid=existing.uuid)
 
+            pay_later = form.cleaned_data.get('pay_later', False)
             mentee = form.save(commit=False)
             mentee.session = active_session
             mentee.amount = Decimal('10000.00')
-            mentee.payment_status = 'pending'
-            mentee.is_paid = False
+            mentee.pay_later = pay_later
             mentee.transaction_id = f"SPONSORPAY-FILLEUL-{uuid.uuid4().hex[:10].upper()}"
-            mentee.save()
-            messages.success(request, _("Félicitations %(name)s ! Votre candidature de Filleul a été enregistrée. Finalisez votre paiement de 10 000 FCFA pour activer votre Pass Soirée et être intégré à l'algorithme d'affectation.") % {'name': mentee.first_name})
-            return redirect('sponsorship_payment', uuid=mentee.uuid)
+
+            if pay_later:
+                mentee.is_paid = False
+                mentee.payment_status = 'pay_later'
+                mentee.save()
+                from .utils import generate_sponsorship_pass
+                try:
+                    generate_sponsorship_pass(mentee)
+                except Exception as e:
+                    pass
+                messages.success(request, _("Félicitations %(name)s ! Votre candidature de Filleul a été enregistrée avec l'option « Payer plus tard ». Veuillez contacter le comité d'organisation afin de régler votre billet avant la date.") % {'name': mentee.first_name})
+                return redirect('sponsorship_success', uuid=mentee.uuid)
+            else:
+                mentee.payment_status = 'pending'
+                mentee.is_paid = False
+                mentee.save()
+                messages.success(request, _("Félicitations %(name)s ! Votre candidature de Filleul a été enregistrée. Finalisez votre paiement de 10 000 FCFA pour activer votre Pass Soirée et être intégré à l'algorithme d'affectation.") % {'name': mentee.first_name})
+                return redirect('sponsorship_payment', uuid=mentee.uuid)
         else:
             messages.error(request, _("Veuillez corriger les erreurs indiquées dans le formulaire, notamment la photo portrait obligatoire."))
     else:
@@ -1061,9 +1091,17 @@ def sponsorship_success(request, uuid=None):
         messages.error(request, _("Participant introuvable."))
         return redirect('sponsorship_home')
 
-    if not participant.is_paid:
+    if not participant.is_paid and not getattr(participant, 'pay_later', False):
         messages.warning(request, _("Veuillez d'abord finaliser votre paiement pour obtenir votre Pass officiel."))
         return redirect('sponsorship_payment', uuid=participant.uuid)
+
+    if not participant.ticket_pdf:
+        from .utils import generate_sponsorship_pass
+        try:
+            generate_sponsorship_pass(participant)
+            participant.refresh_from_db()
+        except Exception:
+            pass
 
     match = None
     matches = []
@@ -1213,9 +1251,17 @@ def sponsorship_success(request, uuid=None):
         messages.error(request, _("Participant introuvable."))
         return redirect('sponsorship_home')
 
-    if not participant.is_paid:
+    if not participant.is_paid and not getattr(participant, 'pay_later', False):
         messages.warning(request, _("Veuillez d'abord finaliser votre paiement pour obtenir votre Pass officiel."))
         return redirect('sponsorship_payment', uuid=participant.uuid)
+
+    if not participant.ticket_pdf:
+        from .utils import generate_sponsorship_pass
+        try:
+            generate_sponsorship_pass(participant)
+            participant.refresh_from_db()
+        except Exception:
+            pass
 
     match = None
     matches = []
@@ -2874,25 +2920,138 @@ def cofesti_home(request, year=None):
     return render(request, 'main/cofesti/home.html', context)
 
 def cofesti_miss_master(request, year=None):
-    """Page Concours Miss & Master et Finale The Voice du COFESTI"""
+    """Page Concours Miss & Master et Finale The Voice du COFESTI avec statistiques en temps réel et graphiques."""
+    import json
     edition = _get_cofesti_edition(year)
-    contest_type = request.GET.get('type', 'all')
     
-    qs = edition.candidates.filter(is_approved=True)
-    if contest_type in ['miss', 'master', 'voice']:
-        qs = qs.filter(contest_type=contest_type)
-        
-    candidates = qs.order_by('-votes_count', 'number')
+    # Séparation stricte : Miss d'un côté, Master de l'autre
+    candidates_miss = list(edition.candidates.filter(contest_type='miss', is_approved=True).prefetch_related('photos').order_by('-votes_count', 'number'))
+    candidates_master = list(edition.candidates.filter(contest_type='master', is_approved=True).prefetch_related('photos').order_by('-votes_count', 'number'))
+    candidates_voice = list(edition.candidates.filter(contest_type='voice', is_approved=True).prefetch_related('photos').order_by('-votes_count', 'number'))
     
+    # Statistiques Miss en direct
+    total_votes_miss = sum(c.votes_count for c in candidates_miss)
+    leader_miss = candidates_miss[0] if candidates_miss and candidates_miss[0].votes_count > 0 else None
+    leader_miss_gap = 0
+    if leader_miss and len(candidates_miss) > 1:
+        leader_miss_gap = leader_miss.votes_count - candidates_miss[1].votes_count
+    elif leader_miss:
+        leader_miss_gap = leader_miss.votes_count
+
+    for rank, c in enumerate(candidates_miss, start=1):
+        c.rank = rank
+        c.percentage = round((c.votes_count / total_votes_miss * 100), 1) if total_votes_miss > 0 else 0
+        c.gap_with_leader = (leader_miss.votes_count - c.votes_count) if (leader_miss and c != leader_miss) else 0
+
+    # Statistiques Master en direct
+    total_votes_master = sum(c.votes_count for c in candidates_master)
+    leader_master = candidates_master[0] if candidates_master and candidates_master[0].votes_count > 0 else None
+    leader_master_gap = 0
+    if leader_master and len(candidates_master) > 1:
+        leader_master_gap = leader_master.votes_count - candidates_master[1].votes_count
+    elif leader_master:
+        leader_master_gap = leader_master.votes_count
+
+    for rank, c in enumerate(candidates_master, start=1):
+        c.rank = rank
+        c.percentage = round((c.votes_count / total_votes_master * 100), 1) if total_votes_master > 0 else 0
+        c.gap_with_leader = (leader_master.votes_count - c.votes_count) if (leader_master and c != leader_master) else 0
+
+    # Données pour les graphiques Chart.js
+    chart_miss_data = {
+        'labels': [c.name for c in candidates_miss],
+        'data': [c.votes_count for c in candidates_miss],
+        'colors': ['#E91E63', '#ec407a', '#f06292', '#f48fb1', '#f8bbd0', '#ad1457', '#880e4f'][:len(candidates_miss)]
+    }
+    chart_master_data = {
+        'labels': [c.name for c in candidates_master],
+        'data': [c.votes_count for c in candidates_master],
+        'colors': ['#C2185B', '#D81B60', '#E91E63', '#ec407a', '#ad1457', '#880e4f'][:len(candidates_master)]
+    }
+
+    current_tab = request.GET.get('tab', 'miss')
+    if current_tab not in ['miss', 'master', 'voice', 'stats']:
+        current_tab = 'miss'
+
     context = {
         'edition': edition,
-        'candidates': candidates,
-        'current_type': contest_type,
-        'miss_count': edition.candidates.filter(contest_type='miss', is_approved=True).count(),
-        'master_count': edition.candidates.filter(contest_type='master', is_approved=True).count(),
-        'voice_count': edition.candidates.filter(contest_type='voice', is_approved=True).count(),
+        'current_tab': current_tab,
+        'candidates_miss': candidates_miss,
+        'candidates_master': candidates_master,
+        'candidates_voice': candidates_voice,
+        'miss_count': len(candidates_miss),
+        'master_count': len(candidates_master),
+        'voice_count': len(candidates_voice),
+        'total_votes_miss': total_votes_miss,
+        'total_votes_master': total_votes_master,
+        'leader_miss': leader_miss,
+        'leader_miss_gap': leader_miss_gap,
+        'leader_master': leader_master,
+        'leader_master_gap': leader_master_gap,
+        'chart_miss_json': json.dumps(chart_miss_data),
+        'chart_master_json': json.dumps(chart_master_data),
     }
     return render(request, 'main/cofesti/miss_master.html', context)
+
+
+def cofesti_candidate_apply(request, year=None):
+    """Formulaire de candidature Miss ou Master (avec 1 à 5 photos, bio et message de campagne)"""
+    edition = _get_cofesti_edition(year)
+    if not edition:
+        messages.error(request, _("Édition COFESTI introuvable."))
+        return redirect('cofesti_home')
+
+    from .forms import CofestiCandidateApplicationForm
+    from .models import CofestiCandidatePhoto
+
+    if request.method == 'POST':
+        form = CofestiCandidateApplicationForm(request.POST, request.FILES)
+        if form.is_valid():
+            candidate = form.save(commit=False)
+            candidate.edition = edition
+            candidate.status = 'pending'
+            candidate.is_approved = False  # En attente de validation admin
+
+            # Numéro automatique dans son concours
+            num = CofestiCandidate.objects.filter(edition=edition, contest_type=candidate.contest_type).count() + 1
+            candidate.number = num
+            candidate.save()
+
+            # Sauvegarde des photos additionnelles (jusqu'à 4 additionnelles = 5 photos au total avec la principale)
+            files = request.FILES.getlist('additional_photos')
+            saved_count = 1
+            for idx, img_file in enumerate(files[:4]):
+                try:
+                    if img_file.size <= 5 * 1024 * 1024:
+                        CofestiCandidatePhoto.objects.create(
+                            candidate=candidate,
+                            image=img_file,
+                            order=idx + 1,
+                            caption=f"Photo #{idx + 2} de {candidate.name}"
+                        )
+                        saved_count += 1
+                except Exception:
+                    pass
+
+            contest_label = "Miss Département" if candidate.contest_type == 'miss' else "Master Département"
+            messages.success(
+                request,
+                _(f"Félicitations {candidate.name} ! Votre candidature pour l'élection {contest_label} a été enregistrée avec {saved_count} photo(s). Le comité d'organisation va examiner et valider votre dossier avant l'ouverture officielle des votes en ligne.")
+            )
+            return redirect('cofesti_miss_master')
+        else:
+            messages.error(request, _("Veuillez corriger les erreurs indiquées dans le formulaire (photo principale obligatoire, format valide)."))
+    else:
+        init_type = request.GET.get('type', 'miss')
+        if init_type not in ['miss', 'master']:
+            init_type = 'miss'
+        form = CofestiCandidateApplicationForm(initial={'contest_type': init_type})
+
+    context = {
+        'edition': edition,
+        'form': form,
+    }
+    return render(request, 'main/cofesti/candidate_apply.html', context)
 
 def cofesti_sports(request, year=None):
     """Page Compétitions Sportives & Jeux de Salle du COFESTI"""
@@ -3167,8 +3326,14 @@ def activity_detail(request, slug):
                 app.save()
                 messages.success(request, _("Félicitations ! Votre inscription à l'activité \"%(title)s\" est confirmée avec succès.") % {'title': activity.title})
                 return redirect('activity_application_status', uuid=app.uuid)
+            elif getattr(app, 'pay_later', False):
+                app.is_paid = False
+                app.status = 'pay_later'
+                app.save()
+                messages.success(request, _("Félicitations ! Votre inscription à l'activité \"%(title)s\" a été enregistrée avec l'option « Payer plus tard ». Veuillez contacter le comité d'organisation afin de régler votre participation avant la date.") % {'title': activity.title})
+                return redirect('activity_application_status', uuid=app.uuid)
             else:
-                # Si payant : initiation du paiement Freemopay Mobile Money
+                # Si payant : initiation du paiement Mobile Money via Propenta Pay
                 app.status = 'pending'
                 app.is_paid = False
                 app.save()
@@ -3206,8 +3371,8 @@ def activity_application_status(request, uuid):
         return redirect('events')
     activity = application.activity
     
-    # Vérification asynchrone du statut si en attente
-    if application.status == 'pending' and not application.is_paid and activity.price > 0:
+    # Vérification asynchrone du statut si en attente (et non pay_later)
+    if application.status == 'pending' and not application.is_paid and not getattr(application, 'pay_later', False) and activity.price > 0:
         from .propenta_service import PropentaPaymentProcessor
         processor = PropentaPaymentProcessor()
         # Mock/Vérification

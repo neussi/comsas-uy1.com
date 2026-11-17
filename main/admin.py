@@ -530,8 +530,8 @@ class EventActivityAdmin(admin.ModelAdmin):
 
 @admin.register(EventActivityApplication)
 class EventActivityApplicationAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'activity', 'team_name', 'gamer_tag', 'phone', 'amount', 'is_paid', 'status', 'created_at')
-    list_filter = ('activity__event', 'activity', 'is_paid', 'status', 'created_at')
+    list_display = ('full_name', 'activity', 'team_name', 'gamer_tag', 'phone', 'amount', 'is_paid', 'pay_later', 'status', 'created_at')
+    list_filter = ('activity__event', 'activity', 'is_paid', 'pay_later', 'status', 'created_at')
     list_editable = ('is_paid', 'status')
     search_fields = ('full_name', 'email', 'phone', 'team_name', 'gamer_tag', 'transaction_id')
     readonly_fields = ('uuid', 'transaction_id', 'created_at', 'updated_at')
@@ -681,16 +681,16 @@ run_full_sponsorship_matching_admin.short_description = "Lancer l'Algorithme COM
 
 @admin.register(Mentor)
 class MentorAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'cycle', 'filiere_option', 'profession', 'company', 'is_paid', 'amount', 'payment_status', 'status', 'max_mentees', 'current_mentees_count')
-    list_filter = ('is_paid', 'payment_status', 'status', 'cycle', 'session')
+    list_display = ('first_name', 'last_name', 'cycle', 'filiere_option', 'profession', 'company', 'is_paid', 'pay_later', 'amount', 'payment_status', 'status', 'max_mentees', 'current_mentees_count')
+    list_filter = ('is_paid', 'pay_later', 'payment_status', 'status', 'cycle', 'session')
     list_editable = ('status', 'is_paid')
     search_fields = ('first_name', 'last_name', 'email', 'phone', 'profession', 'company')
     actions = [run_full_sponsorship_matching_admin, export_to_csv]
 
 @admin.register(Mentee)
 class MenteeAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'cycle', 'filiere_option', 'desired_specialty', 'is_paid', 'amount', 'payment_status', 'status', 'created_at')
-    list_filter = ('is_paid', 'payment_status', 'status', 'cycle', 'session')
+    list_display = ('first_name', 'last_name', 'cycle', 'filiere_option', 'desired_specialty', 'is_paid', 'pay_later', 'amount', 'payment_status', 'status', 'created_at')
+    list_filter = ('is_paid', 'pay_later', 'payment_status', 'status', 'cycle', 'session')
     list_editable = ('status', 'is_paid')
     search_fields = ('first_name', 'last_name', 'email', 'phone', 'desired_specialty', 'skills_to_acquire')
     actions = [run_full_sponsorship_matching_admin, export_to_csv, export_sponsorship_pdf]
@@ -887,7 +887,7 @@ class VoteAdmin(admin.ModelAdmin):
 # COFESTI (FESTI-NOËL) ADMIN
 # =============================================================================
 from .models import (
-    CofestiEdition, CofestiCandidate, CofestiVote, CofestiSportTournament,
+    CofestiEdition, CofestiCandidate, CofestiCandidatePhoto, CofestiVote, CofestiSportTournament,
     CofestiTeam, CofestiPicnic, CofestiPicnicBooking,
     CofestiSponsorshipRegistration, CofestiOrganizingMember
 )
@@ -923,13 +923,32 @@ class CofestiEditionAdmin(admin.ModelAdmin):
     )
 
 
+class CofestiCandidatePhotoInline(admin.TabularInline):
+    model = CofestiCandidatePhoto
+    extra = 1
+    max_num = 4
+    fields = ('image', 'caption', 'order')
+
+
 @admin.register(CofestiCandidate)
 class CofestiCandidateAdmin(admin.ModelAdmin):
-    list_display = ('number', 'name', 'contest_type', 'edition', 'level', 'votes_count', 'total_revenue', 'is_approved')
-    list_filter = ('edition', 'contest_type', 'is_approved', 'level')
-    search_fields = ('name', 'bio', 'specialty')
-    list_editable = ('is_approved',)
+    list_display = ('number', 'name', 'contest_type', 'edition', 'level', 'status', 'is_approved', 'votes_count', 'total_revenue')
+    list_filter = ('edition', 'contest_type', 'status', 'is_approved', 'level')
+    search_fields = ('name', 'bio', 'campaign_message', 'specialty', 'phone', 'email')
+    list_editable = ('status', 'is_approved')
     ordering = ['edition', 'contest_type', '-votes_count']
+    inlines = [CofestiCandidatePhotoInline]
+    actions = ['approuver_candidatures', 'rejeter_candidatures']
+
+    @admin.action(description="Valider et approuver les candidatures sélectionnées")
+    def approuver_candidatures(self, request, queryset):
+        count = queryset.update(status='approved', is_approved=True)
+        self.message_user(request, f"{count} candidature(s) approuvée(s) avec succès pour le vote.")
+
+    @admin.action(description="Rejeter les candidatures sélectionnées")
+    def rejeter_candidatures(self, request, queryset):
+        count = queryset.update(status='rejected', is_approved=False)
+        self.message_user(request, f"{count} candidature(s) marquée(s) comme rejetée(s).")
 
 
 @admin.register(CofestiVote)

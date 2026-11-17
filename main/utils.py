@@ -326,16 +326,27 @@ def render_ticket_pdf(event, participant_data):
     p.setFillColor(C_TEXT_MUTED)
     p.drawString(inst_x, main_top - 7 * mm, "Département d'Informatique • Computer Science Association (COMSAS)")
 
-    # Badge Pilule "OFFICIEL" en haut à droite
-    pill_w = 32 * mm
+    # Badge Pilule "OFFICIEL" ou "NON PAYÉ" en haut à droite
+    pill_w = 34 * mm
     pill_h = 5.5 * mm
     pill_rx = ticket_width - pill_w - 7 * mm
     pill_ry = main_top - 6 * mm
-    p.setFillColor(C_BLUE_ROYAL)
-    p.roundRect(pill_rx, pill_ry, pill_w, pill_h, 2 * mm, fill=1, stroke=0)
-    p.setFont("Helvetica-Bold", 6.5)
-    p.setFillColor(colors.white)
-    p.drawCentredString(pill_rx + pill_w / 2, pill_ry + 1.6 * mm, "BILLET OFFICIEL D'ACCÈS")
+    
+    is_paid = participant_data.get('is_paid', True)
+    pay_later = participant_data.get('pay_later', False) or (not is_paid)
+
+    if not is_paid:
+        p.setFillColor(colors.HexColor('#DC2626'))
+        p.roundRect(pill_rx, pill_ry, pill_w, pill_h, 2 * mm, fill=1, stroke=0)
+        p.setFont("Helvetica-Bold", 6.5)
+        p.setFillColor(colors.white)
+        p.drawCentredString(pill_rx + pill_w / 2, pill_ry + 1.6 * mm, "BILLET NON PAYÉ")
+    else:
+        p.setFillColor(C_BLUE_ROYAL)
+        p.roundRect(pill_rx, pill_ry, pill_w, pill_h, 2 * mm, fill=1, stroke=0)
+        p.setFont("Helvetica-Bold", 6.5)
+        p.setFillColor(colors.white)
+        p.drawCentredString(pill_rx + pill_w / 2, pill_ry + 1.6 * mm, "BILLET OFFICIEL D'ACCÈS")
 
     # Filet fin de séparation sous l'en-tête
     sep_y = main_top - logo_size - 2 * mm
@@ -385,11 +396,17 @@ def render_ticket_pdf(event, participant_data):
     loc_val = getattr(event, 'location', 'Campus UY1') or "Campus Universitaire de Yaoundé 1"
     p.drawString(main_x + 24 * mm, details_y - 15.5 * mm, loc_val[:48])
 
-    # Consigne personnalisable (ticket_note)
-    ticket_note = getattr(event, 'ticket_note', '') or "Billet officiel d'accès - Présentez ce ticket et votre pièce d'identité à l'entrée."
-    p.setFont("Helvetica-Oblique", 6.2)
-    p.setFillColor(C_TEXT_MUTED)
-    p.drawString(main_x, 6 * mm, ticket_note[:90])
+    # Consigne personnalisable (ticket_note) ou Avertissement Non Payé
+    if not is_paid:
+        ticket_note = "Non payé, veuillez contacter le comité d'organisation afin de payer votre billet avant la date."
+        p.setFont("Helvetica-Bold", 6.8)
+        p.setFillColor(colors.HexColor('#DC2626'))
+        p.drawString(main_x, 6 * mm, ticket_note[:110])
+    else:
+        ticket_note = getattr(event, 'ticket_note', '') or "Billet officiel d'accès - Présentez ce ticket et votre pièce d'identité à l'entrée."
+        p.setFont("Helvetica-Oblique", 6.2)
+        p.setFillColor(C_TEXT_MUTED)
+        p.drawString(main_x, 6 * mm, ticket_note[:90])
 
     # 6. QR Code de Sécurité & Validation à droite
     qr_s = 25 * mm
@@ -440,19 +457,32 @@ def generate_ticket(registration):
     qr.make(fit=True)
     blob = BytesIO()
     qr.make_image(fill_color="black", back_color="white").save(blob, 'PNG')
+    if registration.qr_code:
+        try:
+            registration.qr_code.delete(save=False)
+        except Exception:
+            pass
     registration.qr_code.save(f'qr_{registration.uuid}.png', File(blob), save=False)
+
+    is_paid = getattr(registration, 'is_paid', True)
+    pay_later = getattr(registration, 'pay_later', False) or (not is_paid)
 
     participant_data = {
         'nom_prenom': registration.nom_prenom,
         'promotion': getattr(registration, 'promotion', ''),
         'uuid': registration.uuid,
         'verify_url': verify_url,
+        'is_paid': is_paid,
+        'pay_later': pay_later,
     }
 
     buffer = render_ticket_pdf(event, participant_data)
     
     if registration.ticket_pdf:
-        registration.ticket_pdf.delete(save=False)
+        try:
+            registration.ticket_pdf.delete(save=False)
+        except Exception:
+            pass
 
     registration.ticket_pdf.save(f'ticket_{registration.uuid}.pdf', File(buffer), save=True)
     return registration.ticket_pdf.url
@@ -478,7 +508,10 @@ def generate_sponsorship_pass(participant):
     blob = BytesIO()
     qr.make_image(fill_color="#C2185B", back_color="white").save(blob, 'PNG')
     if participant.qr_code:
-        participant.qr_code.delete(save=False)
+        try:
+            participant.qr_code.delete(save=False)
+        except Exception:
+            pass
     participant.qr_code.save(f'qr_pass_{participant.uuid}.png', File(blob), save=False)
 
     # Proxy pour la mise en page
@@ -490,11 +523,19 @@ def generate_sponsorship_pass(participant):
         except Exception:
             date_evt = participant.session.end_date
 
+    is_paid = getattr(participant, 'is_paid', False)
+    pay_later = getattr(participant, 'pay_later', False) or (not is_paid)
+
+    if not is_paid:
+        ticket_note = "Non payé, veuillez contacter le comité d'organisation afin de payer votre billet avant la date."
+    else:
+        ticket_note = f"Pass officiel Soirée Festi-Noël • {role_label} ({amount_str}) • Accès Buffet & Gala."
+
     event_proxy = type('EventProxy', (), {
         'title_fr': f"SOIRÉE PARRAINAGE & GALA • PASS {role_label}",
         'date_event': date_evt,
         'location': "Restaurant Universitaire N° 2 • Campus UY1",
-        'ticket_note': f"Pass officiel Soirée Festi-Noël • {role_label} ({amount_str}) • Accès Buffet & Gala."
+        'ticket_note': ticket_note
     })()
 
     participant_data = {
@@ -502,12 +543,17 @@ def generate_sponsorship_pass(participant):
         'promotion': f"{role_label} • {getattr(participant, 'level', '')}",
         'uuid': participant.uuid,
         'verify_url': verify_url,
+        'is_paid': is_paid,
+        'pay_later': pay_later,
     }
 
     buffer = render_ticket_pdf(event_proxy, participant_data)
     
     if participant.ticket_pdf:
-        participant.ticket_pdf.delete(save=False)
+        try:
+            participant.ticket_pdf.delete(save=False)
+        except Exception:
+            pass
 
     participant.ticket_pdf.save(f'pass_{participant.uuid}.pdf', File(buffer), save=True)
     return participant.ticket_pdf.url

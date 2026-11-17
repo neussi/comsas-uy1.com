@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Candidature Concours Miss & Master — COFESTI {{ edition.year }} | COMS.A.S{% endblock %}
+
+{% block meta_description %}Déposez votre candidature pour l'élection Miss Département et Master Département d'Informatique de l'Université de Yaoundé 1.{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --rose: #E91E63;
+        --rose-light: #f06292;
+        --rose-dark: #c2185b;
+        --rose-pale: rgba(233, 30, 99, .08);
+        --rose-border: rgba(233, 30, 99, .2);
+        --rose-shadow: rgba(233, 30, 99, .15);
+        --blanc: #ffffff;
+        --blanc-off: #fdf5f8;
+        --text-dark: #1a0a10;
+        --text-muted: #8a6070;
+        --gradient: linear-gradient(135deg, #E91E63 0%, #f06292 100%);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--blanc-off);
+        color: var(--text-dark);
+    }
+
+    .form-card {
+        background: var(--blanc);
+        border: 1px solid var(--rose-border);
+        border-radius: 28px;
+        box-shadow: 0 12px 40px var(--rose-shadow);
+        overflow: hidden;
+    }
+
+    .btn-rose {
+        background: var(--gradient);
+        color: var(--blanc) !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 32px;
+        transition: all .25s ease;
+        box-shadow: 0 4px 15px rgba(233, 30, 99, .25);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        font-size: 1rem;
+    }
+
+    .btn-rose:hover {
+        opacity: .95;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(233, 30, 99, .35);
+    }
+
+    .btn-outline-rose {
+        background: transparent;
+        color: var(--rose) !important;
+        border: 1.5px solid var(--rose-border);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 12px 28px;
+        transition: all .25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-rose:hover {
+        background: var(--rose-pale);
+        border-color: var(--rose);
+    }
+
+    .contest-pill {
+        border: 2px solid var(--rose-border);
+        background: #fff;
+        border-radius: 20px;
+        padding: 18px 20px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-align: center;
+    }
+
+    .contest-pill:hover,
+    .contest-pill.selected {
+        border-color: var(--rose);
+        background: var(--rose-pale);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px var(--rose-shadow);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--rose);
+        box-shadow: 0 0 0 0.25rem rgba(233, 30, 99, 0.18);
+    }
+
+    .photo-preview-box {
+        width: 140px;
+        height: 170px;
+        border-radius: 16px;
+        border: 2px dashed var(--rose-border);
+        background: var(--blanc-off);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .photo-preview-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gallery-preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 12px;
+    }
+
+    .gallery-thumb {
+        height: 120px;
+        border-radius: 12px;
+        border: 1px solid var(--rose-border);
+        overflow: hidden;
+        position: relative;
+        background: #fff;
+    }
+
+    .gallery-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container py-3">
+        <div class="row justify-content-center">
+            <div class="col-lg-9 col-xl-8">
+
+                <!-- Fil d'ariane -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted text-decoration-none">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'cofesti_home' %}" class="text-muted text-decoration-none">COFESTI {{ edition.year }}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'cofesti_miss_master' %}" class="text-muted text-decoration-none">Miss & Master</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Déposer ma candidature</li>
+                    </ol>
+                </nav>
+
+                <div class="form-card mb-5">
+                    <!-- En-tête -->
+                    <div class="p-4 p-md-5 text-center text-white" style="background: var(--gradient);">
+                        <span class="badge bg-white text-uppercase fw-bold px-3 py-1.5 rounded-pill mb-2" style="color: var(--rose); font-size: 0.75rem;">
+                            COFESTI {{ edition.year }} • COM.S.AS
+                        </span>
+                        <h1 class="h2 fw-extrabold text-white mb-2">Candidature Miss & Master Département</h1>
+                        <p class="text-white-50 max-w-600 mx-auto mb-0" style="font-size: 0.98rem; line-height: 1.6;">
+                            Remplissez ce formulaire officiel pour postuler. Votre profil et votre galerie photo (1 à 5 photos) seront examinés et validés par la Commission Culturelle avant l'ouverture des votes en ligne !
+                        </p>
+                    </div>
+
+                    <div class="p-4 p-md-5">
+                        {% if form.errors %}
+                        <div class="alert alert-danger border-0 rounded-4 mb-4 p-3 shadow-sm" style="background-color: #fee2e2; border-left: 5px solid #ef4444 !important; color: #991b1b;">
+                            <strong class="d-block mb-1"><i class="fas fa-exclamation-triangle me-2"></i>Veuillez corriger les erreurs ci-dessous :</strong>
+                            <ul class="mb-0 ps-3 small">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                    <li><strong>{{ field|capfirst }} :</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        <form method="POST" enctype="multipart/form-data" id="candidateForm" onsubmit="return handleCandidateSubmit(event)">
+                            {% csrf_token %}
+
+                            <!-- ÉTAPE 1 : CHOIX DU CONCOURS -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase" style="color: var(--rose); letter-spacing: 0.5px;">
+                                    1. Choix du concours *
+                                </label>
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <div class="contest-pill {% if form.contest_type.value == 'miss' or not form.contest_type.value %}selected{% endif %}" onclick="selectContest('miss')">
+                                            <div class="h2 mb-1">👑</div>
+                                            <h5 class="fw-bold mb-1" style="color: var(--rose);">Miss Département</h5>
+                                            <p class="small text-muted mb-0">Ambassadrice de l'élégance, de l'éloquence et de l'intelligence au féminin.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="contest-pill {% if form.contest_type.value == 'master' %}selected{% endif %}" onclick="selectContest('master')">
+                                            <div class="h2 mb-1">🤴</div>
+                                            <h5 class="fw-bold mb-1" style="color: var(--rose-dark);">Master Département</h5>
+                                            <p class="small text-muted mb-0">Ambassadeur du charisme, de l'éloquence et du leadership masculin.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="contest_type" id="contest_type_input" value="{{ form.contest_type.value|default:'miss' }}">
+                            </div>
+
+                            <hr class="my-4 border-rose-subtle">
+
+                            <!-- ÉTAPE 2 : INFORMATIONS PERSONNELLES -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase" style="color: var(--rose); letter-spacing: 0.5px;">
+                                    2. Informations Académiques & Personnelles *
+                                </label>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold">Nom complet *</label>
+                                        <input type="text" name="name" class="form-control rounded-3" placeholder="Ex: Grâce Ngo Bisseck" value="{{ form.name.value|default:'' }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold">Niveau d'études *</label>
+                                        {{ form.level }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold">Filière / Option *</label>
+                                        <input type="text" name="specialty" class="form-control rounded-3" placeholder="Ex: Informatique Fondamentale, MIS, ICT4D, Génie Logiciel..." value="{{ form.specialty.value|default:'' }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold">Numéro WhatsApp / Téléphone *</label>
+                                        <input type="tel" name="phone" class="form-control rounded-3" placeholder="Ex: 6XXXXXXXX" value="{{ form.phone.value|default:'' }}" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small fw-semibold">Adresse e-mail *</label>
+                                        <input type="email" name="email" class="form-control rounded-3" placeholder="Ex: etudiant@comsas-uy1.com" value="{{ form.email.value|default:'' }}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4 border-rose-subtle">
+
+                            <!-- ÉTAPE 3 : CAMPAGNE & BIOGRAPHIE -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase" style="color: var(--rose); letter-spacing: 0.5px;">
+                                    3. Message de Campagne & Biographie *
+                                </label>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Slogan / Message de campagne *</label>
+                                    <input type="text" name="campaign_message" class="form-control rounded-3" placeholder="Ex: L'élégance alliée au génie technologique pour inspirer notre département !" value="{{ form.campaign_message.value|default:'' }}" required>
+                                    <small class="text-muted">Votre devise ou phrase d'accroche qui s'affichera sur votre carte de vote.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Biographie & Présentation *</label>
+                                    <textarea name="bio" rows="4" class="form-control rounded-3" placeholder="Parlez de votre parcours académique, de vos passions, de votre vision et des projets que vous comptez porter pour le département..." required>{{ form.bio.value|default:'' }}</textarea>
+                                </div>
+                            </div>
+
+                            <hr class="my-4 border-rose-subtle">
+
+                            <!-- ÉTAPE 4 : GALERIE PHOTOS (1 À 5 PHOTOS) -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase" style="color: var(--rose); letter-spacing: 0.5px;">
+                                    4. Galerie Photos (1 Photo Principale Obligatoire + Jusqu'à 4 Photos Additionnelles) *
+                                </label>
+                                <p class="small text-muted mb-3">
+                                    Les électeurs pourront faire défiler vos photos (carrousel jusqu'à 5 photos). Choisissez vos plus belles prises (tenue de soirée, tenue décontractée, tenue traditionnelle, etc.).
+                                </p>
+
+                                <!-- Photo principale -->
+                                <div class="p-3 rounded-4 mb-3" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                    <div class="d-flex align-items-center gap-4 flex-wrap">
+                                        <div class="photo-preview-box" id="mainPhotoBox">
+                                            <i class="fas fa-camera fa-2x mb-2" style="color: var(--rose);"></i>
+                                            <span class="small text-muted text-center px-2">Aperçu photo</span>
+                                            <img id="mainPhotoImg" class="d-none" alt="Photo principale">
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="fw-bold mb-1" style="color: var(--text-dark);">
+                                                Photo Portrait Officielle * (Photo Principale)
+                                            </h6>
+                                            <p class="small text-muted mb-2">
+                                                Photo nette de face, bonne luminosité. Utilisée comme image de profil officielle (Max 5 Mo).
+                                            </p>
+                                            <input type="file" name="photo" id="mainPhotoInput" class="form-control rounded-pill" accept="image/*" onchange="previewMainPhoto(this)" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Photos additionnelles (1 à 4 photos) -->
+                                <div class="p-3 rounded-4" style="background: var(--blanc-off); border: 1px solid var(--rose-border);">
+                                    <h6 class="fw-bold mb-1" style="color: var(--text-dark);">
+                                        Photos Complémentaires (Galerie : 1 à 4 photos de plus)
+                                    </h6>
+                                    <p class="small text-muted mb-2">
+                                        Sélectionnez jusqu'à 4 photos additionnelles pour compléter votre album de 5 photos.
+                                    </p>
+                                    <input type="file" name="additional_photos" id="additionalPhotosInput" class="form-control rounded-pill mb-3" accept="image/*" multiple onchange="previewGalleryPhotos(this)">
+                                    
+                                    <div id="galleryPreviewContainer" class="gallery-preview-grid d-none">
+                                        <!-- Vignettes injectées via JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4 border-rose-subtle">
+
+                            <!-- SOUMISSION -->
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+                                <a href="{% url 'cofesti_miss_master' %}" class="btn-outline-rose">
+                                    <i class="fas fa-arrow-left"></i> Annuler
+                                </a>
+                                <button type="submit" id="btnSubmitCandidate" class="btn-rose px-5">
+                                    <i class="fas fa-paper-plane"></i>
+                                    <span>Soumettre ma candidature officielle</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function selectContest(type) {
+        document.getElementById('contest_type_input').value = type;
+        document.querySelectorAll('.contest-pill').forEach(pill => {
+            pill.classList.remove('selected');
+        });
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('selected');
+        }
+    }
+
+    function previewMainPhoto(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('mainPhotoImg');
+                img.src = e.target.result;
+                img.classList.remove('d-none');
+                const box = document.getElementById('mainPhotoBox');
+                box.querySelectorAll('i, span').forEach(el => el.classList.add('d-none'));
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function previewGalleryPhotos(input) {
+        const container = document.getElementById('galleryPreviewContainer');
+        container.innerHTML = '';
+        if (input.files && input.files.length > 0) {
+            if (input.files.length > 4) {
+                alert("Vous pouvez sélectionner jusqu'à 4 photos additionnelles au maximum (total 5 photos avec la principale). Seules les 4 premières seront retenues.");
+            }
+            container.classList.remove('d-none');
+            const maxFiles = Math.min(input.files.length, 4);
+            for (let i = 0; i < maxFiles; i++) {
+                const file = input.files[i];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const thumb = document.createElement('div');
+                    thumb.className = 'gallery-thumb shadow-sm';
+                    thumb.innerHTML = `<img src="${e.target.result}" alt="Photo additionnelle ${i+1}">`;
+                    container.appendChild(thumb);
+                };
+                reader.readAsDataURL(file);
+            }
+        } else {
+            container.classList.add('d-none');
+        }
+    }
+
+    function handleCandidateSubmit(e) {
+        const mainInput = document.getElementById('mainPhotoInput');
+        if (!mainInput.files || mainInput.files.length === 0) {
+            e.preventDefault();
+            alert("Veuillez sélectionner votre photo officielle principale.");
+            mainInput.focus();
+            return false;
+        }
+
+        const btn = document.getElementById('btnSubmitCandidate');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Envoi de votre candidature...';
+        }
+        return true;
+    }
+</script>
+{% endblock %}
+

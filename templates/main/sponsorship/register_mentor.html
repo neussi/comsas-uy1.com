@@ -359,6 +359,23 @@
                                 </div>
                             </div>
 
+                            <!-- OPTION PAYER PLUS TARD -->
+                            <div class="p-3 rounded-4 mb-4" style="background: #fffdf5; border: 1px solid #fed7aa;">
+                                <div class="form-check d-flex align-items-start gap-3 mb-0">
+                                    <input class="form-check-input mt-1" type="checkbox" name="pay_later" id="id_pay_later" value="true" style="width: 22px; height: 22px; cursor: pointer; border-color: #f59e0b;" onchange="togglePayLaterMentor(this.checked)">
+                                    <label class="form-check-label" for="id_pay_later" style="cursor: pointer;">
+                                        <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                                            <i class="fas fa-clock text-warning"></i>
+                                            <span>Payer plus tard (Régler auprès du comité avant la soirée)</span>
+                                            <span class="badge rounded-pill bg-warning text-dark fw-bold" style="font-size: 0.7rem;">Option flexible</span>
+                                        </div>
+                                        <p class="small text-muted mb-0 mt-1" style="line-height: 1.5;">
+                                            Vous n'avez pas vos fonds immédiatement ? Cochez cette case pour réserver votre place dès aujourd'hui. Votre pass soirée officiel sera édité avec la mention « <em>Non payé</em> » et vous pourrez régler les 5 000 FCFA directement auprès des organisateurs avant la date de la soirée.
+                                        </p>
+                                    </label>
+                                </div>
+                            </div>
+
                             <hr class="my-4" />
 
                             <div class="d-flex flex-column flex-sm-row justify-content-end gap-3">
@@ -366,7 +383,7 @@
                                     Annuler
                                 </a>
                                 <button type="submit" id="submitBtn" class="btn-rose px-5">
-                                    <i class="fas fa-arrow-right"></i> Continuer vers le paiement (5 000 FCFA)
+                                    <i class="fas fa-arrow-right"></i> <span id="submitBtnText">Continuer vers le paiement (5 000 FCFA)</span>
                                 </button>
                             </div>
                         </form>
@@ -512,6 +529,17 @@
             cropModal.hide();
         }, 'image/jpeg', 0.9);
     });
+
+    function togglePayLaterMentor(isPayLater) {
+        const btnText = document.getElementById('submitBtnText');
+        if (btnText) {
+            if (isPayLater) {
+                btnText.innerText = "Valider l'inscription (Payer plus tard auprès du comité)";
+            } else {
+                btnText.innerText = "Continuer vers le paiement (5 000 FCFA)";
+            }
+        }
+    }
 
     function handleFormSubmit(e) {
         if (!finalPhotoInput.files || finalPhotoInput.files.length === 0) {

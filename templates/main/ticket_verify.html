@@ -120,6 +120,26 @@
                             });
                         </script>
                         {% else %}
+                        {% if mentor_pass and not mentor_pass.is_paid or mentee_pass and not mentee_pass.is_paid or activity_app and not activity_app.is_paid and activity_app.activity.price > 0 or registration and not registration.is_paid and registration.event.price > 0 %}
+                        <!-- ÉTAT NON PAYÉ (PAYER PLUS TARD OU EN ATTENTE DE RÈGLEMENT) -->
+                        <div class="status-badge mb-4 animate__animated animate__zoomIn animate__delay-1s" style="background: #fff3cd; color: #d97706; box-shadow: 0 0 20px rgba(217, 119, 6, 0.25);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="text-center mb-4">
+                            <h3 class="fw-bold text-warning mb-1" style="color: #d97706 !important;">Réservation Enregistrée • En attente de paiement</h3>
+                            <p class="text-muted small">ID: {{ uuid }}</p>
+                        </div>
+                        <div class="alert alert-warning border-0 rounded-4 text-start p-3 mb-4 shadow-sm" style="background-color: #fffbeb; border-left: 6px solid #f59e0b !important; color: #92400e;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle fa-2x me-3" style="color: #f59e0b;"></i>
+                                <div>
+                                    <strong class="d-block fw-bold text-dark mb-1" style="font-size: 1.05rem;">Billet Non Payé</strong>
+                                    <span class="fw-bold" style="color: #b45309; font-size: 0.95rem;">Non payé, veuillez contacter le comité d'organisation afin de payer votre billet avant la date.</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <!-- ÉTAT PAYÉ & CONFIRMÉ -->
                         <div
                             class="status-badge status-success mb-4 animate__animated animate__zoomIn animate__delay-1s">
                             <i class="fas fa-check"></i>
@@ -128,6 +148,7 @@
                             <h3 class="fw-bold text-success mb-1">Pass & Document Authentique</h3>
                             <p class="text-muted small">ID: {{ uuid }}</p>
                         </div>
+                        {% endif %}
 
                         {% if mentor_pass %}
                         <!-- VÉRIFICATION PASS PARRAIN -->
@@ -155,9 +176,13 @@
                                 <div class="info-value"><span class="badge rounded-pill fw-bold" style="background: linear-gradient(135deg, #E91E63, #f06292); color: #fff;">{{ mentor_pass.amount|floatformat:0 }} FCFA (Parrain)</span></div>
                             </div>
                             <div class="info-item">
-                                <div class="info-label">Statut d'Accès</div>
+                                <div class="info-label">Statut du Paiement & Accès</div>
                                 <div class="info-value">
-                                    <span class="badge bg-success rounded-pill px-3 py-1.5"><i class="fas fa-check-circle me-1"></i>Pass Valide • Entrée Autorisée</span>
+                                    {% if mentor_pass.is_paid %}
+                                    <span class="badge bg-success rounded-pill px-3 py-1.5"><i class="fas fa-check-circle me-1"></i>Pass Payé & Valide • Entrée Autorisée</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1.5 fw-bold"><i class="fas fa-clock me-1"></i>Non payé • Règlement auprès du comité avant la date</span>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -184,13 +209,17 @@
                                 <div class="info-value">{{ mentee_pass.get_level_display }} — {{ mentee_pass.filiere_option|default:mentee_pass.desired_specialty }}</div>
                             </div>
                             <div class="info-item">
-                                <div class="info-label">Frais Réglés</div>
+                                <div class="info-label">Frais</div>
                                 <div class="info-value"><span class="badge rounded-pill fw-bold" style="background: linear-gradient(135deg, #E91E63, #f06292); color: #fff;">{{ mentee_pass.amount|floatformat:0 }} FCFA (Filleul)</span></div>
                             </div>
                             <div class="info-item">
-                                <div class="info-label">Statut d'Accès</div>
+                                <div class="info-label">Statut du Paiement & Accès</div>
                                 <div class="info-value">
-                                    <span class="badge bg-success rounded-pill px-3 py-1.5"><i class="fas fa-check-circle me-1"></i>Pass Valide • Entrée Autorisée</span>
+                                    {% if mentee_pass.is_paid %}
+                                    <span class="badge bg-success rounded-pill px-3 py-1.5"><i class="fas fa-check-circle me-1"></i>Pass Payé & Valide • Entrée Autorisée</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1.5 fw-bold"><i class="fas fa-clock me-1"></i>Non payé • Règlement auprès du comité avant la date</span>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -207,10 +236,20 @@
                                 <div class="info-label">Participant / Équipe</div>
                                 <div class="info-value">{{ activity_app.team_name|default:activity_app.full_name }}</div>
                             </div>
+                            {% if activity_app.activity.price > 0 %}
                             <div class="info-item">
-                                <div class="info-label">Statut</div>
+                                <div class="info-label">Frais de participation</div>
+                                <div class="info-value"><span class="badge rounded-pill fw-bold" style="background: linear-gradient(135deg, #E91E63, #f06292); color: #fff;">{{ activity_app.amount|floatformat:0 }} FCFA</span></div>
+                            </div>
+                            {% endif %}
+                            <div class="info-item">
+                                <div class="info-label">Statut de la Candidature</div>
                                 <div class="info-value">
-                                    <span class="badge bg-success rounded-pill px-3 py-1.5">{{ activity_app.get_status_display }}</span>
+                                    {% if activity_app.is_paid or activity_app.activity.price <= 0 %}
+                                    <span class="badge bg-success rounded-pill px-3 py-1.5"><i class="fas fa-check-circle me-1"></i>{{ activity_app.get_status_display }}</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1.5 fw-bold"><i class="fas fa-clock me-1"></i>Non payé • Règlement auprès du comité avant la date</span>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -237,7 +276,11 @@
                             <div class="info-item">
                                 <div class="info-label">Statut</div>
                                 <div class="info-value">
-                                    <span class="badge bg-success rounded-pill px-3">Inscrit & Confirmé</span>
+                                    {% if registration.is_paid or registration.event.price <= 0 %}
+                                    <span class="badge bg-success rounded-pill px-3"><i class="fas fa-check-circle me-1"></i>Inscrit & Confirmé</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1.5 fw-bold"><i class="fas fa-clock me-1"></i>Non payé • Règlement auprès du comité avant la date</span>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

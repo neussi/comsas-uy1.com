@@ -403,6 +403,7 @@ class EventActivityApplication(models.Model):
     STATUS_CHOICES = [
         ('pending', 'En attente'),
         ('confirmed', 'Confirmée'),
+        ('pay_later', 'À régler plus tard (Auprès du comité)'),
         ('rejected', 'Rejetée'),
         ('cancelled', 'Annulée'),
     ]
@@ -434,6 +435,7 @@ class EventActivityApplication(models.Model):
     transaction_id = models.CharField(max_length=100, unique=True, verbose_name="ID Unique de Transaction")
     payment_reference = models.CharField(max_length=100, blank=True, verbose_name="Référence Passerelle")
     is_paid = models.BooleanField(default=False, verbose_name="Paiement validé")
+    pay_later = models.BooleanField(default=False, verbose_name="Payer plus tard (Règlement auprès du comité)")
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Statut de la candidature")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -791,6 +793,7 @@ class Mentor(models.Model):
         ('pending', 'En attente de paiement'),
         ('initiated', 'Paiement initié'),
         ('confirmed', 'Paiement confirmé'),
+        ('pay_later', 'À régler plus tard (Auprès du comité)'),
         ('failed', 'Paiement échoué'),
         ('cancelled', 'Paiement annulé'),
     ]
@@ -821,6 +824,7 @@ class Mentor(models.Model):
     # Paiement & Pass Soirée
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=5000, verbose_name="Tarif d'inscription (FCFA)")
     is_paid = models.BooleanField(default=False, verbose_name="Paiement validé")
+    pay_later = models.BooleanField(default=False, verbose_name="Payer plus tard (Règlement auprès du comité)")
     payment_status = models.CharField(max_length=20, default='pending', choices=PAYMENT_STATUS_CHOICES, verbose_name="Statut du paiement")
     transaction_id = models.CharField(max_length=100, blank=True, null=True, unique=True, verbose_name="ID Unique de Transaction")
     payment_reference = models.CharField(max_length=150, blank=True, default="", verbose_name="Référence passerelle Mobile Money")
@@ -902,6 +906,7 @@ class Mentee(models.Model):
         ('pending', 'En attente de paiement'),
         ('initiated', 'Paiement initié'),
         ('confirmed', 'Paiement confirmé'),
+        ('pay_later', 'À régler plus tard (Auprès du comité)'),
         ('failed', 'Paiement échoué'),
         ('cancelled', 'Paiement annulé'),
     ]
@@ -929,6 +934,7 @@ class Mentee(models.Model):
     # Paiement & Pass Soirée
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=10000, verbose_name="Tarif d'inscription (FCFA)")
     is_paid = models.BooleanField(default=False, verbose_name="Paiement validé")
+    pay_later = models.BooleanField(default=False, verbose_name="Payer plus tard (Règlement auprès du comité)")
     payment_status = models.CharField(max_length=20, default='pending', choices=PAYMENT_STATUS_CHOICES, verbose_name="Statut du paiement")
     transaction_id = models.CharField(max_length=100, blank=True, null=True, unique=True, verbose_name="ID Unique de Transaction")
     payment_reference = models.CharField(max_length=150, blank=True, default="", verbose_name="Référence passerelle Mobile Money")
@@ -2013,21 +2019,30 @@ class CofestiCandidate(models.Model):
         ('master', 'Master Département'),
         ('voice', 'Finale The Voice'),
     ]
+    STATUS_CHOICES = [
+        ('pending', 'En attente de validation'),
+        ('approved', 'Validé pour le vote'),
+        ('rejected', 'Refusé'),
+    ]
     
     edition = models.ForeignKey(CofestiEdition, on_delete=models.CASCADE, related_name='candidates', verbose_name="Édition COFESTI")
     contest_type = models.CharField(max_length=20, choices=CONTEST_TYPES, default='miss', verbose_name="Type de concours")
     number = models.PositiveIntegerField(default=1, verbose_name="Numéro de candidat")
     name = models.CharField(max_length=200, verbose_name="Nom complet")
+    phone = models.CharField(max_length=20, blank=True, verbose_name="Téléphone WhatsApp")
+    email = models.EmailField(blank=True, verbose_name="Adresse e-mail")
     age = models.PositiveIntegerField(null=True, blank=True, verbose_name="Âge")
     level = models.CharField(max_length=50, default="Licence 1", verbose_name="Niveau d'étude")
     specialty = models.CharField(max_length=100, blank=True, verbose_name="Filière / Spécialité")
-    photo = models.ImageField(upload_to='cofesti/candidates/', blank=True, null=True, verbose_name="Photo de présentation")
+    photo = models.ImageField(upload_to='cofesti/candidates/', blank=True, null=True, verbose_name="Photo de présentation principale")
+    campaign_message = models.CharField(max_length=255, blank=True, verbose_name="Message de campagne / Slogan")
     bio = models.TextField(blank=True, verbose_name="Biographie, motivation ou présentation")
     video_url = models.URLField(blank=True, null=True, verbose_name="Lien vidéo (YouTube / TikTok / etc.)")
     
     votes_count = models.PositiveIntegerField(default=0, verbose_name="Nombre total de votes")
     total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="Revenus générés (FCFA)")
-    is_approved = models.BooleanField(default=True, verbose_name="Candidat approuvé")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Statut de la candidature")
+    is_approved = models.BooleanField(default=False, verbose_name="Candidat approuvé pour le vote")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -2037,6 +2052,41 @@ class CofestiCandidate(models.Model):
 
     def __str__(self):
         return f"[{self.get_contest_type_display()}] #{self.number} {self.name} ({self.votes_count} voix)"
+
+    def all_photos_list(self):
+        """Retourne la liste ordonnée de toutes les photos du candidat (1 à 5 photos)"""
+        items = []
+        if self.photo:
+            items.append({
+                'url': self.photo.url,
+                'caption': self.campaign_message or self.name,
+                'is_main': True
+            })
+        for p in self.photos.all():
+            if p.image:
+                items.append({
+                    'url': p.image.url,
+                    'caption': p.caption or f"Photo de {self.name}",
+                    'is_main': False
+                })
+        return items
+
+
+class CofestiCandidatePhoto(models.Model):
+    """Galerie photos additionnelles du candidat (jusqu'à 5 photos au total par candidat)."""
+    candidate = models.ForeignKey(CofestiCandidate, on_delete=models.CASCADE, related_name='photos', verbose_name="Candidat")
+    image = models.ImageField(upload_to='cofesti/candidates/gallery/', verbose_name="Photo")
+    caption = models.CharField(max_length=200, blank=True, verbose_name="Légende (ex: Tenue de gala, Tenue traditionnelle)")
+    order = models.PositiveIntegerField(default=1, verbose_name="Ordre d'affichage")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Photo supplémentaire de candidat"
+        verbose_name_plural = "Photos supplémentaires de candidats"
+        ordering = ['order', 'created_at']
+
+    def __str__(self):
+        return f"Photo #{self.order} — {self.candidate.name}"
 
 
 class CofestiVote(models.Model):

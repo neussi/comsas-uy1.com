@@ -100,6 +100,29 @@
             <div class="col-lg-8 col-xl-7">
 
                 <div class="success-card p-4 p-md-5 text-center mb-4">
+                    {% if not participant.is_paid %}
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 85px; height: 85px; background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 2.5rem; border: 2px solid #f59e0b;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+
+                    <span class="badge rounded-pill px-3 py-1.5 mb-2 d-inline-block bg-warning text-dark" style="font-weight: 800; font-size: 0.78rem;">
+                        RÉSERVATION ENREGISTRÉE • OPTION « PAYER PLUS TARD »
+                    </span>
+
+                    <h1 class="display-6 fw-extrabold mb-2" style="color: var(--text-dark);">
+                        Félicitations {% if participant %}{{ participant.first_name }}{% endif %} !
+                    </h1>
+
+                    <div class="alert alert-warning border-0 rounded-4 text-start p-3 mb-4 mx-auto shadow-sm" style="max-width: 580px; background: #fffdf5; border-left: 6px solid #f59e0b !important;">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle fa-2x me-3" style="color: #f59e0b;"></i>
+                            <div>
+                                <strong class="d-block text-dark fw-bold mb-1">Rappel de paiement :</strong>
+                                <span class="fw-bold" style="color: #92400e; font-size: 0.95rem;">Non payé, veuillez contacter le comité d'organisation afin de payer votre billet avant la date.</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
                     <!-- Icône succès animée -->
                     <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 85px; height: 85px; background: rgba(76, 175, 80, 0.12); color: #2e7d32; font-size: 2.5rem;">
                         <i class="fas fa-check-circle"></i>
@@ -116,6 +139,7 @@
                     <p class="text-muted lead mb-4" style="font-size: 1.05rem;">
                         Votre participation au programme de parrainage et votre accès à la <strong>Soirée de Gala & Parrainage</strong> au <strong>Restaurant Universitaire N°2</strong> sont officiellement confirmés.
                     </p>
+                    {% endif %}
 
                     {% if participant %}
                     <!-- Aperçu du Pass & QR Code -->
